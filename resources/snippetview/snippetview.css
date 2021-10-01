@@ -1,6 +1,24 @@
 * {
     box-sizing: border-box;
 }
+
+#contentMain {
+    padding: 0;
+    overflow-y: scroll;
+    mask-image: linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px);
+    mask-size: 100% 20000px;
+    mask-position: left bottom;
+    -webkit-mask-image: linear-gradient(to top, transparent, black), linear-gradient(to left, transparent 17px, black 17px);
+    -webkit-mask-size: 100% 20000px;
+    -webkit-mask-position: left bottom;
+    transition: mask-position 0.8s cubic-bezier(.23,.96,.57,.99), -webkit-mask-position 0.8s cubic-bezier(.23,.96,.57,.99);
+}
+
+#contentMain:hover {
+    mask-position: left top;
+    -webkit-mask-position: left top;
+}
+
 body {
     font-family: sans-serif;
     color: var(--vscode-editor-foreground);

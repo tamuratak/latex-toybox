@@ -3,6 +3,15 @@ const mathSymbolCategories = ['All'];
 const grid = document.querySelector('#Symbols .grid');
 var vscodeApi;
 
+// Based on https://css-tricks.com/scrollbars-on-hover/
+document.addEventListener('DOMContentLoaded', () => {
+    const contentDiv = document.getElementById('contentMain');
+    contentDiv.style.height = window.innerHeight + 'px';
+    window.addEventListener('resize', () => {
+        contentDiv.style.height = window.innerHeight + 'px';
+    })
+});
+
 (function() {
     vscodeApi = acquireVsCodeApi();
     tikzInitialise();
