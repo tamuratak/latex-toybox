@@ -181,6 +181,18 @@ export class PdfViewerPanelService {
                     }
                     break;
                 }
+                case 'click_event': {
+                    if (!/^https?:/.exec(e.data.href)) {
+                        return;
+                    }
+                    const dom = document.createElement('a');
+                    dom.style.display = 'none';
+                    dom.href = e.data.href;
+                    document.body.appendChild(dom);
+                    dom.click();
+                    document.body.removeChild(dom);
+                    return;
+                }
                 case 'keyboard_event': {
                     if (${rebroadcast}) {
                         window.dispatchEvent(new KeyboardEvent('keydown', e.data.event));
