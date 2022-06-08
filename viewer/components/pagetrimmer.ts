@@ -57,7 +57,7 @@ function getTrimScale() {
         opt.disabled = true
     }
     if (currentUserSelectScale === undefined) {
-        currentUserSelectScale = PDFViewerApplication.pdfViewer._currentScale
+        currentUserSelectScale = PDFViewerApplication.pdfViewer.currentScale
     }
     if (originalUserSelectIndex === undefined) {
         originalUserSelectIndex = scaleSelect.selectedIndex

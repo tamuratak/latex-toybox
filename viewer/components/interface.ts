@@ -47,6 +47,13 @@ export type PdfjsEventName
     | 'spreadmodechanged'
     | 'pagenumberchanged'
 
+type PageView = {
+    viewport: {
+        convertToViewportPoint(x: number, y: number): [number, number]
+    },
+    getPagePoint(x: number, y: number): [number, number]
+}
+
 export interface IPDFViewerApplication {
     eventBus: {
         on: (eventName: PdfjsEventName, listener: () => void) => void,
@@ -60,14 +67,9 @@ export interface IPDFViewerApplication {
     initializedPromise: Promise<void>,
     isViewerEmbedded: boolean,
     pdfViewer: {
-        _currentScale: number,
-        _pages: {
-            viewport: {
-                convertToViewportPoint(x: number, y: number): [number, number]
-            },
-            getPagePoint(x: number, y: number): [number, number]
-        }[],
+        currentScale: number,
         currentScaleValue: string,
+        getPageView: (index: number) => PageView,
         scrollMode: number,
         spreadMode: number
     },
