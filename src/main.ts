@@ -34,10 +34,12 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
+import { CompletionUpdater } from './components/completionupdater'
+import { CompletionStore } from './components/completionstore'
 
 
 function conflictExtensionCheck() {
@@ -189,7 +191,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
                 const file = e.document.uri.fsPath
                 await extension.manager.parseFileAndSubs(file, extension.manager.rootFile)
                 await extension.manager.parseFlsFile(extension.manager.rootFile ? extension.manager.rootFile : file)
-                await extension.manager.updateCompleter(file, content)
+                await extension.completionUpdater.updateCompleter(file, content)
             }, configuration.get('intellisense.update.delay', 1000))
         }
     }))
@@ -307,6 +309,8 @@ interface IExtension extends
     ExtensionRootLocator,
     BuilderLocator,
     CompleterLocator,
+    CompletionUpdaterLocator,
+    CompletionStoreLocator,
     LoggerLocator,
     LwfsLocator,
     ManagerLocator,
@@ -327,7 +331,9 @@ export class Extension implements IExtension {
     readonly locator: Locator
     readonly compilerLogParser: CompilerLogParser
     readonly pegParser: PEGParser
+    readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
+    readonly completionStore: CompletionStore
     readonly atSuggestionCompleter: AtSuggestionCompleter
     readonly linter: Linter
     readonly counter: Counter
@@ -359,7 +365,9 @@ export class Extension implements IExtension {
         this.server = new Server(this)
         this.locator = new Locator(this)
         this.compilerLogParser = new CompilerLogParser(this)
+        this.completionUpdater = new CompletionUpdater(this)
         this.completer = new Completer(this)
+        this.completionStore = new CompletionStore()
         this.atSuggestionCompleter = new AtSuggestionCompleter(this)
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)

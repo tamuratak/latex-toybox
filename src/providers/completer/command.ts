@@ -1,13 +1,11 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs'
-import {latexParser} from 'latex-utensils'
 
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
-import {CommandFinder, isTriggerSuggestNeeded, resolveCmdEnvFile} from './commandlib/commandfinder'
-import {CommandSignatureDuplicationDetector, CommandNameDuplicationDetector} from './commandlib/commandfinder'
+import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandfinder'
 import {SurroundCommand} from './commandlib/surround'
-import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
+import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
 
@@ -83,14 +81,16 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
 
 interface IExtension extends
     ExtensionRootLocator,
+    CompletionUpdaterLocator,
     CompleterLocator,
+    CompletionStoreLocator,
     LoggerLocator,
+    LwfsLocator,
     ManagerLocator { }
 
 export class Command implements IProvider, ICommand {
     private readonly extension: IExtension
     private readonly environment: Environment
-    private readonly commandFinder: CommandFinder
     private readonly surroundCommand: SurroundCommand
 
     private readonly defaultCmds: CmdEnvSuggestion[] = []
@@ -100,8 +100,46 @@ export class Command implements IProvider, ICommand {
     constructor(extension: IExtension, environment: Environment) {
         this.extension = extension
         this.environment = environment
-        this.commandFinder = new CommandFinder(extension)
         this.surroundCommand = new SurroundCommand()
+        void this.load()
+    }
+
+    async load() {
+        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const packageDirUri = vscode.Uri.file(`${this.extension.extensionRoot}/data/packages/`)
+        const files = await vscode.workspace.fs.readDirectory(packageDirUri)
+        files.forEach(async (file) => {
+            const fileName = file[0]
+            const match = /(.*)_cmd.json/.exec(fileName)
+            if (match) {
+                const pkg = match[1]
+                const filePathUri = vscode.Uri.joinPath(packageDirUri, fileName)
+                const pkgEntry: CmdEnvSuggestion[] = []
+                if (filePathUri !== undefined) {
+                    try {
+                        const content = await this.extension.lwfs.readFile(filePathUri)
+                        const cmds = JSON.parse(content) as {[key: string]: CmdItemEntry}
+                        Object.keys(cmds).forEach(key => {
+                            if (isCmdItemEntry(cmds[key])) {
+                                pkgEntry.push(this.entryCmdToCompletion(key, cmds[key]))
+                            } else {
+                                this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                                this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(cmds[key])}`)
+                            }
+                        })
+                    } catch (e) {
+                        this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                    }
+                }
+                this.packageCmds.set(pkg, pkgEntry)
+            }
+        })
+        if (configuration.get('intellisense.unimathsymbols.enabled')) {
+            const symbols: { [key: string]: CmdItemEntry } = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/unimathsymbols.json`).toString()) as DataUnimathSymbolsJsonType
+            Object.keys(symbols).forEach(key => {
+                this.defaultSymbols.push(this.entryCmdToCompletion(key, symbols[key]))
+            })
+        }
     }
 
     initialize(defaultCmds: {[key: string]: CmdItemEntry}) {
@@ -126,7 +164,7 @@ export class Command implements IProvider, ICommand {
     }
 
     get definedCmds() {
-        return this.commandFinder.definedCmds
+        return this.extension.completionUpdater.definedCmds
     }
 
     provideFrom(result: RegExpMatchArray, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
@@ -165,12 +203,6 @@ export class Command implements IProvider, ICommand {
 
         // Insert unimathsymbols
         if (configuration.get('intellisense.unimathsymbols.enabled')) {
-            if (this.defaultSymbols.length === 0) {
-                const symbols: { [key: string]: CmdItemEntry } = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/unimathsymbols.json`).toString()) as DataUnimathSymbolsJsonType
-                Object.keys(symbols).forEach(key => {
-                    this.defaultSymbols.push(this.entryCmdToCompletion(key, symbols[key]))
-                })
-            }
             this.defaultSymbols.forEach(symbol => {
                 suggestions.push(symbol)
                 cmdDuplicationDetector.add(symbol)
@@ -230,34 +262,6 @@ export class Command implements IProvider, ICommand {
         this.surroundCommand.surround(cmdItems)
     }
 
-    /**
-     * Updates the Manager cache for commands used in `file` with `nodes`.
-     * If `nodes` is `undefined`, `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
-     * @param file The path of a LaTeX file.
-     * @param nodes AST of a LaTeX file.
-     * @param content The content of a LaTeX file.
-     */
-    update(file: string, nodes?: latexParser.Node[], content?: string) {
-        // First, we must update the package list
-        this.updatePkg(file, nodes, content)
-        // Remove newcommand cmds, because they will be re-insert in the next step
-        this.definedCmds.forEach((entry,cmd) => {
-            if (entry.file === file) {
-                this.definedCmds.delete(cmd)
-            }
-        })
-        const cache = this.extension.manager.getCachedContent(file)
-        if (cache === undefined) {
-            return
-        }
-        if (nodes !== undefined) {
-            cache.element.command = this.commandFinder.getCmdFromNodeArray(file, nodes, new CommandNameDuplicationDetector())
-        } else if (content !== undefined) {
-            cache.element.command = this.commandFinder.getCmdFromContent(file, content)
-        }
-    }
-
     getExtraPkgs(languageId: string): string[] {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const extraPackages = Array.from(configuration.get('intellisense.package.extra') as string[])
@@ -269,87 +273,6 @@ export class Command implements IProvider, ICommand {
         }
         return extraPackages
     }
-
-    /**
-     * Updates the Manager cache for packages used in `file` with `nodes`.
-     * If `nodes` is `undefined`, `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
-     *
-     * @param file The path of a LaTeX file.
-     * @param nodes AST of a LaTeX file.
-     * @param content The content of a LaTeX file.
-     */
-    private updatePkg(file: string, nodes?: latexParser.Node[], content?: string) {
-        if (nodes !== undefined) {
-            this.updatePkgWithNodeArray(file, nodes)
-        } else if (content !== undefined) {
-            const pkgReg = /\\usepackage(?:\[[^[\]{}]*\])?{(.*)}/g
-
-            while (true) {
-                const result = pkgReg.exec(content)
-                if (result === null) {
-                    break
-                }
-                result[1].split(',').forEach(pkg => {
-                    pkg = pkg.trim()
-                    if (pkg === '') {
-                        return
-                    }
-                    const cache = this.extension.manager.getCachedContent(file)
-                    if (cache === undefined) {
-                        return
-                    }
-                    let filePkgs = cache.element.package
-                    if (!filePkgs) {
-                        filePkgs = new Set<string>()
-                        cache.element.package = filePkgs
-                    }
-                    filePkgs.add(pkg)
-                })
-            }
-        }
-    }
-
-    private updatePkgWithNodeArray(file: string, nodes: latexParser.Node[]) {
-        nodes.forEach(node => {
-            if ( latexParser.isCommand(node) && (node.name === 'usepackage' || node.name === 'documentclass') ) {
-                node.args.forEach(arg => {
-                    if (latexParser.isOptionalArg(arg)) {
-                        return
-                    }
-                    for (const c of arg.content) {
-                        if (!latexParser.isTextString(c)) {
-                            continue
-                        }
-                        c.content.split(',').forEach(pkg => {
-                            pkg = pkg.trim()
-                            if (pkg === '') {
-                                return
-                            }
-                            if (node.name === 'documentclass') {
-                                pkg = 'class-' + pkg
-                            }
-                            const cache = this.extension.manager.getCachedContent(file)
-                            if (cache === undefined) {
-                                return
-                            }
-                            let pkgs = cache.element.package
-                            if (!pkgs) {
-                                pkgs = new Set<string>()
-                                cache.element.package = pkgs
-                            }
-                            pkgs.add(pkg)
-                        })
-                    }
-                })
-            } else {
-                if (latexParser.hasContentArray(node)) {
-                    this.updatePkgWithNodeArray(file, node.content)
-                }
-            }
-        })
-    }
-
 
     private entryCmdToCompletion(itemKey: string, item: CmdItemEntry): CmdEnvSuggestion {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
@@ -389,27 +312,6 @@ export class Command implements IProvider, ICommand {
     provideCmdInPkg(pkg: string, suggestions: vscode.CompletionItem[], cmdDuplicationDetector: CommandSignatureDuplicationDetector) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
-        // Load command in pkg
-        if (!this.packageCmds.has(pkg)) {
-            const filePath: string | undefined = resolveCmdEnvFile(`${pkg}_cmd.json`, `${this.extension.extensionRoot}/data/packages/`)
-            const pkgEntry: CmdEnvSuggestion[] = []
-            if (filePath !== undefined) {
-                try {
-                    const cmds = JSON.parse(fs.readFileSync(filePath).toString()) as {[key: string]: CmdItemEntry}
-                    Object.keys(cmds).forEach(key => {
-                        if (isCmdItemEntry(cmds[key])) {
-                            pkgEntry.push(this.entryCmdToCompletion(key, cmds[key]))
-                        } else {
-                            this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePath}`)
-                            this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(cmds[key])}`)
-                        }
-                    })
-                } catch (e) {
-                    this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePath}`)
-                }
-            }
-            this.packageCmds.set(pkg, pkgEntry)
-        }
 
         // No package command defined
         const pkgEntry = this.packageCmds.get(pkg)

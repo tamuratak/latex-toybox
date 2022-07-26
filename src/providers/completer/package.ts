@@ -1,8 +1,7 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import type {IProvider} from './interface'
-import type {ExtensionRootLocator} from '../../interfaces'
+import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')
 
@@ -13,7 +12,8 @@ type PackageItemEntry = {
 }
 
 interface IExtension extends
-    ExtensionRootLocator { }
+    ExtensionRootLocator,
+    LwfsLocator { }
 
 export class Package implements IProvider {
     private readonly extension: IExtension
@@ -21,9 +21,16 @@ export class Package implements IProvider {
 
     constructor(extension: IExtension) {
         this.extension = extension
+        void this.load()
     }
 
-    initialize(defaultPackages: {[key: string]: PackageItemEntry}) {
+    private async load() {
+        const content = await this.extension.lwfs.readFile(vscode.Uri.file(`${this.extension.extensionRoot}/data/packagenames.json`))
+        const pkgs: {[key: string]: PackageItemEntry} = JSON.parse(content) as DataPackagesJsonType
+        this.initialize(pkgs)
+    }
+
+    private initialize(defaultPackages: {[key: string]: PackageItemEntry}) {
         Object.keys(defaultPackages).forEach(key => {
             const item = defaultPackages[key]
             const pack = new vscode.CompletionItem(item.command, vscode.CompletionItemKind.Module)
@@ -38,10 +45,6 @@ export class Package implements IProvider {
     }
 
     private provide(): vscode.CompletionItem[] {
-        if (this.suggestions.length === 0) {
-            const pkgs: {[key: string]: PackageItemEntry} = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/packagenames.json`).toString()) as DataPackagesJsonType
-            this.initialize(pkgs)
-        }
         return this.suggestions
     }
 }

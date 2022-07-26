@@ -1,8 +1,7 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import type {IProvider} from './interface'
-import type {ExtensionRootLocator} from '../../interfaces'
+import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
 
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')
 
@@ -13,7 +12,8 @@ type ClassItemEntry = {
 }
 
 interface IExtension extends
-    ExtensionRootLocator { }
+    ExtensionRootLocator,
+    LwfsLocator { }
 
 export class DocumentClass implements IProvider {
     private readonly extension: IExtension
@@ -21,9 +21,16 @@ export class DocumentClass implements IProvider {
 
     constructor(extension: IExtension) {
         this.extension = extension
+        void this.load()
     }
 
-    initialize(classes: {[key: string]: ClassItemEntry}) {
+    private async load() {
+        const content = await this.extension.lwfs.readFile(vscode.Uri.file(`${this.extension.extensionRoot}/data/classnames.json`))
+        const allClasses: {[key: string]: ClassItemEntry} = JSON.parse(content) as DataClassnamesJsonType
+        this.initialize(allClasses)
+    }
+
+    private initialize(classes: {[key: string]: ClassItemEntry}) {
         Object.keys(classes).forEach(key => {
             const item = classes[key]
             const cl = new vscode.CompletionItem(item.command, vscode.CompletionItemKind.Module)
@@ -38,10 +45,6 @@ export class DocumentClass implements IProvider {
     }
 
     private provide(): vscode.CompletionItem[] {
-        if (this.suggestions.length === 0) {
-            const allClasses: {[key: string]: ClassItemEntry} = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/classnames.json`).toString()) as DataClassnamesJsonType
-            this.initialize(allClasses)
-        }
         return this.suggestions
     }
 }

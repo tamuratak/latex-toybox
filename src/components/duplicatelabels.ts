@@ -10,7 +10,7 @@ export class DuplicateLabels {
 
     constructor(extension: Extension) {
         this.extension = extension
-        this.extension.manager.onDidUpdateIntellisense((file: string) => {
+        this.extension.completionUpdater.onDidUpdateIntellisense((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop')
             if (configuration.get('check.duplicatedLabels.enabled')) {
                 this.run(file)
