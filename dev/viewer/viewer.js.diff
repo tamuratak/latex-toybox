@@ -1,6 +1,6 @@
---- ../tmp/pdfjs-2.15/web/viewer.js	2022-07-31 13:44:12.000000000 +0900
-+++ viewer/viewer.js	2022-08-27 07:47:39.000000000 +0900
-@@ -934,7 +934,7 @@
+--- ../tmp/pdfjs-2.16/web/viewer.js	2022-08-28 13:14:14.000000000 +0900
++++ viewer/viewer.js	2022-08-31 13:59:00.000000000 +0900
+@@ -2086,7 +2086,7 @@
        }
      }
  
@@ -8,8 +8,8 @@
 +    // this.setTitle(title);
    },
  
-   setTitle(title) {
-@@ -5673,7 +5673,7 @@
+   setTitle(title = this._title) {
+@@ -5776,7 +5776,7 @@
  };
  exports.FindState = FindState;
  const FIND_TIMEOUT = 250;
@@ -18,7 +18,7 @@
  const MATCH_SCROLL_OFFSET_LEFT = -400;
  const CHARACTERS_TO_NORMALIZE = {
    "\u2010": "-",
-@@ -8759,7 +8759,7 @@
+@@ -8863,7 +8863,7 @@
        return;
      }
  
@@ -27,7 +27,7 @@
  
      if (!this.isInitialEventDispatched) {
        this.#dispatchEvent();
-@@ -10022,7 +10022,7 @@
+@@ -10128,7 +10128,7 @@
      this.downloadManager = options.downloadManager || null;
      this.findController = options.findController || null;
      this._scriptingManager = options.scriptingManager || null;
@@ -35,8 +35,8 @@
 +    this.removePageBorders = options.removePageBorders || true;
      this.textLayerMode = options.textLayerMode ?? _ui_utils.TextLayerMode.ENABLE;
      this.#annotationMode = options.annotationMode ?? _pdfjsLib.AnnotationMode.ENABLE_FORMS;
-     this.#annotationEditorMode = options.annotationEditorMode ?? ANNOTATION_EDITOR_MODE;
-@@ -14344,11 +14344,11 @@
+     this.#annotationEditorMode = options.annotationEditorMode ?? _pdfjsLib.AnnotationEditorType.DISABLE;
+@@ -14683,11 +14683,11 @@
  
    async _writeToStorage() {
      const databaseStr = JSON.stringify(this.database);
@@ -50,7 +50,7 @@
    }
  
    async set(name, val) {
-@@ -14416,11 +14416,11 @@
+@@ -14755,11 +14755,11 @@
  
  class GenericPreferences extends _preferences.BasePreferences {
    async _writeToStorage(prefObj) {
@@ -64,7 +64,7 @@
    }
  
  }
-@@ -15364,7 +15364,7 @@
+@@ -15703,7 +15703,7 @@
      var data = gL10nData[key];
  
      if (!data) {
@@ -73,7 +73,7 @@
  
        if (!fallback) {
          return null;
-@@ -15429,7 +15429,7 @@
+@@ -15768,7 +15768,7 @@
      var data = getL10nData(l10n.id, l10n.args);
  
      if (!data) {
@@ -82,7 +82,7 @@
        return;
      }
  
-@@ -15873,6 +15873,9 @@
+@@ -16212,6 +16212,9 @@
  
  window.addEventListener("keydown", function (event) {
    if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
@@ -92,7 +92,7 @@
      window.print();
      event.preventDefault();
  
-@@ -16178,7 +16181,7 @@
+@@ -16529,7 +16532,7 @@
    try {
      parent.document.dispatchEvent(event);
    } catch (ex) {
