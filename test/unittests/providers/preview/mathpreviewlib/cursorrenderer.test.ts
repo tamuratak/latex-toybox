@@ -24,7 +24,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         assert(texMath)
         const renderer = new CursorRenderer({pegParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
-        assert.strictEqual(result, '${~a|+b~}$')
+        assert.strictEqual(result, '$a{~|~}+b$')
     })
 
     runUnitTestWithFixture('fixture001', 'test shouldNotWriteCursor', () => {
@@ -62,7 +62,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         assert(texMath)
         const renderer = new CursorRenderer({pegParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
-        assert.strictEqual(result, '$\\frac{1}{2}$')
+        assert.strictEqual(result, undefined)
     })
 
     runUnitTestWithFixture('fixture001', 'test a^|b', async () => {
@@ -86,7 +86,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         assert(texMath)
         const renderer = new CursorRenderer({pegParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
-        assert.strictEqual(result, '$a^{~b| ~}$')
+        assert.strictEqual(result, '$a^{~b|~} $')
     })
 
     runUnitTestWithFixture('fixture001', 'test a_|b', async () => {

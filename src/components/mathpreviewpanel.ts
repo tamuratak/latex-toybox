@@ -6,9 +6,6 @@ import type {Extension} from '../main'
 
 
 type UpdateEvent = {
-    type: 'edit',
-    event: vscode.TextDocumentChangeEvent
-} | {
     type: 'selection',
     event: vscode.TextEditorSelectionChangeEvent
 }
@@ -41,7 +38,6 @@ export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer
 export class MathPreviewPanel {
     private readonly extension: Extension
     private panel?: vscode.WebviewPanel
-    private prevEditTime = 0
     private prevDocumentUri?: string
     private prevCursorPosition?: vscode.Position
     private prevNewCommands?: string
@@ -96,9 +92,6 @@ export class MathPreviewPanel {
 
     initializePanel(panel: vscode.WebviewPanel) {
         const disposable = vscode.Disposable.from(
-            vscode.workspace.onDidChangeTextDocument( (event) => {
-                void this.extension.mathPreviewPanel.update({type: 'edit', event})
-            }),
             vscode.window.onDidChangeTextEditorSelection( (event) => {
                 void this.extension.mathPreviewPanel.update({type: 'selection', event})
             })
@@ -137,7 +130,6 @@ export class MathPreviewPanel {
     }
 
     private clearCache() {
-        this.prevEditTime = 0
         this.prevDocumentUri = undefined
         this.prevCursorPosition = undefined
         this.prevNewCommands = undefined
@@ -173,15 +165,6 @@ export class MathPreviewPanel {
         if (!this.panel || !this.panel.visible) {
             return
         }
-        if (!this.needCursor) {
-            if (ev?.type === 'edit') {
-                this.prevEditTime = Date.now()
-            } else if (ev?.type === 'selection') {
-                if (Date.now() - this.prevEditTime < 100) {
-                    return
-                }
-            }
-        }
         const editor = vscode.window.activeTextEditor
         const document = editor?.document
         if (!editor || !document?.languageId || !this.extension.manager.hasTexId(document.languageId)) {
@@ -189,24 +172,18 @@ export class MathPreviewPanel {
             return
         }
         const documentUri = document.uri.toString()
-        if (ev?.type === 'edit' && documentUri !== ev.event.document.uri.toString()) {
-            return
-        }
-        const position = editor.selection.active
+        const position = ev?.event.selections[0]?.active || editor.selection.active
         const texMath = this.getTexMath(document, position)
         if (!texMath) {
             this.clearCache()
-            return this.panel.webview.postMessage({type: 'mathImage', src: '' })
             return
         }
         let cachedCommands: string | undefined
-        if ( position.line === this.prevCursorPosition?.line && documentUri === this.prevDocumentUri ) {
+        if (position.line === this.prevCursorPosition?.line && documentUri === this.prevDocumentUri) {
             cachedCommands = this.prevNewCommands
         }
-        if (this.needCursor) {
-            await this.renderCursor(document, texMath)
-        }
-        const result = await this.mathPreview.generateSVG(texMath, cachedCommands).catch(() => undefined)
+        const newTeXMath = this.needCursor ? await this.renderCursor(document, texMath) : texMath
+        const result = await this.mathPreview.generateSVG(newTeXMath, cachedCommands).catch(() => undefined)
         if (!result) {
             return
         }
@@ -229,9 +206,9 @@ export class MathPreviewPanel {
         return
     }
 
-    async renderCursor(document: vscode.TextDocument, tex: TexMathEnv) {
-        const s = await this.mathPreview.renderCursor(document, tex)
-        tex.texString = s
+    async renderCursor(document: vscode.TextDocument, tex: TexMathEnv, cursorPos?: vscode.Position) {
+        const s = await this.mathPreview.renderCursor(document, tex, cursorPos) ?? tex.texString
+        return { texString: s, envname: tex.envname }
     }
 
 }
