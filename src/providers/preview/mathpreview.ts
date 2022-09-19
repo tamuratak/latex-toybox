@@ -54,7 +54,7 @@ export class MathPreview {
     async provideHoverOnTex(document: vscode.TextDocument, tex: TexMathEnv, newCommand: string): Promise<vscode.Hover> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const scale = configuration.get('hover.preview.scale') as number
-        let s = await this.cursorRenderer.renderCursor(document, tex, this.color)
+        let s = await this.cursorRenderer.renderCursor(document, tex, this.color) || tex.texString
         s = this.mputils.mathjaxify(s, tex.envname)
         const typesetArg = newCommand + this.mputils.stripTeX(s)
         const typesetOpts = { scale, color: this.color }
@@ -106,7 +106,7 @@ export class MathPreview {
         return undefined
     }
 
-    async generateSVG(tex: TexMathEnv, newCommandsArg?: string) {
+    async generateSVG(tex: Pick<TexMathEnv, 'texString' | 'envname'>, newCommandsArg?: string) {
         const newCommands: string = newCommandsArg ?? await this.newCommandFinder.findProjectNewCommand()
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const scale = configuration.get('hover.preview.scale') as number
@@ -124,8 +124,8 @@ export class MathPreview {
         }
     }
 
-    renderCursor(document: vscode.TextDocument, texMath: TexMathEnv): Promise<string> {
-        return this.cursorRenderer.renderCursor(document, texMath, this.color)
+    renderCursor(document: vscode.TextDocument, texMath: TexMathEnv, cursorPos?: vscode.Position): Promise<string | undefined> {
+        return this.cursorRenderer.renderCursor(document, texMath, this.color, cursorPos)
     }
 
     findHoverOnTex(document: ITextDocumentLike, position: vscode.Position): TexMathEnv | undefined {

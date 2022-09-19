@@ -4,6 +4,12 @@ import { TexMathEnv } from './texmathenvfinder'
 
 import type { UtensilsParserLocator } from '../../../interfaces'
 import type { ITextDocumentLike } from './textdocumentlike'
+import { convertPositionToOffset } from '../../../utils/ast'
+
+type PrevNextNodes = {
+    prev: latexParser.Node | undefined,
+    next: latexParser.Node | undefined
+}
 
 interface IExtension extends UtensilsParserLocator { }
 
@@ -31,37 +37,10 @@ export class CursorRenderer {
         return false
     }
 
-    getContentRange(node: latexParser.Node): vscode.Range | undefined {
-        if (latexParser.hasContentArray(node) && node.content.length > 0) {
-            const sloc = node.content[0].location
-            const eloc = node.content[node.content.length-1].location
-            if (sloc && eloc) {
-                const start = { line: sloc.start.line - 1, character: sloc.start.column - 1 }
-                const end = { line: eloc.end.line - 1, character: eloc.end.column - 1 }
-                return new vscode.Range(start.line, start.character, end.line, end.character)
-            } else {
-                return
-            }
-        }
-        if (latexParser.isSubscript(node) || latexParser.isSuperscript(node)) {
-            const start = { line: node.location.start.line - 1, character: node.location.start.column }
-            const end = { line: node.location.end.line - 1, character: node.location.end.column - 1 }
-            return new vscode.Range(start.line, start.character, end.line, end.character)
-        } else {
-            if (node.location) {
-                const start = { line: node.location.start.line - 1, character: node.location.start.column - 1 }
-                const end = { line: node.location.end.line - 1, character: node.location.end.column - 1 }
-                return new vscode.Range(start.line, start.character, end.line, end.character)
-            } else {
-                return
-            }
-        }
-    }
-
-    cursorPosInSnippet(texMath: TexMathEnv, cursorPos: vscode.Position): { line: number, character: number } {
+    cursorPosInSnippet(texMath: TexMathEnv, cursorPos: vscode.Position): vscode.Position {
         const line = cursorPos.line - texMath.range.start.line
         const character = line === 0 ? cursorPos.character - texMath.range.start.character : cursorPos.character
-        return {line, character}
+        return new vscode.Position(line, character)
     }
 
     isInAmsMathTextCommand(findResult: latexParser.FindResult<latexParser.Node, latexParser.Node> | undefined): boolean {
@@ -75,45 +54,62 @@ export class CursorRenderer {
         return false
     }
 
-    async insertCursor(texMath: TexMathEnv, cursorPos: vscode.Position, cursor: string): Promise<string> {
-        const cursorPosInSnippet = this.cursorPosInSnippet(texMath, cursorPos)
-        const arry = texMath.texString.split('\n')
+    async insertCursor(texMath: TexMathEnv, originalCursorPos: vscode.Position, cursor: string): Promise<string | undefined> {
+        const cursorPos = this.cursorPosInSnippet(texMath, originalCursorPos)
         const findResult = await this.findNodeAt(texMath, cursorPos)
-        const cursorNode = findResult?.node
-        if (this.isInAmsMathTextCommand(findResult)){
-            return texMath.texString
+        if (!findResult) {
+            return
         }
-        if (cursorNode) {
-            if (latexParser.isCommand(cursorNode)) {
-                return texMath.texString
+        const cursorNode = findResult.node
+        if (this.isInAmsMathTextCommand(findResult)) {
+            return
+        }
+        if (cursorNode && latexParser.isCommand(cursorNode)) {
+            return
+        }
+        let nodeStart: number | undefined
+        let nodeEnd: number | undefined
+        const texString = texMath.texString
+        const cursorOffset = convertPositionToOffset(cursorPos, texString)
+        if (latexParser.hasContentArray(findResult.node)) {
+            const {prev} = this.findPrevNextNode(cursorOffset, findResult.node.content)
+            if (latexParser.isSubscript(prev) || latexParser.isSuperscript(prev)) {
+                const arg = prev.arg
+                if (latexParser.isMathCharacter(arg) && arg.location?.end.offset === cursorOffset) {
+                    nodeStart = arg.location?.start.offset
+                    nodeEnd = arg.location?.end.offset
+                }
             }
         }
-        if (!cursorNode || !cursorNode.location) {
-            const {line, character} = this.cursorPosInSnippet(texMath, cursorPos)
-            const curLine = arry[line]
-            arry[line] = curLine.substring(0, character) + cursor + curLine.substring(character, curLine.length)
-            return arry.join('\n')
+        if (latexParser.isSuperscript(cursorNode) || latexParser.isSubscript(cursorNode)) {
+            const arg = cursorNode.arg
+            if (arg && latexParser.isMathCharacter(arg)) {
+                nodeStart = arg.location?.start.offset
+                nodeEnd = arg.location?.end.offset
+            } else {
+                return
+            }
         }
-        const cursorNodeContentRangeInSnippet = this.getContentRange(cursorNode)
-        if (!cursorNodeContentRangeInSnippet) {
-            return texMath.texString
+        if (nodeStart !== undefined && nodeEnd !== undefined) {
+            const newTexString = texString.substring(0, nodeStart)
+                + '{~'
+                + texString.substring(nodeStart, cursorOffset)
+                + cursor
+                + texString.substring(cursorOffset, nodeEnd)
+                + '~}'
+                + texString.substring(nodeEnd)
+            return newTexString
+        } else {
+            const newTexString = texString.substring(0, cursorOffset)
+                + '{~'
+                + cursor
+                + '~}'
+                + texString.substring(cursorOffset)
+            return newTexString
         }
-        const nodeStart = cursorNodeContentRangeInSnippet.start
-        const nodeEnd = cursorNodeContentRangeInSnippet.end
-        const line = cursorPosInSnippet.line
-        const curLine = arry[line]
-        arry[line] =
-        curLine.substring(0, nodeStart.character)
-        + '{~'
-        + curLine.substring(nodeStart.character, cursorPosInSnippet.character)
-        + cursor
-        + curLine.substring(cursorPosInSnippet.character, nodeEnd.character)
-        + '~}'
-        + curLine.substring(nodeEnd.character, curLine.length)
-        return arry.join('\n')
     }
 
-    async findNodeAt(texMath: TexMathEnv, cursorPos: vscode.Position) {
+    async findNodeAt(texMath: TexMathEnv, cursorPosInSnippet: vscode.Position) {
         let ast: latexParser.LatexAst | undefined
         if (texMath.texString === this.currentTeXString && this.currentAst) {
             ast = this.currentAst
@@ -125,33 +121,47 @@ export class CursorRenderer {
         if (!ast) {
             return
         }
-        const cursorPosInSnippet = this.cursorPosInSnippet(texMath, cursorPos)
         const cursorLocInSnippet = {line: cursorPosInSnippet.line + 1, column: cursorPosInSnippet.character + 1}
         const result = latexParser.findNodeAt(ast.content, cursorLocInSnippet)
         return result
     }
 
-    async renderCursor(document: ITextDocumentLike, texMath: TexMathEnv, thisColor: string): Promise<string> {
+    findPrevNextNode(cursorOffset: number, nodeArray: latexParser.Node[]): PrevNextNodes {
+        let prev: latexParser.Node | undefined
+        for (let i = 0; i < nodeArray.length; i++) {
+            const node = nodeArray[i]
+            const loc = node.location
+            if (loc && cursorOffset <= loc.start.offset) {
+                return { prev, next: node }
+            } else {
+                prev = node
+            }
+        }
+        return { prev, next: undefined }
+    }
+
+    async renderCursor(document: ITextDocumentLike, texMath: TexMathEnv, thisColor: string, cursorPos?: vscode.Position): Promise<string | undefined> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const cursorEnabled = configuration.get('hover.preview.cursor.enabled') as boolean
         if (!cursorEnabled) {
-            return texMath.texString
+            return
         }
         const texMathRange = texMath.range
-        const cursorPos = vscode.window.activeTextEditor?.selection.active
+        cursorPos ??= vscode.window.activeTextEditor?.selection.active
         if (!cursorPos) {
-            return texMath.texString
+            return
         }
         if (!this.isCursorInsideTexMath(texMathRange, cursorPos)) {
-            return texMath.texString
+            return
         }
         if (this.isCursorInTeXCommand(document)) {
-            return texMath.texString
+            return
         }
         const symbol = configuration.get('hover.preview.cursor.symbol') as string
         const color = configuration.get('hover.preview.cursor.color') as string
         const cursorString = color === 'auto' ? `{\\color{${thisColor}}${symbol}}` : `{\\color{${color}}${symbol}}`
-        return this.insertCursor(texMath, cursorPos, cursorString)
+        const ret = await this.insertCursor(texMath, cursorPos, cursorString)
+        return ret
     }
 
     isCursorInsideTexMath(texMathRange: vscode.Range, cursorPos: vscode.Position): boolean {
