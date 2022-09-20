@@ -91,9 +91,23 @@ export class MathPreviewPanel {
     }
 
     initializePanel(panel: vscode.WebviewPanel) {
+        let timeout: NodeJS.Timeout | undefined
         const disposable = vscode.Disposable.from(
-            vscode.window.onDidChangeTextEditorSelection( (event) => {
-                void this.extension.mathPreviewPanel.update({type: 'selection', event})
+            vscode.workspace.onDidChangeTextDocument(() => {
+                if (timeout) {
+                    clearTimeout(timeout)
+                }
+                timeout = setTimeout(() => {
+                    void this.update()
+                }, 200)
+
+            }),
+            vscode.window.onDidChangeTextEditorSelection((event) => {
+                if (timeout) {
+                    clearTimeout(timeout)
+                    timeout = undefined
+                }
+                void this.update({type: 'selection', event})
             })
         )
         this.panel = panel
@@ -161,7 +175,7 @@ export class MathPreviewPanel {
         </html>`
     }
 
-    async update(ev?: UpdateEvent) {
+    private async update(ev?: UpdateEvent) {
         if (!this.panel || !this.panel.visible) {
             return
         }
@@ -172,14 +186,14 @@ export class MathPreviewPanel {
             return
         }
         const documentUri = document.uri.toString()
-        const position = ev?.event.selections[0]?.active || editor.selection.active
-        const texMath = this.getTexMath(document, position)
+        const cursorPos = ev?.event.selections[0]?.active ?? editor.selection.active
+        const texMath = this.getTexMath(document, cursorPos)
         if (!texMath) {
             this.clearCache()
             return
         }
         let cachedCommands: string | undefined
-        if (position.line === this.prevCursorPosition?.line && documentUri === this.prevDocumentUri) {
+        if (cursorPos.line === this.prevCursorPosition?.line && documentUri === this.prevDocumentUri) {
             cachedCommands = this.prevNewCommands
         }
         const newTeXMath = this.needCursor ? await this.renderCursor(document, texMath) : texMath
@@ -189,7 +203,7 @@ export class MathPreviewPanel {
         }
         this.prevDocumentUri = documentUri
         this.prevNewCommands = result.newCommands
-        this.prevCursorPosition = position
+        this.prevCursorPosition = cursorPos
         return this.panel.webview.postMessage({type: 'mathImage', src: result.svgDataUrl })
     }
 
@@ -206,9 +220,9 @@ export class MathPreviewPanel {
         return
     }
 
-    async renderCursor(document: vscode.TextDocument, tex: TexMathEnv, cursorPos?: vscode.Position) {
-        const s = await this.mathPreview.renderCursor(document, tex, cursorPos) ?? tex.texString
-        return { texString: s, envname: tex.envname }
+    private async renderCursor(document: vscode.TextDocument, tex: TexMathEnv, cursorPos?: vscode.Position) {
+        const texString = await this.mathPreview.renderCursor(document, tex, cursorPos) ?? tex.texString
+        return { texString, envname: tex.envname }
     }
 
 }
