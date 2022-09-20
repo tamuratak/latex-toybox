@@ -4,11 +4,11 @@ import { TexMathEnv } from './texmathenvfinder'
 
 import type { UtensilsParserLocator } from '../../../interfaces'
 import type { ITextDocumentLike } from './textdocumentlike'
-import { convertPositionToOffset } from '../../../utils/ast'
+import { convertPositionToOffset, toLuPos } from '../../../utils/utensils'
 
 type PrevNextNodes = {
-    prev: latexParser.Node | undefined,
-    next: latexParser.Node | undefined
+    readonly prev: latexParser.Node | undefined,
+    readonly next: latexParser.Node | undefined
 }
 
 interface IExtension extends UtensilsParserLocator { }
@@ -43,7 +43,7 @@ export class CursorRenderer {
         return new vscode.Position(line, character)
     }
 
-    isInAmsMathTextCommand(findResult: latexParser.FindResult<latexParser.Node, latexParser.Node> | undefined): boolean {
+    isInAmsMathTextCommand(findResult: latexParser.FindResult<latexParser.Node> | undefined): boolean {
         let parent = findResult?.parent
         while (parent) {
             if (latexParser.isAmsMathTextCommand(parent.node)) {
@@ -121,8 +121,8 @@ export class CursorRenderer {
         if (!ast) {
             return
         }
-        const cursorLocInSnippet = {line: cursorPosInSnippet.line + 1, column: cursorPosInSnippet.character + 1}
-        const result = latexParser.findNodeAt(ast.content, cursorLocInSnippet)
+        const cursorLuPosInSnippet = toLuPos(cursorPosInSnippet)
+        const result = latexParser.findNodeAt(ast.content, cursorLuPosInSnippet)
         return result
     }
 
@@ -140,7 +140,12 @@ export class CursorRenderer {
         return { prev, next: undefined }
     }
 
-    async renderCursor(document: ITextDocumentLike, texMath: TexMathEnv, thisColor: string, cursorPos?: vscode.Position): Promise<string | undefined> {
+    async renderCursor(
+        document: ITextDocumentLike,
+        texMath: TexMathEnv,
+        thisColor: string,
+        cursorPos?: vscode.Position
+    ): Promise<string | undefined> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const cursorEnabled = configuration.get('hover.preview.cursor.enabled') as boolean
         if (!cursorEnabled) {

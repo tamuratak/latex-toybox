@@ -96,6 +96,7 @@ export class MathPreviewPanel {
             vscode.workspace.onDidChangeTextDocument(() => {
                 if (timeout) {
                     clearTimeout(timeout)
+                    timeout = undefined
                 }
                 timeout = setTimeout(() => {
                     void this.update()

@@ -4,7 +4,11 @@ import * as utils from '../../../utils/utils'
 import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike'
 import type { ReferenceEntry } from '../../completer/reference'
 
-export type TexMathEnv = { texString: string, range: vscode.Range, envname: string }
+export type TexMathEnv = {
+    readonly texString: string,
+    readonly envname: string,
+    range: vscode.Range
+}
 
 export class TeXMathEnvFinder {
 
@@ -137,7 +141,7 @@ export class TeXMathEnvFinder {
         const pattern = new RegExp('\\\\end\\{' + utils.escapeRegExp(envname) + '\\}')
         const startPos1 = new vscode.Position(startPos.line, startPos.character + envname.length + '\\begin{}'.length)
         const endPos = this.findEndPair(document, pattern, startPos1)
-        if ( endPos ) {
+        if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}
         }
@@ -151,7 +155,7 @@ export class TeXMathEnvFinder {
         const pattern = envname === '\\[' ? /\\\]/ : envname === '\\(' ? /\\\)/ : /\$\$/
         const startPos1 = new vscode.Position(startPos.line, startPos.character + envname.length)
         const endPos = this.findEndPair(document, pattern, startPos1)
-        if ( endPos ) {
+        if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}
         }

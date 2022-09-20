@@ -2,77 +2,14 @@ import {latexParser} from 'latex-utensils'
 import * as vscode from 'vscode'
 
 import type {UtensilsParserLocator} from '../interfaces'
+import { LuPos, LuRange, toLuPos, toVscodeRange } from '../utils/utensils'
 
 
-interface ILuRange {
-    start: ILuPos,
-    end: ILuPos
-}
-
-class LuRange implements ILuRange {
-    readonly start: LuPos
-    readonly end: LuPos
-
-    constructor(arg: {start: ILuPos, end: ILuPos}) {
-        this.start = LuPos.from(arg.start)
-        this.end = LuPos.from(arg.end)
-    }
-
-    contains(pos: ILuPos): boolean {
-        return this.start.isBeforeOrEqual(pos) && this.end.isAfterOrEqual(pos)
-    }
-}
-
-interface ILuPos {
-    readonly line: number,
-    readonly column: number
-}
-
-interface IContent {
+export interface IContent {
     content: latexParser.Node[],
     contentLuRange: LuRange,
     startSep: latexParser.Node | undefined,
     endSep: latexParser.Node | undefined
-}
-
-class LuPos implements ILuPos {
-
-    static from(loc: ILuPos) {
-        return new LuPos(loc.line, loc.column)
-    }
-
-    constructor(
-        readonly line: number,
-        readonly column: number
-    ) {}
-
-    isAfter(other: ILuPos): boolean {
-        return this.line > other.line || ( this.line === other.line && this.column > other.column )
-    }
-
-    isAfterOrEqual(other: ILuPos): boolean {
-        return this.line > other.line || ( this.line === other.line && this.column >= other.column )
-    }
-
-    isBefore(other: ILuPos): boolean {
-        return this.line < other.line || ( this.line === other.line && this.column < other.column )
-    }
-
-    isBeforeOrEqual(other: ILuPos): boolean {
-        return this.line < other.line || ( this.line === other.line && this.column <= other.column )
-    }
-
-}
-
-function toVscodeRange(loc: ILuRange): vscode.Range {
-    return new vscode.Range(
-        loc.start.line - 1, loc.start.column - 1,
-        loc.end.line - 1, loc.end.column - 1
-    )
-}
-
-function toLatexUtensilPosition(pos: vscode.Position): LuPos {
-    return new LuPos(pos.line + 1, pos.character + 1)
 }
 
 interface IExtension extends UtensilsParserLocator { }
@@ -89,7 +26,7 @@ export class SelectionRangeProvider implements vscode.SelectionRangeProvider {
         }
         const ret: vscode.SelectionRange[] = []
         positions.forEach(pos => {
-            const lupos = toLatexUtensilPosition(pos)
+            const lupos = toLuPos(pos)
             const result = latexParser.findNodeAt(
                 latexAst.content,
                 lupos
