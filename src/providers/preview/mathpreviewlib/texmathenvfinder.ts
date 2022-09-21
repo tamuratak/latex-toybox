@@ -7,7 +7,7 @@ import type { ReferenceEntry } from '../../completer/reference'
 export type TexMathEnv = {
     readonly texString: string,
     readonly envname: string,
-    range: vscode.Range
+    readonly range: vscode.Range
 }
 
 export class TeXMathEnvFinder {
@@ -49,8 +49,7 @@ export class TeXMathEnvFinder {
                     const beginEndRange = t.range
                     const refRange = document.getWordRangeAtPosition(position, /\S+?\{.*?\}/)
                     if (refRange && beginEndRange.contains(labelPos)) {
-                        t.range = refRange
-                        return t
+                        return {texString: t.texString, envname: t.envname, range: refRange}
                     }
                 }
             }
