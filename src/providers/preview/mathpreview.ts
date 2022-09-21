@@ -54,9 +54,9 @@ export class MathPreview {
     async provideHoverOnTex(document: vscode.TextDocument, tex: TexMathEnv, newCommand: string): Promise<vscode.Hover> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const scale = configuration.get('hover.preview.scale') as number
-        let s = await this.cursorRenderer.renderCursor(document, tex, this.color) || tex.texString
-        s = this.mputils.mathjaxify(s, tex.envname)
-        const typesetArg = newCommand + this.mputils.stripTeX(s)
+        let newTexString = await this.cursorRenderer.renderCursor(document, tex, this.color) || tex.texString
+        newTexString = this.mputils.mathjaxify(newTexString, tex.envname)
+        const typesetArg = newCommand + this.mputils.stripTeX(newTexString)
         const typesetOpts = { scale, color: this.color }
         try {
             const xml = await this.mj.typeset(typesetArg, typesetOpts)
@@ -110,8 +110,8 @@ export class MathPreview {
         const newCommands: string = newCommandsArg ?? await this.newCommandFinder.findProjectNewCommand()
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const scale = configuration.get('hover.preview.scale') as number
-        const s = this.mputils.mathjaxify(tex.texString, tex.envname)
-        const xml = await this.mj.typeset(newCommands + this.mputils.stripTeX(s), {scale, color: this.color})
+        const newTexString = this.mputils.mathjaxify(tex.texString, tex.envname)
+        const xml = await this.mj.typeset(newCommands + this.mputils.stripTeX(newTexString), {scale, color: this.color})
         return {svgDataUrl: utils.svgToDataUrl(xml), newCommands}
     }
 
