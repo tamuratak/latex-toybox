@@ -2559,14 +2559,14 @@
     "@types/vscode": "1.71.0",
     "@types/workerpool": "6.1.0",
     "@types/ws": "8.5.3",
-    "@typescript-eslint/eslint-plugin": "5.38.0",
-    "@typescript-eslint/parser": "5.38.0",
+    "@typescript-eslint/eslint-plugin": "5.39.0",
+    "@typescript-eslint/parser": "5.39.0",
     "@vscode/test-electron": "2.1.5",
     "eslint": "8.24.0",
     "mocha": "9.2.2",
     "rimraf": "3.0.2",
     "textmate-bailout": "1.1.0",
-    "typescript": "4.8.3",
+    "typescript": "4.8.4",
     "vsce": "2.11.0",
     "vscode-extend-language": "0.1.1"
   }
