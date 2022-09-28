@@ -134,14 +134,19 @@ export class Server {
         }
     }
 
-    private sendOkResponse(response: http.ServerResponse, content: Buffer, contentType: string) {
+    private sendOkResponse(
+        response: http.ServerResponse,
+        content: Buffer,
+        contentType: string,
+        corp: 'same-origin' | 'cross-origin' = 'same-origin'
+    ) {
         //
         // Headers to enable site isolation.
         // - https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header
         // - https://www.w3.org/TR/post-spectre-webdev/#documents-isolated
         //
         const sameOriginPolicyHeaders = {
-            'Cross-Origin-Resource-Policy': 'same-origin',
+            'Cross-Origin-Resource-Policy': corp,
             'Cross-Origin-Embedder-Policy': 'require-corp',
             'Cross-Origin-Opener-Policy': 'same-origin',
             'X-Content-Type-Options': 'nosniff'
@@ -162,9 +167,9 @@ export class Server {
         if (!isValidOrigin) {
             return
         }
-        if (request.url.includes(this.pdfFilePathEncoder.pdfFilePrefix) && !request.url.includes('viewer.html')) {
-            const s = request.url.replace('/', '')
-            const fileUri = this.pdfFilePathEncoder.decodePathWithPrefix(s)
+        if (request.url.startsWith('/' + this.pdfFilePathEncoder.pdfFilePrefix)) {
+            const encodedFileUri = request.url.replace('/', '')
+            const fileUri = this.pdfFilePathEncoder.decodePathWithPrefix(encodedFileUri)
             if (this.extension.viewer.getClientSet(fileUri) === undefined) {
                 this.extension.logger.addLogMessage(`Invalid PDF request: ${fileUri.toString(true)}`)
                 return
@@ -256,7 +261,11 @@ export class Server {
                     }
                     response.end()
                 } else {
-                    this.sendOkResponse(response, content, contentType)
+                    if (request.url?.startsWith('/viewer.html')) {
+                        this.sendOkResponse(response, content, contentType, 'cross-origin')
+                    } else {
+                        this.sendOkResponse(response, content, contentType)
+                    }
                 }
             })
         }
