@@ -641,12 +641,23 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
         }
     }
 
+    private isTrustedOrigin(origin: string): boolean {
+        const originUrl = new URL(origin)
+        return (originUrl.protocol === document.location.protocol && originUrl.hostname === document.location.hostname)
+            || originUrl.protocol === 'vscode-webview:'
+            || originUrl.hostname.endsWith('.github.dev')
+    }
+
     private async startReceivingPanelManagerResponse() {
         await this.pdfViewerStarted
         window.addEventListener('message', (e) => {
+            if (!this.isTrustedOrigin(e.origin)) {
+                console.log('LatexWorkshopPdfViewer received a message with invalid origin')
+                return
+            }
             const data = e.data as PanelManagerResponse
             if (!data.type) {
-                console.log('LateXWorkshopPdfViewer received a message of unknown type: ' + JSON.stringify(data))
+                console.log('LatexWorkshopPdfViewer received a message of unknown type')
                 return
             }
             switch (data.type) {

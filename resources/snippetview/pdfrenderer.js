@@ -1,4 +1,15 @@
+function isTrustedOrigin(origin) {
+    const originUrl = new URL(origin);
+    return (originUrl.protocol === document.location.protocol && originUrl.hostname === document.location.hostname)
+        || originUrl.protocol === 'vscode-webview:'
+        || originUrl.hostname.endsWith('.github.dev');
+}
+
 window.addEventListener('message', async (event) => {
+    if (!isTrustedOrigin(event.origin)) {
+        console.log('pdfrenderer.js received a message with invalid origin');
+        return;
+    }
     const message = event.data;
     if (message.type !== 'pdf') {
         return
