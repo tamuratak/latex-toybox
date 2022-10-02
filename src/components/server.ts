@@ -138,7 +138,7 @@ export class Server {
         response: http.ServerResponse,
         content: Buffer,
         contentType: string,
-        corp: 'same-origin' | 'cross-origin' = 'same-origin'
+        isVeiewerHtml: boolean = false
     ) {
         //
         // Headers to enable site isolation.
@@ -146,7 +146,7 @@ export class Server {
         // - https://www.w3.org/TR/post-spectre-webdev/#documents-isolated
         //
         const sameOriginPolicyHeaders = {
-            'Cross-Origin-Resource-Policy': corp,
+            'Cross-Origin-Resource-Policy': isVeiewerHtml ? 'cross-origin' : 'same-origin',
             'Cross-Origin-Embedder-Policy': 'require-corp',
             'Cross-Origin-Opener-Policy': 'same-origin',
             'X-Content-Type-Options': 'nosniff'
@@ -262,7 +262,7 @@ export class Server {
                     response.end()
                 } else {
                     if (request.url?.startsWith('/viewer.html')) {
-                        this.sendOkResponse(response, content, contentType, 'cross-origin')
+                        this.sendOkResponse(response, content, contentType, true)
                     } else {
                         this.sendOkResponse(response, content, contentType)
                     }
