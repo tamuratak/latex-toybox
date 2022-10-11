@@ -77,9 +77,9 @@ function trimPage(page: HTMLElement) {
         // add -4px to ensure that no horizontal scroll bar appears.
         const widthNum = Math.floor(Number(m[1])/trimScale) - 4
         const width = widthNum + 'px'
+        const offsetX = - Number(m[1]) * (1 - 1/trimScale) / 2
         page.style.width = width
         canvasWrapper.style.width = width
-        const offsetX = - Number(m[1]) * (1 - 1/trimScale) / 2
         canvas.style.left = offsetX + 'px'
         canvas.style.position = 'relative'
         if (textLayer) {
@@ -87,15 +87,14 @@ function trimPage(page: HTMLElement) {
                 textLayer.style.width = widthNum - offsetX + 'px'
                 textLayer.style.left = offsetX + 'px'
             } else {
-                (textLayer.style as any) = `width: ${width}; offset: ${offsetX}px;`
+                (textLayer.style as any) = `width: ${widthNum - offsetX}px; offset: ${offsetX}px;`
             }
         }
         if (annotationLayer) {
             if(annotationLayer.style) {
-                annotationLayer.style.width = widthNum + 'px'
                 annotationLayer.style.left = offsetX + 'px'
             } else {
-                (annotationLayer.style as any) = `width: ${width}; offset: ${offsetX}px;`
+                (annotationLayer.style as any) = `offset: ${offsetX}px;`
             }
         }
     }
