@@ -58,6 +58,17 @@ function getTrimScale() {
     scaleSelect.dispatchEvent(ev)
 })
 
+function resetTrim(page: HTMLElement) {
+    page.style.overflow = ''
+    const textLayer = page.getElementsByClassName('textLayer')[0] as HTMLElement
+    const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
+    if (textLayer && textLayer.style) {
+        textLayer.style.left = ''
+    }
+    if (annotationLayer && annotationLayer.style) {
+        annotationLayer.style.left = ''
+    }
+}
 
 function trimPage(page: HTMLElement) {
     const trimScale = getTrimScale()
@@ -74,6 +85,7 @@ function trimPage(page: HTMLElement) {
     const w = canvas.style.width
     const m = w.match(/(\d+)/)
     if (m) {
+        page.style.overflow = 'hidden'
         // add -4px to ensure that no horizontal scroll bar appears.
         const widthNum = Math.floor(Number(m[1])/trimScale) - 4
         const width = widthNum + 'px'
@@ -102,10 +114,18 @@ function trimPage(page: HTMLElement) {
 
 function setObserverToTrim() {
     const observer = new MutationObserver(records => {
-        records.forEach(record => {
-            const page = record.target as HTMLElement
-            trimPage(page)
-        })
+        const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
+        if (trimSelect.selectedIndex <= 0) {
+            records.forEach(record => {
+                const page = record.target as HTMLElement
+                resetTrim(page)
+            })
+        } else {
+            records.forEach(record => {
+                const page = record.target as HTMLElement
+                trimPage(page)
+            })
+        }
     })
     const viewer = document.getElementById('viewer') as HTMLElement
     for( const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement> ){
@@ -160,7 +180,7 @@ export class PageTrimmer {
                 return
             }
             const viewer = document.getElementById('viewer') as HTMLElement
-            for( const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement> ){
+            for(const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>){
                 trimPage(page)
             }
         })
