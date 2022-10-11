@@ -41,16 +41,6 @@ function getTrimScale() {
         scaleSelect.dispatchEvent(ev)
         currentUserSelectScale = undefined
         originalUserSelectIndex = undefined
-        const viewer = document.getElementById('viewer') as HTMLElement
-        for ( const page of viewer.getElementsByClassName('page') ) {
-            for ( const layer of page.getElementsByClassName('annotationLayer') ) {
-                for ( const secionOfAnnotation of layer.getElementsByTagName('section') ) {
-                    if (secionOfAnnotation.dataset.originalLeft !== undefined) {
-                        secionOfAnnotation.style.left = secionOfAnnotation.dataset.originalLeft
-                    }
-                }
-            }
-        }
         return
     }
     for ( const opt of scaleSelect.options ) {
@@ -73,6 +63,7 @@ function trimPage(page: HTMLElement) {
     const trimScale = getTrimScale()
     const textLayer = page.getElementsByClassName('textLayer')[0] as HTMLElement
     const canvasWrapper = page.getElementsByClassName('canvasWrapper')[0] as HTMLElement
+    const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
     const canvas = page.getElementsByTagName('canvas')[0]
     if ( !canvasWrapper || !canvas ) {
         if (page.style.width !== '250px') {
@@ -91,23 +82,20 @@ function trimPage(page: HTMLElement) {
         const offsetX = - Number(m[1]) * (1 - 1/trimScale) / 2
         canvas.style.left = offsetX + 'px'
         canvas.style.position = 'relative'
-        canvas.setAttribute('data-is-trimmed', 'trimmed')
-        if ( textLayer && textLayer.dataset.isTrimmed !== 'trimmed' ) {
-            textLayer.style.width = widthNum - offsetX + 'px'
-            textLayer.style.left = offsetX + 'px'
-            textLayer.setAttribute('data-is-trimmed', 'trimmed')
-        }
-        const secionOfAnnotationArray = page.getElementsByTagName('section')
-        for ( const secionOfAnnotation of secionOfAnnotationArray ) {
-            let originalLeft = secionOfAnnotation.style.left
-            if (secionOfAnnotation.dataset.originalLeft === undefined) {
-                secionOfAnnotation.setAttribute('data-original-left', secionOfAnnotation.style.left)
+        if (textLayer) {
+            if (textLayer.style) {
+                textLayer.style.width = widthNum - offsetX + 'px'
+                textLayer.style.left = offsetX + 'px'
             } else {
-                originalLeft = secionOfAnnotation.dataset.originalLeft
+                (textLayer.style as any) = `width: ${width}; offset: ${offsetX}px;`
             }
-            const mat = originalLeft.match(/(\d+)/)
-            if (mat) {
-                secionOfAnnotation.style.left = (Number(mat[1]) + offsetX) + 'px'
+        }
+        if (annotationLayer) {
+            if(annotationLayer.style) {
+                annotationLayer.style.width = widthNum + 'px'
+                annotationLayer.style.left = offsetX + 'px'
+            } else {
+                (annotationLayer.style as any) = `width: ${width}; offset: ${offsetX}px;`
             }
         }
     }
@@ -115,10 +103,6 @@ function trimPage(page: HTMLElement) {
 
 function setObserverToTrim() {
     const observer = new MutationObserver(records => {
-        const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
-        if (trimSelect.selectedIndex <= 0) {
-            return
-        }
         records.forEach(record => {
             const page = record.target as HTMLElement
             trimPage(page)
