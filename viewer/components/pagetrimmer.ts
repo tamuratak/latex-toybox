@@ -1,4 +1,4 @@
-import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.js'
+import type { ILatexWorkshopPdfViewer, IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -11,7 +11,7 @@ function getTrimScale() {
         return 1.0
     }
     const trimValue = trimSelect.options[trimSelect.selectedIndex].value
-    return 1.0/(1 - 2*Number(trimValue))
+    return 1.0 / (1 - 2 * Number(trimValue))
 }
 
 
@@ -21,7 +21,7 @@ function getTrimScale() {
     const scaleSelect = document.getElementById('scaleSelect') as HTMLSelectElement
     const ev = new Event('change')
     if (trimSelect.selectedIndex <= 0) {
-        for ( const opt of scaleSelect.options ) {
+        for (const opt of scaleSelect.options) {
             opt.disabled = false
         }
         (document.getElementById('trimOption') as HTMLOptionElement).disabled = true;
@@ -43,7 +43,7 @@ function getTrimScale() {
         originalUserSelectIndex = undefined
         return
     }
-    for ( const opt of scaleSelect.options ) {
+    for (const opt of scaleSelect.options) {
         opt.disabled = true
     }
     if (currentUserSelectScale === undefined) {
@@ -76,7 +76,7 @@ function trimPage(page: HTMLElement) {
     const canvasWrapper = page.getElementsByClassName('canvasWrapper')[0] as HTMLElement
     const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
     const canvas = page.getElementsByTagName('canvas')[0]
-    if ( !canvasWrapper || !canvas ) {
+    if (!canvasWrapper || !canvas) {
         if (page.style.width !== '250px') {
             page.style.width = '250px'
         }
@@ -87,9 +87,9 @@ function trimPage(page: HTMLElement) {
     if (m) {
         page.style.overflow = 'hidden'
         // add -4px to ensure that no horizontal scroll bar appears.
-        const widthNum = Math.floor(Number(m[1])/trimScale) - 4
+        const widthNum = Math.floor(Number(m[1]) / trimScale) - 4
         const width = widthNum + 'px'
-        const offsetX = - Number(m[1]) * (1 - 1/trimScale) / 2
+        const offsetX = - Number(m[1]) * (1 - 1 / trimScale) / 2
         page.style.width = width
         canvasWrapper.style.width = width
         canvas.style.left = offsetX + 'px'
@@ -103,7 +103,7 @@ function trimPage(page: HTMLElement) {
             }
         }
         if (annotationLayer) {
-            if(annotationLayer.style) {
+            if (annotationLayer.style) {
                 annotationLayer.style.left = offsetX + 'px'
             } else {
                 (annotationLayer.style as any) = `offset: ${offsetX}px;`
@@ -128,16 +128,16 @@ function setObserverToTrim() {
         }
     })
     const viewer = document.getElementById('viewer') as HTMLElement
-    for( const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement> ){
+    for (const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>) {
         if (page.dataset.isObserved !== 'observed') {
-            observer.observe(page, {attributes: true, childList: true, attributeFilter: ['style']})
+            observer.observe(page, { attributes: true, childList: true, attributeFilter: ['style'] })
             page.setAttribute('data-is-observed', 'observed')
         }
     }
 }
 
 // We need to recaluculate scale and left offset for trim mode on each resize event.
-window.addEventListener('resize', () =>{
+window.addEventListener('resize', () => {
     const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
     const ind = trimSelect.selectedIndex
     if (!trimSelect || ind <= 0) {
@@ -156,12 +156,12 @@ export class PageTrimmer {
     constructor(lwApp: ILatexWorkshopPdfViewer) {
         this.lwApp = lwApp
         // Set observers after a pdf file is loaded in the first time.
-        this.lwApp.onPagesLoaded(setObserverToTrim, {once: true})
+        this.lwApp.onPagesLoaded(setObserverToTrim, { once: true })
         // Skip the first loading
         this.lwApp.onPagesInit(() => {
             // Set observers each time a pdf file is refresed.
             this.lwApp.onPagesInit(setObserverToTrim)
-        }, {once: true})
+        }, { once: true })
 
         this.lwApp.onPagesLoaded(() => {
             const container = document.getElementById('trimSelectContainer') as HTMLElement
@@ -180,7 +180,7 @@ export class PageTrimmer {
                 return
             }
             const viewer = document.getElementById('viewer') as HTMLElement
-            for(const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>){
+            for (const page of viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>) {
                 trimPage(page)
             }
         })
