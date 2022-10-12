@@ -12,7 +12,7 @@
     "url": "https://github.com/James-Yu/LaTeX-Workshop.git"
   },
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.72.0"
   },
   "categories": [
     "Programming Languages",
@@ -2556,7 +2556,7 @@
     "@types/mocha": "9.1.1",
     "@types/node": "16.11.39",
     "@types/tmp": "0.2.3",
-    "@types/vscode": "1.71.0",
+    "@types/vscode": "1.72.0",
     "@types/workerpool": "6.1.0",
     "@types/ws": "8.5.3",
     "@typescript-eslint/eslint-plugin": "5.40.0",
