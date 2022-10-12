@@ -491,6 +491,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
             document.addEventListener('click', (e) => {
                 const target = e.target as HTMLAnchorElement
                 if (target.nodeName === 'A' && !target.href.startsWith(window.location.href) && !target.href.startsWith('blob:')) { // is external link
+                    this.sendToPanelManager({ type: 'click_event', href: target.href })
                     e.preventDefault()
                 }
             })

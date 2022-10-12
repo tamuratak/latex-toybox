@@ -69,6 +69,9 @@ export type PanelManagerResponse = {
 export type PanelRequest = {
     type: 'initialized'
 } | {
+    type: 'click_event',
+    href: string
+} | {
     type: 'keyboard_event',
     event: any
 } | {
