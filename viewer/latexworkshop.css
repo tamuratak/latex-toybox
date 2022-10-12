@@ -80,6 +80,13 @@ html[dir='rtl'] .findbar {
     box-shadow: 0px 0px 0px 1px lightgrey;
 }
 
+.pdfViewer.removePageBorders .page.scalePageWidth {
+    border-width: 1px 0px 1px 0px;
+    border-color: lightgrey;
+    border-style: solid;
+    box-shadow: none;
+}
+
 .notransition {
     transition: none !important;
 }

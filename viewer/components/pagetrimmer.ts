@@ -60,6 +60,7 @@ function getTrimScale() {
 
 function resetTrim(page: HTMLElement) {
     page.style.overflow = ''
+    page.classList.remove('scalePageWidth')
     const textLayer = page.getElementsByClassName('textLayer')[0] as HTMLElement
     const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
     if (textLayer && textLayer.style) {
@@ -86,6 +87,9 @@ function trimPage(page: HTMLElement) {
     const m = w.match(/(\d+)/)
     if (m) {
         page.style.overflow = 'hidden'
+        if (originalUserSelectIndex === 3) {
+            page.classList.add('scalePageWidth')
+        }
         // add -4px to ensure that no horizontal scroll bar appears.
         const widthNum = Math.floor(Number(m[1]) / trimScale) - 4
         const width = widthNum + 'px'
