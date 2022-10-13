@@ -145,7 +145,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
     private getPdfViewerState(): PdfViewerState {
         const pack: PdfViewerState = {
             pdfFileUri: this.pdfFileUri,
-            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+            scale: this.pageTrimmer.originalPdfViewerCurrentScaleValue || PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
             scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,
@@ -304,7 +304,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
             return
         }
         const pack = {
-            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+            scale: this.pageTrimmer.originalPdfViewerCurrentScaleValue || PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
             scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,
