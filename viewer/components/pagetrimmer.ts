@@ -2,8 +2,10 @@ import type { ILatexWorkshopPdfViewer, IPDFViewerApplication } from './interface
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
-let currentUserSelectScale: number | undefined
-let originalUserSelectIndex: number | undefined
+let pdfViewerCurrentScale: number | undefined
+let originalSelectedIndex: number | undefined
+// 'page-width' and others
+let originalPdfViewerCurrentScaleValue: string | undefined
 
 function getTrimScale() {
     const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
@@ -19,43 +21,46 @@ function getTrimScale() {
     const trimScale = getTrimScale()
     const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
     const scaleSelect = document.getElementById('scaleSelect') as HTMLSelectElement
-    const ev = new Event('change')
+    const changeEvent = new Event('change')
     if (trimSelect.selectedIndex <= 0) {
         for (const opt of scaleSelect.options) {
             opt.disabled = false
         }
         (document.getElementById('trimOption') as HTMLOptionElement).disabled = true;
         (document.getElementById('trimOption') as HTMLOptionElement).hidden = true
-        if (originalUserSelectIndex !== undefined) {
+        if (originalSelectedIndex !== undefined) {
             /**
              * If the original scale is custom, selectedIndex === 4,
              * we use page-width, selectedIndex === 3.
-             * There is no way to set the custom scale.
+             * We don't restore the custom scale.
              */
-            if (originalUserSelectIndex === 4) {
+            if (originalSelectedIndex === 4) {
                 scaleSelect.selectedIndex = 3
             } else {
-                scaleSelect.selectedIndex = originalUserSelectIndex
+                scaleSelect.selectedIndex = originalSelectedIndex
             }
         }
-        scaleSelect.dispatchEvent(ev)
-        currentUserSelectScale = undefined
-        originalUserSelectIndex = undefined
+        scaleSelect.dispatchEvent(changeEvent)
+        pdfViewerCurrentScale = undefined
+        originalSelectedIndex = undefined
+        originalPdfViewerCurrentScaleValue = undefined
         return
     }
     for (const opt of scaleSelect.options) {
         opt.disabled = true
     }
-    if (currentUserSelectScale === undefined) {
-        currentUserSelectScale = PDFViewerApplication.pdfViewer.currentScale
+    if (pdfViewerCurrentScale === undefined) {
+        pdfViewerCurrentScale = PDFViewerApplication.pdfViewer.currentScale
     }
-    if (originalUserSelectIndex === undefined) {
-        originalUserSelectIndex = scaleSelect.selectedIndex
+    if (originalSelectedIndex === undefined) {
+        originalSelectedIndex = scaleSelect.selectedIndex
+        originalPdfViewerCurrentScaleValue = PDFViewerApplication.pdfViewer.currentScaleValue
     }
     const opt = document.getElementById('trimOption') as HTMLOptionElement
-    opt.value = (currentUserSelectScale * trimScale).toString()
+    // Set the value as one of the options of the scaleSelect element.
+    opt.value = (pdfViewerCurrentScale * trimScale).toString()
     opt.selected = true
-    scaleSelect.dispatchEvent(ev)
+    scaleSelect.dispatchEvent(changeEvent)
 })
 
 function resetTrim(page: HTMLElement) {
@@ -87,7 +92,7 @@ function trimPage(page: HTMLElement) {
     const m = w.match(/(\d+)/)
     if (m) {
         page.style.overflow = 'hidden'
-        if (originalUserSelectIndex === 3) {
+        if (originalSelectedIndex === 3) {
             page.classList.add('scalePageWidth')
         }
         // add -4px to ensure that no horizontal scroll bar appears.
@@ -188,5 +193,9 @@ export class PageTrimmer {
                 trimPage(page)
             }
         })
+    }
+
+    get originalPdfViewerCurrentScaleValue() {
+        return originalPdfViewerCurrentScaleValue
     }
 }
