@@ -5,7 +5,10 @@ function isTrustedOrigin(origin) {
         || originUrl.hostname.endsWith('.github.dev');
 }
 
+let count = 0;
+
 window.addEventListener('message', async (event) => {
+    count += 1;
     if (!isTrustedOrigin(event.origin)) {
         console.log('pdfrenderer.js received a message with invalid origin');
         return;
@@ -29,12 +32,22 @@ window.addEventListener('message', async (event) => {
         })
         throw(e)
     }
+    if (count > 3) {
+        pdfjsLib.GlobalWorkerOptions.workerPort?.terminate();
+        createPdfWorker();
+        count = 0;
+    }
 })
 
 // https://github.com/microsoft/vscode/issues/87282#issuecomment-919464403
-async function createPdfWorker() {
+const pdfWorkerJsBlob = new Promise(async resolve => {
     const result = await fetch(pdfjsDistUri + '/build/pdf.worker.js');
     const blob = await result.blob();
+    resolve(blob);
+})
+
+async function createPdfWorker() {
+    const blob = await pdfWorkerJsBlob;
     const blobUrl = URL.createObjectURL(blob);
     pdfjsLib.GlobalWorkerOptions.workerPort = new Worker(blobUrl);
 }
@@ -59,7 +72,7 @@ async function renderPdfFile(url, opts) {
     // Prepare canvas using PDF page dimensions
     //
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: false });
     canvas.width = Math.floor(viewport.width);
     canvas.height = Math.floor(viewport.height);
 
