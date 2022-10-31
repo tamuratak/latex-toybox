@@ -2544,7 +2544,7 @@
     "latex-utensils": "4.6.0",
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.5",
-    "pdfjs-dist": "2.16.105",
+    "pdfjs-dist": "3.0.279",
     "tmp": "0.2.1",
     "workerpool": "6.2.1",
     "ws": "8.9.0"
