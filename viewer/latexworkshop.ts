@@ -306,7 +306,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
             return
         }
         const pack = {
-            scale: this.pageTrimmer.originalPdfViewerCurrentScaleValue || PDFViewerApplication.pdfViewer.currentScaleValue,
+            scale: PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
             scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,
