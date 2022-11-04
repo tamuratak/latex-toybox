@@ -1,11 +1,5 @@
 # Visual Studio Code LaTeX Workshop Extension
 
-[![version](https://vsmarketplacebadge.apphb.com/version/James-Yu.latex-workshop.svg)](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
-[![downloads](https://vsmarketplacebadge.apphb.com/downloads-short/James-Yu.latex-workshop.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/James-Yu.latex-workshop.svg)
-[![installs](https://vsmarketplacebadge.apphb.com/installs-short/James-Yu.latex-workshop.svg)](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
-[![rating](https://vsmarketplacebadge.apphb.com/rating-short/James-Yu.latex-workshop.svg)](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
-[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/James-Yu/LaTeX-Workshop/master/LICENSE.txt)
-
 LaTeX Workshop is an extension for [Visual Studio Code](https://code.visualstudio.com/), aiming to provide core features for LaTeX typesetting with Visual Studio Code.
 
 This project won't be successful without contributions from the community, especially from the current and past key contributors:
