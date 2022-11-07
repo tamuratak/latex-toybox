@@ -6,6 +6,7 @@ import type {PanelRequest, PdfViewerState} from '../../../types/latex-workshop-p
 import {escapeHtml, sleep} from '../../utils/utils'
 import type {PdfViewerManagerService} from './pdfviewermanager'
 import {PdfViewerStatusChanged} from '../eventbus'
+import { getNonce } from '../../utils/getnonce'
 
 
 export class PdfViewerPanel {
@@ -70,7 +71,7 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             panel.webview.html = `<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>File not found: ${s}</html>`
             return
         }
-        panel.webview.html = await this.panelService.getPDFViewerContent(pdfFileUri)
+        panel.webview.html = await this.panelService.getPDFViewerContent(pdfFileUri, panel.webview)
         const pdfPanel = new PdfViewerPanel(this.extension, pdfFileUri, panel)
         this.managerService.initiatePdfViewerPanel(pdfPanel)
         return
@@ -105,11 +106,11 @@ export class PdfViewerPanelService {
 
     async createPdfViewerPanel(pdfFileUri: vscode.Uri, viewColumn: vscode.ViewColumn): Promise<PdfViewerPanel> {
         await this.extension.server.serverStarted
-        const htmlContent = await this.getPDFViewerContent(pdfFileUri)
         const panel = vscode.window.createWebviewPanel('latex-workshop-pdf', path.basename(pdfFileUri.path), viewColumn, {
             enableScripts: true,
             retainContextWhenHidden: true
         })
+        const htmlContent = await this.getPDFViewerContent(pdfFileUri, panel.webview)
         panel.webview.html = htmlContent
         const pdfPanel = new PdfViewerPanel(this.extension, pdfFileUri, panel)
         return pdfPanel
@@ -132,7 +133,7 @@ export class PdfViewerPanelService {
      *
      * @param pdfFile The path of a PDF file to be opened.
      */
-    async getPDFViewerContent(pdfFile: vscode.Uri): Promise<string> {
+    async getPDFViewerContent(pdfFile: vscode.Uri, webview: vscode.Webview): Promise<string> {
         const serverPort = this.extension.server.port
         // viewer/viewer.js automatically requests the file to server.ts, and server.ts decodes the encoded path of PDF file.
         const origUrl = `http://127.0.0.1:${serverPort}/viewer.html?file=${this.encodePathWithPrefix(pdfFile)}`
@@ -142,73 +143,18 @@ export class PdfViewerPanelService {
         await this.tweakForCodespaces(url)
         this.extension.logger.addLogMessage(`The internal PDF viewer url: ${iframeSrcUrl}`)
         const rebroadcast: boolean = this.getKeyboardEventConfig()
+        const jsPath = vscode.Uri.file(path.join(this.extension.extensionRoot, './resources/pdfviewerpanel/pdfviewerpanel.js'))
+        const jsPathSrc = webview.asWebviewUri(jsPath)
+        const nonce = getNonce()
         return `
-        <!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; frame-src ${iframeSrcOrigin}; script-src 'unsafe-inline'; style-src 'unsafe-inline';"></head>
+        <!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; frame-src ${iframeSrcOrigin}; script-src 'nonce-${nonce}'; style-src 'unsafe-inline';"></head>
         <body><iframe id="preview-panel" class="preview-panel" src="${iframeSrcUrl}" style="position:absolute; border: none; left: 0; top: 0; width: 100%; height: 100%;">
         </iframe>
-        <script>
-        // When the tab gets focus again later, move the
-        // the focus to the iframe so that keyboard navigation works in the pdf.
-        const iframe = document.getElementById('preview-panel');
-        window.onfocus = function() {
-            setTimeout(function() { // doesn't work immediately
-                iframe.contentWindow.focus();
-            }, 100);
-        }
-
-        // Prevent the whole iframe selected.
-        // See https://github.com/James-Yu/LaTeX-Workshop/issues/3408
-        window.addEventListener('selectstart', (e) => {
-            e.preventDefault();
-        });
-
-        const vsStore = acquireVsCodeApi();
-        // To enable keyboard shortcuts of VS Code when the iframe is focused,
-        // we have to dispatch keyboard events in the parent window.
-        // See https://github.com/microsoft/vscode/issues/65452#issuecomment-586036474
-        window.addEventListener('message', (e) => {
-            if (e.origin !== '${iframeSrcOrigin}') {
-                return;
-            }
-            switch (e.data.type) {
-                case 'initialized': {
-                    const state = vsStore.getState();
-                    if (state) {
-                        state.type = 'restore_state';
-                        iframe.contentWindow.postMessage(state, '${iframeSrcOrigin}');
-                    } else {
-                        iframe.contentWindow.postMessage({type: 'restore_state', state: {kind: 'not_stored'} }, '${iframeSrcOrigin}');
-                    }
-                    break;
-                }
-                case 'click_event': {
-                    if (!/^https?:/.exec(e.data.href)) {
-                        return;
-                    }
-                    const dom = document.createElement('a');
-                    dom.style.display = 'none';
-                    dom.href = e.data.href;
-                    document.body.appendChild(dom);
-                    dom.click();
-                    document.body.removeChild(dom);
-                    return;
-                }
-                case 'keyboard_event': {
-                    if (${rebroadcast}) {
-                        window.dispatchEvent(new KeyboardEvent('keydown', e.data.event));
-                    }
-                    break;
-                }
-                case 'state': {
-                    vsStore.setState(e.data);
-                    break;
-                }
-                default:
-                break;
-            }
-            vsStore.postMessage(e.data)
-        });
+        <script nonce="${nonce}">
+          var iframeSrcOrigin = '${iframeSrcOrigin}';
+          var rebroadcast = ${rebroadcast};
         </script>
+        <script src="${jsPathSrc}" nonce="${nonce}" defer></script>
         </body></html>
         `
     }
