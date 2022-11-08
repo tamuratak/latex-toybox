@@ -1,7 +1,6 @@
 test/utils/decycle.ts
 dev/*.js
 src/lib/**/*.ts
-types/**/*.ts
 resources/**/*.js
 out
 node_modules
