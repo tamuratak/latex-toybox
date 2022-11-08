@@ -44,6 +44,10 @@ window.addEventListener('message', (e) => {
             document.body.removeChild(dom);
             return;
         }
+        case 'copy_event': {
+            window.navigator.clipboard.writeText(e.data.text);
+            return;
+        }
         case 'keyboard_event': {
             if (rebroadcast) {
                 window.dispatchEvent(new KeyboardEvent('keydown', e.data.event));
@@ -57,5 +61,13 @@ window.addEventListener('message', (e) => {
         default:
             break;
     }
-    vsStore.postMessage(e.data)
+    vsStore.postMessage(e.data);
+});
+
+window.addEventListener('paste', async (e) => {
+    if (e.origin !== undefined) {
+        return;
+    }
+    const text = await window.navigator.clipboard.readText();
+    iframe.contentWindow.postMessage({ type: 'paste_event', text }, iframeSrcOrigin);
 });

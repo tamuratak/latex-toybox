@@ -34,7 +34,7 @@ export type PdfViewerParams = {
             pageColorsBackground: string,
             backgroundColor: string
         }
-    }
+    },
     keybindings: {
         synctex: 'ctrl-click' | 'double-click'
     }
@@ -64,6 +64,9 @@ export type ClientRequest = {
 export type PanelManagerResponse = {
     type: 'restore_state',
     state: PdfViewerState
+} | {
+    type: 'paste_event',
+    text: string
 }
 
 export type PanelRequest = {
@@ -71,6 +74,9 @@ export type PanelRequest = {
 } | {
     type: 'click_event',
     href: string
+} | {
+    type: 'copy_event',
+    text: string
 } | {
     type: 'keyboard_event',
     event: any
