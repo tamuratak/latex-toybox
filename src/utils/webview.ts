@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import type {ExtensionRootLocator} from '../interfaces'
+import { getNonce } from './getnonce'
 
 interface IExtension extends ExtensionRootLocator { }
 
@@ -9,9 +10,11 @@ export function replaceWebviewPlaceholders(content: string, extension: IExtensio
     const resourcesFolderLink = resourcesFolderUri.toString()
     const pdfjsDistUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionRootUri, 'node_modules', 'pdfjs-dist'))
     const pdfjsDistLink = pdfjsDistUri.toString()
+    const nonce = getNonce()
     return content.replace(/%VSCODE_RES%/g, resourcesFolderLink)
                   .replace(/%VSCODE_PDFJS_DIST%/g, pdfjsDistLink)
                   .replace(/%VSCODE_CSP%/g, webview.cspSource)
+                  .replace(/%VSCODE_NONCE%/g, nonce)
 }
 
 /**
