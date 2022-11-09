@@ -65,16 +65,10 @@ window.addEventListener('message', (e) => {
 });
 
 window.addEventListener('copy', (e) => {
-    if (e.origin !== undefined) {
-        return;
-    }
     iframe.contentWindow.postMessage({ type: 'copy_event' }, iframeSrcOrigin);
 });
 
 window.addEventListener('paste', async (e) => {
-    if (e.origin !== undefined) {
-        return;
-    }
     const text = await window.navigator.clipboard.readText();
     iframe.contentWindow.postMessage({ type: 'paste_event', text }, iframeSrcOrigin);
 });
