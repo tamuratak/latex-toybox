@@ -521,13 +521,6 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
                     this.viewerHistory.forward()
                 }
             }
-
-            if (evt.metaKey && evt.key === 'c') {
-                const text = document.getSelection()?.toString()
-                if (text) {
-                    this.sendToPanelManager({ type: 'copy_event', text })
-                }
-            }
         });
 
         (document.getElementById('outerContainer') as HTMLElement).onmousemove = (e) => {
@@ -679,6 +672,13 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
                         this.#restoredState.resolve(data.state)
                     } else {
                         this.#restoredState.resolve(undefined)
+                    }
+                    break
+                }
+                case 'copy_event': {
+                    const text = document.getSelection()?.toString()
+                    if (text) {
+                        this.sendToPanelManager({ type: 'copy_event', text })
                     }
                     break
                 }

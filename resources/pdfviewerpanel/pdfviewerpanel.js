@@ -64,6 +64,13 @@ window.addEventListener('message', (e) => {
     vsStore.postMessage(e.data);
 });
 
+window.addEventListener('copy', (e) => {
+    if (e.origin !== undefined) {
+        return;
+    }
+    iframe.contentWindow.postMessage({ type: 'copy_event' }, iframeSrcOrigin);
+});
+
 window.addEventListener('paste', async (e) => {
     if (e.origin !== undefined) {
         return;

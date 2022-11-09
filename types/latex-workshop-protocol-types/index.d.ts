@@ -65,6 +65,8 @@ export type PanelManagerResponse = {
     type: 'restore_state',
     state: PdfViewerState
 } | {
+    type: 'copy_event'
+} | {
     type: 'paste_event',
     text: string
 }
