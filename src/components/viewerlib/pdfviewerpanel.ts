@@ -147,16 +147,22 @@ export class PdfViewerPanelService {
         const jsPathSrc = webview.asWebviewUri(jsPath)
         const nonce = getNonce()
         return `
-        <!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; frame-src ${iframeSrcOrigin}; script-src 'nonce-${nonce}'; style-src 'unsafe-inline';"></head>
-        <body><iframe id="preview-panel" class="preview-panel" src="${iframeSrcUrl}" style="position:absolute; border: none; left: 0; top: 0; width: 100%; height: 100%;">
-        </iframe>
-        <script nonce="${nonce}">
-          var iframeSrcOrigin = '${iframeSrcOrigin}';
-          var rebroadcast = ${rebroadcast};
-        </script>
-        <script src="${jsPathSrc}" nonce="${nonce}" defer></script>
-        </body></html>
-        `
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; frame-src ${iframeSrcOrigin}; script-src 'nonce-${nonce}'; style-src 'unsafe-inline';">
+<script nonce="${nonce}">
+var iframeSrcOrigin = '${iframeSrcOrigin}';
+var rebroadcast = ${rebroadcast};
+</script>
+<script src="${jsPathSrc}" nonce="${nonce}"></script>
+</head>
+<body>
+<iframe id="preview-panel" class="preview-panel" src="${iframeSrcUrl}" style="position:absolute; border: none; left: 0; top: 0; width: 100%; height: 100%;">
+</iframe>
+</body>
+</html>
+`
     }
 
 }
