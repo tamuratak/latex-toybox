@@ -1,7 +1,7 @@
 // When the tab gets focus again later, move the
 // the focus to the iframe so that keyboard navigation works in the pdf.
-const iframe = document.getElementById('preview-panel');
 window.onfocus = function () {
+    const iframe = document.getElementById('preview-panel');
     setTimeout(function () { // doesn't work immediately
         iframe.contentWindow.focus();
     }, 100);
@@ -18,6 +18,7 @@ const vsStore = acquireVsCodeApi();
 // we have to dispatch keyboard events in the parent window.
 // See https://github.com/microsoft/vscode/issues/65452#issuecomment-586036474
 window.addEventListener('message', (e) => {
+    const iframe = document.getElementById('preview-panel');
     if (e.origin !== iframeSrcOrigin) {
         return;
     }
@@ -64,11 +65,13 @@ window.addEventListener('message', (e) => {
     vsStore.postMessage(e.data);
 });
 
-window.addEventListener('copy', (e) => {
+window.addEventListener('copy', () => {
+    const iframe = document.getElementById('preview-panel');
     iframe.contentWindow.postMessage({ type: 'copy_event' }, iframeSrcOrigin);
 });
 
-window.addEventListener('paste', async (e) => {
+window.addEventListener('paste', async () => {
+    const iframe = document.getElementById('preview-panel');
     const text = await window.navigator.clipboard.readText();
     iframe.contentWindow.postMessage({ type: 'paste_event', text }, iframeSrcOrigin);
 });
