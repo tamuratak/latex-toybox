@@ -24,6 +24,8 @@ export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer
 
     deserializeWebviewPanel(panel: vscode.WebviewPanel) {
         this.extension.mathPreviewPanel.initializePanel(panel)
+        // We should update localResourceRoots for the case that the extension version was updated and the extension directory changed.
+        // https://github.com/microsoft/vscode/pull/114661#issuecomment-764994131
         panel.webview.options = {
             enableScripts: true,
             localResourceRoots: [resourcesFolder(this.extension.extensionRoot)]

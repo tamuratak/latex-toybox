@@ -51,6 +51,13 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
     }
 
     async deserializeWebviewPanel(panel: vscode.WebviewPanel, argState: {state: PdfViewerState}): Promise<void> {
+        // We should update localResourceRoots for the case that the extension version was updated and the extension directory changed.
+        // https://github.com/microsoft/vscode/pull/114661#issuecomment-764994131
+        const resourceFolder = path.join(this.extension.extensionRoot, 'resources', 'pdfviewerpanel')
+        panel.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [vscode.Uri.file(resourceFolder)]
+        }
         await this.extension.server.serverStarted
         this.extension.logger.addLogMessage(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${JSON.stringify(argState)}`)
         const state = argState.state
