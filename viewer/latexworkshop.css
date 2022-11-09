@@ -149,13 +149,13 @@ html[dir='rtl'] .findbar {
 }
 
 #trimSelectContainer {
-    max-width: 138px;
-    min-width: 138px;
+    max-width: 140px;
+    min-width: 140px;
 }
 
 #trimSelectContainer > select {
-    min-width: 160px;
-    max-width: 160px;
+    min-width: 130px;
+    max-width: 130px;
 }
 
 #sidebarToggle::after {
