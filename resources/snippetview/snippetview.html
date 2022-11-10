@@ -18,14 +18,14 @@
     <body>
     <div id="contentMain">
         <div class="tab">
-            <button class="tablinks active" onclick="openTab(event, 'Symbols')">Symbols</button>
-            <button class="tablinks" onclick="openTab(event, 'TikZ')">TikZ</button>
+            <button id="tabSymbols" class="tablinks active">Symbols</button>
+            <button id="tabTikz" class="tablinks">TikZ</button>
         </div>
 
         <div id="Symbols" class="tabcontent">
             <div class="header">
-                <input type="text" name="search" id="symbolsearch" placeholder="Search" oninput="mathSymbolSearch()" />
-                <select onchange="mathSymbolSearch()"> </select>
+                <input type="text" name="search" id="symbolsearch" placeholder="Search" />
+                <select id="symbolsearchselect"></select>
             </div>
 
             <div class="grid"></div>

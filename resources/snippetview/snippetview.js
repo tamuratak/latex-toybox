@@ -118,4 +118,20 @@ function openTab(evt, tabName) {
     evt.currentTarget.classList.add('active');
 }
 
-document.querySelector('.tablinks.active').click();
+document.getElementById("tabSymbols").addEventListener("click", (event) => {
+    openTab(event, 'Symbols');
+});
+
+document.getElementById("tabTikz").addEventListener("click", (event) => {
+    openTab(event, 'TikZ');
+});
+
+document.getElementById("symbolsearch").addEventListener("input", () => {
+    mathSymbolSearch();
+});
+
+document.getElementById("symbolsearchselect").addEventListener("change", () => {
+    mathSymbolSearch();
+});
+
+document.getElementById('tabSymbols').click();
