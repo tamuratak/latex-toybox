@@ -705,7 +705,13 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
 
 }
 
+// Defines pdfjsLib globally.
+// @ts-expect-error
+await import('/build/pdf.js')
+
 const extension = new LateXWorkshopPdfViewer()
 await extension.waitSetupAppOptionsFinished()
+
+// Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
 // @ts-expect-error
 await import('/viewer.js')
