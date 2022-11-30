@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
 import * as process from 'process'
 
 import {Commander} from './commander'
@@ -149,7 +148,7 @@ export function deactivate() {
 }
 
 export function activate(context: vscode.ExtensionContext): ReturnType<typeof generateLatexWorkshopApi> {
-    const extension = new Extension()
+    const extension = new Extension(context)
     extensionToDispose = extension
     void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', true)
 
@@ -357,8 +356,8 @@ export class Extension implements IExtension {
     readonly mathPreviewPanel: MathPreviewPanel
     readonly duplicateLabels: DuplicateLabels
 
-    constructor() {
-        this.extensionRoot = path.resolve(`${__dirname}/../../`)
+    constructor(context: vscode.ExtensionContext) {
+        this.extensionRoot = context.extensionPath
         // We must create an instance of Logger first to enable
         // adding log messages during initialization.
         this.logger = new Logger()
