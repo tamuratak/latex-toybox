@@ -171,30 +171,29 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
         }
     }
 
-    async waitSetupAppOptionsFinished() {
+    async waitSetupAppOptionsReady() {
         return this.setupAppOptionsPromise.promise
     }
 
     private async setupAppOptions() {
         const workerPort = new Worker('/build/pdf.worker.js')
         const params = await this.fetchParams()
-        document.addEventListener('webviewerloaded', () => {
-            const color = this.isPrefersColorSchemeDark() ? params.color.dark : params.color.light
-            const options = {
-                annotationEditorMode: -1,
-                disablePreferences: true,
-                enableScripting: false,
-                cMapUrl: '/cmaps/',
-                sidebarViewOnLoad: 0,
-                standardFontDataUrl: '/standard_fonts/',
-                workerPort,
-                workerSrc: '/build/pdf.worker.js',
-                forcePageColors: true,
-                ...color
-            }
-            PDFViewerApplicationOptions.setAll(options)
-        })
+        const color = this.isPrefersColorSchemeDark() ? params.color.dark : params.color.light
+        const options = {
+            annotationEditorMode: -1,
+            disablePreferences: true,
+            enableScripting: false,
+            cMapUrl: '/cmaps/',
+            sidebarViewOnLoad: 0,
+            standardFontDataUrl: '/standard_fonts/',
+            workerPort,
+            workerSrc: '/build/pdf.worker.js',
+            forcePageColors: true,
+            ...color
+        }
         this.setupAppOptionsPromise.resolve()
+        await this.webViewerLoaded
+        PDFViewerApplicationOptions.setAll(options)
     }
 
     private async applyParamsOnStart() {
@@ -710,8 +709,9 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
 await import('/build/pdf.js')
 
 const extension = new LateXWorkshopPdfViewer()
-await extension.waitSetupAppOptionsFinished()
+await extension.waitSetupAppOptionsReady()
 
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
+await extension.waitSetupAppOptionsReady()
 // @ts-expect-error
 await import('/viewer.js')
