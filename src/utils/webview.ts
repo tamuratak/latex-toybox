@@ -1,11 +1,7 @@
 import * as vscode from 'vscode'
-import type {ExtensionRootLocator} from '../interfaces'
 import { getNonce } from './getnonce'
 
-interface IExtension extends ExtensionRootLocator { }
-
-export function replaceWebviewPlaceholders(content: string, extension: IExtension, webview: vscode.Webview): string {
-    const extensionRootUri = vscode.Uri.file(extension.extensionRoot)
+export function replaceWebviewPlaceholders(content: string, extensionRootUri: vscode.Uri, webview: vscode.Webview): string {
     const resourcesFolderUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionRootUri, 'resources'))
     const resourcesFolderLink = resourcesFolderUri.toString()
     const pdfjsDistUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionRootUri, 'node_modules', 'pdfjs-dist'))

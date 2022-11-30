@@ -97,7 +97,8 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
 
         const webviewSourcePath = path.join(this.extension.extensionRoot, 'resources', 'snippetview', 'snippetview.html')
         let webviewHtml = readFileSync(webviewSourcePath, { encoding: 'utf8' })
-        webviewHtml = replaceWebviewPlaceholders(webviewHtml, this.extension, this.view.webview)
+        const extensionRootUri = vscode.Uri.file(this.extension.extensionRoot)
+        webviewHtml = replaceWebviewPlaceholders(webviewHtml, extensionRootUri, this.view.webview)
         webviewView.webview.html = webviewHtml
 
         webviewView.webview.onDidReceiveMessage((e: SnippetViewResult) => {
