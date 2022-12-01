@@ -100,6 +100,7 @@ sequenceDiagram
   Note over Viewer: load latexworkshop.js
   Viewer-)Server: open
   Viewer->>WebServer: fetch /config.json
+  Note over Viewer: SetupAppOptionsReady
   Note over Viewer: load viewer.js
   Note over Viewer: webviewerloaded
   Viewer->>Viewer: Set PDFViewerApplicationOptions
