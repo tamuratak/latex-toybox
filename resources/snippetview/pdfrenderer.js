@@ -5,10 +5,7 @@ function isTrustedOrigin(origin) {
         || originUrl.hostname.endsWith('.github.dev');
 }
 
-let count = 0;
-
 window.addEventListener('message', async (event) => {
-    count += 1;
     if (!isTrustedOrigin(event.origin)) {
         console.log('pdfrenderer.js received a message with invalid origin');
         return;
@@ -18,12 +15,13 @@ window.addEventListener('message', async (event) => {
         return
     }
     try {
-        const canvas = await renderPdfFile(message.uri, message.opts);
+        const {canvas, pdf} = await renderPdfFile(message.uri, message.opts);
         vscodeApi.postMessage({
             type: 'png',
             uri: message.uri,
             data: canvas.toDataURL()
         })
+        pdf.cleanup();
     } catch (e) {
         vscodeApi.postMessage({
             type: 'png',
@@ -31,11 +29,6 @@ window.addEventListener('message', async (event) => {
             data: undefined
         })
         throw(e)
-    }
-    if (count > 3) {
-        pdfjsLib.GlobalWorkerOptions.workerPort?.terminate();
-        createPdfWorker();
-        count = 0;
     }
 })
 
@@ -53,10 +46,11 @@ async function createPdfWorker() {
 }
 
 async function renderPdfFile(url, opts) {
-    const loadingTask = pdfjsLib.getDocument({
+    let loadingTask = pdfjsLib.getDocument({
         url,
         cMapUrl: pdfjsDistUri + '/cmaps/',
-        cMapPacked: true
+        cMapPacked: true,
+        isOffscreenCanvasSupported: false
     });
     const pdf = await loadingTask.promise;
     const page = await pdf.getPage(opts.pageNumber);
@@ -72,7 +66,7 @@ async function renderPdfFile(url, opts) {
     // Prepare canvas using PDF page dimensions
     //
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d', { alpha: false });
+    const context = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
     canvas.width = Math.floor(viewport.width);
     canvas.height = Math.floor(viewport.height);
 
@@ -84,10 +78,21 @@ async function renderPdfFile(url, opts) {
         viewport: viewport,
         intent: 'print'
     };
-    const renderTask = page.render(renderContext);
-    setTimeout(() => renderTask.cancel(), 5000);
+    let renderTask = page.render(renderContext);
+    setTimeout(() => {
+        try {
+            renderTask?.cancel();
+            loadingTask?.destroy();
+        } catch (e) {
+            // ignore
+        }
+    }, 5000);
     await renderTask.promise;
-    return canvas;
+    renderTask = undefined;
+    await loadingTask.destroy();
+    loadingTask = undefined;
+    return {canvas, pdf};
 }
 
-createPdfWorker()
+await import(pdfjsDistUri + "/build/pdf.js");
+createPdfWorker();
