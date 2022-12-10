@@ -277,15 +277,7 @@ export class Commander {
         if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             return
         }
-        this.extension.envPair.gotoPair()
-    }
-
-    selectEnvContent() {
-        this.extension.logger.addLogMessage('SelectEnv command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        this.extension.envPair.selectEnv()
+        return this.extension.envPair.gotoPair()
     }
 
     selectEnvName() {
@@ -293,23 +285,7 @@ export class Commander {
         if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             return
         }
-        this.extension.envPair.envNameAction('selection')
-    }
-
-    multiCursorEnvName() {
-        this.extension.logger.addLogMessage('MutliCursorEnvName command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        this.extension.envPair.envNameAction('cursor')
-    }
-
-    toggleEquationEnv() {
-        this.extension.logger.addLogMessage('toggleEquationEnv command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        this.extension.envPair.envNameAction('equationToggle')
+        return this.extension.envPair.envNameAction()
     }
 
     closeEnv() {
