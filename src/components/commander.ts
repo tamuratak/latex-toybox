@@ -92,7 +92,6 @@ export class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXComm
             new LaTeXCommand('Select current environment name', {command: 'latex-workshop.select-envname'}),
             new LaTeXCommand('Close current environment', {command: 'latex-workshop.close-env'}),
             new LaTeXCommand('Surround with begin{}...\\end{}', {command: 'latex-workshop.wrap-env'}),
-            new LaTeXCommand('Insert %!TeX root magic comment', {command: 'latex-workshop.addtexroot'})
         ])
         commands.push(node)
 

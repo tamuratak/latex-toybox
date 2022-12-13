@@ -13,7 +13,6 @@ import {Locator} from './components/locator'
 import {Linter} from './components/linter'
 import {Cleaner} from './components/cleaner'
 import {Counter} from './components/counter'
-import {TeXMagician} from './components/texmagician'
 import {EnvPair} from './components/envpair'
 import {Section} from './components/section'
 import {CompilerLogParser} from './components/parser/compilerlog'
@@ -23,7 +22,6 @@ import {EventBus} from './components/eventbus'
 
 import {Completer, AtSuggestionCompleter} from './providers/completion'
 import {BibtexCompleter} from './providers/bibtexcompletion'
-import {CodeActions} from './providers/codeactions'
 import {DuplicateLabels} from './components/duplicatelabels'
 import {HoverProvider} from './providers/hover'
 import {GraphicsPreview} from './providers/preview/graphicspreview'
@@ -33,7 +31,6 @@ import {DocSymbolProvider} from './providers/docsymbol'
 import {ProjectSymbolProvider} from './providers/projectsymbol'
 import {StructureTreeView} from './providers/structure'
 import {DefinitionProvider} from './providers/definition'
-import {LatexFormatterProvider} from './providers/latexformatter'
 import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
@@ -80,11 +77,9 @@ function registerLatexWorkshopCommands(extension: Extension, context: vscode.Ext
         vscode.commands.registerCommand('latex-workshop.actions', () => extension.commander.actions()),
         vscode.commands.registerCommand('latex-workshop.activate', () => undefined),
         vscode.commands.registerCommand('latex-workshop.citation', () => extension.commander.citation()),
-        vscode.commands.registerCommand('latex-workshop.addtexroot', () => extension.commander.addTexRoot()),
         vscode.commands.registerCommand('latex-workshop.wordcount', () => extension.commander.wordcount()),
         vscode.commands.registerCommand('latex-workshop.log', () => extension.commander.log()),
         vscode.commands.registerCommand('latex-workshop.compilerlog', () => extension.commander.log('compiler')),
-        vscode.commands.registerCommand('latex-workshop.code-action', (d: vscode.TextDocument, r: vscode.Range, c: number, m: string) => extension.codeActions.runCodeAction(d, r, c, m)),
         vscode.commands.registerCommand('latex-workshop.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
         vscode.commands.registerCommand('latex-workshop.navigate-envpair', () => extension.commander.navigateToEnvPair()),
         vscode.commands.registerCommand('latex-workshop.select-envcontent', () => extension.commander.selectEnvContent()),
@@ -256,13 +251,10 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     const weaveSelector = selectDocumentsWithId(['jlweave', 'rsweave'])
     const latexDoctexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave', 'doctex'])
     const bibtexSelector = selectDocumentsWithId(['bibtex'])
-    const latexFormatter = new LatexFormatterProvider(extension)
     const bibtexFormatter = new BibtexFormatterProvider(extension)
 
     context.subscriptions.push(
-        vscode.languages.registerDocumentFormattingEditProvider(latexSelector, latexFormatter),
         vscode.languages.registerDocumentFormattingEditProvider({ scheme: 'file', language: 'bibtex'}, bibtexFormatter),
-        vscode.languages.registerDocumentRangeFormattingEditProvider(latexSelector, latexFormatter),
         vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: 'file', language: 'bibtex'}, bibtexFormatter)
     )
 
@@ -303,7 +295,6 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     }
 
     context.subscriptions.push(
-        vscode.languages.registerCodeActionsProvider(latexSelector, extension.codeActions),
         vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider(extension)),
         vscode.languages.registerFoldingRangeProvider(weaveSelector, new WeaveFoldingProvider(extension))
     )
@@ -351,8 +342,6 @@ export class Extension implements IExtension {
     readonly linter: Linter
     readonly cleaner: Cleaner
     readonly counter: Counter
-    readonly codeActions: CodeActions
-    readonly texMagician: TeXMagician
     readonly envPair: EnvPair
     readonly section: Section
     readonly latexCommanderTreeView: LaTeXCommanderTreeView
@@ -387,8 +376,6 @@ export class Extension implements IExtension {
         this.linter = new Linter(this)
         this.cleaner = new Cleaner(this)
         this.counter = new Counter(this)
-        this.codeActions = new CodeActions(this)
-        this.texMagician = new TeXMagician(this)
         this.envPair = new EnvPair(this)
         this.section = new Section(this)
         this.latexCommanderTreeView = new LaTeXCommanderTreeView(this)
