@@ -14,9 +14,6 @@ export class ReferenceUpdater {
         this.extension.eventBus.onDidChangeRootFile(() => {
             void this.update()
         })
-        this.extension.eventBus.onDidUpdateCachedContent(() => {
-            void this.update()
-        })
         vscode.workspace.onDidChangeTextDocument(() => {
             void this.update()
         })

@@ -24,45 +24,36 @@ import {IntellisenseWatcher} from './managerlib/intellisensewatcher'
 
 import {Mutex} from '../lib/await-semaphore'
 
-/**
- * The content cache for each LaTeX file `filepath`.
- */
-export interface Content {
-    [filepath: string]: { // The path of a LaTeX file.
+
+export interface CachedContentEntry {
+    /**
+     * Completion item and other items for the LaTeX file.
+     */
+    readonly element: {
+        reference?: ILwCompletionItem[],
+        glossary?: GlossarySuggestion[],
+        environment?: CmdEnvSuggestion[],
+        bibitem?: CiteSuggestion[],
+        command?: CmdEnvSuggestion[],
+        package?: Set<string>
+    },
+    /**
+     * The sub-files of the LaTeX file. They should be tex or plain files.
+     */
+    children: {
         /**
-         * The dirty (under editing) content of the LaTeX file if opened in vscode,
-         * the content on disk otherwise.
+         * The index of character sub-content is inserted
          */
-        content: string | undefined,
+        index: number,
         /**
-         * Completion item and other items for the LaTeX file.
+         * The path of the sub-file
          */
-        element: {
-            reference?: ILwCompletionItem[],
-            glossary?: GlossarySuggestion[],
-            environment?: CmdEnvSuggestion[],
-            bibitem?: CiteSuggestion[],
-            command?: CmdEnvSuggestion[],
-            package?: Set<string>
-        },
-        /**
-         * The sub-files of the LaTeX file. They should be tex or plain files.
-         */
-        children: {
-            /**
-             * The index of character sub-content is inserted
-             */
-            index: number,
-            /**
-             * The path of the sub-file
-             */
-            file: string
-        }[],
-        /**
-         * The array of the paths of `.bib` files referenced from the LaTeX file.
-         */
-        bibs: string[]
-    }
+        file: string
+    }[],
+    /**
+     * The array of the paths of `.bib` files referenced from the LaTeX file.
+     */
+    bibs: string[]
 }
 
 export const enum BuildEvents {
@@ -83,7 +74,7 @@ export class Manager implements IManager {
     /**
      * The content cache for each LaTeX file.
      */
-    private readonly cachedContent = Object.create(null) as Content
+    private readonly cachedContent = new Map<string, CachedContentEntry>() // key: filePath
 
     private _localRootFile: string | undefined
     private _rootFileLanguageId: string | undefined
@@ -132,30 +123,30 @@ export class Manager implements IManager {
         await this.bibWatcher.dispose()
     }
 
-    getCachedContent(filePath: string): Content[string] | undefined {
-        return this.cachedContent[filePath]
+    getCachedContent(filePath: string): CachedContentEntry | undefined {
+        return this.cachedContent.get(filePath)
     }
 
-    private setCachedContent(filePath: string, cacheEntry: Content[string]) {
-        return this.cachedContent[filePath] = cacheEntry
+    private setCachedContent(filePath: string, cacheEntry: CachedContentEntry): CachedContentEntry {
+        this.cachedContent.set(filePath, cacheEntry)
+        return cacheEntry
+    }
+
+    private initCacheEntry(filePath: string): CachedContentEntry {
+        return this.setCachedContent(filePath, { element: {}, children: [], bibs: [] })
+    }
+
+    private gracefulCachedContent(filePath: string): CachedContentEntry {
+        const cache = this.cachedContent.get(filePath)
+        if (cache) {
+            return cache
+        } else {
+            return this.initCacheEntry(filePath)
+        }
     }
 
     get cachedFilePaths() {
-        return Object.keys(this.cachedContent)
-    }
-
-    private invalidateCachedContent(filePath: string) {
-        if (filePath in this.cachedContent) {
-            this.cachedContent[filePath].content = undefined
-        }
-    }
-
-    updateCachedContent(document: vscode.TextDocument) {
-        const cache = this.getCachedContent(document.fileName)
-        if (cache !== undefined) {
-            cache.content = document.getText()
-        }
-        this.extension.eventBus.fire(eventbus.CachedContentUpdated)
+        return this.cachedContent.keys()
     }
 
     getFilesWatched() {
@@ -500,12 +491,12 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        if (!(file in this.extension.manager.cachedContent)) {
+        if (!this.getCachedContent(file)) {
             return []
         }
         children.push(file)
-        includedBib.push(...this.extension.manager.cachedContent[file].bibs)
-        for (const child of this.extension.manager.cachedContent[file].children) {
+        includedBib.push(...this.gracefulCachedContent(file).bibs)
+        for (const child of this.gracefulCachedContent(file).children) {
             if (children.includes(child.file)) {
                 // Already parsed
                 continue
@@ -531,11 +522,11 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        if (!(file in this.extension.manager.cachedContent)) {
+        if (!this.getCachedContent(file)) {
             return []
         }
         includedTeX.push(file)
-        for (const child of this.extension.manager.cachedContent[file].children) {
+        for (const child of this.gracefulCachedContent(file).children) {
             if (includedTeX.includes(child.file)) {
                 // Already included
                 continue
@@ -549,19 +540,17 @@ export class Manager implements IManager {
      * Get the buffer content of a file if it is opened in vscode. Otherwise, read the file from disk
      */
     getDirtyContent(file: string): string | undefined {
-        const cache = this.cachedContent[file]
-        if (cache !== undefined) {
-            if (cache.content) {
-                return cache.content
-            }
+        const cache = this.getCachedContent(file)
+        if (cache === undefined) {
+            this.initCacheEntry(file)
         }
-        const fileContent = this.extension.lwfs.readFileSyncGracefully(file)
-        if (fileContent === undefined) {
+        const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
+        const content = doc?.getText() || this.extension.lwfs.readFileSyncGracefully(file)
+        if (content === undefined) {
             this.extension.logger.addLogMessage(`Cannot read dirty content of unknown ${file}`)
-            return undefined
+            return
         }
-        this.setCachedContent(file, {content: fileContent, element: {}, children: [], bibs: []})
-        return fileContent
+        return content
     }
 
     private isExcluded(file: string): boolean {
@@ -606,8 +595,8 @@ export class Manager implements IManager {
             return
         }
         content = utils.stripCommentsAndVerbatim(content)
-        this.cachedContent[file].children = []
-        this.cachedContent[file].bibs = []
+        this.gracefulCachedContent(file).children = []
+        this.gracefulCachedContent(file).bibs = []
         await this.parseInputFiles(content, file, baseFile)
         await this.parseBibFiles(content, file)
     }
@@ -626,8 +615,8 @@ export class Manager implements IManager {
         }
 
         // Update children of current file
-        if (this.cachedContent[file] === undefined) {
-            this.cachedContent[file] = {content, element: {}, bibs: [], children: []}
+        if (!this.getCachedContent(file)) {
+            this.initCacheEntry(file)
             const inputFileRegExp = new InputFileRegExp()
             while (true) {
                 const result = inputFileRegExp.exec(content, file, baseFile)
@@ -640,14 +629,14 @@ export class Manager implements IManager {
                     continue
                 }
 
-                this.cachedContent[file].children.push({
+                this.gracefulCachedContent(file).children.push({
                     index: result.match.index,
                     file: result.path
                 })
             }
         }
 
-        this.cachedContent[file].children.forEach(child => {
+        this.gracefulCachedContent(file).children.forEach(child => {
             if (children.includes(child.file)) {
                 // Already included
                 return
@@ -691,7 +680,7 @@ export class Manager implements IManager {
                 continue
             }
 
-            this.cachedContent[baseFile].children.push({
+            this.gracefulCachedContent(baseFile).children.push({
                 index: result.match.index,
                 file: result.path
             })
@@ -721,7 +710,7 @@ export class Manager implements IManager {
                 if (bibPath === undefined) {
                     continue
                 }
-                this.cachedContent[baseFile].bibs.push(bibPath)
+                this.gracefulCachedContent(baseFile).bibs.push(bibPath)
                 await this.bibWatcher.watchBibFile(bibPath)
             }
         }
@@ -763,7 +752,7 @@ export class Manager implements IManager {
             }
             if (path.extname(inputFile) === '.tex') {
                 // Parse tex files as imported subfiles.
-                this.cachedContent[texFile].children.push({
+                this.gracefulCachedContent(texFile).children.push({
                     index: Number.MAX_VALUE,
                     file: inputFile
                 })
@@ -798,8 +787,8 @@ export class Manager implements IManager {
                 if (bibPath === undefined) {
                     continue
                 }
-                if (this.rootFile && !this.cachedContent[this.rootFile].bibs.includes(bibPath)) {
-                    this.cachedContent[this.rootFile].bibs.push(bibPath)
+                if (this.rootFile && !this.gracefulCachedContent(this.rootFile).bibs.includes(bibPath)) {
+                    this.gracefulCachedContent(this.rootFile).bibs.push(bibPath)
                 }
                 await this.bibWatcher.watchBibFile(bibPath)
             }
@@ -876,7 +865,6 @@ export class Manager implements IManager {
         // It is possible for either tex or non-tex files in the watcher.
         if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file)) &&
             !file.includes('expl3-code.tex')) {
-            this.invalidateCachedContent(file)
             await this.parseFileAndSubs(file, this.rootFile)
             await this.updateCompleterOnChange(file)
         }
@@ -886,7 +874,7 @@ export class Manager implements IManager {
     private async onWatchedFileDeleted(file: string) {
         this.extension.logger.addLogMessage(`File watcher - file deleted: ${file}`)
         await this.deleteFromFileWatcher(file)
-        delete this.cachedContent[file]
+        this.cachedContent.delete(file)
         if (file === this.rootFile) {
             this.extension.logger.addLogMessage(`Root file deleted: ${file}`)
             this.extension.logger.addLogMessage('Start searching a new root file.')

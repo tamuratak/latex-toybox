@@ -657,10 +657,6 @@ export class StructureTreeView {
             }
         })
 
-        this.extension.eventBus.onDidUpdateCachedContent(() => {
-            void this.computeTreeStructure()
-        })
-
         this.extension.eventBus.onDidChangeRootFile(() => {
             void this.computeTreeStructure()
         })

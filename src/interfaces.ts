@@ -2,7 +2,7 @@ import type fs from 'fs'
 import type {latexParser, bibtexParser} from 'latex-utensils'
 import type vscode from 'vscode'
 import type {SyncTeXRecordForward} from './components/locator'
-import type {Content} from './components/manager'
+import type {CachedContentEntry} from './components/manager'
 import type {ICommand} from './providers/completer/interface'
 
 export interface CommandLocator {
@@ -73,9 +73,9 @@ export interface IManager {
     readonly rootDir: string | undefined,
     rootFile: string | undefined,
     rootFileUri: vscode.Uri | undefined,
-    readonly cachedFilePaths: string[],
+    readonly cachedFilePaths: IterableIterator<string>,
     getOutDir(texPath?: string): string,
-    getCachedContent(filePath: string): Content[string] | undefined,
+    getCachedContent(filePath: string): CachedContentEntry | undefined,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
     findRoot(): Promise<string | undefined>,
