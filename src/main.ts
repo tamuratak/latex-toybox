@@ -39,6 +39,9 @@ import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
 import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator} from './interfaces'
+import { ReferenceStore } from './components/referencestore'
+import { ReferenceProvider } from './providers/reference'
+import { RenameProvider } from './providers/rename'
 
 
 function conflictExtensionCheck() {
@@ -277,6 +280,11 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
         vscode.languages.registerWorkspaceSymbolProvider(new ProjectSymbolProvider(extension))
     )
 
+    context.subscriptions.push(
+        vscode.languages.registerReferenceProvider(latexSelector, new ReferenceProvider(extension)),
+        vscode.languages.registerRenameProvider(latexSelector, new RenameProvider(extension)),
+    )
+
     const userTriggersLatex = configuration.get('intellisense.triggers.latex') as string[]
     const latexTriggers = ['\\', ','].concat(userTriggersLatex)
     extension.logger.addLogMessage(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
@@ -355,6 +363,7 @@ export class Extension implements IExtension {
     readonly bibtexFormatter: BibtexFormatter
     readonly mathPreviewPanel: MathPreviewPanel
     readonly duplicateLabels: DuplicateLabels
+    readonly referenceStore: ReferenceStore
 
     constructor(context: vscode.ExtensionContext) {
         this.extensionRoot = context.extensionPath
@@ -363,6 +372,7 @@ export class Extension implements IExtension {
         this.logger = new Logger()
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
+        this.referenceStore = new ReferenceStore()
         this.lwfs = new LwFileSystem(this)
         this.commander = new Commander(this)
         this.manager = new Manager(this)
