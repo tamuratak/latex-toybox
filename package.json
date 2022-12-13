@@ -378,11 +378,6 @@
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.addtexroot",
-        "title": "Insert %!TeX root magic comment",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.wordcount",
         "title": "Count words in LaTeX document",
         "category": "LaTeX Workshop"
@@ -2060,26 +2055,6 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Convert the encoding of filenames if necessary when displaying them in the problems panel."
-        },
-        "latex-workshop.latexindent.path": {
-          "scope": "window",
-          "type": "string",
-          "default": "latexindent",
-          "markdownDescription": "Define the location of the latexindent executable file."
-        },
-        "latex-workshop.latexindent.args": {
-          "scope": "resource",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "-c",
-            "%DIR%/",
-            "%TMPFILE%",
-            "-y=defaultIndent: '%INDENT%'"
-          ],
-          "markdownDescription": "Define the command line arguments for latexindent. In the addition to the placeholders defined at https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#placeholders, the following placeholders are accepted\n- %TMPFILE%: The full path of the raw TeX file to be formatted. At this moment you need to use it as an input file of `latexindent`.\n- %INDENT%: The indent character of the file, typically `\t`, `' '`, `' '`.\n\nNote that the option `-c` requires a trailing slash."
         },
         "latex-workshop.docker.enabled": {
           "scope": "window",
