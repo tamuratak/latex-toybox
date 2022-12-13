@@ -5,12 +5,12 @@ import * as cp from 'child_process'
 import * as cs from 'cross-spawn'
 import * as os from 'os'
 import * as tmp from 'tmp'
-import {Mutex} from '../lib/await-semaphore'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 
 import type {Extension} from '../main'
 import {BuildFinished} from './eventbus'
 import type {IBuilder} from '../interfaces'
+import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
 const maxPrintLine = '10000'
 const texMagicProgramName = 'TeXMagicProgram'
@@ -22,8 +22,7 @@ export class Builder implements IBuilder {
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     disableBuildAfterSave: boolean = false
     disableCleanAndRetry: boolean = false
-    private readonly buildMutex: Mutex
-    private readonly waitingForBuildToFinishMutex: Mutex
+    private readonly buildMutex = new MutexWithSizedQueue(1)
     private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
     private previousLanguageId: string | undefined
@@ -43,8 +42,6 @@ export class Builder implements IBuilder {
             }
             throw e
         }
-        this.buildMutex = new Mutex()
-        this.waitingForBuildToFinishMutex = new Mutex()
         try {
             const pdflatexVersion = cp.execSync('pdflatex --version')
             if (pdflatexVersion.toString().match(/MiKTeX/)) {
@@ -82,9 +79,8 @@ export class Builder implements IBuilder {
             this.extension.logger.addLogMessage('LaTeX build process to kill is not found.')
         }
     }
-
     private isWaitingForBuildToFinish(): boolean {
-        return this.waitingForBuildToFinishMutex.count < 1
+        return this.buildMutex.waiting > 0
     }
 
     private async preprocess(): Promise<() => void> {
@@ -92,10 +88,18 @@ export class Builder implements IBuilder {
         this.disableBuildAfterSave = true
         await vscode.workspace.saveAll()
         setTimeout(() => this.disableBuildAfterSave = false, configuration.get('latex.autoBuild.interval', 1000) as number)
-        const releaseWaiting = await this.waitingForBuildToFinishMutex.acquire()
-        const releaseBuildMutex = await this.buildMutex.acquire()
-        releaseWaiting()
-        return releaseBuildMutex
+        try {
+            const releaseBuildMutex = await this.buildMutex.acquire()
+            return releaseBuildMutex
+        } catch (e) {
+            if (e instanceof MaxWaitingLimitError) {
+                const msg = 'Another LaTeX build processing is already waiting for the current LaTeX build to finish. Exit.'
+                this.extension.logger.addLogMessage(msg)
+                throw new MaxWaitingLimitError(msg)
+            } else {
+                throw e
+            }
+        }
     }
 
     /**
@@ -111,9 +115,6 @@ export class Builder implements IBuilder {
             // Stop watching the PDF file to avoid reloading the PDF viewer twice.
             // The builder will be responsible for refreshing the viewer.
             this.extension.manager.ignorePdfFile(rootFile)
-        }
-        if (this.isWaitingForBuildToFinish()) {
-            return
         }
         const releaseBuildMutex = await this.preprocess()
         this.extension.logger.displayStatus('sync~spin', 'statusBar.foreground')

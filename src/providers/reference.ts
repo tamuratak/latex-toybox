@@ -1,7 +1,7 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
 import type { Extension } from '../main'
-import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
+import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
 
 
@@ -123,6 +123,11 @@ export class ReferenceUpdater {
                 return
             }
             await this.updateForFile(rootFile)
+        } catch (e) {
+            if (e instanceof MaxWaitingLimitError) {
+                return
+            }
+            throw e
         } finally {
             release?.()
         }
