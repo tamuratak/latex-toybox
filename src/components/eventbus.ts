@@ -7,7 +7,6 @@ export const PdfViewerPagesLoaded = 'pdfviewerpagesloaded'
 export const PdfViewerStatusChanged = 'pdfviewerstatuschanged'
 export const RootFileChanged = 'rootfilechanged'
 export const FindRootFileEnd = 'findrootfileend'
-export const CachedContentUpdated = 'cachedcontentupdated'
 
 type EventArgTypeMap = {
     [PdfViewerStatusChanged]: PdfViewerState,
@@ -19,7 +18,7 @@ export type EventName = typeof BuildFinished
                     | typeof PdfViewerStatusChanged
                     | typeof RootFileChanged
                     | typeof FindRootFileEnd
-                    | typeof CachedContentUpdated
+
 
 export class EventBus {
     private readonly eventEmitter = new EventEmitter()
@@ -40,10 +39,6 @@ export class EventBus {
 
     onDidEndFindRootFile(cb: () => void): Disposable {
         return this.registerListener('findrootfileend', cb)
-    }
-
-    onDidUpdateCachedContent(cb: () => void): Disposable {
-        return this.registerListener('cachedcontentupdated', cb)
     }
 
     onDidChangePdfViewerStatus(cb: (status: EventArgTypeMap['pdfviewerstatuschanged']) => void): Disposable {
