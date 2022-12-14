@@ -123,7 +123,6 @@ export class Manager implements IManager {
         this.intellisenseWatcher = new IntellisenseWatcher()
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
-        this.registerSetEnvVar()
         this.extension.eventBus.onDidChangeRootFile(() => this.logWatchedFiles())
     }
 
@@ -978,23 +977,6 @@ export class Manager implements IManager {
             this.extension.completer.command.update(file, undefined, contentNoComment)
         }
         this.extension.manager.intellisenseWatcher.emitUpdate(file)
-    }
-
-    private registerSetEnvVar() {
-        this.setEnvVar()
-        const configName = 'latex-workshop.docker.image.latex'
-        vscode.workspace.onDidChangeConfiguration((ev) => {
-            if (ev.affectsConfiguration(configName)) {
-                this.setEnvVar()
-            }
-        })
-    }
-
-    private setEnvVar() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const dockerImageName: string = configuration.get('docker.image.latex', '')
-        this.extension.logger.addLogMessage(`Set $LATEXWORKSHOP_DOCKER_LATEX: ${JSON.stringify(dockerImageName)}`)
-        process.env['LATEXWORKSHOP_DOCKER_LATEX'] = dockerImageName
     }
 
 }

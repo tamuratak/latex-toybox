@@ -179,20 +179,10 @@ export class Locator {
 
     private invokeSyncTeXCommandForward(line: number, col: number, filePath: string, pdfFile: string): Thenable<SyncTeXRecordForward> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const docker = configuration.get('docker.enabled')
-        const args = ['view', '-i', `${line}:${col + 1}:${docker ? path.basename(filePath): filePath}`, '-o', docker ? path.basename(pdfFile): pdfFile]
+        const args = ['view', '-i', `${line}:${col + 1}:${filePath}`, '-o', pdfFile]
         this.extension.logger.addLogMessage(`Execute synctex with args ${JSON.stringify(args)}`)
 
-        let command = configuration.get('synctex.path') as string
-        if (docker) {
-            this.extension.logger.addLogMessage('Use Docker to invoke the command.')
-            if (process.platform === 'win32') {
-                command = path.resolve(this.extension.extensionRoot, './scripts/synctex.bat')
-            } else {
-                command = path.resolve(this.extension.extensionRoot, './scripts/synctex')
-                fs.chmodSync(command, 0o755)
-            }
-        }
+        const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfFile)})
         proc.stdout.setEncoding('utf8')
         proc.stderr.setEncoding('utf8')
@@ -236,20 +226,10 @@ export class Locator {
     private invokeSyncTeXCommandBackward(page: number, x: number, y: number, pdfPath: string): Thenable<SyncTeXRecordBackward> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
 
-        const docker = configuration.get('docker.enabled')
-        const args = ['edit', '-o', `${page}:${x}:${y}:${docker ? path.basename(pdfPath): pdfPath}`]
+        const args = ['edit', '-o', `${page}:${x}:${y}:${pdfPath}`]
         this.extension.logger.addLogMessage(`Executing synctex with args ${JSON.stringify(args)}`)
 
-        let command = configuration.get('synctex.path') as string
-        if (docker) {
-            this.extension.logger.addLogMessage('Use Docker to invoke the command.')
-            if (process.platform === 'win32') {
-                command = path.resolve(this.extension.extensionRoot, './scripts/synctex.bat')
-            } else {
-                command = path.resolve(this.extension.extensionRoot, './scripts/synctex')
-                fs.chmodSync(command, 0o755)
-            }
-        }
+        const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfPath)})
         proc.stdout.setEncoding('utf8')
         proc.stderr.setEncoding('utf8')
@@ -288,7 +268,6 @@ export class Locator {
      */
     async locate(data: Extract<ClientRequest, {type: 'reverse_synctex'}>, pdfPath: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const docker = configuration.get('docker.enabled')
         const useSyncTexJs = configuration.get('synctex.synctexjs.enabled') as boolean
         let record: SyncTeXRecordBackward
 
@@ -304,9 +283,6 @@ export class Locator {
             }
         } else {
             record = await this.invokeSyncTeXCommandBackward(data.page, data.pos[0], data.pos[1], pdfPath)
-            if (docker && process.platform === 'win32') {
-                record.input = path.join(path.dirname(pdfPath), record.input.replace('/data/', ''))
-            }
         }
         record.input = record.input.replace(/(\r\n|\n|\r)/gm, '')
 
