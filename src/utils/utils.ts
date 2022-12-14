@@ -240,7 +240,6 @@ export function resolveFile(dirs: string[], inputFile: string, suffix: string = 
 export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (arg: string) => string {
     return (arg: string) => {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
-        const docker = configuration.get('docker.enabled')
 
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
         const workspaceDir = workspaceFolder?.uri.fsPath.split(path.sep).join('/') || ''
@@ -257,18 +256,18 @@ export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (
         const relativeDoc = path.relative(workspaceDir, doc).split(path.sep).join('/')
 
         const expandPlaceHolders = (a: string): string => {
-            return a.replace(/%DOC%/g, docker ? docfile : doc)
-                    .replace(/%DOC_W32%/g, docker ? docfile : docW32)
-                    .replace(/%DOC_EXT%/g, docker ? docfileExt : docExt)
-                    .replace(/%DOC_EXT_W32%/g, docker ? docfileExt : docExtW32)
+            return a.replace(/%DOC%/g, doc)
+                    .replace(/%DOC_W32%/g, docW32)
+                    .replace(/%DOC_EXT%/g, docExt)
+                    .replace(/%DOC_EXT_W32%/g, docExtW32)
                     .replace(/%DOCFILE_EXT%/g, docfileExt)
                     .replace(/%DOCFILE%/g, docfile)
-                    .replace(/%DIR%/g, docker ? './' : dir)
-                    .replace(/%DIR_W32%/g, docker ? './' : dirW32)
+                    .replace(/%DIR%/g, dir)
+                    .replace(/%DIR_W32%/g, dirW32)
                     .replace(/%TMPDIR%/g, tmpDir)
-                    .replace(/%WORKSPACE_FOLDER%/g, docker ? './' : workspaceDir)
-                    .replace(/%RELATIVE_DIR%/, docker ? './' : relativeDir)
-                    .replace(/%RELATIVE_DOC%/, docker ? docfile : relativeDoc)
+                    .replace(/%WORKSPACE_FOLDER%/g, workspaceDir)
+                    .replace(/%RELATIVE_DIR%/, relativeDir)
+                    .replace(/%RELATIVE_DOC%/, relativeDoc)
 
         }
         const outDirW32 = path.normalize(expandPlaceHolders(configuration.get('latex.outDir') as string))

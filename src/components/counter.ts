@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 import * as cp from 'child_process'
 
@@ -7,7 +6,6 @@ import type {Extension} from '../main'
 
 export class Counter {
     private readonly extension: Extension
-    private useDocker: boolean = false
     private disableCountAfterSave: boolean = false
     private autoRunEnabled: boolean = false
     private autoRunInterval: number = 0
@@ -53,7 +51,6 @@ export class Counter {
         this.autoRunInterval = configuration.get('texcount.interval') as number
         this.commandArgs = configuration.get('texcount.args') as string[]
         this.commandPath = configuration.get('texcount.path') as string
-        this.useDocker = configuration.get('docker.enabled') as boolean
     }
 
     private updateStatusVisibility() {
@@ -99,16 +96,7 @@ export class Counter {
     }
 
     runTeXCount(file: string, merge: boolean = true): Promise<boolean> {
-        let command = this.commandPath
-        if (this.useDocker) {
-            this.extension.logger.addLogMessage('Use Docker to invoke the command.')
-            if (process.platform === 'win32') {
-                command = path.resolve(this.extension.extensionRoot, './scripts/texcount.bat')
-            } else {
-                command = path.resolve(this.extension.extensionRoot, './scripts/texcount')
-                fs.chmodSync(command, 0o755)
-            }
-        }
+        const command = this.commandPath
         const args = Array.from(this.commandArgs)
         if (merge && !args.includes('-merge')) {
             args.push('-merge')

@@ -465,24 +465,7 @@ export class Builder implements IBuilder {
          */
         steps = JSON.parse(JSON.stringify(steps)) as StepCommand[]
 
-        const docker = configuration.get('docker.enabled')
         steps.forEach(step => {
-            if (docker) {
-                switch (step.command) {
-                    case 'latexmk':
-                        this.extension.logger.addLogMessage('Use Docker to invoke the command.')
-                        if (process.platform === 'win32') {
-                            step.command = path.resolve(this.extension.extensionRoot, './scripts/latexmk.bat')
-                        } else {
-                            step.command = path.resolve(this.extension.extensionRoot, './scripts/latexmk')
-                            fs.chmodSync(step.command, 0o755)
-                        }
-                        break
-                    default:
-                        this.extension.logger.addLogMessage(`Will not use Docker to invoke the command: ${step.command}`)
-                        break
-                }
-            }
             if (step.args) {
                 step.args = step.args.map(replaceArgumentPlaceholders(rootFile, this.tmpDir))
             }
