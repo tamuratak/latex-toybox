@@ -27,9 +27,6 @@
     "preview",
     "hint"
   ],
-  "activationEvents": [
-    "onCommand:latex-workshop.activate"
-  ],
   "main": "./out/src/main.js",
   "capabilities": {
     "virtualWorkspaces": {
