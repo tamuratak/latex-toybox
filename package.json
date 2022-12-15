@@ -365,12 +365,6 @@
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.clean",
-        "title": "Clean up auxiliary files",
-        "category": "LaTeX Workshop",
-        "enablement": "!virtualWorkspace"
-      },
-      {
         "command": "latex-workshop.citation",
         "title": "Open citation browser",
         "category": "LaTeX Workshop",
@@ -1164,12 +1158,6 @@
           "type": "integer",
           "default": 1000,
           "markdownDescription": "The minimal time interval between two consecutive auto builds in milliseconds."
-        },
-        "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": {
-          "scope": "resource",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Delete LaTeX auxiliary files when errors occur during build and retry. This property defines whether LaTeX Workshop will try to clean and build the project once again after errors happen in the build toolchain."
         },
         "latex-workshop.latex.build.clearLog.everyRecipeStep.enabled": {
           "scope": "resource",

@@ -21,7 +21,6 @@ export class Builder implements IBuilder {
     readonly tmpDir: string
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     disableBuildAfterSave: boolean = false
-    disableCleanAndRetry: boolean = false
     private readonly buildMutex = new MutexWithSizedQueue(1)
     private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
@@ -200,7 +199,6 @@ export class Builder implements IBuilder {
             return
         }
         const releaseBuildMutex = await this.preprocess()
-        this.disableCleanAndRetry = false
         this.extension.logger.displayStatus('sync~spin', 'statusBar.foreground')
         this.extension.logger.addLogMessage(`Build root file ${rootFile}`)
         try {
@@ -316,30 +314,10 @@ export class Builder implements IBuilder {
                 this.extension.logger.addLogMessage(`The environment variable $Path: ${envVarsPath}`)
                 this.extension.logger.addLogMessage(`The environment variable $SHELL: ${process.env.SHELL}`)
 
-                const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
-                if (!this.disableCleanAndRetry && configuration.get('latex.autoBuild.cleanAndRetry.enabled')) {
-                    this.disableCleanAndRetry = true
-                    if (signal !== 'SIGTERM') {
-                        this.extension.logger.displayStatus('x', 'errorForeground', 'Recipe terminated with error. Retry building the project.', 'warning')
-                        this.extension.logger.addLogMessage('Cleaning auxiliary files and retrying build after toolchain error.')
-
-                        void this.extension.cleaner.clean(rootFile).then(() => {
-                            this.buildStep(rootFile, steps, 0, recipeName, releaseBuildMutex)
-                        })
-                    } else {
-                        this.extension.logger.displayStatus('x', 'errorForeground')
-                        this.currentProcess = undefined
-                        releaseBuildMutex()
-                    }
-                } else {
-                    this.extension.logger.displayStatus('x', 'errorForeground')
-                    if (['onFailed', 'onBuilt'].includes(configuration.get('latex.autoClean.run') as string)) {
-                        await this.extension.cleaner.clean(rootFile)
-                    }
-                    void this.extension.logger.showErrorMessageWithCompilerLogButton('Recipe terminated with error.')
-                    this.currentProcess = undefined
-                    releaseBuildMutex()
-                }
+                this.extension.logger.displayStatus('x', 'errorForeground')
+                void this.extension.logger.showErrorMessageWithCompilerLogButton('Recipe terminated with error.')
+                this.currentProcess = undefined
+                releaseBuildMutex()
             } else {
                 if (index === steps.length - 1) {
                     this.extension.logger.addLogMessage(`Recipe of length ${steps.length} finished. PID: ${pid}.`)
@@ -373,10 +351,6 @@ export class Builder implements IBuilder {
             const pdfFile = this.extension.manager.tex2pdf(rootFile)
             this.extension.logger.addLogMessage('SyncTex after build invoked.')
             this.extension.locator.syncTeX(undefined, undefined, pdfFile)
-        }
-        if (configuration.get('latex.autoClean.run') as string === 'onBuilt') {
-            this.extension.logger.addLogMessage('Auto Clean invoked.')
-            await this.extension.cleaner.clean(rootFile)
         }
     }
 
