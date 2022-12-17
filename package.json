@@ -276,16 +276,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop.select-envcontent",
-        "title": "Select the current environment content",
-        "category": "LaTeX Workshop"
-      },
-      {
-        "command": "latex-workshop.multicursor-envname",
-        "title": "Add a multicursor to the current environment name",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.wrap-env",
         "title": "Surround selection with \\begin{}...\\end{}",
         "category": "LaTeX Workshop"
@@ -298,11 +288,6 @@
       {
         "command": "latex-workshop.close-env",
         "title": "Close current environment",
-        "category": "LaTeX Workshop"
-      },
-      {
-        "command": "latex-workshop.toggle-equation-envname",
-        "title": "Toggle between \\[...\\] and \\begin{}...\\end{}",
         "category": "LaTeX Workshop"
       },
       {
