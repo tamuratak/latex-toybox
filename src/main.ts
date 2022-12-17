@@ -11,7 +11,6 @@ import {Viewer, PdfViewerHookProvider} from './components/viewer'
 import {Server} from './components/server'
 import {Locator} from './components/locator'
 import {Linter} from './components/linter'
-import {Cleaner} from './components/cleaner'
 import {Counter} from './components/counter'
 import {EnvPair} from './components/envpair'
 import {Section} from './components/section'
@@ -73,7 +72,6 @@ function registerLatexWorkshopCommands(extension: Extension, context: vscode.Ext
         vscode.commands.registerCommand('latex-workshop.texdoc', (pkg: string | undefined) => extension.commander.texdoc(pkg)),
         vscode.commands.registerCommand('latex-workshop.texdocUsepackages', () => extension.commander.texdocUsepackages()),
         vscode.commands.registerCommand('latex-workshop.synctexto', (line: number, filePath: string) => extension.commander.synctexonref(line, filePath)),
-        vscode.commands.registerCommand('latex-workshop.clean', () => extension.commander.clean()),
         vscode.commands.registerCommand('latex-workshop.actions', () => extension.commander.actions()),
         vscode.commands.registerCommand('latex-workshop.activate', () => undefined),
         vscode.commands.registerCommand('latex-workshop.citation', () => extension.commander.citation()),
@@ -338,7 +336,6 @@ export class Extension implements IExtension {
     readonly completer: Completer
     readonly atSuggestionCompleter: AtSuggestionCompleter
     readonly linter: Linter
-    readonly cleaner: Cleaner
     readonly counter: Counter
     readonly envPair: EnvPair
     readonly section: Section
@@ -372,7 +369,6 @@ export class Extension implements IExtension {
         this.atSuggestionCompleter = new AtSuggestionCompleter(this)
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)
-        this.cleaner = new Cleaner(this)
         this.counter = new Counter(this)
         this.envPair = new EnvPair(this)
         this.section = new Section(this)

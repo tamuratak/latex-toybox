@@ -60,7 +60,6 @@ export class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXComm
         const recipeCommands = recipes.map(recipe => new LaTeXCommand(`Recipe: ${recipe.name}`, {command: 'latex-workshop.recipes', arguments: [recipe.name]}, 'debug-start'))
         let node: LaTeXCommand
         node = this.buildNode(buildCommand, [
-            new LaTeXCommand('Clean up auxiliary files', {command: 'latex-workshop.clean'}, 'clear-all'),
             new LaTeXCommand('Terminate current compilation', {command: 'latex-workshop.kill'}, 'debug-stop'),
             ...recipeCommands
         ])
