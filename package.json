@@ -392,21 +392,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop-dev.parselog",
-        "title": "Parse current document as LaTeX logs",
-        "category": "LaTeX Workshop DevTools"
-      },
-      {
-        "command": "latex-workshop-dev.parsetex",
-        "title": "Parse current file as LaTeX AST",
-        "category": "LaTeX Workshop DevTools"
-      },
-      {
-        "command": "latex-workshop-dev.parsebib",
-        "title": "Parse current file as BibTeX AST",
-        "category": "LaTeX Workshop DevTools"
-      },
-      {
         "command": "latex-workshop.texdoc",
         "title": "Show package documentation",
         "category": "LaTeX Workshop"

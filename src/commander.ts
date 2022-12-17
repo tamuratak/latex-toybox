@@ -466,29 +466,6 @@ export class Commander {
         this.extension.section.selectSection()
     }
 
-    devParseLog() {
-        if (vscode.window.activeTextEditor === undefined) {
-            return
-        }
-        this.extension.compilerLogParser.parse(vscode.window.activeTextEditor.document.getText())
-    }
-
-    async devParseTeX() {
-        if (vscode.window.activeTextEditor === undefined) {
-            return
-        }
-        const ast = await this.extension.pegParser.parseLatex(vscode.window.activeTextEditor.document.getText())
-        return vscode.workspace.openTextDocument({content: JSON.stringify(ast, null, 2), language: 'json'}).then(doc => vscode.window.showTextDocument(doc))
-    }
-
-    async devParseBib() {
-        if (vscode.window.activeTextEditor === undefined) {
-            return
-        }
-        const ast = await this.extension.pegParser.parseBibtex(vscode.window.activeTextEditor.document.getText())
-        return vscode.workspace.openTextDocument({content: JSON.stringify(ast, null, 2), language: 'json'}).then(doc => vscode.window.showTextDocument(doc))
-    }
-
     texdoc(pkg?: string) {
         this._texdoc.texdoc(pkg)
     }
