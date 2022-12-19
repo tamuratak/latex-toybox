@@ -2,13 +2,14 @@ import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 import {stripEnvironments, isNewCommand} from '../../utils/utils'
 
-import type {ILwCompletionItem} from '../../providers/completer/interface'
 import type {ManagerLocator} from '../../interfaces'
+import { LabelDefinitionElement } from '../../providers/completer/labeldefinition'
+import { toVscodeRange } from '../../utils/utensils'
 
 interface IExtension extends
     ManagerLocator { }
 
-export class ReferenceUpdater {
+export class LabelDefinitionUpdater {
     private readonly extension: IExtension
     private readonly envsToSkip = ['tikzpicture']
 
@@ -31,15 +32,15 @@ export class ReferenceUpdater {
             return
         }
         if (nodes !== undefined && lines !== undefined) {
-            cache.element.reference = this.getRefFromNodeArray(nodes, lines)
+            cache.element.labelDefinition = this.getRefFromNodeArray(nodes, lines)
         } else if (content !== undefined) {
-            cache.element.reference = this.getRefFromContent(content)
+            cache.element.labelDefinition = this.getRefFromContent(content)
         }
     }
 
     // This function will return all references in a node array, including sub-nodes
-    private getRefFromNodeArray(nodes: latexParser.Node[], lines: string[]): ILwCompletionItem[] {
-        let refs: ILwCompletionItem[] = []
+    private getRefFromNodeArray(nodes: latexParser.Node[], lines: string[]): LabelDefinitionElement[] {
+        let refs: LabelDefinitionElement[] = []
         for (let index = 0; index < nodes.length; ++index) {
             if (index < nodes.length - 1) {
                 // Also pass the next node to handle cases like `label={some-text}`
@@ -52,10 +53,10 @@ export class ReferenceUpdater {
     }
 
     // This function will return the reference defined by the node, or all references in `content`
-    private getRefFromNode(node: latexParser.Node, lines: string[], nextNode?: latexParser.Node): ILwCompletionItem[] {
+    private getRefFromNode(node: latexParser.Node, lines: string[], nextNode?: latexParser.Node): LabelDefinitionElement[] {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const useLabelKeyVal = configuration.get('intellisense.label.keyval')
-        const refs: ILwCompletionItem[] = []
+        const refs: LabelDefinitionElement[] = []
         let label = ''
         if (isNewCommand(node) || latexParser.isDefCommand(node)) {
             // Do not scan labels inside \newcommand & co
@@ -84,12 +85,8 @@ export class ReferenceUpdater {
              || latexParser.isTextString(node))) {
             refs.push({
                 label,
-                kind: vscode.CompletionItemKind.Reference,
-                // One row before, four rows after
                 documentation: lines.slice(node.location.start.line - 2, node.location.end.line + 4).join('\n'),
-                // Here we abuse the definition of range to store the location of the reference definition
-                range: new vscode.Range(node.location.start.line - 1, node.location.start.column,
-                                        node.location.end.line - 1, node.location.end.column)
+                range: toVscodeRange(node.location)
             })
             return refs
         }
@@ -108,9 +105,9 @@ export class ReferenceUpdater {
         return refs
     }
 
-    private getRefFromContent(content: string): ILwCompletionItem[] {
+    private getRefFromContent(content: string): LabelDefinitionElement[] {
         const refReg = /(?:\\label(?:\[[^[\]{}]*\])?|(?:^|[,\s])label=){([^#\\}]*)}/gm
-        const refs: ILwCompletionItem[] = []
+        const refs: LabelDefinitionElement[] = []
         const refList: string[] = []
         content = stripEnvironments(content, this.envsToSkip)
         while (true) {
@@ -127,10 +124,7 @@ export class ReferenceUpdater {
 
             refs.push({
                 label: result[1],
-                kind: vscode.CompletionItemKind.Reference,
-                // One row before, four rows after
                 documentation: content.substring(prevContent.lastIndexOf('\n') + 1, result.index + followLength),
-                // Here we abuse the definition of range to store the location of the reference definition
                 range: new vscode.Range(positionContent.length - 1, positionContent[positionContent.length - 1].length,
                                         positionContent.length - 1, positionContent[positionContent.length - 1].length)
             })

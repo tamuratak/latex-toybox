@@ -6,9 +6,9 @@ import {escapeRegExp} from '../../utils/utils'
 import type {ExtensionRootLocator} from '../../interfaces'
 
 export interface AtSuggestionItemEntry {
-    prefix: string,
-    body: string,
-    description: string
+    readonly prefix: string,
+    readonly body: string,
+    readonly description: string
 }
 
 type DataAtSuggestionJsonType = typeof import('../../../data/at-suggestions.json')

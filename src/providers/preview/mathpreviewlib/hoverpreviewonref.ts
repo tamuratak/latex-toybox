@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as utils from '../../../utils/svg'
 import type {MathJaxPool} from '../mathjaxpool'
-import type {ReferenceEntry} from '../../completer/reference'
+import type {LabelDefinitionEntry} from '../../completer/labeldefinition'
 import type {TexMathEnv} from './texmathenvfinder'
 import type {MathPreviewUtils} from './mathpreviewutils'
 import type {LoggerLocator} from '../../../interfaces'
@@ -19,23 +19,23 @@ export class HoverPreviewOnRefProvider {
         this.mputils = mputils
     }
 
-    async provideHoverPreviewOnRef(tex: TexMathEnv, newCommand: string, refData: ReferenceEntry, color: string): Promise<vscode.Hover> {
-        const md = await this.renderSvgOnRef(tex, newCommand, refData, color)
-        const line = refData.position.line
-        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, refData.file]) })
+    async provideHoverPreviewOnRef(tex: TexMathEnv, newCommand: string, labelDef: LabelDefinitionEntry, color: string): Promise<vscode.Hover> {
+        const md = await this.renderSvgOnRef(tex, newCommand, labelDef, color)
+        const line = labelDef.position.line
+        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         return new vscode.Hover( [this.mputils.addDummyCodeBlock(`![equation](${md})`), mdLink], tex.range )
     }
 
-    async renderSvgOnRef(tex: TexMathEnv, newCommand: string, refData: Pick<ReferenceEntry, 'label' | 'prevIndex'>, color: string) {
+    async renderSvgOnRef(tex: TexMathEnv, newCommand: string, labelDef: Pick<LabelDefinitionEntry, 'label' | 'prevIndex'>, color: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const scale = configuration.get('hover.preview.scale') as number
 
         let newTeXString: string
-        if (refData.prevIndex !== undefined && configuration.get('hover.ref.number.enabled') as boolean) {
-            const tag = refData.prevIndex.refNumber
-            const texString = this.replaceLabelWithTag(tex.texString, refData.label, tag)
+        if (labelDef.prevIndex !== undefined && configuration.get('hover.ref.number.enabled') as boolean) {
+            const tag = labelDef.prevIndex.refNumber
+            const texString = this.replaceLabelWithTag(tex.texString, labelDef.label, tag)
             newTeXString = this.mputils.mathjaxify(texString, tex.envname, {stripLabel: false})
         } else {
             newTeXString = this.mputils.mathjaxify(tex.texString, tex.envname)

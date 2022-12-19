@@ -10,7 +10,7 @@ export class DuplicateLabels {
 
     constructor(extension: Extension) {
         this.extension = extension
-        this.extension.completionUpdater.onDidUpdateIntellisense((file: string) => {
+        this.extension.completionUpdater.onDidUpdate((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop')
             if (configuration.get('check.duplicatedLabels.enabled')) {
                 this.run(file)
@@ -28,14 +28,11 @@ export class DuplicateLabels {
         }
         const labelsCount = new Map<string, number>()
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
-            const cachedRefs = this.extension.manager.getCachedContent(cachedFile)?.element.reference
+            const cachedRefs = this.extension.manager.getCachedContent(cachedFile)?.element.labelDefinition
             if (cachedRefs === undefined) {
                 return
             }
             cachedRefs.forEach(ref => {
-                if (ref.range === undefined) {
-                    return
-                }
                 let count = labelsCount.get(ref.label)
                 if (count === undefined) {
                     count = 0
@@ -67,19 +64,16 @@ export class DuplicateLabels {
         const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
 
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
-            const cachedRefs = this.extension.manager.getCachedContent(cachedFile)?.element.reference
+            const cachedRefs = this.extension.manager.getCachedContent(cachedFile)?.element.labelDefinition
             if (cachedRefs === undefined) {
                 return
             }
             cachedRefs.forEach(ref => {
-                if (ref.range === undefined) {
-                    return
-                }
                 if (duplicates.includes(ref.label)) {
                    if (! (cachedFile in diagsCollection)) {
                         diagsCollection[cachedFile] = []
                     }
-                    const range = ref.range instanceof vscode.Range ? ref.range : ref.range.inserting
+                    const range = ref.range
                     const diag = new vscode.Diagnostic(range, `Duplicate label ${ref.label}`, vscode.DiagnosticSeverity.Warning)
                     diag.source = 'DuplicateLabels'
                     diagsCollection[cachedFile].push(diag)

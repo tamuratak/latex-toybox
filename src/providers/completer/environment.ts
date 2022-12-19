@@ -9,10 +9,10 @@ import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator,
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
 
 export interface EnvItemEntry {
-    name: string, // Name of the environment, what comes inside \begin{...}
-    snippet?: string, // To be inserted after \begin{..}
-    package?: string, // The package providing the environment
-    detail?: string
+    readonly name: string, // Name of the environment, what comes inside \begin{...}
+    readonly snippet?: string, // To be inserted after \begin{..}
+    readonly package?: string, // The package providing the environment
+    readonly detail?: string
 }
 
 function isEnvItemEntry(obj: any): obj is EnvItemEntry {
@@ -203,18 +203,19 @@ export class Environment implements IProvider {
      * Environments can be inserted using `\envname`.
      * This function is called by Command.provide to compute these commands for every package in use.
      */
-    provideEnvsAsCommandInPkg(pkg: string, suggestions: vscode.CompletionItem[], cmdDuplicationDetector: CommandSignatureDuplicationDetector) {
+    provideEnvsAsCommandInPkg(pkg: string, cmdDuplicationDetector: CommandSignatureDuplicationDetector): CmdEnvSuggestion[] {
+        const suggestions: CmdEnvSuggestion[] = []
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
 
         if (! configuration.get('intellisense.package.env.enabled')) {
-            return
+            return []
         }
 
         // No environment defined in package
         const entry = this.packageEnvsAsCommand.get(pkg)
         if (!entry || entry.length === 0) {
-            return
+            return []
         }
 
         // Insert env snippets
@@ -227,6 +228,7 @@ export class Environment implements IProvider {
                 cmdDuplicationDetector.add(env)
             }
         })
+        return suggestions
     }
 
     private getEnvFromPkg(pkg: string, type: EnvSnippetType): CmdEnvSuggestion[] {
@@ -236,22 +238,32 @@ export class Environment implements IProvider {
 
     private entryEnvToCompletion(itemKey: string, item: EnvItemEntry, type: EnvSnippetType): CmdEnvSuggestion {
         const label = item.detail ? item.detail : item.name
-        const suggestion = new CmdEnvSuggestion(item.name, 'latex', splitSignatureString(itemKey), vscode.CompletionItemKind.Module)
-        suggestion.detail = `Insert environment ${item.name}.`
-        suggestion.documentation = item.name
+        const detail = `Insert environment ${item.name}.`
+        let documentation: string
         if (item.package) {
-            suggestion.documentation += '\n' + `Package: ${item.package}`
+            documentation = item.name + '\n' + `Package: ${item.package}`
+        } else {
+            documentation = item.name
         }
-        suggestion.sortText = label.replace(/^[a-zA-Z]/, c => {
+        const sortText = label.replace(/^[a-zA-Z]/, c => {
             const n = c.match(/[a-z]/) ? c.toUpperCase().charCodeAt(0): c.toLowerCase().charCodeAt(0)
             return n !== undefined ? n.toString(16): c
         })
 
         if (type === EnvSnippetType.AsName) {
-            return suggestion
+            return new CmdEnvSuggestion(
+                item.name,
+                'latex',
+                splitSignatureString(itemKey),
+                vscode.CompletionItemKind.Module,
+                {detail, documentation, sortText}
+            )
         } else {
+            let kind: vscode.CompletionItemKind
             if (type === EnvSnippetType.AsCommand) {
-                suggestion.kind = vscode.CompletionItemKind.Snippet
+                kind = vscode.CompletionItemKind.Snippet
+            } else {
+                kind = vscode.CompletionItemKind.Module
             }
             const configuration = vscode.workspace.getConfiguration('latex-workshop')
             const useTabStops = configuration.get('intellisense.useTabStops.enabled')
@@ -268,12 +280,21 @@ export class Environment implements IProvider {
             } else {
                 snippet += '\n\t${0:${TM_SELECTED_TEXT}}\n'
             }
+            let sugLabel: string
             if (item.detail) {
-                suggestion.label = item.detail
+                sugLabel = item.detail
+            } else {
+                sugLabel = item.name
             }
-            suggestion.filterText = itemKey
-            suggestion.insertText = new vscode.SnippetString(`${prefix}${item.name}}${snippet}\\end{${item.name}}`)
-            return suggestion
+            const filterText = itemKey
+            const insertText = new vscode.SnippetString(`${prefix}${item.name}}${snippet}\\end{${item.name}}`)
+            return new CmdEnvSuggestion(
+                sugLabel,
+                'latex',
+                splitSignatureString(itemKey),
+                kind,
+                {detail, documentation, sortText, filterText, insertText}
+            )
         }
     }
 

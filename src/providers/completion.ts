@@ -10,11 +10,10 @@ import type {CmdItemEntry} from './completer/command'
 import {Environment} from './completer/environment'
 import type {EnvItemEntry} from './completer/environment'
 import {AtSuggestion} from './completer/atsuggestion'
-import {Reference} from './completer/reference'
+import {LabelDefinition} from './completer/labeldefinition'
 import {Package} from './completer/package'
 import {Input, Import, SubImport} from './completer/input'
 import {Glossary} from './completer/glossary'
-import type {ReferenceDocType} from './completer/reference'
 import {escapeRegExp} from '../utils/utils'
 import type {ICompleter} from '../interfaces'
 
@@ -28,7 +27,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     readonly command: Command
     readonly documentClass: DocumentClass
     readonly environment: Environment
-    readonly reference: Reference
+    readonly reference: LabelDefinition
     readonly package: Package
     readonly input: Input
     readonly import: Import
@@ -41,7 +40,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.environment = new Environment(extension) // Must be created before command
         this.command = new Command(extension, this.environment)
         this.documentClass = new DocumentClass(extension)
-        this.reference = new Reference(extension)
+        this.reference = new LabelDefinition(extension)
         this.package = new Package(extension)
         this.input = new Input(extension)
         this.import = new Import(extension)
@@ -107,19 +106,18 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         if (item.kind === vscode.CompletionItemKind.Reference) {
-            if (typeof item.documentation !== 'string') {
+            if (typeof item.label !== 'string') {
                 return item
             }
-            const data = JSON.parse(item.documentation) as ReferenceDocType
-            const sug = {
-                file: data.file,
-                position: new vscode.Position(data.position.line, data.position.character)
+            const data = this.extension.completer.reference.getLabelDef(item.label)
+            if (data === undefined) {
+                return item
             }
             if (!configuration.get('hover.ref.enabled')) {
                 item.documentation = data.documentation
                 return item
             }
-            const tex = this.extension.mathPreview.findHoverOnRef(sug, data.key)
+            const tex = this.extension.mathPreview.findHoverOnRef(data, item.label)
             if (tex) {
                 const svgDataUrl = await this.extension.mathPreview.renderSvgOnRef(tex, data, token)
                 item.documentation = new vscode.MarkdownString(`![equation](${svgDataUrl})`)

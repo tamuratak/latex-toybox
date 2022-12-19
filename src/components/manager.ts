@@ -12,7 +12,6 @@ import * as eventbus from './eventbus'
 import type {CmdEnvSuggestion} from '../providers/completer/command'
 import type {CiteSuggestion} from '../providers/completer/citation'
 import type {GlossarySuggestion} from '../providers/completer/glossary'
-import type {ILwCompletionItem} from '../providers/completer/interface'
 import type {IManager} from '../interfaces'
 
 import {PdfWatcher} from './managerlib/pdfwatcher'
@@ -21,6 +20,7 @@ import {FinderUtils} from './managerlib/finderutils'
 import {PathUtils} from './managerlib/pathutils'
 
 import {Mutex} from '../lib/await-semaphore'
+import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
 
 
 export interface CachedContentEntry {
@@ -28,7 +28,7 @@ export interface CachedContentEntry {
      * Completion item and other items for the LaTeX file.
      */
     readonly element: {
-        reference?: ILwCompletionItem[],
+        labelDefinition?: LabelDefinitionElement[],
         glossary?: GlossarySuggestion[],
         environment?: CmdEnvSuggestion[],
         bibitem?: CiteSuggestion[],

@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import * as utils from '../../../utils/utils'
 import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike'
-import type { ReferenceEntry } from '../../completer/reference'
+import type { LabelDefinitionEntry } from '../../completer/labeldefinition'
 
 export type TexMathEnv = {
     readonly texString: string,
@@ -31,17 +31,17 @@ export class TeXMathEnvFinder {
     findHoverOnRef(
         document: ITextDocumentLike,
         position: vscode.Position,
-        refData: Pick<ReferenceEntry, 'file' | 'position'>,
+        labelDef: LabelDefinitionEntry,
         token: string,
     ): TexMathEnv | undefined {
         const limit = vscode.workspace.getConfiguration('latex-workshop').get('hover.preview.maxLines') as number
-        const docOfRef = TextDocumentLike.load(refData.file)
+        const docOfRef = TextDocumentLike.load(labelDef.file)
         const envBeginPatMathMode = /\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
-        const l = docOfRef.lineAt(refData.position.line).text
+        const l = docOfRef.lineAt(labelDef.position.line).text
         const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(token) + '\\}')
         const m = l.match(pat)
         if (m && m.index !== undefined) {
-            const labelPos = new vscode.Position(refData.position.line, m.index)
+            const labelPos = new vscode.Position(labelDef.position.line, m.index)
             const beginPos = this.findBeginPair(docOfRef, envBeginPatMathMode, labelPos, limit)
             if (beginPos) {
                 const t = this.findHoverOnTex(docOfRef, beginPos)

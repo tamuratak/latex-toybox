@@ -47,15 +47,40 @@ export function splitSignatureString(signature: string): CmdSignature {
 }
 
 export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwCompletionItem {
-    label: string
-    package: string
-    signature: CmdSignature
+    readonly command: vscode.Command | undefined
+    readonly detail: string | undefined
+    readonly documentation: string | undefined
+    readonly filterText: string | undefined
+    insertText?: string | vscode.SnippetString | undefined
+    readonly sortText: string | undefined
+    readonly label: string
+    readonly package: string
+    readonly signature: CmdSignature
 
-    constructor(label: string, pkg: string, signature: CmdSignature, kind: vscode.CompletionItemKind) {
+    constructor(
+        label: string,
+        pkg: string,
+        signature: CmdSignature,
+        kind: vscode.CompletionItemKind,
+        args: {
+            command?: vscode.Command,
+            documentation?: string,
+            detail?: string,
+            filterText?: string,
+            insertText?: string | vscode.SnippetString,
+            sortText?: string
+        }
+    ) {
         super(label, kind)
         this.label = label
         this.package = pkg
         this.signature = signature
+        this.command = args.command
+        this.documentation = args.documentation
+        this.detail = args.detail
+        this.filterText = args.filterText
+        this.insertText = args.insertText
+        this.sortText = args.sortText
     }
 
     /**
@@ -214,16 +239,16 @@ export class Command implements IProvider, ICommand {
             const extraPackages = this.extension.completer.command.getExtraPkgs(languageId)
             if (extraPackages) {
                 extraPackages.forEach(pkg => {
-                    this.provideCmdInPkg(pkg, suggestions, cmdDuplicationDetector)
-                    this.environment.provideEnvsAsCommandInPkg(pkg, suggestions, cmdDuplicationDetector)
+                    suggestions.push(...this.provideCmdInPkg(pkg, cmdDuplicationDetector))
+                    suggestions.push(...this.environment.provideEnvsAsCommandInPkg(pkg, cmdDuplicationDetector))
                 })
             }
             this.extension.manager.getIncludedTeX().forEach(tex => {
                 const pkgs = this.extension.manager.getCachedContent(tex)?.element.package
                 if (pkgs !== undefined) {
                     pkgs.forEach(pkg => {
-                        this.provideCmdInPkg(pkg, suggestions, cmdDuplicationDetector)
-                        this.environment.provideEnvsAsCommandInPkg(pkg, suggestions, cmdDuplicationDetector)
+                        suggestions.push(...this.provideCmdInPkg(pkg, cmdDuplicationDetector))
+                        suggestions.push(...this.environment.provideEnvsAsCommandInPkg(pkg, cmdDuplicationDetector))
                     })
                 }
             })
@@ -279,8 +304,8 @@ export class Command implements IProvider, ICommand {
         const useTabStops = configuration.get('intellisense.useTabStops.enabled')
         const backslash = item.command.startsWith(' ') ? '' : '\\'
         const label = item.label ? `${item.label}` : `${backslash}${item.command}`
-        const suggestion = new CmdEnvSuggestion(label, 'latex', splitSignatureString(itemKey), vscode.CompletionItemKind.Function)
 
+        let insertText: string | vscode.SnippetString
         if (item.snippet) {
             if (useTabStops) {
                 item.snippet = item.snippet.replace(/\$\{(\d+):[^$}]*\}/g, '$${$1}')
@@ -289,34 +314,43 @@ export class Command implements IProvider, ICommand {
             if (! (item.snippet.match(/\$\{?2/) || (item.snippet.match(/\$\{?0/) && item.snippet.match(/\$\{?1/)))) {
                 item.snippet = item.snippet.replace(/\$1|\$\{1\}/, '$${1:$${TM_SELECTED_TEXT}}').replace(/\$\{1:([^$}]+)\}/, '$${1:$${TM_SELECTED_TEXT:$1}}')
             }
-            suggestion.insertText = new vscode.SnippetString(item.snippet)
+            insertText = new vscode.SnippetString(item.snippet)
         } else {
-            suggestion.insertText = item.command
+            insertText = item.command
         }
-        suggestion.filterText = itemKey
-        suggestion.detail = item.detail
-        suggestion.documentation = item.documentation ? item.documentation : '`' + item.command + '`'
-        suggestion.sortText = item.command.replace(/^[a-zA-Z]/, c => {
+        const filterText = itemKey
+        const detail = item.detail
+        const documentation = item.documentation ? item.documentation : '`' + item.command + '`'
+        const sortText = item.command.replace(/^[a-zA-Z]/, c => {
             const n = c.match(/[a-z]/) ? c.toUpperCase().charCodeAt(0): c.toLowerCase().charCodeAt(0)
             return n !== undefined ? n.toString(16): c
         })
+        let command: vscode.Command | undefined
         if (item.postAction) {
-            suggestion.command = { title: 'Post-Action', command: item.postAction }
+            command = { title: 'Post-Action', command: item.postAction }
         } else if (isTriggerSuggestNeeded(item.command)) {
             // Automatically trigger completion if the command is for citation, filename, reference or glossary
-            suggestion.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
+            command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
         }
+        const suggestion = new CmdEnvSuggestion(
+            label,
+            'latex',
+            splitSignatureString(itemKey),
+            vscode.CompletionItemKind.Function,
+            { insertText, filterText, documentation, detail, sortText, command }
+        )
         return suggestion
     }
 
-    provideCmdInPkg(pkg: string, suggestions: vscode.CompletionItem[], cmdDuplicationDetector: CommandSignatureDuplicationDetector) {
+    provideCmdInPkg(pkg: string, cmdDuplicationDetector: CommandSignatureDuplicationDetector): CmdEnvSuggestion[] {
+        const suggestions: CmdEnvSuggestion[] = []
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
 
         // No package command defined
         const pkgEntry = this.packageCmds.get(pkg)
         if (!pkgEntry || pkgEntry.length === 0) {
-            return
+            return []
         }
 
         // Insert commands
@@ -329,6 +363,7 @@ export class Command implements IProvider, ICommand {
                 cmdDuplicationDetector.add(cmd)
             }
         })
+        return suggestions
     }
 
 }

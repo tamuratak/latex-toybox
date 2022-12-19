@@ -1,15 +1,23 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
+import { EventBusLocator, LwfsLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
 import type { Extension } from '../main'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
 
 
+interface IExtension extends
+    EventBusLocator,
+    LwfsLocator,
+    ManagerLocator,
+    UtensilsParserLocator,
+    ReferenceStoreLocator { }
+
 export class ReferenceUpdater {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly mutex = new MutexWithSizedQueue(1)
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
         this.extension.eventBus.onDidChangeRootFile(() => {
             void this.update()

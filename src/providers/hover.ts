@@ -48,7 +48,7 @@ export class HoverProvider implements vscode.HoverProvider {
             const ctanLink = new vscode.MarkdownString(`[${ctanUrl}](${ctanUrl})`)
             return new vscode.Hover([md, mdLink, ctanLink])
         }
-        const refData = this.extension.completer.reference.getRef(token)
+        const refData = this.extension.completer.reference.getLabelDef(token)
         if (hovReference && refData) {
             const hover = await this.extension.mathPreview.provideHoverOnRef(document, position, refData, token, ctoken)
             return hover
