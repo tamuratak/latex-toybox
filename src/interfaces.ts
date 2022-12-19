@@ -5,12 +5,35 @@ import type {SyncTeXRecordForward} from './components/locator'
 import type {CachedContentEntry} from './components/manager'
 import type {ICommand} from './providers/completer/interface'
 
-export interface CommandLocator {
+interface CommandLocator {
     readonly command: ICommand
 }
 
+export interface ICompleter extends
+    CommandLocator { }
+
 export interface CompleterLocator {
-    readonly completer: CommandLocator
+    readonly completer: ICompleter
+}
+
+export interface ICompletionStore {
+    dummy: string
+ }
+
+export interface CompletionStoreLocator {
+    readonly completionStore: ICompletionStore
+}
+
+export interface CompletionUpdaterLocator {
+    readonly completionUpdater: ICompleteionUpdater
+}
+
+export interface ICompleteionUpdater {
+    readonly definedCmds: Map<string, {
+        file: string,
+        location: vscode.Location
+    }>,
+    updateCompleter(file: string, content: string): Promise<void>
 }
 
 export interface ExtensionRootLocator {

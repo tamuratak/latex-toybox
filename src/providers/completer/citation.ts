@@ -8,7 +8,7 @@ import type {IProvider} from './interface'
 import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 
 
-class Fields extends Map<string, string> {
+export class Fields extends Map<string, string> {
 
     get author() {
         return this.get('author')
@@ -54,25 +54,16 @@ class Fields extends Map<string, string> {
 
 }
 
-export interface CiteSuggestion extends ILwCompletionItem {
-    key: string,
-    fields: Fields,
-    file: string,
-    position: vscode.Position
+export interface CiteSuggestion {
+    readonly key: string,
+    readonly label: string,
+    readonly kind: vscode.CompletionItemKind,
+    readonly detail: string | undefined,
+    readonly fields: Fields,
+    readonly file: string,
+    readonly position: vscode.Position
 }
 
-/**
- * Read the value `intellisense.citation.format`
- * @param configuration workspace configuration
- * @param excludedField A field to exclude from the list of citation fields. Primary usage is to not include `citation.label` twice.
- */
-function readCitationFormat(configuration: vscode.WorkspaceConfiguration, excludedField?: string): string[] {
-    const fields = (configuration.get('intellisense.citation.format') as string[]).map(f => { return f.toLowerCase() })
-    if (excludedField) {
-        return fields.filter(f => f !== excludedField.toLowerCase())
-    }
-    return fields
-}
 
 interface IExtension extends
     LoggerLocator,
@@ -81,10 +72,7 @@ interface IExtension extends
 
 export class Citation implements IProvider {
     private readonly extension: IExtension
-    /**
-     * Bib entries in each bib `file`.
-     */
-    private readonly bibEntries = new Map<string, CiteSuggestion[]>()
+    private readonly bibEntries = new Map<string, CiteSuggestion[]>() // key: filePath
 
     constructor(extension: IExtension) {
         this.extension = extension
@@ -98,7 +86,7 @@ export class Citation implements IProvider {
         // Compile the suggestion array to vscode completion array
         const configuration = vscode.workspace.getConfiguration('latex-workshop', args.document.uri)
         const label = configuration.get('intellisense.citation.label') as string
-        const fields = readCitationFormat(configuration)
+        const fields = this.readCitationFormat(configuration)
         let range: vscode.Range | undefined = undefined
         const line = args.document.lineAt(args.position).text
         const curlyStart = line.lastIndexOf('{', args.position.character)
@@ -107,81 +95,89 @@ export class Citation implements IProvider {
         if (startPos >= 0) {
             range = new vscode.Range(args.position.line, startPos + 1, args.position.line, args.position.character)
         }
-        return this.updateAll(this.getIncludedBibs(this.extension.manager.rootFile)).map(item => {
+        const bibs = this.getIncludedBibs(this.extension.manager.rootFile)
+        const items = this.gatherAll(bibs).map(citeSugg => {
+            const item: ILwCompletionItem = {...citeSugg}
             // Compile the completion item label
             switch(label) {
                 case 'bibtex key':
                 default:
                     break
                 case 'title':
-                    if (item.fields.title) {
-                        item.label = item.fields.title
+                    if (citeSugg.fields.title) {
+                        item.label = citeSugg.fields.title
                     }
                     break
                 case 'authors':
-                    if (item.fields.author) {
-                        item.label = item.fields.author
+                    if (citeSugg.fields.author) {
+                        item.label = citeSugg.fields.author
                     }
                     break
             }
-            item.filterText = item.key + ' ' + item.fields.join(fields, false)
-            item.insertText = item.key
+            item.filterText = citeSugg.key + ' ' + citeSugg.fields.join(fields, false)
+            item.insertText = citeSugg.key
             item.range = range
             // We need two spaces to ensure md newline
-            item.documentation = new vscode.MarkdownString( '\n' + item.fields.join(fields, true, '  \n') + '\n\n')
+            item.documentation = new vscode.MarkdownString( '\n' + citeSugg.fields.join(fields, true, '  \n') + '\n\n')
             return item
         })
+        return items
     }
 
-    browser(args?: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
+    async browser(args?: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', args?.document.uri)
         const label = configuration.get('intellisense.citation.label') as string
-        const fields = readCitationFormat(configuration, label)
-        void vscode.window.showQuickPick(this.updateAll(this.getIncludedBibs(this.extension.manager.rootFile)).map(item => {
+        const fields = this.readCitationFormat(configuration, label)
+        const bibs = this.getIncludedBibs(this.extension.manager.rootFile)
+        const items = this.gatherAll(bibs).map(item => {
             return {
                 label: item.fields.title ? trimMultiLineString(item.fields.title) : '',
                 description: item.key,
                 detail: item.fields.join(fields, true, ', ')
             }
-        }), {
+        })
+        const selected = await vscode.window.showQuickPick(items, {
             placeHolder: 'Press ENTER to insert citation key at cursor',
             matchOnDetail: true,
             matchOnDescription: true,
             ignoreFocusOut: true
-        }).then(selected => {
-            if (!selected) {
-                return
-            }
-            if (vscode.window.activeTextEditor) {
-                const editor = vscode.window.activeTextEditor
-                const content = editor.document.getText(new vscode.Range(new vscode.Position(0, 0), editor.selection.start))
-                let start = editor.selection.start
-                if (content.lastIndexOf('\\cite') > content.lastIndexOf('}')) {
-                    const curlyStart = content.lastIndexOf('{') + 1
-                    const commaStart = content.lastIndexOf(',') + 1
-                    start = editor.document.positionAt(curlyStart > commaStart ? curlyStart : commaStart)
-                }
-                void editor.edit(edit => edit.replace(new vscode.Range(start, editor.selection.start), selected.description || ''))
-                           .then(() => editor.selection = new vscode.Selection(editor.selection.end, editor.selection.end))
-            }
         })
+        if (!selected) {
+            return
+        }
+        if (vscode.window.activeTextEditor) {
+            const editor = vscode.window.activeTextEditor
+            const content = editor.document.getText(new vscode.Range(new vscode.Position(0, 0), editor.selection.start))
+            let start = editor.selection.start
+            if (content.lastIndexOf('\\cite') > content.lastIndexOf('}')) {
+                const curlyStart = content.lastIndexOf('{') + 1
+                const commaStart = content.lastIndexOf(',') + 1
+                start = editor.document.positionAt(curlyStart > commaStart ? curlyStart : commaStart)
+            }
+            await editor.edit(edit => edit.replace(new vscode.Range(start, editor.selection.start), selected.description || ''))
+            editor.selection = new vscode.Selection(editor.selection.end, editor.selection.end)
+        }
     }
 
     getEntry(key: string): CiteSuggestion | undefined {
-        const suggestions = this.updateAll()
+        const suggestions = this.gatherAll()
         const entry = suggestions.find((elm) => elm.key === key)
         return entry
     }
 
-    getEntryWithDocumentation(key: string, configurationScope: vscode.ConfigurationScope | undefined): CiteSuggestion | undefined {
+    getEntryWithDocumentation(key: string, configurationScope: vscode.ConfigurationScope | undefined): ILwCompletionItem | undefined {
         const entry = this.getEntry(key)
-        if (entry && !(entry.detail || entry.documentation)) {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', configurationScope)
-            const fields = readCitationFormat(configuration)
-            // We need two spaces to ensure md newline
-            entry.documentation = new vscode.MarkdownString( '\n' + entry.fields.join(fields, true, '  \n') + '\n\n')
+        if (!entry) {
+            return
         }
-        return entry
+        const result: ILwCompletionItem = {...entry}
+        if (entry.detail === undefined) {
+            const configuration = vscode.workspace.getConfiguration('latex-workshop', configurationScope)
+            const fields = this.readCitationFormat(configuration)
+            // We need two spaces to ensure md newline
+            result.documentation = new vscode.MarkdownString( '\n' + entry.fields.join(fields, true, '  \n') + '\n\n')
+        }
+        return result
     }
 
     /**
@@ -192,7 +188,6 @@ export class Citation implements IProvider {
      */
     private getIncludedBibs(file?: string, visitedTeX: string[] = []): string[] {
         if (file === undefined) {
-            // Only happens when rootFile is undefined
             return Array.from(this.bibEntries.keys())
         }
         if (!this.extension.manager.getCachedContent(file)) {
@@ -202,16 +197,15 @@ export class Citation implements IProvider {
         if (cache === undefined) {
             return []
         }
-        let bibs = cache.bibs
+        const bibs = [...cache.bibs]
         visitedTeX.push(file)
         for (const child of cache.children) {
             if (visitedTeX.includes(child.file)) {
-                // Already included
                 continue
             }
-            bibs = Array.from(new Set(bibs.concat(this.getIncludedBibs(child.file, visitedTeX))))
+            bibs.push(...this.getIncludedBibs(child.file, visitedTeX))
         }
-        return bibs
+        return Array.from(new Set(bibs))
     }
 
     /**
@@ -219,16 +213,13 @@ export class Citation implements IProvider {
      *
      * @param bibFiles The array of the paths of `.bib` files. If `undefined`, the keys of `bibEntries` are used.
      */
-    private updateAll(bibFiles?: string[]): CiteSuggestion[] {
-        let suggestions: CiteSuggestion[] = []
-        // From bib files
-        if (bibFiles === undefined) {
-            bibFiles = Array.from(this.bibEntries.keys())
-        }
+    private gatherAll(bibFiles?: string[]): CiteSuggestion[] {
+        const suggestions: CiteSuggestion[] = []
+        bibFiles ||= Array.from(this.bibEntries.keys())
         bibFiles.forEach(file => {
             const entry = this.bibEntries.get(file)
             if (entry) {
-                suggestions = suggestions.concat(entry)
+                suggestions.push(...entry)
             }
         })
         // From caches
@@ -237,14 +228,15 @@ export class Citation implements IProvider {
             if (cachedBibs === undefined) {
                 return
             }
-            suggestions = suggestions.concat(cachedBibs.map(bib => {
+            const cbibs = cachedBibs.map(bib => {
                 return {...bib,
                     key: bib.label,
                     detail: bib.detail ? bib.detail : '',
                     file: cachedFile,
                     fields: new Fields()
                 }
-            }))
+            })
+            suggestions.push(...cbibs)
         })
         return suggestions
     }
@@ -256,12 +248,6 @@ export class Citation implements IProvider {
      */
     async parseBibFile(file: string) {
         this.extension.logger.addLogMessage(`Parsing .bib entries from ${file}`)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
-        if (fs.statSync(file).size >= (configuration.get('bibtex.maxFileSize') as number) * 1024 * 1024) {
-            this.extension.logger.addLogMessage(`Bib file is too large, ignoring it: ${file}`)
-            this.bibEntries.delete(file)
-            return
-        }
         const newEntry: CiteSuggestion[] = []
         const bibtex = fs.readFileSync(file).toString()
         const ast = await this.extension.pegParser.parseBibtex(bibtex).catch((e) => {
@@ -283,17 +269,22 @@ export class Citation implements IProvider {
                     file,
                     position: new vscode.Position(entry.location.start.line - 1, entry.location.start.column - 1),
                     kind: vscode.CompletionItemKind.Reference,
-                    fields: new Fields()
+                    fields: this.entryToFields(entry),
+                    detail: undefined
                 }
-                entry.content.forEach(field => {
-                    const value = Array.isArray(field.value.content) ?
-                        field.value.content.join(' ') : this.deParenthesis(field.value.content)
-                    item.fields.set(field.name, value)
-                })
                 newEntry.push(item)
             })
         this.bibEntries.set(file, newEntry)
         this.extension.logger.addLogMessage(`Parsed ${newEntry.length} bib entries from ${file}.`)
+    }
+
+    entryToFields(entry: bibtexParser.Entry) {
+        const fields = new Fields()
+        entry.content.forEach(field => {
+            const value = Array.isArray(field.value.content) ? field.value.content.join(' ') : this.deParenthesis(field.value.content)
+            fields.set(field.name, value)
+        })
+        return fields
     }
 
     removeEntriesInFile(file: string) {
@@ -301,47 +292,23 @@ export class Citation implements IProvider {
         this.bibEntries.delete(file)
     }
 
-    /**
-     * Updates the Manager cache for bibitems defined in `file`.
-     * `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
-     *
-     * @param file The path of a LaTeX file.
-     * @param content The content of a LaTeX file.
-     */
-    update(file: string, content: string) {
-        const cache = this.extension.manager.getCachedContent(file)
-        if (cache !== undefined) {
-            cache.element.bibitem = this.parseContent(file, content)
-        }
-    }
-
-    private parseContent(file: string, content: string): CiteSuggestion[] {
-        const itemReg = /^(?!%).*\\bibitem(?:\[[^[\]{}]*\])?{([^}]*)}/gm
-        const items: CiteSuggestion[] = []
-        while (true) {
-            const result = itemReg.exec(content)
-            if (result === null) {
-                break
-            }
-            const postContent = content.substring(result.index + result[0].length, content.indexOf('\n', result.index)).trim()
-            const positionContent = content.substring(0, result.index).split('\n')
-            items.push({
-                key: result[1],
-                label: result[1],
-                file,
-                kind: vscode.CompletionItemKind.Reference,
-                detail: `${postContent}\n...`,
-                fields: new Fields(),
-                position: new vscode.Position(positionContent.length - 1, positionContent[positionContent.length - 1].length)
-            })
-        }
-        return items
-    }
-
     private deParenthesis(str: string): string {
         // Remove wrapping { }
         // Extract the content of \url{}
         return str.replace(/\\url{([^\\{}]+)}/g, '$1').replace(/{+([^\\{}]+)}+/g, '$1')
     }
+
+    /**
+     * Read the value `intellisense.citation.format`
+     * @param configuration workspace configuration
+     * @param excludedField A field to exclude from the list of citation fields. Primary usage is to not include `citation.label` twice.
+     */
+    private readCitationFormat(configuration: vscode.WorkspaceConfiguration, excludedField?: string): string[] {
+        const fields = (configuration.get('intellisense.citation.format') as string[]).map(f => { return f.toLowerCase() })
+        if (excludedField) {
+            return fields.filter(f => f !== excludedField.toLowerCase())
+        }
+        return fields
+    }
+
 }

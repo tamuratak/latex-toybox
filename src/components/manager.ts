@@ -4,7 +4,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as chokidar from 'chokidar'
 import * as micromatch from 'micromatch'
-import type {latexParser} from 'latex-utensils'
 import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
 
@@ -20,7 +19,6 @@ import {PdfWatcher} from './managerlib/pdfwatcher'
 import {BibWatcher} from './managerlib/bibwatcher'
 import {FinderUtils} from './managerlib/finderutils'
 import {PathUtils} from './managerlib/pathutils'
-import {IntellisenseWatcher} from './managerlib/intellisensewatcher'
 
 import {Mutex} from '../lib/await-semaphore'
 
@@ -84,7 +82,6 @@ export class Manager implements IManager {
     private readonly fileWatcher: chokidar.FSWatcher
     private readonly pdfWatcher: PdfWatcher
     private readonly bibWatcher: BibWatcher
-    private readonly intellisenseWatcher: IntellisenseWatcher
     private readonly finderUtils: FinderUtils
     private readonly pathUtils: PathUtils
     private readonly filesWatched = new Set<string>()
@@ -111,7 +108,6 @@ export class Manager implements IManager {
         this.fileWatcher = this.createFileWatcher()
         this.pdfWatcher = new PdfWatcher(extension)
         this.bibWatcher = new BibWatcher(extension)
-        this.intellisenseWatcher = new IntellisenseWatcher()
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
         this.extension.eventBus.onDidChangeRootFile(() => this.logWatchedFiles())
@@ -882,10 +878,6 @@ export class Manager implements IManager {
         }
     }
 
-    onDidUpdateIntellisense(cb: (file: string) => void) {
-        return this.intellisenseWatcher.onDidUpdateIntellisense(cb)
-    }
-
     watchPdfFile(pdfFileUri: vscode.Uri) {
         this.pdfWatcher.watchPdfFile(pdfFileUri)
     }
@@ -925,46 +917,14 @@ export class Manager implements IManager {
         return this.autoBuild(file, false)
     }
 
-
     // This function updates all completers upon tex-file changes.
     private async updateCompleterOnChange(file: string) {
         const content = this.getDirtyContent(file)
         if (!content) {
             return
         }
-        await this.updateCompleter(file, content)
+        await this.extension.completionUpdater.updateCompleter(file, content)
         this.extension.completer.input.setGraphicsPath(content)
-    }
-
-    /**
-     * Updates all completers upon tex-file changes, or active file content is changed.
-     */
-    async updateCompleter(file: string, content: string) {
-        this.extension.completer.citation.update(file, content)
-        const languageId: string | undefined = vscode.window.activeTextEditor?.document.languageId
-        let latexAst: latexParser.AstRoot | latexParser.AstPreamble | undefined = undefined
-        if (!languageId || languageId !== 'latex-expl3') {
-            latexAst = await this.extension.pegParser.parseLatex(content)
-        }
-
-        if (latexAst) {
-            const nodes = latexAst.content
-            const lines = content.split('\n')
-            this.extension.completer.reference.update(file, nodes, lines)
-            this.extension.completer.glossary.update(file, nodes)
-            this.extension.completer.environment.update(file, nodes, lines)
-            this.extension.completer.command.update(file, nodes)
-        } else {
-            this.extension.logger.addLogMessage(`Cannot parse a TeX file: ${file}`)
-            this.extension.logger.addLogMessage('Fall back to regex-based completion.')
-            // Do the update with old style.
-            const contentNoComment = utils.stripCommentsAndVerbatim(content)
-            this.extension.completer.reference.update(file, undefined, undefined, contentNoComment)
-            this.extension.completer.glossary.update(file, undefined, contentNoComment)
-            this.extension.completer.environment.update(file, undefined, undefined, contentNoComment)
-            this.extension.completer.command.update(file, undefined, contentNoComment)
-        }
-        this.extension.manager.intellisenseWatcher.emitUpdate(file)
     }
 
 }

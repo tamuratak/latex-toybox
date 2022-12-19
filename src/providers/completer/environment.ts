@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import {latexParser} from 'latex-utensils'
 
 import type {IProvider} from './interface'
-import {resolveCmdEnvFile, CommandSignatureDuplicationDetector} from './commandlib/commandfinder'
+import {CommandSignatureDuplicationDetector} from './commandlib/commandfinder'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
-import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
+import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
+
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
 
@@ -26,6 +25,7 @@ interface IExtension extends
     ExtensionRootLocator,
     CompleterLocator,
     LoggerLocator,
+    LwfsLocator,
     ManagerLocator { }
 
 export class Environment implements IProvider {
@@ -39,6 +39,52 @@ export class Environment implements IProvider {
 
     constructor(extension: IExtension) {
         this.extension = extension
+        void this.load()
+    }
+
+    private async load() {
+        const packageDirUri = vscode.Uri.file(`${this.extension.extensionRoot}/data/packages/`)
+        const files = await vscode.workspace.fs.readDirectory(packageDirUri)
+        const pkgAndEnvs: { pkg: string, envs: { [key: string]: EnvItemEntry } }[] = []
+        for (const file of files) {
+            const fileName = file[0]
+            const match = /(.*)_env.json/.exec(fileName)
+            if (match) {
+                const pkg = match[1]
+                const filePathUri = vscode.Uri.joinPath(packageDirUri, fileName)
+                try {
+                    const content = await this.extension.lwfs.readFile(filePathUri)
+                    const envs: {[key: string]: EnvItemEntry} = JSON.parse(content) as DataEnvsJsonType
+                    Object.keys(envs).forEach(key => {
+                        if (! isEnvItemEntry(envs[key])) {
+                            this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                            this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(envs[key])}`)
+                            delete envs[key]
+                        }
+                    })
+                    pkgAndEnvs.push({pkg, envs})
+                } catch (e) {
+                    this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                }
+            }
+        }
+
+        [EnvSnippetType.AsCommand, EnvSnippetType.ForBegin, EnvSnippetType.AsName].forEach((type) => {
+            pkgAndEnvs.forEach((item) => {
+                if (!item) {
+                    return
+                }
+                const {pkg, envs} = item
+                const packageEnvs = this.getPackageEnvs(type)
+                const newEntry: CmdEnvSuggestion[] = []
+                Object.keys(envs).forEach(key => {
+                    newEntry.push(this.entryEnvToCompletion(key, envs[key], type))
+                })
+                packageEnvs.set(pkg, newEntry)
+                return
+            })
+        })
+
     }
 
     initialize(envs: {[key: string]: EnvItemEntry}) {
@@ -60,13 +106,10 @@ export class Environment implements IProvider {
         switch (type) {
             case EnvSnippetType.AsName:
                 return this.defaultEnvsAsName
-                break
             case EnvSnippetType.AsCommand:
                 return this.defaultEnvsAsCommand
-                break
             case EnvSnippetType.ForBegin:
                 return this.defaultEnvsForBegin
-                break
             default:
                 return []
         }
@@ -76,13 +119,10 @@ export class Environment implements IProvider {
         switch (type) {
             case EnvSnippetType.AsName:
                 return this.packageEnvsAsName
-                break
             case EnvSnippetType.AsCommand:
                 return this.packageEnvsAsCommand
-                break
             case EnvSnippetType.ForBegin:
                 return this.packageEnvsForBegin
-                break
             default:
                 return new Map<string, CmdEnvSuggestion[]>()
         }
@@ -171,16 +211,6 @@ export class Environment implements IProvider {
             return
         }
 
-        // Load environments from the package if not already done
-        if (!this.packageEnvsAsCommand.has(pkg)) {
-            const entry: CmdEnvSuggestion[] = []
-            const envs: {[key: string]: EnvItemEntry} = this.getEnvItemsFromPkg(pkg)
-            Object.keys(envs).forEach(key => {
-                entry.push(this.entryEnvToCompletion(key, envs[key], EnvSnippetType.AsCommand))
-            })
-            this.packageEnvsAsCommand.set(pkg, entry)
-        }
-
         // No environment defined in package
         const entry = this.packageEnvsAsCommand.get(pkg)
         if (!entry || entry.length === 0) {
@@ -199,107 +229,9 @@ export class Environment implements IProvider {
         })
     }
 
-    /**
-     * Updates the Manager cache for environments used in `file` with `nodes`.
-     * If `nodes` is `undefined`, `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
-     * @param file The path of a LaTeX file.
-     * @param nodes AST of a LaTeX file.
-     * @param content The content of a LaTeX file.
-     */
-    update(file: string, nodes?: latexParser.Node[], lines?: string[], content?: string) {
-        const cache = this.extension.manager.getCachedContent(file)
-        if (cache === undefined) {
-            return
-        }
-        if (nodes !== undefined && lines !== undefined) {
-            cache.element.environment = this.getEnvFromNodeArray(nodes, lines)
-        } else if (content !== undefined) {
-            cache.element.environment = this.getEnvFromContent(content)
-        }
-    }
-
-    // This function will return all environments in a node array, including sub-nodes
-    private getEnvFromNodeArray(nodes: latexParser.Node[], lines: string[]): CmdEnvSuggestion[] {
-        let envs: CmdEnvSuggestion[] = []
-        for (let index = 0; index < nodes.length; ++index) {
-            envs = envs.concat(this.getEnvFromNode(nodes[index], lines))
-        }
-        return envs
-    }
-
-    private getEnvFromNode(node: latexParser.Node, lines: string[]): CmdEnvSuggestion[] {
-        let envs: CmdEnvSuggestion[] = []
-        // Here we only check `isEnvironment` which excludes `align*` and `verbatim`.
-        // Nonetheless, they have already been included in `defaultEnvs`.
-        if (latexParser.isEnvironment(node)) {
-            const env = new CmdEnvSuggestion(`${node.name}`, '', { name: node.name, args: '' }, vscode.CompletionItemKind.Module)
-            env.documentation = '`' + node.name + '`'
-            env.filterText = node.name
-            envs.push(env)
-        }
-        if (latexParser.hasContentArray(node)) {
-            envs = envs.concat(this.getEnvFromNodeArray(node.content, lines))
-        }
-        return envs
-    }
-
-    private getEnvItemsFromPkg(pkg: string): {[key: string]: EnvItemEntry} {
-        const filePath: string | undefined = resolveCmdEnvFile(`${pkg}_env.json`, `${this.extension.extensionRoot}/data/packages/`)
-        if (filePath === undefined) {
-            return {}
-        }
-        try {
-            const envs: {[key: string]: EnvItemEntry} = JSON.parse(fs.readFileSync(filePath).toString()) as DataEnvsJsonType
-            Object.keys(envs).forEach(key => {
-                if (! isEnvItemEntry(envs[key])) {
-                    this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePath}`)
-                    this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(envs[key])}`)
-                    delete envs[key]
-                }
-            })
-            return envs
-        } catch (e) {
-            this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePath}`)
-        }
-        return {}
-    }
-
     private getEnvFromPkg(pkg: string, type: EnvSnippetType): CmdEnvSuggestion[] {
         const packageEnvs = this.getPackageEnvs(type)
-        const entry = packageEnvs.get(pkg)
-        if (entry !== undefined) {
-            return entry
-        }
-        const newEntry: CmdEnvSuggestion[] = []
-        const envs: {[key: string]: EnvItemEntry} = this.getEnvItemsFromPkg(pkg)
-        Object.keys(envs).forEach(key => {
-            newEntry.push(this.entryEnvToCompletion(key, envs[key], type))
-        })
-        packageEnvs.set(pkg, newEntry)
-        return newEntry
-    }
-
-    private getEnvFromContent(content: string): CmdEnvSuggestion[] {
-        const envReg = /\\begin\s?{([^{}]*)}/g
-        const envs: CmdEnvSuggestion[] = []
-        const envList: string[] = []
-        while (true) {
-            const result = envReg.exec(content)
-            if (result === null) {
-                break
-            }
-            if (envList.includes(result[1])) {
-                continue
-            }
-            const env = new CmdEnvSuggestion(`${result[1]}`, '', { name: result[1], args: '' }, vscode.CompletionItemKind.Module)
-            env.documentation = '`' + result[1] + '`'
-            env.filterText = result[1]
-
-            envs.push(env)
-            envList.push(result[1])
-        }
-        return envs
+        return packageEnvs.get(pkg) || []
     }
 
     private entryEnvToCompletion(itemKey: string, item: EnvItemEntry, type: EnvSnippetType): CmdEnvSuggestion {

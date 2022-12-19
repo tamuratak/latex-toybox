@@ -522,11 +522,6 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     }
 
     async buildBibTeXModel(document: vscode.TextDocument): Promise<Section[]> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(document.fileName))
-        if (document.getText().length >= (configuration.get('bibtex.maxFileSize') as number) * 1024 * 1024) {
-            this.extension.logger.addLogMessage(`Bib file is too large, ignoring it: ${document.fileName}`)
-            return []
-        }
         const ast = await this.extension.pegParser.parseBibtex(document.getText()).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line

@@ -230,7 +230,7 @@ export class Commander {
 
     citation() {
         this.extension.logger.addLogMessage('CITATION command invoked.')
-        this.extension.completer.citation.browser()
+        return this.extension.completer.citation.browser()
     }
 
     wordcount() {
