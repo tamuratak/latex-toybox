@@ -34,7 +34,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -307,6 +307,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
 
 interface IExtension extends
     ExtensionRootLocator,
+    EventBusLocator,
     BuilderLocator,
     CompleterLocator,
     CompletionUpdaterLocator,
@@ -314,6 +315,7 @@ interface IExtension extends
     LoggerLocator,
     LwfsLocator,
     ManagerLocator,
+    ReferenceStoreLocator,
     UtensilsParserLocator,
     ViewerLocator { }
 

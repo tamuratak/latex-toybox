@@ -6,9 +6,9 @@ import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')
 
 type ClassItemEntry = {
-    command: string,
-    detail: string,
-    documentation: string
+    readonly command: string,
+    readonly detail: string,
+    readonly documentation: string
 }
 
 interface IExtension extends

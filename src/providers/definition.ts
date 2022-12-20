@@ -63,7 +63,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
             }
             return undefined
         }
-        const ref = this.extension.completer.reference.getRef(token)
+        const ref = this.extension.completer.reference.getLabelDef(token)
         if (ref) {
             return new vscode.Location(vscode.Uri.file(ref.file), ref.position)
         }

@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import {MathJaxPool} from './mathjaxpool'
 import * as utils from '../../utils/svg'
-import type {ReferenceEntry} from '../completer/reference'
+import type {LabelDefinitionEntry} from '../completer/labeldefinition'
 import {getCurrentThemeLightness} from '../../utils/theme'
 
 import {CursorRenderer} from './mathpreviewlib/cursorrenderer'
@@ -72,34 +72,34 @@ export class MathPreview {
     async provideHoverOnRef(
         document: vscode.TextDocument,
         position: vscode.Position,
-        refData: ReferenceEntry,
+        labelDef: LabelDefinitionEntry,
         token: string,
         ctoken: vscode.CancellationToken
     ): Promise<vscode.Hover> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const line = refData.position.line
-        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, refData.file]) })
+        const line = labelDef.position.line
+        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         if (configuration.get('hover.ref.enabled') as boolean) {
-            const tex = this.texMathEnvFinder.findHoverOnRef(document, position, refData, token)
+            const tex = this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
             if (tex) {
                 const newCommands = await this.findProjectNewCommand(ctoken)
-                return this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, refData, this.color)
+                return this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
             }
         }
-        const md = '```latex\n' + refData.documentation + '\n```\n'
+        const md = '```latex\n' + labelDef.documentation + '\n```\n'
         const refRange = document.getWordRangeAtPosition(position, /\{.*?\}/)
-        const refNumberMessage = this.refNumberMessage(refData)
+        const refNumberMessage = this.refNumberMessage(labelDef)
         if (refNumberMessage !== undefined && configuration.get('hover.ref.number.enabled') as boolean) {
             return new vscode.Hover([md, refNumberMessage, mdLink], refRange)
         }
         return new vscode.Hover([md, mdLink], refRange)
     }
 
-    private refNumberMessage(refData: Pick<ReferenceEntry, 'prevIndex'>): string | undefined {
-        if (refData.prevIndex) {
-            const refNum = refData.prevIndex.refNumber
+    private refNumberMessage(labelDef: LabelDefinitionEntry): string | undefined {
+        if (labelDef.prevIndex) {
+            const refNum = labelDef.prevIndex.refNumber
             const refMessage = `numbered ${refNum} at last compilation`
             return refMessage
         }
@@ -132,18 +132,15 @@ export class MathPreview {
         return this.texMathEnvFinder.findHoverOnTex(document, position)
     }
 
-    findHoverOnRef(
-        refData: Pick<ReferenceEntry, 'file' | 'position'>,
-        token: string
-    ) {
-        const document = TextDocumentLike.load(refData.file)
-        const position = refData.position
-        return this.texMathEnvFinder.findHoverOnRef(document, position, refData, token)
+    findHoverOnRef(labelDef: LabelDefinitionEntry, token: string) {
+        const document = TextDocumentLike.load(labelDef.file)
+        const position = labelDef.position
+        return this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
     }
 
-    async renderSvgOnRef(tex: TexMathEnv, refData: Pick<ReferenceEntry, 'label' | 'prevIndex'>, ctoken: vscode.CancellationToken) {
+    async renderSvgOnRef(tex: TexMathEnv, labelDef: LabelDefinitionEntry, ctoken: vscode.CancellationToken) {
         const newCommand = await this.findProjectNewCommand(ctoken)
-        return this.hoverPreviewOnRefProvider.renderSvgOnRef(tex, newCommand, refData, this.color)
+        return this.hoverPreviewOnRefProvider.renderSvgOnRef(tex, newCommand, labelDef, this.color)
     }
 
     findMathEnvIncludingPosition(document: ITextDocumentLike, position: vscode.Position): TexMathEnv | undefined {

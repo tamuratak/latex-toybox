@@ -1,3 +1,4 @@
+import type * as vscode from 'vscode'
 import * as events from 'events'
 
 export class IntellisenseWatcher {
@@ -13,10 +14,10 @@ export class IntellisenseWatcher {
         })
     }
 
-    onDidUpdateIntellisense(cb: (file: string) => void) {
+    onDidUpdateIntellisense(cb: (file: string) => void): vscode.Disposable {
         this.cbSet.add(cb)
         const diposable = {
-            dipose: () => { this.cbSet.delete(cb) }
+            dispose: () => { this.cbSet.delete(cb) }
         }
         return diposable
     }

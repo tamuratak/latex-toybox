@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import {latexParser} from 'latex-utensils'
 import {CmdEnvSuggestion} from '../command'
-import type {ILwCompletionItem} from '../interface'
 import type {CompleterLocator, ManagerLocator} from '../../../interfaces'
 
 
@@ -59,29 +58,37 @@ export class CommandFinder {
         if (latexParser.isDefCommand(node)) {
            const name = node.token.slice(1)
             if (!commandNameDuplicationDetector.has(name)) {
-                const cmd = new CmdEnvSuggestion(`\\${name}`, '', {name, args: this.getArgsFromNode(node)}, vscode.CompletionItemKind.Function)
-                cmd.documentation = '`' + name + '`'
-                cmd.insertText = new vscode.SnippetString(name + this.getTabStopsFromNode(node))
-                cmd.filterText = name
+                const documentation = '`' + name + '`'
+                const insertText = new vscode.SnippetString(name + this.getTabStopsFromNode(node))
+                const filterText = name
+                let command: vscode.Command | undefined
                 if (isTriggerSuggestNeeded(name)) {
-                    cmd.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
+                    command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
                 }
+                const cmd = new CmdEnvSuggestion(
+                    `\\${name}`,
+                    '',
+                    {name, args: this.getArgsFromNode(node)},
+                    vscode.CompletionItemKind.Function,
+                    {documentation, insertText, filterText, command}
+                )
                 cmds.push(cmd)
                 commandNameDuplicationDetector.add(name)
             }
         } else if (latexParser.isCommand(node)) {
             if (!commandNameDuplicationDetector.has(node.name)) {
+                const documentation = '`' + node.name + '`'
+                const insertText = new vscode.SnippetString(node.name + this.getTabStopsFromNode(node))
+                let command: vscode.Command | undefined
+                if (isTriggerSuggestNeeded(node.name)) {
+                    command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
+                }
                 const cmd = new CmdEnvSuggestion(`\\${node.name}`,
                     this.whichPackageProvidesCommand(node.name),
                     { name: node.name, args: this.getArgsFromNode(node) },
-                    vscode.CompletionItemKind.Function
+                    vscode.CompletionItemKind.Function,
+                    {documentation, insertText, command}
                 )
-
-                cmd.documentation = '`' + node.name + '`'
-                cmd.insertText = new vscode.SnippetString(node.name + this.getTabStopsFromNode(node))
-                if (isTriggerSuggestNeeded(node.name)) {
-                    cmd.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
-                }
                 cmds.push(cmd)
                 commandNameDuplicationDetector.add(node.name)
             }
@@ -98,13 +105,20 @@ export class CommandFinder {
                     }
                 }
                 if (!commandNameDuplicationDetector.has(label)) {
-                    const cmd = new CmdEnvSuggestion(`\\${label}`, 'user-defined', {name: label, args}, vscode.CompletionItemKind.Function)
-                    cmd.documentation = '`' + label + '`'
-                    cmd.insertText = new vscode.SnippetString(label + tabStops)
-                    cmd.filterText = label
+                    const documentation = '`' + label + '`'
+                    const insertText = new vscode.SnippetString(label + tabStops)
+                    const filterText = label
+                    let command: vscode.Command | undefined
                     if (isTriggerSuggestNeeded(label)) {
-                        cmd.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
+                        command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
                     }
+                    const cmd = new CmdEnvSuggestion(
+                        `\\${label}`,
+                        'user-defined',
+                        {name: label, args},
+                        vscode.CompletionItemKind.Function,
+                        {documentation, insertText, filterText, command}
+                    )
                     cmds.push(cmd)
                     this.definedCmds.set(label, {
                         file,
@@ -188,18 +202,21 @@ export class CommandFinder {
             if (commandNameDuplicationDetector.has(result[1])) {
                 continue
             }
+
+            const documentation = '`' + result[1] + '`'
+            const insertText = new vscode.SnippetString(result[1] + this.getTabStopsFromRegResult(result))
+            const filterText = result[1]
+            let command: vscode.Command | undefined
+            if (isTriggerSuggestNeeded(result[1])) {
+                command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
+            }
             const cmd = new CmdEnvSuggestion(
                 `\\${result[1]}`,
                 this.whichPackageProvidesCommand(result[1]),
                 { name: result[1], args: this.getArgsFromRegResult(result) },
-                vscode.CompletionItemKind.Function
+                vscode.CompletionItemKind.Function,
+                { documentation, insertText, filterText, command}
             )
-            cmd.documentation = '`' + result[1] + '`'
-            cmd.insertText = new vscode.SnippetString(result[1] + this.getTabStopsFromRegResult(result))
-            cmd.filterText = result[1]
-            if (isTriggerSuggestNeeded(result[1])) {
-                cmd.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
-            }
             cmds.push(cmd)
             commandNameDuplicationDetector.add(result[1])
         }
@@ -224,10 +241,16 @@ export class CommandFinder {
                 }
             }
 
-            const cmd = new CmdEnvSuggestion(`\\${result[1]}`, 'user-defined', {name: result[1], args}, vscode.CompletionItemKind.Function)
-            cmd.documentation = '`' + result[1] + '`'
-            cmd.insertText = new vscode.SnippetString(result[1] + tabStops)
-            cmd.filterText = result[1]
+            const documentation = '`' + result[1] + '`'
+            const insertText = new vscode.SnippetString(result[1] + tabStops)
+            const filterText = result[1]
+            const cmd = new CmdEnvSuggestion(
+                `\\${result[1]}`,
+                'user-defined',
+                {name: result[1], args},
+                vscode.CompletionItemKind.Function,
+                { documentation, insertText, filterText }
+            )
             cmds.push(cmd)
             commandNameDuplicationDetector.add(result[1])
 
@@ -275,8 +298,7 @@ export class CommandFinder {
                     continue
                 }
                 for (const pkg of cachedPkgs) {
-                    const commands: ILwCompletionItem[] = []
-                    this.extension.completer.command.provideCmdInPkg(pkg, commands, new CommandSignatureDuplicationDetector())
+                    const commands = this.extension.completer.command.provideCmdInPkg(pkg, new CommandSignatureDuplicationDetector())
                     for (const cmd of commands) {
                         const label = cmd.label.slice(1)
                         if (label.startsWith(cmdName) &&

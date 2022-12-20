@@ -47,9 +47,15 @@ export class EnvironmentUpdater {
         // Here we only check `isEnvironment` which excludes `align*` and `verbatim`.
         // Nonetheless, they have already been included in `defaultEnvs`.
         if (latexParser.isEnvironment(node)) {
-            const env = new CmdEnvSuggestion(`${node.name}`, '', { name: node.name, args: '' }, vscode.CompletionItemKind.Module)
-            env.documentation = '`' + node.name + '`'
-            env.filterText = node.name
+            const documentation = '`' + node.name + '`'
+            const filterText = node.name
+            const env = new CmdEnvSuggestion(
+                `${node.name}`,
+                '',
+                { name: node.name, args: '' },
+                vscode.CompletionItemKind.Module,
+                { documentation, filterText }
+            )
             envs.push(env)
         }
         if (latexParser.hasContentArray(node)) {
@@ -70,10 +76,15 @@ export class EnvironmentUpdater {
             if (envList.includes(result[1])) {
                 continue
             }
-            const env = new CmdEnvSuggestion(`${result[1]}`, '', { name: result[1], args: '' }, vscode.CompletionItemKind.Module)
-            env.documentation = '`' + result[1] + '`'
-            env.filterText = result[1]
-
+            const documentation = '`' + result[1] + '`'
+            const filterText = result[1]
+            const env = new CmdEnvSuggestion(
+                `${result[1]}`,
+                '',
+                { name: result[1], args: '' },
+                vscode.CompletionItemKind.Module,
+                { documentation, filterText }
+            )
             envs.push(env)
             envList.push(result[1])
         }

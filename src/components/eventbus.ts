@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type {Disposable} from 'vscode'
+import { IEventBus } from '../interfaces'
 
 export const BuildFinished = 'buildfinished'
 export const PdfViewerPagesLoaded = 'pdfviewerpagesloaded'
@@ -8,7 +9,7 @@ export const PdfViewerStatusChanged = 'pdfviewerstatuschanged'
 export const RootFileChanged = 'rootfilechanged'
 export const FindRootFileEnd = 'findrootfileend'
 
-type EventArgTypeMap = {
+export type EventArgTypeMap = {
     [PdfViewerStatusChanged]: PdfViewerState,
     [RootFileChanged]: string
 }
@@ -20,7 +21,7 @@ export type EventName = typeof BuildFinished
                     | typeof FindRootFileEnd
 
 
-export class EventBus {
+export class EventBus implements IEventBus {
     private readonly eventEmitter = new EventEmitter()
 
     dispose() {

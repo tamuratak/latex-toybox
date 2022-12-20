@@ -1,13 +1,13 @@
 import * as utils from '../utils/utils'
 import {latexParser} from 'latex-utensils'
 import * as vscode from 'vscode'
-import {IntellisenseWatcher} from './managerlib/intellisensewatcher'
+import {IntellisenseWatcher} from './completionupdaterlib/intellisensewatcher'
 import {CommandUpdater} from './completionupdaterlib/commandupdater'
 import {EnvironmentUpdater} from './completionupdaterlib/environmentupdater'
-import {ReferenceUpdater} from './completionupdaterlib/referenceupdater'
+import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupdater'
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
-import { CompleterLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
+import { CompleterLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
 
 interface IExtension extends
     CompleterLocator,
@@ -15,13 +15,13 @@ interface IExtension extends
     ManagerLocator,
     UtensilsParserLocator { }
 
-export class CompletionUpdater {
+export class CompletionUpdater implements ICompleteionUpdater {
     private readonly intellisenseWatcher: IntellisenseWatcher
     private readonly extension: IExtension
     private readonly citationUpdater: CitationUpdater
     private readonly commandUpdater: CommandUpdater
     private readonly environmentUpdater: EnvironmentUpdater
-    private readonly referenceUpdater: ReferenceUpdater
+    private readonly referenceUpdater: LabelDefinitionUpdater
     private readonly glossaryUpdater: GlossaryUpdater
 
     constructor(extension: IExtension) {
@@ -30,7 +30,7 @@ export class CompletionUpdater {
         this.environmentUpdater = new EnvironmentUpdater(extension)
         this.citationUpdater = new CitationUpdater(extension)
         this.commandUpdater = new CommandUpdater(extension)
-        this.referenceUpdater = new ReferenceUpdater(extension)
+        this.referenceUpdater = new LabelDefinitionUpdater(extension)
         this.glossaryUpdater = new GlossaryUpdater(extension)
     }
 
@@ -38,7 +38,7 @@ export class CompletionUpdater {
         return this.commandUpdater.commandFinder.definedCmds
     }
 
-    onDidUpdateIntellisense(cb: (file: string) => void) {
+    onDidUpdate(cb: (file: string) => void): vscode.Disposable {
         return this.intellisenseWatcher.onDidUpdateIntellisense(cb)
     }
 

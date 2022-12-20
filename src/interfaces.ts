@@ -1,11 +1,31 @@
 import type fs from 'fs'
 import type {latexParser, bibtexParser} from 'latex-utensils'
 import type vscode from 'vscode'
+import type { EventArgTypeMap, EventBus, EventName } from './components/eventbus'
 import type {SyncTeXRecordForward} from './components/locator'
 import type {CachedContentEntry} from './components/manager'
+import { ReferenceStore } from './components/referencestore'
 import type {ICommand} from './providers/completer/interface'
 
-interface CommandLocator {
+
+export interface ReferenceStoreLocator {
+    readonly referenceStore: ReferenceStore
+}
+
+export interface IEventBus {
+    fire<T extends keyof EventArgTypeMap>(eventName: T, arg: EventArgTypeMap[T]): void,
+    fire(eventName: EventName): void,
+    fire(eventName: EventName, arg?: any): void,
+    onDidChangeRootFile(cb: (rootFile: EventArgTypeMap['rootfilechanged']) => void): vscode.Disposable,
+    onDidEndFindRootFile(cb: () => void): vscode.Disposable,
+    onDidChangePdfViewerStatus(cb: (status: EventArgTypeMap['pdfviewerstatuschanged']) => void): vscode.Disposable
+}
+
+export interface EventBusLocator {
+    readonly eventBus: EventBus
+}
+
+export interface CommandLocator {
     readonly command: ICommand
 }
 
@@ -33,6 +53,7 @@ export interface ICompleteionUpdater {
         file: string,
         location: vscode.Location
     }>,
+    onDidUpdate(cb: (file: string) => void): vscode.Disposable,
     updateCompleter(file: string, content: string): Promise<void>
 }
 
