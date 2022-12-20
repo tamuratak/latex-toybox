@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import {bibtexParser} from 'latex-utensils'
 import {trimMultiLineString} from '../../utils/utils'
 import type {ILwCompletionItem} from './interface'
 
 import type {IProvider} from './interface'
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 
 
 export class Fields extends Map<string, string> {
@@ -67,6 +66,7 @@ export interface CiteSuggestion {
 
 interface IExtension extends
     LoggerLocator,
+    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator { }
 
@@ -249,7 +249,7 @@ export class Citation implements IProvider {
     async parseBibFile(file: string) {
         this.extension.logger.addLogMessage(`Parsing .bib entries from ${file}`)
         const newEntry: CiteSuggestion[] = []
-        const bibtex = fs.readFileSync(file).toString()
+        const bibtex = await this.extension.lwfs.readFilePath(file)
         const ast = await this.extension.pegParser.parseBibtex(bibtex).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line

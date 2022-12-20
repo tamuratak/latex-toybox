@@ -32,6 +32,10 @@ export class LwFileSystem implements ILwFileSystem {
         }
     }
 
+    async readFilePath(filePath: string): Promise<string> {
+        return this.readFile(vscode.Uri.file(filePath))
+    }
+
     async readFile(fileUri: vscode.Uri): Promise<string> {
         const result = await this.readFileAsBuffer(fileUri)
         return result.toString()

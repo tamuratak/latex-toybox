@@ -29,7 +29,7 @@ suite('linter test suite', () => {
         extension.manager.rootFile = texFilePath
         const linter = new ChkTeX(extension)
         const log = fs.readFileSync(path.join(fixtureDir, 'chktex.linterlog')).toString()
-        linter.parseLog(log)
+        await linter.parseLog(log)
         assert.strictEqual(linter.linterDiagnostics.get(vscode.Uri.file(texFilePath))?.length, 1)
         assert.strictEqual(linter.linterDiagnostics.get(vscode.Uri.file(subFilePath))?.length, 1)
         assert.match(linter.linterDiagnostics.get(vscode.Uri.file(texFilePath))?.[0].message || '', /Delete this space/)

@@ -1,9 +1,8 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 
 import type {IProvider} from './interface'
-import { CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
+import { CompletionUpdaterLocator, LwfsLocator, ManagerLocator } from '../../interfaces'
 
 export interface LabelDefinitionElement {
     readonly range: vscode.Range,
@@ -27,6 +26,7 @@ export interface LabelDefinitionEntry extends LabelDefinitionStored {
 
 interface IExtension extends
     CompletionUpdaterLocator,
+    LwfsLocator,
     ManagerLocator { }
 
 export class LabelDefinition implements IProvider {
@@ -96,7 +96,7 @@ export class LabelDefinition implements IProvider {
         this.prevIndexMap.clear()
         const newLabelReg = /^\\newlabel\{(.*?)\}\{\{(.*?)\}\{(.*?)\}/gm
         try {
-            const auxContent = await fs.promises.readFile(auxFile, {encoding: 'utf8'})
+            const auxContent = await this.extension.lwfs.readFilePath(auxFile)
             while (true) {
                 const result = newLabelReg.exec(auxContent)
                 if (result === null) {

@@ -25,7 +25,7 @@ export class Package implements IProvider {
     }
 
     private async load() {
-        const content = await this.extension.lwfs.readFile(vscode.Uri.file(`${this.extension.extensionRoot}/data/packagenames.json`))
+        const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/packagenames.json`)
         const pkgs: {[key: string]: PackageItemEntry} = JSON.parse(content) as DataPackagesJsonType
         this.initialize(pkgs)
     }

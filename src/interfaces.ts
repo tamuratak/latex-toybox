@@ -103,6 +103,7 @@ export interface ILwFileSystem {
     isLocalUri(uri: vscode.Uri): boolean,
     isVirtualUri(uri: vscode.Uri): boolean,
     exists(uri: vscode.Uri): Promise<boolean>,
+    readFilePath(filePath: string): Promise<string>,
     readFile(fileUri: vscode.Uri): Promise<string>,
     readFileAsBuffer(fileUri: vscode.Uri): Promise<Buffer>,
     readFileSyncGracefully(filepath: string): string | undefined,
