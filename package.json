@@ -1412,13 +1412,6 @@
           "default": 0,
           "markdownDescription": "Define the CSS sepia filter level of the PDF viewer when the invert mode is enabled. Possible values are from 0 to 1. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.backgroundColor": {
-          "scope": "window",
-          "type": "string",
-          "default": "#ffffff",
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.view.pdf.color.light.backgroundColor#` and `#latex-workshop.view.pdf.color.dark.backgroundColor#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.view.pdf.color.light.backgroundColor\" and \"latex-workshop.view.pdf.color.dark.backgroundColor\" instead."
-        },
         "latex-workshop.view.pdf.color.light.pageColorsForeground": {
           "scope": "window",
           "type": "string",
@@ -1544,99 +1537,6 @@
           "default": "lacheck",
           "markdownDescription": "Define the location of LaCheck executive file."
         },
-        "latex-workshop.chktex.enabled": {
-          "scope": "resource",
-          "type": "boolean",
-          "default": false,
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.enabled#` and `#latex-workshop.linting.chktex.exec.path#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.enabled\" and \"latex-workshop.linting.chktex.exec.path\" instead."
-        },
-        "latex-workshop.chktex.run": {
-          "scope": "resource",
-          "type": "string",
-          "enum": [
-            "onSave",
-            "onType"
-          ],
-          "enumDescriptions": [
-            "Lint the whole LaTeX project upon saving",
-            "Lint the active document when input is stopped"
-          ],
-          "default": "onSave",
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.run#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.run\" instead."
-        },
-        "latex-workshop.chktex.exec.path": {
-          "scope": "window",
-          "type": "string",
-          "default": "chktex",
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.exec.path#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.exec.path\" instead."
-        },
-        "latex-workshop.chktex.path": {
-          "scope": "window",
-          "type": "string",
-          "default": "",
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.exec.path#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.exec.path\" instead."
-        },
-        "latex-workshop.chktex.exec.args": {
-          "scope": "resource",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "-wall",
-            "-n22",
-            "-n30",
-            "-e16",
-            "-q"
-          ],
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.exec.args#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.exec.args\" instead."
-        },
-        "latex-workshop.chktex.args.active": {
-          "scope": "resource",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.exec.args#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.exec.args\" instead."
-        },
-        "latex-workshop.chktex.args.root": {
-          "scope": "resource",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.exec.args#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.exec.args\" instead."
-        },
-        "latex-workshop.chktex.delay": {
-          "scope": "resource",
-          "type": "number",
-          "default": 500,
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.delay#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.delay\" instead."
-        },
-        "latex-workshop.chktex.convertOutput.column.enabled": {
-          "scope": "resource",
-          "type": "boolean",
-          "default": true,
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.convertOutput.column.enabled#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.convertOutput.column.enabled\" instead."
-        },
-        "latex-workshop.chktex.convertOutput.column.chktexrcTabSize": {
-          "scope": "resource",
-          "type": "number",
-          "default": -1,
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.linting.chktex.convertOutput.column.chktexrcTabSize#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.linting.chktex.convertOutput.column.chktexrcTabSize\" instead."
-        },
         "latex-workshop.check.duplicatedLabels.enabled": {
           "scope": "window",
           "type": "boolean",
@@ -1746,14 +1646,6 @@
             "{"
           ],
           "markdownDescription": "Additional trigger characters for intellisense of LaTeX documents. Reload vscode to make any change in this configuration effective."
-        },
-        "latex-workshop.intellisense.snippets.trigger.latex": {
-          "scope": "window",
-          "type": "string",
-          "default": "@",
-          "markdownDescription": "Character to trigger snippet suggestions as part of intellisense. Set this variable to `''` to deactivate these snippets. Reload vscode to make any change in this configuration effective.",
-          "markdownDeprecationMessage": "**Deprecated**: Please use `#latex-workshop.intellisense.atSuggestion.trigger.latex#` instead.",
-          "deprecationMessage": "Please use \"latex-workshop.intellisense.atSuggestion.trigger.latex\" instead."
         },
         "latex-workshop.intellisense.atSuggestion.trigger.latex": {
           "scope": "window",
