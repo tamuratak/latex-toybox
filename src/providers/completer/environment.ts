@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
-import {CommandSignatureDuplicationDetector} from './commandlib/commandfinder'
+import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
 import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
 

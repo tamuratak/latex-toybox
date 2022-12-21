@@ -1,5 +1,5 @@
 import {runUnitTestWithFixture} from '../../../../utils/ciutils'
-import {isTriggerSuggestNeeded} from '../../../../../src/providers/completer/commandlib/commandfinder'
+import {isTriggerSuggestNeeded} from '../../../../../src/providers/completer/commandlib/commandlib'
 import assert from 'assert'
 
 

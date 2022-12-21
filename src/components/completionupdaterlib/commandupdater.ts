@@ -1,7 +1,8 @@
 import {latexParser} from 'latex-utensils'
 
 import type {CompleterLocator, ManagerLocator} from '../../interfaces'
-import { CommandFinder, CommandNameDuplicationDetector } from '../../providers/completer/commandlib/commandfinder'
+import { CommandNameDuplicationDetector } from '../../providers/completer/commandlib/commandlib'
+import { CommandFinder } from './commandupdaterlib/commandfinder'
 
 interface IExtension extends
     CompleterLocator,
