@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode'
 import { CmdEnvSuggestion } from './command'
-import type {CommandSignatureDuplicationDetector} from './commandlib/commandfinder'
+import type {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 
 export interface IProvider {
 
