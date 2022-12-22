@@ -25,7 +25,7 @@ export class DocumentClass implements IProvider {
     }
 
     private async load() {
-        const content = await this.extension.lwfs.readFile(vscode.Uri.file(`${this.extension.extensionRoot}/data/classnames.json`))
+        const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/classnames.json`)
         const allClasses: {[key: string]: ClassItemEntry} = JSON.parse(content) as DataClassnamesJsonType
         this.initialize(allClasses)
     }

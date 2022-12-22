@@ -1,9 +1,8 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import type {IProvider} from './interface'
 import {escapeRegExp} from '../../utils/utils'
-import type {ExtensionRootLocator} from '../../interfaces'
+import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
 
 export interface AtSuggestionItemEntry {
     readonly prefix: string,
@@ -13,7 +12,9 @@ export interface AtSuggestionItemEntry {
 
 type DataAtSuggestionJsonType = typeof import('../../../data/at-suggestions.json')
 
-interface IExtension extends ExtensionRootLocator { }
+interface IExtension extends
+    ExtensionRootLocator,
+    LwfsLocator { }
 
 export class AtSuggestion implements IProvider {
     private readonly extension: IExtension
@@ -26,16 +27,18 @@ export class AtSuggestion implements IProvider {
         this.triggerCharacter = triggerCharacter
         this.escapedTriggerCharacter = escapeRegExp(this.triggerCharacter)
 
-        const allSuggestions: {[key: string]: AtSuggestionItemEntry} = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/at-suggestions.json`).toString()) as DataAtSuggestionJsonType
-        this.initialize(allSuggestions)
+        void this.initialize()
         vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
             if (e.affectsConfiguration('latex-workshop.intellisense.atSuggestionJSON.replace')) {
-                this.initialize(allSuggestions)
+                void this.initialize()
             }
         })
     }
 
-    private initialize(suggestions: {[key: string]: AtSuggestionItemEntry}) {
+    private async initialize() {
+        const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/at-suggestions.json`)
+        const suggestions: {[key: string]: AtSuggestionItemEntry} = JSON.parse(content) as DataAtSuggestionJsonType
+
         const suggestionReplacements = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.atSuggestionJSON.replace') as {[key: string]: string}
         this.suggestions.length = 0
         Object.keys(suggestionReplacements).forEach(prefix => {

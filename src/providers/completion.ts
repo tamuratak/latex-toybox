@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import type {Extension} from '../main'
 import type {IProvider} from './completer/interface'
@@ -47,16 +46,16 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
         try {
-            this.loadDefaultItems()
+            void this.loadDefaultItems()
         } catch (err) {
             this.extension.logger.addLogMessage(`Error reading data: ${err}.`)
         }
     }
 
-    private loadDefaultItems() {
-        const defaultEnvs = fs.readFileSync(`${this.extension.extensionRoot}/data/environments.json`, {encoding: 'utf8'})
-        const defaultCommands = fs.readFileSync(`${this.extension.extensionRoot}/data/commands.json`, {encoding: 'utf8'})
-        const defaultLaTeXMathSymbols = fs.readFileSync(`${this.extension.extensionRoot}/data/packages/latex-mathsymbols_cmd.json`, {encoding: 'utf8'})
+    private async loadDefaultItems() {
+        const defaultEnvs = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/environments.json`)
+        const defaultCommands = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/commands.json`)
+        const defaultLaTeXMathSymbols = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/packages/latex-mathsymbols_cmd.json`)
         const env: { [key: string]: EnvItemEntry } = JSON.parse(defaultEnvs) as DataEnvsJsonType
         const cmds = JSON.parse(defaultCommands) as DataCmdsJsonType
         const maths: { [key: string]: CmdItemEntry } = JSON.parse(defaultLaTeXMathSymbols) as DataLatexMathSymbolsJsonType

@@ -1,8 +1,7 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import {BibtexFormatConfig} from './bibtexformatterlib/bibtexutils'
-import type {ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../interfaces'
+import type {ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../interfaces'
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
 type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entries.json')
@@ -10,6 +9,7 @@ type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entr
 interface IExtension extends
     ExtensionRootLocator,
     LoggerLocator,
+    LwfsLocator,
     ManagerLocator { }
 
 export class BibtexCompleter implements vscode.CompletionItemProvider {
@@ -71,15 +71,17 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
                 return
         }
         try {
-            this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)
+            void this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)
         } catch (err) {
             this.extension.logger.addLogMessage(`Error reading data: ${err}.`)
         }
     }
 
-    private loadDefaultItems(entriesFile: string, optEntriesFile: string, entriesReplacements: {[key: string]: string[]}) {
-        const entries: { [key: string]: string[] } = JSON.parse(fs.readFileSync(entriesFile, {encoding: 'utf8'})) as DataBibtexJsonType
-        const optFields: { [key: string]: string[] } = JSON.parse(fs.readFileSync(optEntriesFile, {encoding: 'utf8'})) as DataBibtexOptionalJsonType
+    private async loadDefaultItems(entriesFile: string, optEntriesFile: string, entriesReplacements: {[key: string]: string[]}) {
+        const entriesContent = await this.extension.lwfs.readFilePath(entriesFile)
+        const entries: { [key: string]: string[] } = JSON.parse(entriesContent) as DataBibtexJsonType
+        const optFieldsContent = await this.extension.lwfs.readFilePath(optEntriesFile)
+        const optFields: { [key: string]: string[] } = JSON.parse(optFieldsContent) as DataBibtexOptionalJsonType
 
         const maxLengths: {[key: string]: number} = this.computeMaxLengths(entries, optFields)
         const entriesList: string[] = []

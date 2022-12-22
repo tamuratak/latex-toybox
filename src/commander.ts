@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 
 import type {Extension} from './main'
@@ -52,17 +51,20 @@ export class Commander {
     constructor(extension: Extension) {
         this.extension = extension
         this._texdoc = new TeXDoc(extension)
-        let extensionSnippets: string
-        fs.promises.readFile(`${this.extension.extensionRoot}/snippets/latex.json`)
-            .then(data => {extensionSnippets = data.toString()})
-            .then(() => {
-                const snipObj: { [key: string]: { body: string } } = JSON.parse(extensionSnippets) as SnippetsLatexJsonType
-                Object.keys(snipObj).forEach(key => {
-                    this.snippets.set(key, new vscode.SnippetString(snipObj[key]['body']))
-                })
-                this.extension.logger.addLogMessage('Snippet data loaded.')
+        void this.initialize()
+    }
+
+    async initialize() {
+        try {
+            const extensionSnippets = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/snippets/latex.json`)
+            const snipObj: { [key: string]: { body: string } } = JSON.parse(extensionSnippets) as SnippetsLatexJsonType
+            Object.keys(snipObj).forEach(key => {
+                this.snippets.set(key, new vscode.SnippetString(snipObj[key]['body']))
             })
-            .catch(err => this.extension.logger.addLogMessage(`Error reading data: ${err}.`))
+            this.extension.logger.addLogMessage('Snippet data loaded.')
+        } catch(err) {
+            this.extension.logger.addLogMessage(`Error reading data: ${err}.`)
+        }
     }
 
     async build(skipSelection: boolean = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {

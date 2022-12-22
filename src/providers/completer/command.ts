@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
@@ -160,7 +159,8 @@ export class Command implements IProvider, ICommand {
             }
         })
         if (configuration.get('intellisense.unimathsymbols.enabled')) {
-            const symbols: { [key: string]: CmdItemEntry } = JSON.parse(fs.readFileSync(`${this.extension.extensionRoot}/data/unimathsymbols.json`).toString()) as DataUnimathSymbolsJsonType
+            const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/unimathsymbols.json`)
+            const symbols: { [key: string]: CmdItemEntry } = JSON.parse(content) as DataUnimathSymbolsJsonType
             Object.keys(symbols).forEach(key => {
                 this.defaultSymbols.push(this.entryCmdToCompletion(key, symbols[key]))
             })

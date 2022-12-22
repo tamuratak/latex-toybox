@@ -447,12 +447,13 @@ export class Manager implements IManager {
                     this.extension.logger.addLogMessage(`Skip the file: ${file.toString(true)}`)
                     continue
                 }
-                const flsChildren = this.getTeXChildrenFromFls(file.fsPath)
+                const flsChildren = await this.getTeXChildrenFromFls(file.fsPath)
                 if (vscode.window.activeTextEditor && flsChildren.includes(vscode.window.activeTextEditor.document.fileName)) {
                     this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`)
                     return file.fsPath
                 }
-                const content = utils.stripCommentsAndVerbatim(fs.readFileSync(file.fsPath).toString())
+                let content = await this.extension.lwfs.readFile(file)
+                content = utils.stripCommentsAndVerbatim(content)
                 const result = content.match(regex)
                 if (result) {
                     // Can be a root
@@ -643,13 +644,14 @@ export class Manager implements IManager {
         return children
     }
 
-    private getTeXChildrenFromFls(texFile: string) {
+    private async getTeXChildrenFromFls(texFile: string) {
         const flsFile = this.pathUtils.getFlsFilePath(texFile)
         if (flsFile === undefined) {
             return []
         }
         const rootDir = path.dirname(texFile)
-        const ioFiles = this.pathUtils.parseFlsContent(fs.readFileSync(flsFile).toString(), rootDir)
+        const content = await this.extension.lwfs.readFilePath(flsFile)
+        const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
         return ioFiles.input
     }
 
@@ -731,7 +733,8 @@ export class Manager implements IManager {
         }
         const rootDir = path.dirname(texFile)
         const outDir = this.getOutDir(texFile)
-        const ioFiles = this.pathUtils.parseFlsContent(fs.readFileSync(flsFile).toString(), rootDir)
+        const content = await this.extension.lwfs.readFilePath(flsFile)
+        const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
 
         for (const inputFile of ioFiles.input) {
             // Drop files that are also listed as OUTPUT or should be ignored
@@ -762,8 +765,11 @@ export class Manager implements IManager {
         for (const outputFile of ioFiles.output) {
             if (path.extname(outputFile) === '.aux' && fs.existsSync(outputFile)) {
                 this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
-                await this.parseAuxFile(fs.readFileSync(outputFile).toString(),
-                                        path.dirname(outputFile).replace(outDir, rootDir))
+                const outputFileContent = await this.extension.lwfs.readFilePath(outputFile)
+                await this.parseAuxFile(
+                    outputFileContent,
+                    path.dirname(outputFile).replace(outDir, rootDir)
+                )
             }
         }
     }

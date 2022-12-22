@@ -6,10 +6,11 @@ import * as os from 'os'
 import type { ILinter } from '../linter'
 import { LinterUtil } from './linterutil'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
-import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import type {LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
 
 interface IExtension extends
     LoggerLocator,
+    LwfsLocator,
     ManagerLocator { }
 
 export class ChkTeX implements ILinter {
@@ -35,8 +36,8 @@ export class ChkTeX implements ILinter {
             return
         }
 
-        const tabSize = this.getChktexrcTabSize(filePath)
-        this.parseLog(stdout, undefined, tabSize)
+        const tabSize = await this.getChktexrcTabSize(filePath)
+        return this.parseLog(stdout, undefined, tabSize)
     }
 
     async lintFile(document: vscode.TextDocument) {
@@ -50,8 +51,8 @@ export class ChkTeX implements ILinter {
         }
         // provide the original path to the active file as the second argument, so
         // we report this second path in the diagnostics instead of the temporary one.
-        const tabSize = this.getChktexrcTabSize(document.fileName)
-        this.parseLog(stdout, filePath, tabSize)
+        const tabSize = await this.getChktexrcTabSize(document.fileName)
+        return this.parseLog(stdout, filePath, tabSize)
     }
 
     private async chktexWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, requiredArgs: string[], content?: string): Promise<string | undefined> {
@@ -134,7 +135,7 @@ export class ChkTeX implements ILinter {
         return
     }
 
-    private getChktexrcTabSize(file: string): number | undefined {
+    private async getChktexrcTabSize(file: string): Promise<number | undefined> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
         const args = configuration.get('linting.chktex.exec.args') as string[]
         let filePath: string | undefined
@@ -157,7 +158,7 @@ export class ChkTeX implements ILinter {
             this.extension.logger.addLogMessage('The .chktexrc file not found.')
             return
         }
-        const rcFile = fs.readFileSync(filePath).toString()
+        const rcFile = await this.extension.lwfs.readFilePath(filePath)
         const reg = /^\s*TabSize\s*=\s*(\d+)\s*$/m
         const match = reg.exec(rcFile)
         if (match) {
@@ -169,7 +170,7 @@ export class ChkTeX implements ILinter {
         return
     }
 
-    parseLog(log: string, singleFileOriginalPath?: string, tabSizeArg?: number) {
+    async parseLog(log: string, singleFileOriginalPath?: string, tabSizeArg?: number) {
         const re = /^(.*?):(\d+):(\d+):(\d+):(.*?):(\d+):(.*?)$/gm
         const linterLog: ChkTeXLogEntry[] = []
         let match = re.exec(log)
@@ -181,7 +182,7 @@ export class ChkTeX implements ILinter {
                 filePath = path.resolve(this.extension.manager.rootDir, filePath)
             }
             const line = parseInt(match[2])
-            const column = this.callConvertColumn(parseInt(match[3]), filePath, line, tabSizeArg)
+            const column = await this.callConvertColumn(parseInt(match[3]), filePath, line, tabSizeArg)
             linterLog.push({
                 file: filePath,
                 line,
@@ -205,7 +206,7 @@ export class ChkTeX implements ILinter {
         this.showLinterDiagnostics(linterLog)
     }
 
-    private callConvertColumn(column: number, filePathArg: string, line: number, tabSizeArg?: number): number {
+    private async callConvertColumn(column: number, filePathArg: string, line: number, tabSizeArg?: number): Promise<number> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
         if (!configuration.get('linting.chktex.convertOutput.column.enabled', true)) {
             return column
@@ -215,7 +216,8 @@ export class ChkTeX implements ILinter {
             this.extension.logger.addLogMessage(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
             return column
         }
-        const lineString = fs.readFileSync(filePath).toString().split('\n')[line-1]
+        const content = await this.extension.lwfs.readFilePath(filePath)
+        const lineString = content.split('\n')[line-1]
         let tabSize: number | undefined
         const tabSizeConfig = configuration.get('linting.chktex.convertOutput.column.chktexrcTabSize', -1)
         if (tabSizeConfig >= 0) {

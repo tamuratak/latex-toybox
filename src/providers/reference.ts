@@ -105,7 +105,7 @@ export class ReferenceUpdater {
 
     private async updateForFile(filePath: string) {
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === filePath)
-        const content = doc?.getText() || await this.extension.lwfs.readFile(vscode.Uri.file(filePath))
+        const content = doc?.getText() || await this.extension.lwfs.readFilePath(filePath)
         if (content === undefined) {
             return
         }
