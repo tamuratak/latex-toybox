@@ -116,16 +116,16 @@ export interface ManagerLocator {
 
 export interface IManager {
     readonly rootDir: string | undefined,
-    rootFile: string | undefined,
-    rootFileUri: vscode.Uri | undefined,
+    readonly rootFile: string | undefined,
+    readonly rootFileUri: vscode.Uri | undefined,
     readonly cachedFilePaths: IterableIterator<string>,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): CachedContentEntry | undefined,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
     findRoot(): Promise<string | undefined>,
-    getIncludedBib(file?: string, includedBib?: string[], children?: string[]): string[],
-    getIncludedTeX(file?: string, includedTeX?: string[]): string[],
+    getIncludedBib(file?: string): string[],
+    getIncludedTeX(file?: string): string[],
     getDirtyContent(file: string): string | undefined,
     getWorkspaceFolderRootDir(): vscode.WorkspaceFolder | undefined,
     tex2pdf(texPath: string, respectOutDir?: boolean): string

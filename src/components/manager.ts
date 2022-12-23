@@ -40,13 +40,9 @@ export interface CachedContentEntry {
      */
     children: {
         /**
-         * The index of character sub-content is inserted
-         */
-        index: number,
-        /**
          * The path of the sub-file
          */
-        file: string
+        readonly file: string
     }[],
     /**
      * The array of the paths of `.bib` files referenced from the LaTeX file.
@@ -61,11 +57,11 @@ export const enum BuildEvents {
 }
 
 type RootFileType = {
-    type: 'filePath',
-    filePath: string
+    readonly type: 'filePath',
+    readonly filePath: string
 } | {
-    type: 'uri',
-    uri: vscode.Uri
+    readonly type: 'uri',
+    readonly uri: vscode.Uri
 }
 
 export class Manager implements IManager {
@@ -426,7 +422,6 @@ export class Manager implements IManager {
     }
 
     private async findRootInWorkspace(): Promise<string | undefined> {
-        const regex = /\\begin{document}/m
         const currentWorkspaceDirUri = this.findWorkspace()
         this.extension.logger.addLogMessage(`Current workspaceRootDir: ${currentWorkspaceDirUri ? currentWorkspaceDirUri.toString(true) : ''}`)
 
@@ -452,12 +447,11 @@ export class Manager implements IManager {
                     this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`)
                     return file.fsPath
                 }
-                let content = await this.extension.lwfs.readFile(file)
+                let content = await this.extension.lwfs.readFileGracefully(file) || ''
                 content = utils.stripCommentsAndVerbatim(content)
-                const result = content.match(regex)
-                if (result) {
+                if (/\\begin{document}/m.exec(content)) {
                     // Can be a root
-                    const children = this.getTeXChildren(file.fsPath, file.fsPath, [], content)
+                    const children = await this.getTeXChildren(file.fsPath, file.fsPath)
                     if (vscode.window.activeTextEditor && children.includes(vscode.window.activeTextEditor.document.fileName)) {
                         this.extension.logger.addLogMessage(`Found root file from parent: ${file.fsPath}`)
                         return file.fsPath
@@ -481,7 +475,8 @@ export class Manager implements IManager {
      *
      * @param file The path of a LaTeX file
      */
-    getIncludedBib(file?: string, includedBib: string[] = [], children: string[] = []): string[] {
+    getIncludedBib(file?: string, memoChildren = new Set<string>()): string[] {
+        const includedBib: string[] = []
         if (file === undefined) {
             file = this.rootFile
         }
@@ -491,14 +486,14 @@ export class Manager implements IManager {
         if (!this.getCachedContent(file)) {
             return []
         }
-        children.push(file)
+
+        memoChildren.add(file)
         includedBib.push(...this.gracefulCachedContent(file).bibs)
         for (const child of this.gracefulCachedContent(file).children) {
-            if (children.includes(child.file)) {
-                // Already parsed
+            if (memoChildren.has(child.file)) {
                 continue
             }
-            this.getIncludedBib(child.file, includedBib)
+            includedBib.push(...this.getIncludedBib(child.file, memoChildren))
         }
         // Make sure to return an array with unique entries
         return Array.from(new Set(includedBib))
@@ -525,7 +520,6 @@ export class Manager implements IManager {
         includedTeX.push(file)
         for (const child of this.gracefulCachedContent(file).children) {
             if (includedTeX.includes(child.file)) {
-                // Already included
                 continue
             }
             this.getIncludedTeX(child.file, includedTeX)
@@ -603,45 +597,33 @@ export class Manager implements IManager {
      *
      * @param file The file in which children are recursively computed
      * @param baseFile The file currently considered as the rootFile
-     * @param children The list of already computed children
-     * @param content The content of `file`. If undefined, it is read from disk
+     *
      */
-    private getTeXChildren(file: string, baseFile: string, children: string[], content?: string): string[] {
-        if (content === undefined) {
-            content = utils.stripCommentsAndVerbatim(fs.readFileSync(file).toString())
+    private async getTeXChildren(file: string, baseFile: string, children = new Set<string>()): Promise<string[]> {
+        let content = await this.extension.lwfs.readFilePathGracefully(file) || ''
+        content = utils.stripCommentsAndVerbatim(content)
+
+        const inputFileRegExp = new InputFileRegExp()
+        const newChildren = new Set<string>()
+        while (true) {
+            const result = inputFileRegExp.exec(content, file, baseFile)
+            if (!result) {
+                break
+            }
+            if (!fs.existsSync(result.path) || path.relative(result.path, baseFile) === '') {
+                continue
+            }
+            newChildren.add(result.path)
         }
 
-        // Update children of current file
-        if (!this.getCachedContent(file)) {
-            this.initCacheEntry(file)
-            const inputFileRegExp = new InputFileRegExp()
-            while (true) {
-                const result = inputFileRegExp.exec(content, file, baseFile)
-                if (!result) {
-                    break
-                }
-
-                if (!fs.existsSync(result.path) ||
-                    path.relative(result.path, baseFile) === '') {
-                    continue
-                }
-
-                this.gracefulCachedContent(file).children.push({
-                    index: result.match.index,
-                    file: result.path
-                })
+        for (const childFilePath of newChildren) {
+            if (children.has(childFilePath)) {
+                continue
             }
+            children.add(childFilePath)
+            await this.getTeXChildren(childFilePath, baseFile, children)
         }
-
-        this.gracefulCachedContent(file).children.forEach(child => {
-            if (children.includes(child.file)) {
-                // Already included
-                return
-            }
-            children.push(child.file)
-            this.getTeXChildren(child.file, baseFile, children)
-        })
-        return children
+        return Array.from(children)
     }
 
     private async getTeXChildrenFromFls(texFile: string) {
@@ -673,13 +655,11 @@ export class Manager implements IManager {
                 break
             }
 
-            if (!fs.existsSync(result.path) ||
-                path.relative(result.path, baseFile) === '') {
+            if (!fs.existsSync(result.path) || path.relative(result.path, baseFile) === '') {
                 continue
             }
 
             this.gracefulCachedContent(baseFile).children.push({
-                index: result.match.index,
                 file: result.path
             })
 
@@ -738,9 +718,7 @@ export class Manager implements IManager {
 
         for (const inputFile of ioFiles.input) {
             // Drop files that are also listed as OUTPUT or should be ignored
-            if (ioFiles.output.includes(inputFile) ||
-                this.isExcluded(inputFile) ||
-                !fs.existsSync(inputFile)) {
+            if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !fs.existsSync(inputFile)) {
                 continue
             }
             if (inputFile === texFile || this.filesWatched.has(inputFile)) {
@@ -752,7 +730,6 @@ export class Manager implements IManager {
             if (path.extname(inputFile) === '.tex') {
                 // Parse tex files as imported subfiles.
                 this.gracefulCachedContent(texFile).children.push({
-                    index: Number.MAX_VALUE,
                     file: inputFile
                 })
                 await this.parseFileAndSubs(inputFile, texFile)
