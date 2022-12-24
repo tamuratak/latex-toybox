@@ -22,7 +22,8 @@ export class LwFileSystem implements ILwFileSystem {
     async exists(uri: vscode.Uri): Promise<boolean> {
         try {
             if (this.isLocalUri(uri)) {
-                return fs.existsSync(uri.fsPath)
+                await fs.promises.stat(uri.fsPath)
+                return true
             } else {
                 await vscode.workspace.fs.stat(uri)
                 return true
