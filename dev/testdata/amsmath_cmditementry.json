@@ -1,0 +1,877 @@
+[
+    {
+        "label": "\\AmS",
+        "kind": "Function",
+        "documentation": "`AmS`",
+        "sortText": "61mS",
+        "filterText": "AmS",
+        "insertText": {
+            "e": 1,
+            "value": "AmS"
+        }
+    },
+    {
+        "label": "\\AmSfont",
+        "kind": "Function",
+        "documentation": "`AmSfont`",
+        "sortText": "61mSfont",
+        "filterText": "AmSfont",
+        "insertText": {
+            "e": 1,
+            "value": "AmSfont"
+        }
+    },
+    {
+        "label": "\\binom{above}{below}",
+        "kind": "Function",
+        "documentation": "`binom{above}{below}`",
+        "sortText": "42inom{above}{below}",
+        "filterText": "binom{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "binom{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\boxed{argument}",
+        "kind": "Function",
+        "documentation": "`boxed{argument}`",
+        "sortText": "42oxed{argument}",
+        "filterText": "boxed{}",
+        "insertText": {
+            "e": 1,
+            "value": "boxed{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\cfrac[align]{numerator}{denominator}",
+        "kind": "Function",
+        "documentation": "`cfrac[align]{numerator}{denominator}`",
+        "sortText": "43frac[align]{numerator}{denominator}",
+        "filterText": "cfrac[]{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "cfrac[${3}]{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\cfrac{numerator}{denominator}",
+        "kind": "Function",
+        "documentation": "`cfrac{numerator}{denominator}`",
+        "sortText": "43frac{numerator}{denominator}",
+        "filterText": "cfrac{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "cfrac{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\dbinom{above}{below}",
+        "kind": "Function",
+        "documentation": "`dbinom{above}{below}`",
+        "sortText": "44binom{above}{below}",
+        "filterText": "dbinom{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "dbinom{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\ddddot{text}",
+        "kind": "Function",
+        "documentation": "`ddddot{text}`",
+        "sortText": "44dddot{text}",
+        "filterText": "ddddot{}",
+        "insertText": {
+            "e": 1,
+            "value": "ddddot{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\dddot{text}",
+        "kind": "Function",
+        "documentation": "`dddot{text}`",
+        "sortText": "44ddot{text}",
+        "filterText": "dddot{}",
+        "insertText": {
+            "e": 1,
+            "value": "dddot{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\DeclareMathOperator{command}{text}",
+        "kind": "Function",
+        "documentation": "`DeclareMathOperator{command}{text}`",
+        "sortText": "64eclareMathOperator{command}{text}",
+        "filterText": "DeclareMathOperator{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "DeclareMathOperator{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\DeclareMathOperator*{command}{text}",
+        "kind": "Function",
+        "documentation": "`DeclareMathOperator*{command}{text}`",
+        "sortText": "64eclareMathOperator*{command}{text}",
+        "filterText": "DeclareMathOperator*{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "DeclareMathOperator*{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\dfrac{numerator}{denominator}",
+        "kind": "Function",
+        "documentation": "`dfrac{numerator}{denominator}`",
+        "sortText": "44frac{numerator}{denominator}",
+        "filterText": "dfrac{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "dfrac{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\displaybreak",
+        "kind": "Function",
+        "documentation": "`displaybreak`",
+        "sortText": "44isplaybreak",
+        "filterText": "displaybreak",
+        "insertText": {
+            "e": 1,
+            "value": "displaybreak"
+        }
+    },
+    {
+        "label": "\\displaybreak[value]",
+        "kind": "Function",
+        "documentation": "`displaybreak[value]`",
+        "sortText": "44isplaybreak[value]",
+        "filterText": "displaybreak[]",
+        "insertText": {
+            "e": 1,
+            "value": "displaybreak[${1:${TM_SELECTED_TEXT}}]"
+        }
+    },
+    {
+        "label": "\\dotsb",
+        "kind": "Function",
+        "documentation": "`dotsb`",
+        "sortText": "44otsb",
+        "filterText": "dotsb",
+        "insertText": {
+            "e": 1,
+            "value": "dotsb"
+        }
+    },
+    {
+        "label": "\\dotsc",
+        "kind": "Function",
+        "documentation": "`dotsc`",
+        "sortText": "44otsc",
+        "filterText": "dotsc",
+        "insertText": {
+            "e": 1,
+            "value": "dotsc"
+        }
+    },
+    {
+        "label": "\\dotsi",
+        "kind": "Function",
+        "documentation": "`dotsi`",
+        "sortText": "44otsi",
+        "filterText": "dotsi",
+        "insertText": {
+            "e": 1,
+            "value": "dotsi"
+        }
+    },
+    {
+        "label": "\\dotsm",
+        "kind": "Function",
+        "documentation": "`dotsm`",
+        "sortText": "44otsm",
+        "filterText": "dotsm",
+        "insertText": {
+            "e": 1,
+            "value": "dotsm"
+        }
+    },
+    {
+        "label": "\\dotso",
+        "kind": "Function",
+        "documentation": "`dotso`",
+        "sortText": "44otso",
+        "filterText": "dotso",
+        "insertText": {
+            "e": 1,
+            "value": "dotso"
+        }
+    },
+    {
+        "label": "\\eqref{label}",
+        "kind": "Function",
+        "documentation": "`eqref{label}`",
+        "sortText": "45qref{label}",
+        "filterText": "eqref{}",
+        "insertText": {
+            "e": 1,
+            "value": "eqref{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\hdotsfor{columns}",
+        "kind": "Function",
+        "documentation": "`hdotsfor{columns}`",
+        "sortText": "48dotsfor{columns}",
+        "filterText": "hdotsfor{}",
+        "insertText": {
+            "e": 1,
+            "value": "hdotsfor{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\hdotsfor[multiplier]{columns}",
+        "kind": "Function",
+        "documentation": "`hdotsfor[multiplier]{columns}`",
+        "sortText": "48dotsfor[multiplier]{columns}",
+        "filterText": "hdotsfor[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "hdotsfor[${2}]{${1}}"
+        }
+    },
+    {
+        "label": "\\idotsint",
+        "kind": "Function",
+        "documentation": "`idotsint`",
+        "sortText": "49dotsint",
+        "filterText": "idotsint",
+        "insertText": {
+            "e": 1,
+            "value": "idotsint"
+        }
+    },
+    {
+        "label": "\\iiiint",
+        "kind": "Function",
+        "detail": "⨌",
+        "documentation": "QUADRUPLE INTEGRAL OPERATOR",
+        "sortText": "49iiint",
+        "filterText": "iiiint",
+        "insertText": {
+            "e": 1,
+            "value": "iiiint"
+        }
+    },
+    {
+        "label": "\\iiint",
+        "kind": "Function",
+        "detail": "∭",
+        "documentation": "TRIPLE INTEGRAL operator",
+        "sortText": "49iint",
+        "filterText": "iiint",
+        "insertText": {
+            "e": 1,
+            "value": "iiint"
+        }
+    },
+    {
+        "label": "\\iint",
+        "kind": "Function",
+        "detail": "∬",
+        "documentation": "DOUBLE INTEGRAL operator",
+        "sortText": "49int",
+        "filterText": "iint",
+        "insertText": {
+            "e": 1,
+            "value": "iint"
+        }
+    },
+    {
+        "label": "\\impliedby",
+        "kind": "Function",
+        "detail": "⟸",
+        "documentation": "LONG LEFTWARDS DOUBLE ARROW",
+        "sortText": "49mpliedby",
+        "filterText": "impliedby",
+        "insertText": {
+            "e": 1,
+            "value": "impliedby"
+        }
+    },
+    {
+        "label": "\\implies",
+        "kind": "Function",
+        "detail": "⟹",
+        "documentation": "LONG RIGHTWARDS DOUBLE ARROW",
+        "sortText": "49mplies",
+        "filterText": "implies",
+        "insertText": {
+            "e": 1,
+            "value": "implies"
+        }
+    },
+    {
+        "label": "\\intertext{word or phrase}",
+        "kind": "Function",
+        "documentation": "`intertext{word or phrase}`",
+        "sortText": "49ntertext{word or phrase}",
+        "filterText": "intertext{}",
+        "insertText": {
+            "e": 1,
+            "value": "intertext{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\leftroot{argument}",
+        "kind": "Function",
+        "documentation": "`leftroot{argument}`",
+        "sortText": "4ceftroot{argument}",
+        "filterText": "leftroot{}",
+        "insertText": {
+            "e": 1,
+            "value": "leftroot{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\lvert",
+        "kind": "Function",
+        "documentation": "`lvert`",
+        "sortText": "4cvert",
+        "filterText": "lvert",
+        "insertText": {
+            "e": 1,
+            "value": "lvert"
+        }
+    },
+    {
+        "label": "\\lVert",
+        "kind": "Function",
+        "documentation": "`lVert`",
+        "sortText": "4cVert",
+        "filterText": "lVert",
+        "insertText": {
+            "e": 1,
+            "value": "lVert"
+        }
+    },
+    {
+        "label": "\\medspace",
+        "kind": "Function",
+        "detail": " ",
+        "documentation": "MEDIUM MATHEMATICAL SPACE, four-eighteenths of an em",
+        "sortText": "4dedspace",
+        "filterText": "medspace",
+        "insertText": {
+            "e": 1,
+            "value": "medspace"
+        }
+    },
+    {
+        "label": "\\mod{value}",
+        "kind": "Function",
+        "documentation": "`mod{value}`",
+        "sortText": "4dod{value}",
+        "filterText": "mod{}",
+        "insertText": {
+            "e": 1,
+            "value": "mod{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\mspace{dimen}",
+        "kind": "Function",
+        "documentation": "`mspace{dimen}`",
+        "sortText": "4dspace{dimen}",
+        "filterText": "mspace{}",
+        "insertText": {
+            "e": 1,
+            "value": "mspace{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\negmedspace",
+        "kind": "Function",
+        "documentation": "`negmedspace`",
+        "sortText": "4eegmedspace",
+        "filterText": "negmedspace",
+        "insertText": {
+            "e": 1,
+            "value": "negmedspace"
+        }
+    },
+    {
+        "label": "\\negthickspace",
+        "kind": "Function",
+        "documentation": "`negthickspace`",
+        "sortText": "4eegthickspace",
+        "filterText": "negthickspace",
+        "insertText": {
+            "e": 1,
+            "value": "negthickspace"
+        }
+    },
+    {
+        "label": "\\negthinspace",
+        "kind": "Function",
+        "documentation": "`negthinspace`",
+        "sortText": "4eegthinspace",
+        "filterText": "negthinspace",
+        "insertText": {
+            "e": 1,
+            "value": "negthinspace"
+        }
+    },
+    {
+        "label": "\\nobreakdash",
+        "kind": "Function",
+        "documentation": "`nobreakdash`",
+        "sortText": "4eobreakdash",
+        "filterText": "nobreakdash",
+        "insertText": {
+            "e": 1,
+            "value": "nobreakdash"
+        }
+    },
+    {
+        "label": "\\notag",
+        "kind": "Function",
+        "documentation": "`notag`",
+        "sortText": "4eotag",
+        "filterText": "notag",
+        "insertText": {
+            "e": 1,
+            "value": "notag"
+        }
+    },
+    {
+        "label": "\\operatorname{name}",
+        "kind": "Function",
+        "documentation": "`operatorname{name}`",
+        "sortText": "4fperatorname{name}",
+        "filterText": "operatorname{}",
+        "insertText": {
+            "e": 1,
+            "value": "operatorname{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\operatornamewithlimits{name}",
+        "kind": "Function",
+        "documentation": "`operatornamewithlimits{name}`",
+        "sortText": "4fperatornamewithlimits{name}",
+        "filterText": "operatornamewithlimits{}",
+        "insertText": {
+            "e": 1,
+            "value": "operatornamewithlimits{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\overleftrightarrow{argument}",
+        "kind": "Function",
+        "documentation": "`overleftrightarrow{argument}`",
+        "sortText": "4fverleftrightarrow{argument}",
+        "filterText": "overleftrightarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "overleftrightarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\overset{superscript}{argument}",
+        "kind": "Function",
+        "documentation": "`overset{superscript}{argument}`",
+        "sortText": "4fverset{superscript}{argument}",
+        "filterText": "overset{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "overset{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\pod{value}",
+        "kind": "Function",
+        "documentation": "`pod{value}`",
+        "sortText": "50od{value}",
+        "filterText": "pod{}",
+        "insertText": {
+            "e": 1,
+            "value": "pod{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\raisetag{dimen}",
+        "kind": "Function",
+        "documentation": "`raisetag{dimen}`",
+        "sortText": "52aisetag{dimen}",
+        "filterText": "raisetag{}",
+        "insertText": {
+            "e": 1,
+            "value": "raisetag{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\rvert",
+        "kind": "Function",
+        "documentation": "`rvert`",
+        "sortText": "52vert",
+        "filterText": "rvert",
+        "insertText": {
+            "e": 1,
+            "value": "rvert"
+        }
+    },
+    {
+        "label": "\\rVert",
+        "kind": "Function",
+        "documentation": "`rVert`",
+        "sortText": "52Vert",
+        "filterText": "rVert",
+        "insertText": {
+            "e": 1,
+            "value": "rVert"
+        }
+    },
+    {
+        "label": "\\sideset{left}{right}{symbol}",
+        "kind": "Function",
+        "documentation": "`sideset{left}{right}{symbol}`",
+        "sortText": "53ideset{left}{right}{symbol}",
+        "filterText": "sideset{}{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "sideset{${1}}{${2}}{${3}}"
+        }
+    },
+    {
+        "label": "\\smash{argument}",
+        "kind": "Function",
+        "documentation": "`smash{argument}`",
+        "sortText": "53mash{argument}",
+        "filterText": "smash{}",
+        "insertText": {
+            "e": 1,
+            "value": "smash{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\smash[valign]{argument}",
+        "kind": "Function",
+        "documentation": "`smash[valign]{argument}`",
+        "sortText": "53mash[valign]{argument}",
+        "filterText": "smash[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "smash[${2}]{${1}}"
+        }
+    },
+    {
+        "label": "\\substack{argument}",
+        "kind": "Function",
+        "documentation": "`substack{argument}`",
+        "sortText": "53ubstack{argument}",
+        "filterText": "substack{}",
+        "insertText": {
+            "e": 1,
+            "value": "substack{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\tag{label}",
+        "kind": "Function",
+        "documentation": "`tag{label}`",
+        "sortText": "54ag{label}",
+        "filterText": "tag{}",
+        "insertText": {
+            "e": 1,
+            "value": "tag{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\tag*{label}",
+        "kind": "Function",
+        "documentation": "`tag*{label}`",
+        "sortText": "54ag*{label}",
+        "filterText": "tag*{}",
+        "insertText": {
+            "e": 1,
+            "value": "tag*{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\tbinom{above}{below}",
+        "kind": "Function",
+        "documentation": "`tbinom{above}{below}`",
+        "sortText": "54binom{above}{below}",
+        "filterText": "tbinom{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "tbinom{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\tfrac{numerator}{denominator}",
+        "kind": "Function",
+        "documentation": "`tfrac{numerator}{denominator}`",
+        "sortText": "54frac{numerator}{denominator}",
+        "filterText": "tfrac{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "tfrac{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\thickspace",
+        "kind": "Function",
+        "documentation": "`thickspace`",
+        "sortText": "54hickspace",
+        "filterText": "thickspace",
+        "insertText": {
+            "e": 1,
+            "value": "thickspace"
+        }
+    },
+    {
+        "label": "\\thinspace",
+        "kind": "Function",
+        "documentation": "`thinspace`",
+        "sortText": "54hinspace",
+        "filterText": "thinspace",
+        "insertText": {
+            "e": 1,
+            "value": "thinspace"
+        }
+    },
+    {
+        "label": "\\underleftarrow{argument}",
+        "kind": "Function",
+        "documentation": "`underleftarrow{argument}`",
+        "sortText": "55nderleftarrow{argument}",
+        "filterText": "underleftarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "underleftarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\underleftrightarrow{argument}",
+        "kind": "Function",
+        "documentation": "`underleftrightarrow{argument}`",
+        "sortText": "55nderleftrightarrow{argument}",
+        "filterText": "underleftrightarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "underleftrightarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\underrightarrow{argument}",
+        "kind": "Function",
+        "documentation": "`underrightarrow{argument}`",
+        "sortText": "55nderrightarrow{argument}",
+        "filterText": "underrightarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "underrightarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\underset{subscript}{argument}",
+        "kind": "Function",
+        "documentation": "`underset{subscript}{argument}`",
+        "sortText": "55nderset{subscript}{argument}",
+        "filterText": "underset{}{}",
+        "insertText": {
+            "e": 1,
+            "value": "underset{${1}}{${2}}"
+        }
+    },
+    {
+        "label": "\\uproot{argument}",
+        "kind": "Function",
+        "documentation": "`uproot{argument}`",
+        "sortText": "55proot{argument}",
+        "filterText": "uproot{}",
+        "insertText": {
+            "e": 1,
+            "value": "uproot{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\varDelta",
+        "kind": "Function",
+        "detail": "𝛥",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL DELTA",
+        "sortText": "56arDelta",
+        "filterText": "varDelta",
+        "insertText": {
+            "e": 1,
+            "value": "varDelta"
+        }
+    },
+    {
+        "label": "\\varGamma",
+        "kind": "Function",
+        "detail": "𝛤",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL GAMMA",
+        "sortText": "56arGamma",
+        "filterText": "varGamma",
+        "insertText": {
+            "e": 1,
+            "value": "varGamma"
+        }
+    },
+    {
+        "label": "\\varLambda",
+        "kind": "Function",
+        "detail": "𝛬",
+        "documentation": "mathematical italic capital lambda",
+        "sortText": "56arLambda",
+        "filterText": "varLambda",
+        "insertText": {
+            "e": 1,
+            "value": "varLambda"
+        }
+    },
+    {
+        "label": "\\varOmega",
+        "kind": "Function",
+        "detail": "𝛺",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL OMEGA",
+        "sortText": "56arOmega",
+        "filterText": "varOmega",
+        "insertText": {
+            "e": 1,
+            "value": "varOmega"
+        }
+    },
+    {
+        "label": "\\varPhi",
+        "kind": "Function",
+        "detail": "𝛷",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL PHI",
+        "sortText": "56arPhi",
+        "filterText": "varPhi",
+        "insertText": {
+            "e": 1,
+            "value": "varPhi"
+        }
+    },
+    {
+        "label": "\\varPi",
+        "kind": "Function",
+        "detail": "𝛱",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL PI",
+        "sortText": "56arPi",
+        "filterText": "varPi",
+        "insertText": {
+            "e": 1,
+            "value": "varPi"
+        }
+    },
+    {
+        "label": "\\varPsi",
+        "kind": "Function",
+        "detail": "𝛹",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL PSI",
+        "sortText": "56arPsi",
+        "filterText": "varPsi",
+        "insertText": {
+            "e": 1,
+            "value": "varPsi"
+        }
+    },
+    {
+        "label": "\\varSigma",
+        "kind": "Function",
+        "detail": "𝛴",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL SIGMA",
+        "sortText": "56arSigma",
+        "filterText": "varSigma",
+        "insertText": {
+            "e": 1,
+            "value": "varSigma"
+        }
+    },
+    {
+        "label": "\\varTheta",
+        "kind": "Function",
+        "detail": "𝛩",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL THETA",
+        "sortText": "56arTheta",
+        "filterText": "varTheta",
+        "insertText": {
+            "e": 1,
+            "value": "varTheta"
+        }
+    },
+    {
+        "label": "\\varUpsilon",
+        "kind": "Function",
+        "detail": "𝛶",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL UPSILON",
+        "sortText": "56arUpsilon",
+        "filterText": "varUpsilon",
+        "insertText": {
+            "e": 1,
+            "value": "varUpsilon"
+        }
+    },
+    {
+        "label": "\\varXi",
+        "kind": "Function",
+        "detail": "𝛯",
+        "documentation": "MATHEMATICAL ITALIC CAPITAL XI",
+        "sortText": "56arXi",
+        "filterText": "varXi",
+        "insertText": {
+            "e": 1,
+            "value": "varXi"
+        }
+    },
+    {
+        "label": "\\xleftarrow[subscript]{superscript}",
+        "kind": "Function",
+        "documentation": "`xleftarrow[subscript]{superscript}`",
+        "sortText": "58leftarrow[subscript]{superscript}",
+        "filterText": "xleftarrow[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "xleftarrow[${2}]{${1}}"
+        }
+    },
+    {
+        "label": "\\xleftarrow{superscript}",
+        "kind": "Function",
+        "documentation": "`xleftarrow{superscript}`",
+        "sortText": "58leftarrow{superscript}",
+        "filterText": "xleftarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "xleftarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    },
+    {
+        "label": "\\xrightarrow[subscript]{superscript}",
+        "kind": "Function",
+        "documentation": "`xrightarrow[subscript]{superscript}`",
+        "sortText": "58rightarrow[subscript]{superscript}",
+        "filterText": "xrightarrow[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "xrightarrow[${2}]{${1}}"
+        }
+    },
+    {
+        "label": "\\xrightarrow{superscript}",
+        "kind": "Function",
+        "documentation": "`xrightarrow{superscript}`",
+        "sortText": "58rightarrow{superscript}",
+        "filterText": "xrightarrow{}",
+        "insertText": {
+            "e": 1,
+            "value": "xrightarrow{${1:${TM_SELECTED_TEXT}}}"
+        }
+    }
+] 

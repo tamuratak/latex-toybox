@@ -1,0 +1,86 @@
+[
+    {
+        "label": "alignat[alignment]{n}",
+        "kind": "Snippet",
+        "detail": "Insert environment alignat.",
+        "documentation": "alignat\nPackage: amsmath",
+        "sortText": "41lignat[alignment]{n}",
+        "filterText": "alignat[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "begin{alignat}[${2}]{${1}}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{alignat}"
+        }
+    },
+    {
+        "label": "alignat*[alignment]{n}",
+        "kind": "Snippet",
+        "detail": "Insert environment alignat*.",
+        "documentation": "alignat*\nPackage: amsmath",
+        "sortText": "41lignat*[alignment]{n}",
+        "filterText": "alignat*[]{}",
+        "insertText": {
+            "e": 1,
+            "value": "begin{alignat*}[${2}]{${1}}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{alignat*}"
+        }
+    },
+    {
+        "label": "alignat{n}",
+        "kind": "Snippet",
+        "detail": "Insert environment alignat.",
+        "documentation": "alignat\nPackage: amsmath",
+        "sortText": "41lignat{n}",
+        "filterText": "alignat{}",
+        "insertText": {
+            "e": 1,
+            "value": "begin{alignat}{${1}}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{alignat}"
+        }
+    },
+    {
+        "label": "alignat*{n}",
+        "kind": "Snippet",
+        "detail": "Insert environment alignat*.",
+        "documentation": "alignat*\nPackage: amsmath",
+        "sortText": "41lignat*{n}",
+        "filterText": "alignat*{}",
+        "insertText": {
+            "e": 1,
+            "value": "begin{alignat*}{${1}}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{alignat*}"
+        }
+    },
+    {
+        "label": "subarray",
+        "kind": "Snippet",
+        "detail": "Insert environment subarray.",
+        "documentation": "subarray\nPackage: amsmath",
+        "sortText": "53ubarray",
+        "filterText": "subarray",
+        "insertText": {
+            "e": 1,
+            "value": "begin{subarray}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{subarray}"
+        }
+    },
+    {
+        "label": "subarray[align]",
+        "kind": "Snippet",
+        "detail": "Insert environment subarray.",
+        "documentation": "subarray\nPackage: amsmath",
+        "sortText": "53ubarray[align]",
+        "filterText": "subarray[]",
+        "insertText": {
+            "e": 1,
+            "value": "begin{subarray}[${1}]\n\t${0:${TM_SELECTED_TEXT}}\n\\end{subarray}"
+        }
+    },
+    {
+        "label": "xxalignat",
+        "kind": "Snippet",
+        "detail": "Insert environment xxalignat.",
+        "documentation": "xxalignat\nPackage: amsmath",
+        "sortText": "58xalignat",
+        "filterText": "xxalignat",
+        "insertText": {
+            "e": 1,
+            "value": "begin{xxalignat}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{xxalignat}"
+        }
+    }
+]
