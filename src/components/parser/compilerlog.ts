@@ -109,18 +109,18 @@ export class CompilerLogParser {
 
     private latexmkSkipped(log: string): boolean {
         if (log.match(latexmkUpToDate) && !log.match(latexmkPattern)) {
-            this.showCompilerDiagnostics(this.latexLogParser.compilerDiagnostics, this.latexLogParser.buildLog, 'LaTeX')
-            this.showCompilerDiagnostics(this.bibLogParser.compilerDiagnostics, this.bibLogParser.buildLog, 'BibTeX')
+            void this.showCompilerDiagnostics(this.latexLogParser.compilerDiagnostics, this.latexLogParser.buildLog, 'LaTeX')
+            void this.showCompilerDiagnostics(this.bibLogParser.compilerDiagnostics, this.bibLogParser.buildLog, 'BibTeX')
             return true
         }
         return false
     }
 
-    private getErrorPosition(item: LogEntry): {start: number, end: number} | undefined {
+    private async getErrorPosition(item: LogEntry) {
         if (!item.errorPosText) {
             return undefined
         }
-        const content = this.extension.manager.getDirtyContent(item.file)
+        const content = await this.extension.manager.getDirtyContent(item.file)
         if (!content) {
             return undefined
         }
@@ -142,14 +142,14 @@ export class CompilerLogParser {
        return undefined
     }
 
-    showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string) {
+    async showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string) {
         compilerDiagnostics.clear()
         const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
         for (const item of buildLog) {
             let startChar = 0
             let endChar = 65535
             // Try to compute a more precise position
-            const preciseErrorPos = this.getErrorPosition(item)
+            const preciseErrorPos = await this.getErrorPosition(item)
             if (preciseErrorPos) {
                 startChar = preciseErrorPos.start
                 endChar = preciseErrorPos.end

@@ -10,6 +10,7 @@ import {
     promisify,
 //    isDockerEnabled,
     runTestWithFixture,
+    sleep,
     waitLatexWorkshopActivated
 } from './utils/ciutils'
 
@@ -135,6 +136,7 @@ suite('Completion test suite', () => {
         await rootFileFound
         const pos = new vscode.Position(6,5)
         const token = new vscode.CancellationTokenSource().token
+        await sleep(2000)
         const items = extension.exports.realExtension?.completer.provideCompletionItems(
             doc, pos, token,
             {

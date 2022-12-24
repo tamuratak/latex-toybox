@@ -530,13 +530,13 @@ export class Manager implements IManager {
     /**
      * Get the buffer content of a file if it is opened in vscode. Otherwise, read the file from disk
      */
-    getDirtyContent(file: string): string | undefined {
+    async getDirtyContent(file: string): Promise<string | undefined> {
         const cache = this.getCachedContent(file)
         if (cache === undefined) {
             this.initCacheEntry(file)
         }
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
-        const content = doc?.getText() || this.extension.lwfs.readFileSyncGracefully(file)
+        const content = doc?.getText() || await this.extension.lwfs.readFilePathGracefully(file)
         if (content === undefined) {
             this.extension.logger.addLogMessage(`Cannot read dirty content of unknown ${file}`)
             return
@@ -581,7 +581,7 @@ export class Manager implements IManager {
             // in case of circular inclusion
             await this.addToFileWatcher(file)
         }
-        let content = this.getDirtyContent(file)
+        let content = await this.getDirtyContent(file)
         if (!content) {
             return
         }
@@ -902,7 +902,7 @@ export class Manager implements IManager {
 
     // This function updates all completers upon tex-file changes.
     private async updateCompleterOnChange(file: string) {
-        const content = this.getDirtyContent(file)
+        const content = await this.getDirtyContent(file)
         if (!content) {
             return
         }

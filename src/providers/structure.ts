@@ -146,7 +146,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
 
         // `getDirtyContent` is used here. I did not check if this is
         // appropriate.
-        const content = this.extension.manager.getDirtyContent(file)
+        const content = await this.extension.manager.getDirtyContent(file)
         if (!content) {
             this.extension.logger.addLogMessage(`Error loading LaTeX during structuring: ${file}.`)
             return []
