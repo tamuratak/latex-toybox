@@ -44,7 +44,7 @@ export class NewCommandFinder {
             }
             newCommandFileAbs = path.join(rootDir, newCommandFile)
         }
-        commandsString = this.extension.lwfs.readFileSyncGracefully(newCommandFileAbs)
+        commandsString = await this.extension.lwfs.readFilePathGracefully(newCommandFileAbs)
         if (commandsString === undefined) {
             this.extension.logger.addLogMessage(`Cannot read file ${newCommandFileAbs}`)
             return ''
@@ -80,7 +80,7 @@ export class NewCommandFinder {
             if (cache === undefined) {
                 continue
             }
-            const content = this.extension.manager.getDirtyContent(tex)
+            const content = await this.extension.manager.getDirtyContent(tex)
             if (content === undefined) {
                 continue
             }

@@ -16,7 +16,7 @@ export class FinderUtils {
         this.extension = extension
     }
 
-    findRootFromMagic(): string | undefined {
+    async findRootFromMagic(): Promise<string | undefined> {
         if (!vscode.window.activeTextEditor) {
             return undefined
         }
@@ -27,7 +27,7 @@ export class FinderUtils {
         const fileStack: string[] = []
         if (result) {
             let file = path.resolve(path.dirname(vscode.window.activeTextEditor.document.fileName), result[1])
-            content = this.extension.lwfs.readFileSyncGracefully(file)
+            content = await this.extension.lwfs.readFilePathGracefully(file)
             if (content === undefined) {
                 const msg = `Not found root file specified in the magic comment: ${file}`
                 this.extension.logger.addLogMessage(msg)
@@ -47,7 +47,7 @@ export class FinderUtils {
                     this.extension.logger.addLogMessage(`Recursively found root file by magic comment: ${file}`)
                 }
 
-                content = this.extension.lwfs.readFileSyncGracefully(file)
+                content = await this.extension.lwfs.readFilePathGracefully(file)
                 if (content === undefined) {
                     const msg = `Not found root file specified in the magic comment: ${file}`
                     this.extension.logger.addLogMessage(msg)

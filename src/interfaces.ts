@@ -104,9 +104,10 @@ export interface ILwFileSystem {
     isVirtualUri(uri: vscode.Uri): boolean,
     exists(uri: vscode.Uri): Promise<boolean>,
     readFilePath(filePath: string): Promise<string>,
+    readFilePathGracefully(filepath: string): Promise<string | undefined>,
     readFile(fileUri: vscode.Uri): Promise<string>,
+    readFileGracefully(fileUri: vscode.Uri): Promise<string | undefined>,
     readFileAsBuffer(fileUri: vscode.Uri): Promise<Buffer>,
-    readFileSyncGracefully(filepath: string): string | undefined,
     stat(fileUri: vscode.Uri): Promise<fs.Stats | vscode.FileStat>
 }
 
@@ -126,7 +127,7 @@ export interface IManager {
     findRoot(): Promise<string | undefined>,
     getIncludedBib(file?: string): string[],
     getIncludedTeX(file?: string): string[],
-    getDirtyContent(file: string): string | undefined,
+    getDirtyContent(file: string): Promise<string | undefined>,
     getWorkspaceFolderRootDir(): vscode.WorkspaceFolder | undefined,
     tex2pdf(texPath: string, respectOutDir?: boolean): string
 }
