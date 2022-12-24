@@ -72,18 +72,6 @@ export class LwFileSystem implements ILwFileSystem {
         }
     }
 
-    readFileSyncGracefully(filepath: string): string | undefined {
-        try {
-            const ret = fs.readFileSync(filepath).toString()
-            return ret
-        } catch (err) {
-            if (err instanceof Error) {
-                this.extension.logger.logError(err)
-            }
-            return undefined
-        }
-    }
-
     async stat(fileUri: vscode.Uri): Promise<fs.Stats | vscode.FileStat> {
         if (this.isLocalUri(fileUri)) {
             return fs.statSync(fileUri.fsPath)
