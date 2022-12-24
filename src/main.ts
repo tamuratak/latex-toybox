@@ -4,7 +4,7 @@ import * as process from 'process'
 import {Commander} from './commander'
 import {LaTeXCommanderTreeView} from './components/commander'
 import {Logger} from './components/logger'
-import {LwFileSystem} from './components/lwfs'
+import {isVirtualUri} from './lib/lwfs/lwfs'
 import {Manager} from './components/manager'
 import {Builder} from './components/builder'
 import {Viewer, PdfViewerHookProvider} from './components/viewer'
@@ -34,7 +34,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -147,7 +147,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     registerLatexWorkshopCommands(extension, context)
 
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-        if (extension.lwfs.isVirtualUri(e.uri)){
+        if (isVirtualUri(e.uri)){
             return
         }
         if (extension.manager.hasTexId(e.languageId)) {
@@ -160,7 +160,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
 
     // This function will be called when a new text is opened, or an inactive editor is reactivated after vscode reload
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async (e: vscode.TextDocument) => {
-        if (extension.lwfs.isVirtualUri(e.uri)){
+        if (isVirtualUri(e.uri)){
             return
         }
         if (extension.manager.hasTexId(e.languageId)) {
@@ -170,7 +170,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
 
     let updateCompleter: NodeJS.Timeout
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-        if (extension.lwfs.isVirtualUri(e.document.uri)){
+        if (isVirtualUri(e.document.uri)){
             return
         }
         if (!extension.manager.hasTexId(e.document.languageId)) {
@@ -209,7 +209,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
         } else if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId.toLowerCase() === 'log') {
             extension.logger.status.show()
         }
-        if (e && extension.lwfs.isVirtualUri(e.document.uri)){
+        if (e && isVirtualUri(e.document.uri)){
             return
         }
         if (e && extension.manager.hasTexId(e.document.languageId)) {
@@ -313,7 +313,6 @@ interface IExtension extends
     CompletionUpdaterLocator,
     CompletionStoreLocator,
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator,
     ReferenceStoreLocator,
     UtensilsParserLocator,
@@ -323,7 +322,6 @@ export class Extension implements IExtension {
     readonly extensionRoot: string
     readonly logger: Logger
     readonly eventBus = new EventBus()
-    readonly lwfs: LwFileSystem
     readonly commander: Commander
     readonly configuration: Configuration
     readonly manager: Manager
@@ -359,7 +357,6 @@ export class Extension implements IExtension {
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
         this.referenceStore = new ReferenceStore()
-        this.lwfs = new LwFileSystem(this)
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.builder = new Builder(this)

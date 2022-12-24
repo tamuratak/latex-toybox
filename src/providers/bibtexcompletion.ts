@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 
 import {BibtexFormatConfig} from './bibtexformatterlib/bibtexutils'
-import type {ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../interfaces'
+import type {ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../interfaces'
+import { readFilePath } from '../lib/lwfs/lwfs'
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
 type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entries.json')
@@ -9,7 +10,6 @@ type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entr
 interface IExtension extends
     ExtensionRootLocator,
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class BibtexCompleter implements vscode.CompletionItemProvider {
@@ -78,9 +78,9 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     }
 
     private async loadDefaultItems(entriesFile: string, optEntriesFile: string, entriesReplacements: {[key: string]: string[]}) {
-        const entriesContent = await this.extension.lwfs.readFilePath(entriesFile)
+        const entriesContent = await readFilePath(entriesFile)
         const entries: { [key: string]: string[] } = JSON.parse(entriesContent) as DataBibtexJsonType
-        const optFieldsContent = await this.extension.lwfs.readFilePath(optEntriesFile)
+        const optFieldsContent = await readFilePath(optEntriesFile)
         const optFields: { [key: string]: string[] } = JSON.parse(optFieldsContent) as DataBibtexOptionalJsonType
 
         const maxLengths: {[key: string]: number} = this.computeMaxLengths(entries, optFields)

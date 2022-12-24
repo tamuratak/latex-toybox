@@ -11,14 +11,13 @@ import {NewCommandFinder} from './mathpreviewlib/newcommandfinder'
 import {TexMathEnv, TeXMathEnvFinder} from './mathpreviewlib/texmathenvfinder'
 import {HoverPreviewOnRefProvider} from './mathpreviewlib/hoverpreviewonref'
 import {MathPreviewUtils} from './mathpreviewlib/mathpreviewutils'
-import type {LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 
 export type {TexMathEnv} from './mathpreviewlib/texmathenvfinder'
 
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator { }
 

@@ -4,6 +4,7 @@ import * as path from 'path'
 import type {Extension} from './main'
 import {TeXDoc} from './components/texdoc'
 import {getSurroundingCommandRange} from './utils/utils'
+import { readFilePath } from './lib/lwfs/lwfs'
 type SnippetsLatexJsonType = typeof import('../snippets/latex.json')
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -56,7 +57,7 @@ export class Commander {
 
     async initialize() {
         try {
-            const extensionSnippets = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/snippets/latex.json`)
+            const extensionSnippets = await readFilePath(`${this.extension.extensionRoot}/snippets/latex.json`)
             const snipObj: { [key: string]: { body: string } } = JSON.parse(extensionSnippets) as SnippetsLatexJsonType
             Object.keys(snipObj).forEach(key => {
                 this.snippets.set(key, new vscode.SnippetString(snipObj[key]['body']))

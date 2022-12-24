@@ -4,7 +4,8 @@ import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
 import {SurroundCommand} from './commandlib/surround'
-import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
+import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
+import * as lwfs from '../../lib/lwfs/lwfs'
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
 
@@ -109,7 +110,6 @@ interface IExtension extends
     CompleterLocator,
     CompletionStoreLocator,
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class Command implements IProvider, ICommand {
@@ -141,7 +141,7 @@ export class Command implements IProvider, ICommand {
                 const pkgEntry: CmdEnvSuggestion[] = []
                 if (filePathUri !== undefined) {
                     try {
-                        const content = await this.extension.lwfs.readFile(filePathUri)
+                        const content = await lwfs.readFile(filePathUri)
                         const cmds = JSON.parse(content) as {[key: string]: CmdItemEntry}
                         Object.keys(cmds).forEach(key => {
                             if (isCmdItemEntry(cmds[key])) {
@@ -159,7 +159,7 @@ export class Command implements IProvider, ICommand {
             }
         })
         if (configuration.get('intellisense.unimathsymbols.enabled')) {
-            const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/unimathsymbols.json`)
+            const content = await lwfs.readFilePath(`${this.extension.extensionRoot}/data/unimathsymbols.json`)
             const symbols: { [key: string]: CmdItemEntry } = JSON.parse(content) as DataUnimathSymbolsJsonType
             Object.keys(symbols).forEach(key => {
                 this.defaultSymbols.push(this.entryCmdToCompletion(key, symbols[key]))

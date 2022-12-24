@@ -2,7 +2,8 @@ import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
 import {escapeRegExp} from '../../utils/utils'
-import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
+import type {ExtensionRootLocator} from '../../interfaces'
+import { readFilePath } from '../../lib/lwfs/lwfs'
 
 export interface AtSuggestionItemEntry {
     readonly prefix: string,
@@ -13,8 +14,7 @@ export interface AtSuggestionItemEntry {
 type DataAtSuggestionJsonType = typeof import('../../../data/at-suggestions.json')
 
 interface IExtension extends
-    ExtensionRootLocator,
-    LwfsLocator { }
+    ExtensionRootLocator { }
 
 export class AtSuggestion implements IProvider {
     private readonly extension: IExtension
@@ -36,7 +36,7 @@ export class AtSuggestion implements IProvider {
     }
 
     private async initialize() {
-        const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/at-suggestions.json`)
+        const content = await readFilePath(`${this.extension.extensionRoot}/data/at-suggestions.json`)
         const suggestions: {[key: string]: AtSuggestionItemEntry} = JSON.parse(content) as DataAtSuggestionJsonType
 
         const suggestionReplacements = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.atSuggestionJSON.replace') as {[key: string]: string}

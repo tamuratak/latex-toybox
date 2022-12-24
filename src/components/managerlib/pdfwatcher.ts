@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as chokidar from 'chokidar'
 
 import type {Extension} from '../../main'
+import { isLocalUri, isVirtualUri } from '../../lib/lwfs/lwfs'
 
 export class PdfWatcher {
     private readonly extension: Extension
@@ -45,7 +46,7 @@ export class PdfWatcher {
     }
 
     private isWatchedVirtualUri(pdfFile: vscode.Uri): boolean {
-        if (this.extension.lwfs.isVirtualUri(pdfFile)) {
+        if (isVirtualUri(pdfFile)) {
             const key = this.toKey(pdfFile)
             return this.watchedPdfVirtualUris.has(key)
         } else {
@@ -85,7 +86,7 @@ export class PdfWatcher {
     }
 
     watchPdfFile(pdfFileUri: vscode.Uri) {
-        const isLocal = this.extension.lwfs.isLocalUri(pdfFileUri)
+        const isLocal = isLocalUri(pdfFileUri)
         if (isLocal) {
             const pdfFilePath = pdfFileUri.fsPath
             if (!this.watchedPdfLocalPaths.has(pdfFilePath)) {

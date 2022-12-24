@@ -6,11 +6,11 @@ import * as os from 'os'
 import type { ILinter } from '../linter'
 import { LinterUtil } from './linterutil'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
-import type {LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
+import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import { readFilePath } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class ChkTeX implements ILinter {
@@ -158,7 +158,7 @@ export class ChkTeX implements ILinter {
             this.extension.logger.addLogMessage('The .chktexrc file not found.')
             return
         }
-        const rcFile = await this.extension.lwfs.readFilePath(filePath)
+        const rcFile = await readFilePath(filePath)
         const reg = /^\s*TabSize\s*=\s*(\d+)\s*$/m
         const match = reg.exec(rcFile)
         if (match) {
@@ -216,7 +216,7 @@ export class ChkTeX implements ILinter {
             this.extension.logger.addLogMessage(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
             return column
         }
-        const content = await this.extension.lwfs.readFilePath(filePath)
+        const content = await readFilePath(filePath)
         const lineString = content.split('\n')[line-1]
         let tabSize: number | undefined
         const tabSizeConfig = configuration.get('linting.chktex.convertOutput.column.chktexrcTabSize', -1)

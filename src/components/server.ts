@@ -8,6 +8,7 @@ import * as vscode from 'vscode'
 import type {Extension} from '../main'
 import {PdfFilePathEncoder} from './serverlib/encodepath'
 import {EventEmitter} from 'events'
+import { readFileAsBuffer } from '../lib/lwfs/lwfs'
 
 class WsServer extends ws.Server {
     private readonly extension: Extension
@@ -175,7 +176,7 @@ export class Server {
                 return
             }
             try {
-                const buf: Buffer = await this.extension.lwfs.readFileAsBuffer(fileUri)
+                const buf: Buffer = await readFileAsBuffer(fileUri)
                 this.sendOkResponse(response, buf, 'application/pdf')
                 this.extension.logger.addLogMessage(`Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
