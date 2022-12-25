@@ -7,7 +7,7 @@ import {ITextDocumentLike, TextDocumentLike} from '../../../../../src/providers/
 
 suite('unit test suite: mathpreviewlib/textdocumentlike', () => {
 
-    runUnitTestWithFixture('fixture001', 'test load and getWordRangeAtPosition', () => {
+    runUnitTestWithFixture('fixture001', 'test load and getWordRangeAtPosition', async () => {
         const s =
 `abc
 d
@@ -19,7 +19,7 @@ lmn
 `
         const fixtureDir = getFixtureDir()
         const filePath = path.join(fixtureDir, 'textdocumentlike', 'abc.txt')
-        const a = TextDocumentLike.load(filePath)
+        const a = await TextDocumentLike.load(filePath)
         assert.strictEqual(s, a.getText())
 
         const docLike = new TextDocumentLike(s)

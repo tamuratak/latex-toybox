@@ -81,7 +81,7 @@ export class MathPreview {
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         try {
-            const tex = this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
+            const tex = await this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
             if (tex) {
                 const newCommands = await this.findProjectNewCommand(ctoken)
                 return await this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
@@ -133,8 +133,8 @@ export class MathPreview {
         return this.texMathEnvFinder.findHoverOnTex(document, position)
     }
 
-    findHoverOnRef(labelDef: LabelDefinitionEntry, token: string) {
-        const document = TextDocumentLike.load(labelDef.file)
+    async findHoverOnRef(labelDef: LabelDefinitionEntry, token: string) {
+        const document = await TextDocumentLike.load(labelDef.file)
         const position = labelDef.position
         return this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
     }

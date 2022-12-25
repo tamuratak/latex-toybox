@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
+import { readFilePath } from '../../../lib/lwfs/lwfs'
 
 export interface ITextDocumentLike {
     readonly lineCount: number,
@@ -13,7 +13,7 @@ export class TextDocumentLike implements ITextDocumentLike {
     readonly #lines: string[]
     readonly #eol: string
 
-    static load(filePath: string): ITextDocumentLike {
+    static async load(filePath: string) {
         const uri = vscode.Uri.file(filePath)
         const editor = vscode.window.activeTextEditor
         if (editor !== undefined && editor.document.uri.fsPath === uri.fsPath) {
@@ -24,7 +24,7 @@ export class TextDocumentLike implements ITextDocumentLike {
                 return doc
             }
         }
-        return new TextDocumentLike(fs.readFileSync(filePath).toString())
+        return new TextDocumentLike(await readFilePath(filePath))
     }
 
     constructor(s: string) {

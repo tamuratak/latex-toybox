@@ -19,6 +19,10 @@ export async function exists(uri: vscode.Uri): Promise<boolean> {
     }
 }
 
+export async function existsPath(filePath: string): Promise<boolean> {
+    return exists(vscode.Uri.file(filePath))
+}
+
 export async function readFilePath(filePath: string): Promise<string> {
     return readFile(vscode.Uri.file(filePath))
 }
@@ -58,5 +62,19 @@ export async function stat(fileUri: vscode.Uri): Promise<fs.Stats | vscode.FileS
         return fs.promises.stat(fileUri.fsPath)
     } else {
         return vscode.workspace.fs.stat(fileUri)
+    }
+}
+
+export async function statPath(filePath: string): Promise<fs.Stats | vscode.FileStat> {
+    return stat(vscode.Uri.file(filePath))
+}
+
+export async function readDir(fileUri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+    if (isLocalUri(fileUri)) {
+        const result = await fs.promises.readdir(fileUri.fsPath, { withFileTypes: true })
+        const fileType = (entry: fs.Dirent) => entry.isFile() ? vscode.FileType.File : entry.isDirectory() ? vscode.FileType.Directory : entry.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown
+        return result.map(entry => [entry.name, fileType(entry)])
+    } else {
+        return vscode.workspace.fs.readDirectory(fileUri)
     }
 }

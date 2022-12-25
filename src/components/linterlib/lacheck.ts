@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs'
 
 import type { ILinter } from '../linter'
 import { LinterUtil } from './linterutil'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
 import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import { existsPath } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
@@ -33,7 +33,7 @@ export class LaCheck implements ILinter {
             return
         }
 
-        this.parseLog(stdout)
+        return this.parseLog(stdout)
     }
 
     async lintFile(document: vscode.TextDocument) {
@@ -46,7 +46,7 @@ export class LaCheck implements ILinter {
             return
         }
 
-        this.parseLog(stdout, document.fileName)
+        return this.parseLog(stdout, document.fileName)
     }
 
     private async lacheckWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, content?: string): Promise<string | undefined> {
@@ -105,10 +105,10 @@ export class LaCheck implements ILinter {
         }
         this.extension.logger.addLogMessage(`Linter log parsed with ${linterLog.length} messages.`)
         this.linterDiagnostics.clear()
-        this.showLinterDiagnostics(linterLog)
+        return this.showLinterDiagnostics(linterLog)
     }
 
-    private showLinterDiagnostics(linterLog: LaCheckLogEntry[]) {
+    private async showLinterDiagnostics(linterLog: LaCheckLogEntry[]) {
         const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
         for (const item of linterLog) {
             const range = new vscode.Range(
@@ -129,8 +129,8 @@ export class LaCheck implements ILinter {
             if (['.tex', '.bbx', '.cbx', '.dtx'].includes(path.extname(file))) {
                 // Only report LaCheck errors on TeX files. This is done to avoid
                 // reporting errors in .sty files, which are irrelevant for most users.
-                if (!fs.existsSync(file1) && convEnc) {
-                    const f = convertFilenameEncoding(file1)
+                if (!await existsPath(file1) && convEnc) {
+                    const f = await convertFilenameEncoding(file1)
                     if (f !== undefined) {
                         file1 = f
                     }

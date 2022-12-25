@@ -1,13 +1,12 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs'
 import * as os from 'os'
 
 import type { ILinter } from '../linter'
 import { LinterUtil } from './linterutil'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
 import type {LoggerLocator, ManagerLocator} from '../../interfaces'
-import { readFilePath } from '../../lib/lwfs/lwfs'
+import { existsPath, readFilePath } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
@@ -60,7 +59,7 @@ export class ChkTeX implements ILinter {
         const command = configuration.get('linting.chktex.exec.path') as string
         const args = [...(configuration.get('linting.chktex.exec.args') as string[])]
         if (!args.includes('-l')) {
-            const rcPath = this.rcPath
+            const rcPath = await this.rcPath()
             if (rcPath) {
                 args.push('-l', rcPath)
             }
@@ -80,7 +79,7 @@ export class ChkTeX implements ILinter {
         return stdout
     }
 
-    private get rcPath() {
+    private async rcPath() {
         let rcPath: string
         // 0. root file folder
         const root = this.extension.manager.rootFile
@@ -89,7 +88,7 @@ export class ChkTeX implements ILinter {
         } else {
             return
         }
-        if (fs.existsSync(rcPath)) {
+        if (await existsPath(rcPath)) {
             return rcPath
         }
 
@@ -98,13 +97,13 @@ export class ChkTeX implements ILinter {
         if (workspaceFolder) {
             rcPath = path.resolve(workspaceFolder.uri.fsPath, './.chktexrc')
         }
-        if (fs.existsSync(rcPath)) {
+        if (await existsPath(rcPath)) {
             return rcPath
         }
         return undefined
     }
 
-    private globalRcPath(): string | undefined {
+    private async globalRcPath() {
         const rcPathArray: string[] = []
         if (os.platform() === 'win32') {
             if (process.env.CHKTEXRC) {
@@ -128,7 +127,7 @@ export class ChkTeX implements ILinter {
             }
         }
         for (const rcPath of rcPathArray) {
-            if (fs.existsSync(rcPath)) {
+            if (await existsPath(rcPath)) {
                 return rcPath
             }
         }
@@ -143,15 +142,15 @@ export class ChkTeX implements ILinter {
             const idx = args.indexOf('-l')
             if (idx >= 0) {
                 const rcpath = args[idx+1]
-                if (fs.existsSync(rcpath)) {
+                if (await existsPath(rcpath)) {
                     filePath = rcpath
                 }
             }
         } else {
             if (this.rcPath) {
-                filePath = this.rcPath
+                filePath = await this.rcPath()
             } else {
-                filePath = this.globalRcPath()
+                filePath = await this.globalRcPath()
             }
         }
         if (!filePath) {
@@ -203,7 +202,7 @@ export class ChkTeX implements ILinter {
             // clean existing records.
             this.linterDiagnostics.set(vscode.Uri.file(singleFileOriginalPath), [])
         }
-        this.showLinterDiagnostics(linterLog)
+        return this.showLinterDiagnostics(linterLog)
     }
 
     private async callConvertColumn(column: number, filePathArg: string, line: number, tabSizeArg?: number): Promise<number> {
@@ -211,7 +210,7 @@ export class ChkTeX implements ILinter {
         if (!configuration.get('linting.chktex.convertOutput.column.enabled', true)) {
             return column
         }
-        const filePath = convertFilenameEncoding(filePathArg)
+        const filePath = await convertFilenameEncoding(filePathArg)
         if (!filePath){
             this.extension.logger.addLogMessage(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
             return column
@@ -256,7 +255,7 @@ export class ChkTeX implements ILinter {
         return i + 1
     }
 
-    private showLinterDiagnostics(linterLog: ChkTeXLogEntry[]) {
+    private async showLinterDiagnostics(linterLog: ChkTeXLogEntry[]) {
         const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
         for (const item of linterLog) {
             const range = new vscode.Range(
@@ -278,8 +277,8 @@ export class ChkTeX implements ILinter {
             if (['.tex', '.bbx', '.cbx', '.dtx'].includes(path.extname(file))) {
                 // Only report ChkTeX errors on TeX files. This is done to avoid
                 // reporting errors in .sty files, which are irrelevant for most users.
-                if (!fs.existsSync(file1) && convEnc) {
-                    const f = convertFilenameEncoding(file1)
+                if (!await existsPath(file1) && convEnc) {
+                    const f = await convertFilenameEncoding(file1)
                     if (f !== undefined) {
                         file1 = f
                     }

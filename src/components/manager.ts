@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs'
 import * as chokidar from 'chokidar'
 import * as micromatch from 'micromatch'
 import * as utils from '../utils/utils'
@@ -21,7 +20,7 @@ import {PathUtils} from './managerlib/pathutils'
 
 import {Mutex} from '../lib/await-semaphore'
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
-import { isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
+import { existsPath, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
 
 
 export interface CachedContentEntry {
@@ -400,7 +399,7 @@ export class Manager implements IManager {
         return undefined
     }
 
-    private findRootFromActive(): string | undefined {
+    private async findRootFromActive() {
         if (!vscode.window.activeTextEditor) {
             return undefined
         }
@@ -412,7 +411,7 @@ export class Manager implements IManager {
         const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
         const result = content.match(regex)
         if (result) {
-            const rootSubFile = this.finderUtils.findSubFiles(content)
+            const rootSubFile = await this.finderUtils.findSubFiles(content)
             const file = vscode.window.activeTextEditor.document.fileName
             if (rootSubFile) {
                this.localRootFile = file
@@ -612,11 +611,11 @@ export class Manager implements IManager {
         const inputFileRegExp = new InputFileRegExp()
         const newChildren = new Set<string>()
         while (true) {
-            const result = inputFileRegExp.exec(content, file, baseFile)
+            const result = await inputFileRegExp.exec(content, file, baseFile)
             if (!result) {
                 break
             }
-            if (!fs.existsSync(result.path) || path.relative(result.path, baseFile) === '') {
+            if (!await existsPath(result.path) || path.relative(result.path, baseFile) === '') {
                 continue
             }
             newChildren.add(result.path)
@@ -633,7 +632,7 @@ export class Manager implements IManager {
     }
 
     private async getTeXChildrenFromFls(texFile: string) {
-        const flsFile = this.pathUtils.getFlsFilePath(texFile)
+        const flsFile = await this.pathUtils.getFlsFilePath(texFile)
         if (flsFile === undefined) {
             return []
         }
@@ -656,12 +655,12 @@ export class Manager implements IManager {
     private async parseInputFiles(content: string, currentFile: string, baseFile: string) {
         const inputFileRegExp = new InputFileRegExp()
         while (true) {
-            const result = inputFileRegExp.exec(content, currentFile, baseFile)
+            const result = await inputFileRegExp.exec(content, currentFile, baseFile)
             if (!result) {
                 break
             }
 
-            if (!fs.existsSync(result.path) || path.relative(result.path, baseFile) === '') {
+            if (!await existsPath(result.path) || path.relative(result.path, baseFile) === '') {
                 continue
             }
 
@@ -690,7 +689,7 @@ export class Manager implements IManager {
                 return bib.trim()
             })
             for (const bib of bibs) {
-                const bibPath = this.pathUtils.resolveBibPath(bib, path.dirname(baseFile))
+                const bibPath = await this.pathUtils.resolveBibPath(bib, path.dirname(baseFile))
                 if (bibPath === undefined) {
                     continue
                 }
@@ -713,7 +712,7 @@ export class Manager implements IManager {
      */
     async parseFlsFile(texFile: string) {
         this.extension.logger.addLogMessage('Parse fls file.')
-        const flsFile = this.pathUtils.getFlsFilePath(texFile)
+        const flsFile = await this.pathUtils.getFlsFilePath(texFile)
         if (flsFile === undefined) {
             return
         }
@@ -724,7 +723,7 @@ export class Manager implements IManager {
 
         for (const inputFile of ioFiles.input) {
             // Drop files that are also listed as OUTPUT or should be ignored
-            if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !fs.existsSync(inputFile)) {
+            if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
                 continue
             }
             if (inputFile === texFile || this.filesWatched.has(inputFile)) {
@@ -746,7 +745,7 @@ export class Manager implements IManager {
         }
 
         for (const outputFile of ioFiles.output) {
-            if (path.extname(outputFile) === '.aux' && fs.existsSync(outputFile)) {
+            if (path.extname(outputFile) === '.aux' && await existsPath(outputFile)) {
                 this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
                 const outputFileContent = await readFilePath(outputFile)
                 await this.parseAuxFile(
@@ -768,7 +767,7 @@ export class Manager implements IManager {
                 return bib.trim()
             })
             for (const bib of bibs) {
-                const bibPath = this.pathUtils.resolveBibPath(bib, srcDir)
+                const bibPath = await this.pathUtils.resolveBibPath(bib, srcDir)
                 if (bibPath === undefined) {
                     continue
                 }

@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 
 import type {Extension} from '../main'
 import {tokenizer} from './tokenizer'
 import * as utils from '../utils/utils'
-import { isVirtualUri } from '../lib/lwfs/lwfs'
+import { existsPath, isVirtualUri } from '../lib/lwfs/lwfs'
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
     private readonly extension: Extension
@@ -14,7 +13,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
         this.extension = extension
     }
 
-    private onAFilename(document: vscode.TextDocument, position: vscode.Position, token: string): string|undefined {
+    private onAFilename(document: vscode.TextDocument, position: vscode.Position, token: string) {
         const line = document.lineAt(position.line).text
         const escapedToken = utils.escapeRegExp(token)
         const regexInput = new RegExp(`\\\\(?:include|input|subfile)\\{${escapedToken}\\}`)
@@ -48,7 +47,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
         return undefined
     }
 
-    provideDefinition(document: vscode.TextDocument, position: vscode.Position): vscode.Location | undefined {
+    async provideDefinition(document: vscode.TextDocument, position: vscode.Position) {
         if (isVirtualUri(document.uri)) {
             return
         }
@@ -84,12 +83,12 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
                 return
             }
             const absolutePath = path.resolve(path.dirname(vscode.window.activeTextEditor.document.fileName), token)
-            if (fs.existsSync(absolutePath)) {
+            if (await existsPath(absolutePath)) {
                 return new vscode.Location( vscode.Uri.file(absolutePath), new vscode.Position(0, 0) )
             }
         }
 
-        const filename = this.onAFilename(document, position, token)
+        const filename = await this.onAFilename(document, position, token)
         if (filename) {
             return new vscode.Location( vscode.Uri.file(filename), new vscode.Position(0, 0) )
         }

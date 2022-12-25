@@ -28,14 +28,14 @@ export class TeXMathEnvFinder {
         return this.findHoverOnInline(document, position)
     }
 
-    findHoverOnRef(
+    async findHoverOnRef(
         document: ITextDocumentLike,
         position: vscode.Position,
         labelDef: LabelDefinitionEntry,
         token: string,
-    ): TexMathEnv | undefined {
+    ): Promise<TexMathEnv | undefined> {
         const limit = vscode.workspace.getConfiguration('latex-workshop').get('hover.preview.maxLines') as number
-        const docOfRef = TextDocumentLike.load(labelDef.file)
+        const docOfRef = await TextDocumentLike.load(labelDef.file)
         const envBeginPatMathMode = /\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
         const l = docOfRef.lineAt(labelDef.position.line).text
         const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(token) + '\\}')

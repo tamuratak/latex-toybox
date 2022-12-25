@@ -1,5 +1,5 @@
-import * as fs from 'fs'
 import * as iconv from 'iconv-lite'
+import { existsPath } from '../lib/lwfs/lwfs'
 
 // https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
 export const iconvLiteSupportedEncodings = [
@@ -21,11 +21,11 @@ export const iconvLiteSupportedEncodings = [
     'koi8-r', 'koi8-u', 'koi8-ru', 'koi8-t'
 ]
 
-export function convertFilenameEncoding(filePath: string): string | undefined {
+export async function convertFilenameEncoding(filePath: string) {
     for (const enc of iconvLiteSupportedEncodings) {
         try {
             const fpath = iconv.decode(Buffer.from(filePath, 'binary'), enc)
-            if (fs.existsSync(fpath)) {
+            if (await existsPath(fpath)) {
                 return fpath
             }
         } catch (e) {

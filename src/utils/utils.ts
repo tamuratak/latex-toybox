@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs'
 
 import {latexParser} from 'latex-utensils'
+import { existsPath } from '../lib/lwfs/lwfs'
 
 
 export function sleep(ms: number) {
@@ -211,7 +211,7 @@ export function getNthArgument(text: string, nth: number): CommandArgument | und
  * @param suffix The suffix of the input file
  * @return an absolute path or undefined if the file does not exist
  */
-export function resolveFile(dirs: string[], inputFile: string, suffix: string = '.tex'): string | undefined {
+export async function resolveFile(dirs: string[], inputFile: string, suffix: string = '.tex') {
     if (inputFile.startsWith('/')) {
         dirs.unshift('')
     }
@@ -220,10 +220,10 @@ export function resolveFile(dirs: string[], inputFile: string, suffix: string = 
         if (path.extname(inputFilePath) === '') {
             inputFilePath += suffix
         }
-        if (!fs.existsSync(inputFilePath) && fs.existsSync(inputFilePath + suffix)) {
+        if (!await existsPath(inputFilePath) && await existsPath(inputFilePath + suffix)) {
             inputFilePath += suffix
         }
-        if (fs.existsSync(inputFilePath)) {
+        if (await existsPath(inputFilePath)) {
             return inputFilePath
         }
     }

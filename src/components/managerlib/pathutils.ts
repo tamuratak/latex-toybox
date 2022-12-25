@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as cs from 'cross-spawn'
-import * as fs from 'fs'
 import * as utils from '../../utils/utils'
 
 import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import { existsPath } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
@@ -30,12 +30,12 @@ export class PathUtils {
      * @param texFile The path of LaTeX file
      * @return The path of the .fls file or undefined
      */
-    getFlsFilePath(texFile: string): string | undefined {
+    async getFlsFilePath(texFile: string) {
         const rootDir = path.dirname(texFile)
         const outDir = this.getOutDir(texFile)
         const baseName = path.parse(texFile).name
         const flsFile = path.resolve(rootDir, path.join(outDir, baseName + '.fls'))
-        if (!fs.existsSync(flsFile)) {
+        if (!await existsPath(flsFile)) {
             this.extension.logger.addLogMessage(`Cannot find fls file: ${flsFile}`)
             return undefined
         }
@@ -91,7 +91,7 @@ export class PathUtils {
         return undefined
     }
 
-    resolveBibPath(bib: string, baseDir: string) {
+    async resolveBibPath(bib: string, baseDir: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const bibDirs = configuration.get('latex.bibDirs') as string[]
         let searchDirs: string[]
@@ -102,7 +102,7 @@ export class PathUtils {
         } else {
             searchDirs = [baseDir, ...bibDirs]
         }
-        const bibPath = utils.resolveFile(searchDirs, bib, '.bib')
+        const bibPath = await utils.resolveFile(searchDirs, bib, '.bib')
 
         if (!bibPath) {
             this.extension.logger.addLogMessage(`Cannot find .bib file: ${bib}`)
