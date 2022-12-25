@@ -7,6 +7,7 @@ import {escapeHtml, sleep} from '../../utils/utils'
 import type {PdfViewerManagerService} from './pdfviewermanager'
 import {PdfViewerStatusChanged} from '../eventbus'
 import { getNonce } from '../../utils/getnonce'
+import * as lwfs from '../../lib/lwfs/lwfs'
 
 
 export class PdfViewerPanel {
@@ -72,7 +73,7 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             panel.webview.html = '<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>The path of PDF file is undefined.</html>'
             return
         }
-        if (! await this.extension.lwfs.exists(pdfFileUri)) {
+        if (! await lwfs.exists(pdfFileUri)) {
             const s = escapeHtml(pdfFileUri.toString())
             this.extension.logger.addLogMessage(`Error of restoring PDF viewer: file not found ${pdfFileUri.toString(true)}.`)
             panel.webview.html = `<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>File not found: ${s}</html>`

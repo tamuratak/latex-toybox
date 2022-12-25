@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 
 import {Section, SectionNodeProvider} from './structure'
-import type {LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator} from '../interfaces'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../interfaces'
+import { isVirtualUri } from '../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator { }
 
@@ -23,7 +23,7 @@ export class ProjectSymbolProvider implements vscode.WorkspaceSymbolProvider {
             return []
         }
         const rootFileUri = this.extension.manager.rootFileUri
-        if (rootFileUri && this.extension.lwfs.isVirtualUri(rootFileUri)) {
+        if (rootFileUri && isVirtualUri(rootFileUri)) {
             return []
         }
         return this.sectionToSymbols(await this.sectionNodeProvider.buildLaTeXModel())

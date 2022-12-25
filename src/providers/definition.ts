@@ -5,6 +5,7 @@ import * as path from 'path'
 import type {Extension} from '../main'
 import {tokenizer} from './tokenizer'
 import * as utils from '../utils/utils'
+import { isVirtualUri } from '../lib/lwfs/lwfs'
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
     private readonly extension: Extension
@@ -48,7 +49,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
     }
 
     provideDefinition(document: vscode.TextDocument, position: vscode.Position): vscode.Location | undefined {
-        if (this.extension.lwfs.isVirtualUri(document.uri)) {
+        if (isVirtualUri(document.uri)) {
             return
         }
         const token = tokenizer(document, position)

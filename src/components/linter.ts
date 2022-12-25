@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import type {ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../interfaces'
+import type {ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../interfaces'
 import { ChkTeX } from './linterlib/chktex'
 import { LaCheck } from './linterlib/lacheck'
 
@@ -13,7 +13,6 @@ export interface ILinter {
 interface IExtension extends
     ExtensionRootLocator,
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class Linter {

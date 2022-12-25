@@ -3,7 +3,8 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
-import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
+import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
+import * as lwfs from '../../lib/lwfs/lwfs'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -25,7 +26,6 @@ interface IExtension extends
     ExtensionRootLocator,
     CompleterLocator,
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class Environment implements IProvider {
@@ -53,7 +53,7 @@ export class Environment implements IProvider {
                 const pkg = match[1]
                 const filePathUri = vscode.Uri.joinPath(packageDirUri, fileName)
                 try {
-                    const content = await this.extension.lwfs.readFile(filePathUri)
+                    const content = await lwfs.readFile(filePathUri)
                     const envs: {[key: string]: EnvItemEntry} = JSON.parse(content) as DataEnvsJsonType
                     Object.keys(envs).forEach(key => {
                         if (! isEnvItemEntry(envs[key])) {

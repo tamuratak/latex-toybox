@@ -1,6 +1,7 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import { EventBusLocator, LwfsLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
+import { EventBusLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
+import { readFilePath } from '../lib/lwfs/lwfs'
 import type { Extension } from '../main'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
@@ -8,7 +9,6 @@ import { toVscodeRange } from '../utils/utensils'
 
 interface IExtension extends
     EventBusLocator,
-    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator,
     ReferenceStoreLocator { }
@@ -105,7 +105,7 @@ export class ReferenceUpdater {
 
     private async updateForFile(filePath: string) {
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === filePath)
-        const content = doc?.getText() || await this.extension.lwfs.readFilePath(filePath)
+        const content = doc?.getText() || await readFilePath(filePath)
         if (content === undefined) {
             return
         }

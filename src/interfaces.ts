@@ -1,4 +1,3 @@
-import type fs from 'fs'
 import type {latexParser, bibtexParser} from 'latex-utensils'
 import type vscode from 'vscode'
 import type { EventArgTypeMap, EventBus, EventName } from './components/eventbus'
@@ -93,22 +92,6 @@ export interface ILogger {
     showErrorMessageWithExtensionLogButton(message: string): void,
     showLog(): void,
     showCompilerLog(): void
-}
-
-export interface LwfsLocator {
-    readonly lwfs: ILwFileSystem
-}
-
-export interface ILwFileSystem {
-    isLocalUri(uri: vscode.Uri): boolean,
-    isVirtualUri(uri: vscode.Uri): boolean,
-    exists(uri: vscode.Uri): Promise<boolean>,
-    readFilePath(filePath: string): Promise<string>,
-    readFilePathGracefully(filepath: string): Promise<string | undefined>,
-    readFile(fileUri: vscode.Uri): Promise<string>,
-    readFileGracefully(fileUri: vscode.Uri): Promise<string | undefined>,
-    readFileAsBuffer(fileUri: vscode.Uri): Promise<Buffer>,
-    stat(fileUri: vscode.Uri): Promise<fs.Stats | vscode.FileStat>
 }
 
 export interface ManagerLocator {

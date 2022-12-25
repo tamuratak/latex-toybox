@@ -15,6 +15,7 @@ import {PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService} from '.
 import {PdfViewerManagerService} from './viewerlib/pdfviewermanager'
 import {PdfViewerPagesLoaded} from './eventbus'
 import type {IViewer} from '../interfaces'
+import * as lwfs from '../lib/lwfs/lwfs'
 export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
 
 
@@ -91,7 +92,7 @@ export class Viewer implements IViewer {
 
     private async checkViewer(sourceFile: string, respectOutDir: boolean = true): Promise<string | undefined> {
         const pdfFile = this.tex2pdf(sourceFile, respectOutDir)
-        if (!await this.extension.lwfs.exists(pdfFile)) {
+        if (!await lwfs.exists(pdfFile)) {
             this.extension.logger.addLogMessage(`Cannot find PDF file ${pdfFile}`)
             this.extension.logger.displayStatus('check', 'statusBar.foreground', `Cannot view file PDF file. File not found: ${pdfFile}`, 'warning')
             return

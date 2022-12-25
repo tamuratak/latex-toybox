@@ -2,11 +2,11 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as utils from '../../utils/utils'
 
-import type {LoggerLocator, LwfsLocator, ManagerLocator} from '../../interfaces'
+import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator { }
 
 export class FinderUtils {
@@ -27,7 +27,7 @@ export class FinderUtils {
         const fileStack: string[] = []
         if (result) {
             let file = path.resolve(path.dirname(vscode.window.activeTextEditor.document.fileName), result[1])
-            content = await this.extension.lwfs.readFilePathGracefully(file)
+            content = await readFilePathGracefully(file)
             if (content === undefined) {
                 const msg = `Not found root file specified in the magic comment: ${file}`
                 this.extension.logger.addLogMessage(msg)
@@ -47,7 +47,7 @@ export class FinderUtils {
                     this.extension.logger.addLogMessage(`Recursively found root file by magic comment: ${file}`)
                 }
 
-                content = await this.extension.lwfs.readFilePathGracefully(file)
+                content = await readFilePathGracefully(file)
                 if (content === undefined) {
                     const msg = `Not found root file specified in the magic comment: ${file}`
                     this.extension.logger.addLogMessage(msg)

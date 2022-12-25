@@ -21,6 +21,7 @@ import {PathUtils} from './managerlib/pathutils'
 
 import {Mutex} from '../lib/await-semaphore'
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
+import { isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
 
 
 export interface CachedContentEntry {
@@ -386,7 +387,7 @@ export class Manager implements IManager {
         if (!vscode.window.activeTextEditor || this.rootFile === undefined) {
             return undefined
         }
-        if (this.extension.lwfs.isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
+        if (isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
             this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
@@ -400,7 +401,7 @@ export class Manager implements IManager {
         if (!vscode.window.activeTextEditor) {
             return undefined
         }
-        if (this.extension.lwfs.isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
+        if (isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
             this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
@@ -438,7 +439,7 @@ export class Manager implements IManager {
             const files = await vscode.workspace.findFiles(rootFilesIncludeGlob, rootFilesExcludeGlob)
             const candidates: string[] = []
             for (const file of files) {
-                if (this.extension.lwfs.isVirtualUri(file)) {
+                if (isVirtualUri(file)) {
                     this.extension.logger.addLogMessage(`Skip the file: ${file.toString(true)}`)
                     continue
                 }
@@ -447,7 +448,7 @@ export class Manager implements IManager {
                     this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`)
                     return file.fsPath
                 }
-                let content = await this.extension.lwfs.readFileGracefully(file) || ''
+                let content = await readFileGracefully(file) || ''
                 content = utils.stripCommentsAndVerbatim(content)
                 if (/\\begin{document}/m.exec(content)) {
                     // Can be a root
@@ -536,7 +537,7 @@ export class Manager implements IManager {
             this.initCacheEntry(file)
         }
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
-        const content = doc?.getText() || await this.extension.lwfs.readFilePathGracefully(file)
+        const content = doc?.getText() || await readFilePathGracefully(file)
         if (content === undefined) {
             this.extension.logger.addLogMessage(`Cannot read dirty content of unknown ${file}`)
             return
@@ -600,7 +601,7 @@ export class Manager implements IManager {
      *
      */
     private async getTeXChildren(file: string, baseFile: string, children = new Set<string>()): Promise<string[]> {
-        let content = await this.extension.lwfs.readFilePathGracefully(file) || ''
+        let content = await readFilePathGracefully(file) || ''
         content = utils.stripCommentsAndVerbatim(content)
 
         const inputFileRegExp = new InputFileRegExp()
@@ -632,7 +633,7 @@ export class Manager implements IManager {
             return []
         }
         const rootDir = path.dirname(texFile)
-        const content = await this.extension.lwfs.readFilePath(flsFile)
+        const content = await readFilePath(flsFile)
         const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
         return ioFiles.input
     }
@@ -713,7 +714,7 @@ export class Manager implements IManager {
         }
         const rootDir = path.dirname(texFile)
         const outDir = this.getOutDir(texFile)
-        const content = await this.extension.lwfs.readFilePath(flsFile)
+        const content = await readFilePath(flsFile)
         const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
 
         for (const inputFile of ioFiles.input) {
@@ -742,7 +743,7 @@ export class Manager implements IManager {
         for (const outputFile of ioFiles.output) {
             if (path.extname(outputFile) === '.aux' && fs.existsSync(outputFile)) {
                 this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
-                const outputFileContent = await this.extension.lwfs.readFilePath(outputFile)
+                const outputFileContent = await readFilePath(outputFile)
                 await this.parseAuxFile(
                     outputFileContent,
                     path.dirname(outputFile).replace(outDir, rootDir)

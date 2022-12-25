@@ -1,20 +1,18 @@
 import * as vscode from 'vscode'
 
 import {Section, SectionNodeProvider} from './structure'
-import type {LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator} from '../interfaces'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../interfaces'
+import { isVirtualUri } from '../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator { }
 
 export class DocSymbolProvider implements vscode.DocumentSymbolProvider {
-    private readonly extension: IExtension
     private readonly sectionNodeProvider: SectionNodeProvider
 
     constructor(extension: IExtension) {
-        this.extension = extension
         this.sectionNodeProvider = new SectionNodeProvider(extension)
     }
 
@@ -22,7 +20,7 @@ export class DocSymbolProvider implements vscode.DocumentSymbolProvider {
         if (document.languageId === 'bibtex') {
             return this.sectionNodeProvider.buildBibTeXModel(document).then((sections: Section[]) => this.sectionToSymbols(sections))
         }
-        if (this.extension.lwfs.isVirtualUri(document.uri)) {
+        if (isVirtualUri(document.uri)) {
             return []
         }
         return this.sectionToSymbols(await this.sectionNodeProvider.buildLaTeXModel(document.fileName, false))

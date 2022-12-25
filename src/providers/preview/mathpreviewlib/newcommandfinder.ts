@@ -3,11 +3,11 @@ import {latexParser} from 'latex-utensils'
 import {stripCommentsAndVerbatim, isNewCommand, NewCommand} from '../../../utils/utils'
 import * as path from 'path'
 
-import type {LoggerLocator, LwfsLocator, ManagerLocator, UtensilsParserLocator} from '../../../interfaces'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../../interfaces'
+import { readFilePathGracefully } from '../../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
-    LwfsLocator,
     ManagerLocator,
     UtensilsParserLocator { }
 
@@ -44,7 +44,7 @@ export class NewCommandFinder {
             }
             newCommandFileAbs = path.join(rootDir, newCommandFile)
         }
-        commandsString = await this.extension.lwfs.readFilePathGracefully(newCommandFileAbs)
+        commandsString = await readFilePathGracefully(newCommandFileAbs)
         if (commandsString === undefined) {
             this.extension.logger.addLogMessage(`Cannot read file ${newCommandFileAbs}`)
             return ''

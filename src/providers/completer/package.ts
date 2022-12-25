@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
-import type {ExtensionRootLocator, LwfsLocator} from '../../interfaces'
+import type {ExtensionRootLocator} from '../../interfaces'
+import { readFilePath } from '../../lib/lwfs/lwfs'
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')
 
@@ -12,8 +13,7 @@ type PackageItemEntry = {
 }
 
 interface IExtension extends
-    ExtensionRootLocator,
-    LwfsLocator { }
+    ExtensionRootLocator { }
 
 export class Package implements IProvider {
     private readonly extension: IExtension
@@ -25,7 +25,7 @@ export class Package implements IProvider {
     }
 
     private async load() {
-        const content = await this.extension.lwfs.readFilePath(`${this.extension.extensionRoot}/data/packagenames.json`)
+        const content = await readFilePath(`${this.extension.extensionRoot}/data/packagenames.json`)
         const pkgs: {[key: string]: PackageItemEntry} = JSON.parse(content) as DataPackagesJsonType
         this.initialize(pkgs)
     }
