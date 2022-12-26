@@ -21,7 +21,7 @@ export class Counter {
         this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100.45)
         this.loadConfiguration(this.getWorkspace())
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('latex-workshop.texcount', this.getWorkspace()) || e.affectsConfiguration('latex-workshop.docker.enabled')) {
+            if (e.affectsConfiguration('latex-workshop.texcount', this.getWorkspace())) {
                 this.loadConfiguration(this.getWorkspace())
                 this.updateStatusVisibility()
 
