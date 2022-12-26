@@ -487,13 +487,14 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        if (!this.getCachedContent(file)) {
+        const cache = this.getCachedContent(file)
+        if (!cache) {
             return []
         }
 
         memoChildren.add(file)
-        includedBib.push(...this.gracefulCachedContent(file).bibs)
-        for (const child of this.gracefulCachedContent(file).children) {
+        includedBib.push(...cache.bibs)
+        for (const child of cache.children) {
             if (memoChildren.has(child.file)) {
                 continue
             }
@@ -518,11 +519,12 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        if (!this.getCachedContent(file)) {
+        const cache = this.getCachedContent(file)
+        if (!cache) {
             return []
         }
         includedTeX.push(file)
-        for (const child of this.gracefulCachedContent(file).children) {
+        for (const child of cache.children) {
             if (includedTeX.includes(child.file)) {
                 continue
             }
