@@ -213,7 +213,7 @@ export class Commander {
             } else if (this.extension.manager.rootFile !== undefined) {
                 pdfFile = this.extension.manager.tex2pdf(this.extension.manager.rootFile)
             }
-            this.extension.locator.syncTeX(undefined, undefined, pdfFile)
+            return this.extension.locator.syncTeX(undefined, undefined, pdfFile)
         } catch(e) {
             if (e instanceof Error) {
                 this.extension.logger.logError(e)
@@ -228,7 +228,7 @@ export class Commander {
             this.extension.logger.addLogMessage('Cannot start SyncTeX. The active editor is undefined, or the document is not a TeX document.')
             return
         }
-        this.extension.locator.syncTeXOnRef({line, filePath})
+        return this.extension.locator.syncTeXOnRef({line, filePath})
     }
 
     citation() {
