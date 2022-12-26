@@ -2,7 +2,6 @@ import * as assert from 'assert'
 import * as os from 'os'
 import * as path from 'path'
 
-import * as process from 'process'
 import * as vscode from 'vscode'
 
 import {
@@ -46,11 +45,7 @@ function assertCompletionItemContains(items: vscode.CompletionItem[], label: str
 suite('Completion test suite', () => {
 
     suiteSetup(() => {
-        const config = vscode.workspace.getConfiguration()
-        if (process.env['LATEXWORKSHOP_CI_ENABLE_DOCKER']) {
-            return config.update('latex-workshop.docker.enabled', true, vscode.ConfigurationTarget.Global)
-        }
-        return
+        // noop
     })
 
     runTestWithFixture('fixture001', 'basic completion', async () => {

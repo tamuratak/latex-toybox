@@ -11,7 +11,6 @@ import {Viewer, PdfViewerHookProvider} from './components/viewer'
 import {Server} from './components/server'
 import {Locator} from './components/locator'
 import {Linter} from './components/linter'
-import {Counter} from './components/counter'
 import {EnvPair} from './components/envpair'
 import {Section} from './components/section'
 import {CompilerLogParser} from './components/parser/compilerlog'
@@ -77,7 +76,6 @@ function registerLatexWorkshopCommands(extension: Extension, context: vscode.Ext
         vscode.commands.registerCommand('latex-workshop.actions', () => extension.commander.actions()),
         vscode.commands.registerCommand('latex-workshop.activate', () => undefined),
         vscode.commands.registerCommand('latex-workshop.citation', () => extension.commander.citation()),
-        vscode.commands.registerCommand('latex-workshop.wordcount', () => extension.commander.wordcount()),
         vscode.commands.registerCommand('latex-workshop.log', () => extension.commander.log()),
         vscode.commands.registerCommand('latex-workshop.compilerlog', () => extension.commander.log('compiler')),
         vscode.commands.registerCommand('latex-workshop.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
@@ -154,7 +152,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
             extension.logger.addLogMessage(`onDidSaveTextDocument triggered: ${e.uri.toString(true)}`)
             extension.linter.lintRootFileIfEnabled()
             void extension.manager.buildOnSaveIfEnabled(e.fileName)
-            extension.counter.countOnSaveIfEnabled(e.fileName)
         }
     }))
 
@@ -338,7 +335,6 @@ export class Extension implements IExtension {
     readonly completionStore: CompletionStore
     readonly atSuggestionCompleter: AtSuggestionCompleter
     readonly linter: Linter
-    readonly counter: Counter
     readonly envPair: EnvPair
     readonly section: Section
     readonly latexCommanderTreeView: LaTeXCommanderTreeView
@@ -373,7 +369,6 @@ export class Extension implements IExtension {
         this.atSuggestionCompleter = new AtSuggestionCompleter(this)
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)
-        this.counter = new Counter(this)
         this.envPair = new EnvPair(this)
         this.section = new Section(this)
         this.latexCommanderTreeView = new LaTeXCommanderTreeView(this)
