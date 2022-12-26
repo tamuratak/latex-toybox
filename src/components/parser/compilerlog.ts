@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 import type { Extension } from '../../main'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
 import { LatexLogParser } from './latexlog'
 import { BibLogParser } from './biblogparser'
+import { existsPath } from '../../lib/lwfs/lwfs'
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
@@ -168,8 +168,8 @@ export class CompilerLogParser {
         const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
         for (const file in diagsCollection) {
             let file1 = file
-            if (!fs.existsSync(file1) && convEnc) {
-                const f = convertFilenameEncoding(file1)
+            if (!await existsPath(file1) && convEnc) {
+                const f = await convertFilenameEncoding(file1)
                 if (f !== undefined) {
                     file1 = f
                 }

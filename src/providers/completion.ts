@@ -117,7 +117,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
                 item.documentation = data.documentation
                 return item
             }
-            const tex = this.extension.mathPreview.findHoverOnRef(data, item.label)
+            const tex = await this.extension.mathPreview.findHoverOnRef(data, item.label)
             if (tex) {
                 const svgDataUrl = await this.extension.mathPreview.renderSvgOnRef(tex, data, token)
                 item.documentation = new vscode.MarkdownString(`![equation](${svgDataUrl})`)

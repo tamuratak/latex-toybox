@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 import * as cp from 'child_process'
 import {SyncTexJs} from './locatorlib/synctex'
@@ -8,6 +7,7 @@ import {isSameRealPath} from '../utils/pathnormalize'
 
 import type {ClientRequest} from '../../types/latex-workshop-protocol-types'
 import type {BuilderLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, ViewerLocator} from '../interfaces'
+import { existsPath } from '../lib/lwfs/lwfs'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -112,7 +112,7 @@ export class Locator {
      * @param forcedViewer Indicates a PDF viewer with which SyncTeX is executed.
      * @param pdfFile The path of a PDF File compiled from the `filePath` of `args`. If `undefined`, it is automatically detected.
      */
-    syncTeX(args?: {line: number, filePath: string}, forcedViewer: 'auto' | 'tabOrBrowser' | 'external' = 'auto', pdfFile?: string) {
+    async syncTeX(args?: {line: number, filePath: string}, forcedViewer: 'auto' | 'tabOrBrowser' | 'external' = 'auto', pdfFile?: string) {
         let line: number
         let filePath: string
         let character = 0
@@ -160,7 +160,7 @@ export class Locator {
 
         if (useSyncTexJs) {
             try {
-                const record = this.synctexjs.syncTexJsForward(line, filePath, pdfFile)
+                const record = await this.synctexjs.syncTexJsForward(line, filePath, pdfFile)
                 this.extension.viewer.syncTeX(pdfFile, record)
             } catch (e) {
                 this.extension.logger.addLogMessage('[SyncTexJs] Forward SyncTeX failed.')
@@ -217,9 +217,9 @@ export class Locator {
         const viewer = configuration.get('view.pdf.ref.viewer') as 'auto' | 'tabOrBrowser' | 'external'
         args.line += 1
         if (viewer) {
-            this.syncTeX(args, viewer)
+            return this.syncTeX(args, viewer)
         } else {
-            this.syncTeX(args)
+            return this.syncTeX(args)
         }
     }
 
@@ -273,7 +273,7 @@ export class Locator {
 
         if (useSyncTexJs) {
             try {
-                record = this.synctexjs.syncTexJsBackward(Number(data.page), data.pos[0], data.pos[1], pdfPath)
+                record = await this.synctexjs.syncTexJsBackward(Number(data.page), data.pos[0], data.pos[1], pdfPath)
             } catch (e) {
                 this.extension.logger.addLogMessage('[SyncTexJs] Backward SyncTeX failed.')
                 if (e instanceof Error) {
@@ -302,7 +302,7 @@ export class Locator {
 
         const filePath = path.resolve(record.input)
         this.extension.logger.addLogMessage(`SyncTeX to file ${filePath}`)
-        if (!fs.existsSync(filePath)) {
+        if (!await existsPath(filePath)) {
             this.extension.logger.addLogMessage(`Not found: ${filePath}`)
             return
         }

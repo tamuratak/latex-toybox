@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 import * as path from 'path'
 import type { Extension } from '../../main'
+import { existsPath } from '../../lib/lwfs/lwfs'
 
 
 export class GraphicsPreview {
@@ -24,7 +24,7 @@ export class GraphicsPreview {
         if (!execArray || !relPath) {
             return undefined
         }
-        const filePath = this.findFilePath(relPath, document)
+        const filePath = await this.findFilePath(relPath, document)
         if (filePath === undefined) {
             return undefined
         }
@@ -106,9 +106,9 @@ export class GraphicsPreview {
         }
     }
 
-    private findFilePath(relPath: string, document: vscode.TextDocument): string | undefined {
+    private async findFilePath(relPath: string, document: vscode.TextDocument) {
         if (path.isAbsolute(relPath)) {
-            if (fs.existsSync(relPath)) {
+            if (await existsPath(relPath)) {
                 return relPath
             } else {
                 return undefined
@@ -118,13 +118,13 @@ export class GraphicsPreview {
         const activeDir = path.dirname(document.uri.fsPath)
         for (const dirPath of this.extension.completer.input.graphicsPath) {
             const filePath = path.resolve(activeDir, dirPath, relPath)
-            if (fs.existsSync(filePath)) {
+            if (await existsPath(filePath)) {
                 return filePath
             }
         }
 
         const fPath = path.resolve(activeDir, relPath)
-        if (fs.existsSync(fPath)) {
+        if (await existsPath(fPath)) {
             return fPath
         }
 
@@ -133,7 +133,7 @@ export class GraphicsPreview {
             return undefined
         }
         const frPath = path.resolve(rootDir, relPath)
-        if (fs.existsSync(frPath)) {
+        if (await existsPath(frPath)) {
             return frPath
         }
         return undefined

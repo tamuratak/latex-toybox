@@ -168,7 +168,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         }
 
         // Get a list of rnw child chunks
-        const rnwChildren = subFile ? this.parseRnwChildCommand(content, file, this.extension.manager.rootFile || '') : []
+        const rnwChildren = subFile ? await this.parseRnwChildCommand(content, file, this.extension.manager.rootFile || '') : []
         let rnwChild = rnwChildren.shift()
 
         // Parse each base-level node. If the node has contents, that function
@@ -313,7 +313,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         if (['input', 'InputIfFileExists', 'include', 'SweaveInput',
              'subfile', 'loadglsentries'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 0) {
-            candidate = resolveFile(
+            candidate = await resolveFile(
                 [path.dirname(file),
                  path.dirname(this.extension.manager.rootFile || ''),
                  ...texDirs],
@@ -322,7 +322,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // \import{sections/}{section1.tex}
         if (['import', 'inputfrom', 'includefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
-            candidate = resolveFile(
+            candidate = await resolveFile(
                 [cmdArgs[0],
                  path.join(
                     path.dirname(this.extension.manager.rootFile || ''),
@@ -332,7 +332,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // \subimport{01-IntroDir/}{01-Intro.tex}
         if (['subimport', 'subinputfrom', 'subincludefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
-            candidate = resolveFile(
+            candidate = await resolveFile(
                 [path.dirname(file)],
                 path.join(cmdArgs[0], cmdArgs[1]))
         }
@@ -507,11 +507,11 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         })
     }
 
-    private parseRnwChildCommand(content: string, file: string, rootFile: string): {subFile: string, line: number}[] {
+    private async parseRnwChildCommand(content: string, file: string, rootFile: string) {
         const children: {subFile: string, line: number}[] = []
         const childRegExp = new InputFileRegExp()
         while(true) {
-            const result = childRegExp.execChild(content, file, rootFile)
+            const result = await childRegExp.execChild(content, file, rootFile)
             if (!result) {
                 break
             }

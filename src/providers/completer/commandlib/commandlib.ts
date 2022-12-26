@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
+import { existsPath } from '../../../lib/lwfs/lwfs'
 import {CmdEnvSuggestion} from '../command'
 
 
@@ -8,12 +8,12 @@ export function isTriggerSuggestNeeded(name: string): boolean {
     return reg.test(name)
 }
 
-export function resolveCmdEnvFile(name: string, dataDir: string): string | undefined {
+export async function resolveCmdEnvFile(name: string, dataDir: string) {
     const dirs = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.package.dirs') as string[]
     dirs.push(dataDir)
     for (const dir of dirs) {
         const f = `${dir}/${name}`
-        if (fs.existsSync(f)) {
+        if (await existsPath(f)) {
             return f
         }
     }
@@ -24,7 +24,7 @@ export function resolveCmdEnvFile(name: string, dataDir: string): string | undef
     if (indexDash > - 1) {
         const generalPkg = name.substring(0, indexDash)
         const f = `${dataDir}/${generalPkg}${suffix}`
-        if (fs.existsSync(f)) {
+        if (await existsPath(f)) {
             return f
         }
     }
