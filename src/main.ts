@@ -34,7 +34,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -306,6 +306,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
 }
 
 interface IExtension extends
+    ExtensionContextLocator,
     ExtensionRootLocator,
     EventBusLocator,
     BuilderLocator,
@@ -319,6 +320,7 @@ interface IExtension extends
     ViewerLocator { }
 
 export class Extension implements IExtension {
+    readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
     readonly eventBus = new EventBus()
@@ -350,6 +352,7 @@ export class Extension implements IExtension {
     readonly referenceStore: ReferenceStore
 
     constructor(context: vscode.ExtensionContext) {
+        this.extensionContext = context
         this.extensionRoot = context.extensionPath
         // We must create an instance of Logger first to enable
         // adding log messages during initialization.
