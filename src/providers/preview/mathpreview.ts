@@ -80,12 +80,14 @@ export class MathPreview {
         const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
-        if (configuration.get('hover.ref.enabled') as boolean) {
+        try {
             const tex = this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
             if (tex) {
                 const newCommands = await this.findProjectNewCommand(ctoken)
-                return this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
+                return await this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
             }
+        } catch (e) {
+            // ignore
         }
         const md = '```latex\n' + labelDef.documentation + '\n```\n'
         const refRange = document.getWordRangeAtPosition(position, /\{.*?\}/)
