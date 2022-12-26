@@ -129,6 +129,9 @@ export class Manager implements IManager {
         return this.setCachedContent(filePath, { element: {}, children: [], bibs: [] })
     }
 
+    /**
+     * This method should be private to ensure that only manager can change the cached tree structure.
+     */
     private gracefulCachedContent(filePath: string): CachedContentEntry {
         const cache = this.cachedContent.get(filePath)
         if (cache) {
