@@ -56,6 +56,10 @@ export interface ICompleteionUpdater {
     updateCompleter(file: string, content: string): Promise<void>
 }
 
+export interface ExtensionContextLocator {
+    readonly extensionContext: vscode.ExtensionContext
+}
+
 export interface ExtensionRootLocator {
     readonly extensionRoot: string
 }
