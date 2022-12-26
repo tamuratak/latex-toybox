@@ -1,6 +1,5 @@
 import * as assert from 'assert'
 import * as path from 'path'
-import * as process from 'process'
 import * as fs from 'fs'
 import * as os from 'os'
 import {sleep} from './utils/ciutils'
@@ -9,7 +8,7 @@ import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
     executeVscodeCommandAfterActivation,
-    getFixtureDir, isDockerEnabled, runTestWithFixture,
+    getFixtureDir, runTestWithFixture,
     waitGivenRootFile,
     waitLatexWorkshopActivated,
     promisify
@@ -46,11 +45,7 @@ function assertCompletionFilterTextContains(items: vscode.CompletionItem[] | und
 suite('Multi-root workspace test suite', () => {
 
     suiteSetup(() => {
-        const config = vscode.workspace.getConfiguration()
-        if (process.env['LATEXWORKSHOP_CI_ENABLE_DOCKER']) {
-            return config.update('latex-workshop.docker.enabled', true, vscode.ConfigurationTarget.Global)
-        }
-        return
+        // noop
     })
 
     //
@@ -111,7 +106,7 @@ suite('Multi-root workspace test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture005', 'detect root with search.rootFiles.exclude', async () => {
         const fixtureDir = getFixtureDir()
@@ -125,7 +120,7 @@ suite('Multi-root workspace test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     //
     // Auto build tests
@@ -147,7 +142,7 @@ suite('Multi-root workspace test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture011', 'auto build main.tex when editing s.tex with onSave', async () => {
         const fixtureDir = getFixtureDir()

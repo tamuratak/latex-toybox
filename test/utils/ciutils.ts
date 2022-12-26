@@ -128,10 +128,6 @@ export async function assertPdfIsGenerated(pdfFilePath: string, cb: () => Promis
     }
 }
 
-export function isDockerEnabled() {
-    return process.env['LATEXWORKSHOP_CI_ENABLE_DOCKER'] ? true : false
-}
-
 type PickTruthy<T> = T | false | undefined | null
 
 /**

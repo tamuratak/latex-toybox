@@ -45,7 +45,6 @@ async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer'
                 '--disable-gpu'
             ],
             extensionTestsEnv: {
-                LATEXWORKSHOP_CI_ENABLE_DOCKER: process.argv.includes('--enable-docker') ? '1' : undefined,
                 LATEXWORKSHOP_CI: '1'
             }
         })

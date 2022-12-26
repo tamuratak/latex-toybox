@@ -1,12 +1,10 @@
 import * as assert from 'assert'
 import * as os from 'os'
 import * as path from 'path'
-import * as process from 'process'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
     getFixtureDir,
-    isDockerEnabled,
     execCommandThenPick,
     executeVscodeCommandAfterActivation,
     getViewerStatus,
@@ -20,11 +18,7 @@ import {
 suite('PDF Viewer test suite', () => {
 
     suiteSetup(() => {
-        const config = vscode.workspace.getConfiguration()
-        if (process.env['LATEXWORKSHOP_CI_ENABLE_DOCKER']) {
-            return config.update('latex-workshop.docker.enabled', true, vscode.ConfigurationTarget.Global)
-        }
-        return
+        // noop
     })
 
     //
@@ -62,7 +56,7 @@ suite('PDF Viewer test suite', () => {
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture003', 'build main.tex and view it', async () => {
         const fixtureDir = getFixtureDir()
@@ -140,7 +134,7 @@ suite('PDF Viewer test suite', () => {
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture006', 'view a PDF file in outDir', async () => {
         const fixtureDir = getFixtureDir()

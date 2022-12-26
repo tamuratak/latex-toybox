@@ -1,7 +1,6 @@
 import * as assert from 'assert'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as process from 'process'
 import * as vscode from 'vscode'
 import * as os from 'os'
 import {
@@ -9,7 +8,6 @@ import {
     executeVscodeCommandAfterActivation,
     execCommandThenPick,
     getFixtureDir,
-    isDockerEnabled,
     runTestWithFixture,
     waitLatexWorkshopActivated,
     promisify
@@ -19,11 +17,7 @@ import {sleep} from './utils/ciutils'
 suite('Build TeX files test suite', () => {
 
     suiteSetup(() => {
-        const config = vscode.workspace.getConfiguration()
-        if (process.env['LATEXWORKSHOP_CI_ENABLE_DOCKER']) {
-            return config.update('latex-workshop.docker.enabled', true, vscode.ConfigurationTarget.Global)
-        }
-        return
+        // noop
     })
 
     //
@@ -105,7 +99,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture007', 'detect root with search.rootFiles.exclude', async () => {
         const fixtureDir = getFixtureDir()
@@ -118,7 +112,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture008', 'basic build with spaces in names', async () => {
         const fixtureDir = getFixtureDir()
@@ -187,7 +181,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture021', 'build with !TEX program and !TEX options', async () => {
         const fixtureDir = getFixtureDir()
@@ -277,7 +271,7 @@ suite('Build TeX files test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture032', 'auto build with input', async () => {
         const fixtureDir = getFixtureDir()
@@ -358,7 +352,7 @@ suite('Build TeX files test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture036', 'auto build main.tex when main.tex not in root dir and editing a sub file', async () => {
         const fixtureDir = getFixtureDir()
@@ -381,7 +375,7 @@ suite('Build TeX files test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture037', 'auto build with \\input and outDir', async () => {
         const fixtureDir = getFixtureDir()
@@ -404,7 +398,7 @@ suite('Build TeX files test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture038', 'auto build with watch.files.ignore', async () => {
         const fixtureDir = getFixtureDir()
@@ -447,7 +441,7 @@ suite('Build TeX files test suite', () => {
             })
             await doc.save()
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture03a', 'auto build main.tex when editing s.tex with onSave', async () => {
         const fixtureDir = getFixtureDir()
@@ -482,7 +476,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture051', 'build a root file with the subfiles package', async () => {
         const fixtureDir = getFixtureDir()
@@ -524,7 +518,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture054', 'build a subfile with .latexmkrc', async () => {
         const fixtureDir = getFixtureDir()
@@ -537,7 +531,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture055', 'build a subfile in the same directory as main.tex', async () => {
         const fixtureDir = getFixtureDir()
@@ -569,7 +563,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture057', 'build main.tex with subfiles whose path uses a macro when subfile opened', async () => {
         const fixtureDir = getFixtureDir()
@@ -588,7 +582,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture058', 'build main.tex when main.tex not in root dir and subfile opened', async () => {
         const fixtureDir = getFixtureDir()
@@ -605,7 +599,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture059', 'build main.tex choosing it in QuickPick', async () => {
         const fixtureDir = getFixtureDir()
@@ -643,7 +637,7 @@ suite('Build TeX files test suite', () => {
                 }
             )
         })
-    }, () => isDockerEnabled())
+    })
 
     runTestWithFixture('fixture05b', 'build a subfile with extra input file', async () => {
         const fixtureDir = getFixtureDir()
@@ -656,7 +650,7 @@ suite('Build TeX files test suite', () => {
             await vscode.window.showTextDocument(doc)
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
-    }, () => isDockerEnabled())
+    })
 
     //
     // Build with makeindex
