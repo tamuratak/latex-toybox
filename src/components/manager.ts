@@ -573,15 +573,15 @@ export class Manager implements IManager {
      * !! Be careful not to create an infinite loop with parseInputFiles !!
      *
      * @param file The path of a LaTeX file. It is added to the watcher if not being watched.
-     * @param baseFile The file currently considered as the rootFile. If undefined, we use `file`
+     * @param maybeRootFile The file currently considered as the rootFile. If undefined, we use `file`
      */
-    async parseFileAndSubs(file: string, baseFile: string | undefined) {
+    async parseFileAndSubs(file: string, maybeRootFile: string | undefined) {
         if (this.isExcluded(file)) {
             this.extension.logger.addLogMessage(`Ignoring: ${file}`)
             return
         }
-        if (baseFile === undefined) {
-            baseFile = file
+        if (maybeRootFile === undefined) {
+            maybeRootFile = file
         }
         this.extension.logger.addLogMessage(`Parsing a file and its subfiles: ${file}`)
         if (!this.filesWatched.has(file)) {
@@ -595,9 +595,7 @@ export class Manager implements IManager {
             return
         }
         content = utils.stripCommentsAndVerbatim(content)
-        this.gracefulCachedContent(file).children = []
-        this.gracefulCachedContent(file).bibs = []
-        await this.parseInputFiles(content, file, baseFile)
+        await this.parseInputFiles(content, file, maybeRootFile)
         await this.parseBibFiles(content, file)
     }
 
@@ -605,21 +603,21 @@ export class Manager implements IManager {
      * Return the list of files (recursively) included in `file`
      *
      * @param file The file in which children are recursively computed
-     * @param baseFile The file currently considered as the rootFile
+     * @param maybeRootFile The file currently considered as the rootFile
      *
      */
-    private async getTeXChildren(file: string, baseFile: string, children = new Set<string>()): Promise<string[]> {
+    private async getTeXChildren(file: string, maybeRootFile: string, children = new Set<string>()): Promise<string[]> {
         let content = await readFilePathGracefully(file) || ''
         content = utils.stripCommentsAndVerbatim(content)
 
         const inputFileRegExp = new InputFileRegExp()
         const newChildren = new Set<string>()
         while (true) {
-            const result = await inputFileRegExp.exec(content, file, baseFile)
+            const result = await inputFileRegExp.exec(content, file, maybeRootFile)
             if (!result) {
                 break
             }
-            if (!await existsPath(result.path) || path.relative(result.path, baseFile) === '') {
+            if (!await existsPath(result.path) || path.relative(result.path, maybeRootFile) === '') {
                 continue
             }
             newChildren.add(result.path)
@@ -630,7 +628,7 @@ export class Manager implements IManager {
                 continue
             }
             children.add(childFilePath)
-            await this.getTeXChildren(childFilePath, baseFile, children)
+            await this.getTeXChildren(childFilePath, maybeRootFile, children)
         }
         return Array.from(children)
     }
@@ -654,21 +652,22 @@ export class Manager implements IManager {
      *
      * @param content the content of currentFile
      * @param currentFile the name of the current file
-     * @param baseFile the name of the supposed rootFile
+     * @param maybeRootFile the name of the supposed rootFile
      */
-    private async parseInputFiles(content: string, currentFile: string, baseFile: string) {
+    private async parseInputFiles(content: string, currentFile: string, maybeRootFile: string) {
+        this.gracefulCachedContent(currentFile).children = []
         const inputFileRegExp = new InputFileRegExp()
         while (true) {
-            const result = await inputFileRegExp.exec(content, currentFile, baseFile)
+            const result = await inputFileRegExp.exec(content, currentFile, maybeRootFile)
             if (!result) {
                 break
             }
 
-            if (!await existsPath(result.path) || path.relative(result.path, baseFile) === '') {
+            if (!await existsPath(result.path) || path.relative(result.path, maybeRootFile) === '') {
                 continue
             }
 
-            this.gracefulCachedContent(baseFile).children.push({
+            this.gracefulCachedContent(currentFile).children.push({
                 file: result.path
             })
 
@@ -678,11 +677,12 @@ export class Manager implements IManager {
                 // Note that parseFileAndSubs calls parseInputFiles in return
                 continue
             }
-            await this.parseFileAndSubs(result.path, baseFile)
+            await this.parseFileAndSubs(result.path, maybeRootFile)
         }
     }
 
-    private async parseBibFiles(content: string, baseFile: string) {
+    private async parseBibFiles(content: string, currentFile: string) {
+        this.gracefulCachedContent(currentFile).bibs = []
         const bibReg = /(?:\\(?:bibliography|addbibresource)(?:\[[^[\]{}]*\])?){(.+?)}|(?:\\putbib)\[(.+?)\]/g
         while (true) {
             const result = bibReg.exec(content)
@@ -693,11 +693,11 @@ export class Manager implements IManager {
                 return bib.trim()
             })
             for (const bib of bibs) {
-                const bibPath = await this.pathUtils.resolveBibPath(bib, path.dirname(baseFile))
+                const bibPath = await this.pathUtils.resolveBibPath(bib, path.dirname(currentFile))
                 if (bibPath === undefined) {
                     continue
                 }
-                this.gracefulCachedContent(baseFile).bibs.push(bibPath)
+                this.gracefulCachedContent(currentFile).bibs.push(bibPath)
                 await this.bibWatcher.watchBibFile(bibPath)
             }
         }
