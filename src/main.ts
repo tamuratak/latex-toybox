@@ -194,11 +194,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     }))
 
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (e: vscode.TextEditor | undefined) => {
-        if (vscode.window.visibleTextEditors.filter(editor => extension.manager.hasTexId(editor.document.languageId)).length > 0) {
-            extension.logger.status.show()
-        } else if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId.toLowerCase() === 'log') {
-            extension.logger.status.show()
-        }
         if (e && isVirtualUri(e.document.uri)){
             return
         }
