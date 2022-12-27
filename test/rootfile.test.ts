@@ -34,26 +34,29 @@ suite('RootFile test suite', () => {
 
     runTestWithFixture('fixture002', 'circular inclusion', async () => {
         const fixtureDir = getFixtureDir()
-        const texFileName = 'a.tex'
-        const tex2FileName = 'poo.tex'
+        const aFileName = 'a.tex'
+        const pooFileName = 'poo.tex'
         const mainFileName = 'main.tex'
-        const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
+        const aTexFilePath = vscode.Uri.file(path.join(fixtureDir, aFileName))
         const rootFileFound = promisify('findrootfileend')
-        const doc = await vscode.workspace.openTextDocument(texFilePath)
+        const doc = await vscode.workspace.openTextDocument(aTexFilePath)
         await vscode.window.showTextDocument(doc)
         const extension = await waitLatexWorkshopActivated()
         await rootFileFound
         console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
+        await sleep(2000)
         if (extension.exports.realExtension) {
             extension.exports.realExtension.manager.rootFile = undefined
             await extension.exports.realExtension?.manager.findRoot()
             const includedTeX = extension.exports.realExtension.manager.getIncludedTeX()
             console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
             console.log(JSON.stringify(includedTeX))
-            return assert.ok(includedTeX.includes(path.join(fixtureDir, texFileName)) && includedTeX.includes(path.join(fixtureDir, tex2FileName)) && includedTeX.includes(path.join(fixtureDir, mainFileName)))
+            const expetedArray = [path.join(fixtureDir, aFileName), path.join(fixtureDir, pooFileName), path.join(fixtureDir, mainFileName)]
+            assert.ok(expetedArray.every((filePath) => includedTeX.includes(filePath)))
+        } else {
+            assert.fail('Real extension is undefined.')
         }
-        assert.fail('Real extension is undefined.')
     })
 
 })
