@@ -49,9 +49,9 @@ export class CompilerLogParser {
 
         if (log.match(bibtexPattern)) {
             if (log.match(latexmkPattern)) {
-                this.bibLogParser.parse(this.trimLaTeXmkBibTeX(log), rootFile)
+                return this.bibLogParser.parse(this.trimLaTeXmkBibTeX(log), rootFile)
             } else {
-                this.bibLogParser.parse(log, rootFile)
+                return this.bibLogParser.parse(log, rootFile)
             }
         }
         if (log.match(latexmkPattern)) {
@@ -60,10 +60,11 @@ export class CompilerLogParser {
             log = this.trimTexify(log)
         }
         if (log.match(latexPattern) || log.match(latexFatalPattern)) {
-            this.latexLogParser.parse(log, rootFile)
+            return this.latexLogParser.parse(log, rootFile)
         } else if (this.latexmkSkipped(log)) {
             this.isLaTeXmkSkipped = true
         }
+        return
     }
 
     private trimLaTeXmk(log: string): string {

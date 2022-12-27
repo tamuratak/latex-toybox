@@ -150,7 +150,7 @@ export class Builder implements IBuilder {
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
-            this.extension.compilerLogParser.parse(stdout)
+            void this.extension.compilerLogParser.parse(stdout)
             if (exitCode !== 0) {
                 this.extension.logger.addLogMessage(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
                 this.extension.logger.displayStatus('x', 'errorForeground', undefined, 'warning')
@@ -307,7 +307,7 @@ export class Builder implements IBuilder {
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
-            this.extension.compilerLogParser.parse(stdout, rootFile)
+            void this.extension.compilerLogParser.parse(stdout, rootFile)
             if (exitCode !== 0) {
                 this.extension.logger.addLogMessage(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stderr}.`)
                 this.extension.logger.addLogMessage(`The environment variable $PATH: ${envVarsPATH}`)
