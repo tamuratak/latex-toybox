@@ -595,8 +595,6 @@ export class Manager implements IManager {
             return
         }
         content = utils.stripCommentsAndVerbatim(content)
-        this.gracefulCachedContent(file).children = []
-        this.gracefulCachedContent(file).bibs = []
         await this.parseInputFiles(content, file, maybeRootFile)
         await this.parseBibFiles(content, file)
     }
@@ -657,6 +655,7 @@ export class Manager implements IManager {
      * @param maybeRootFile the name of the supposed rootFile
      */
     private async parseInputFiles(content: string, currentFile: string, maybeRootFile: string) {
+        this.gracefulCachedContent(currentFile).children = []
         const inputFileRegExp = new InputFileRegExp()
         while (true) {
             const result = await inputFileRegExp.exec(content, currentFile, maybeRootFile)
@@ -668,7 +667,7 @@ export class Manager implements IManager {
                 continue
             }
 
-            this.gracefulCachedContent(maybeRootFile).children.push({
+            this.gracefulCachedContent(currentFile).children.push({
                 file: result.path
             })
 
@@ -682,10 +681,8 @@ export class Manager implements IManager {
         }
     }
 
-    /**
-     * currentFile should be maybeRootFile?
-     */
     private async parseBibFiles(content: string, currentFile: string) {
+        this.gracefulCachedContent(currentFile).bibs = []
         const bibReg = /(?:\\(?:bibliography|addbibresource)(?:\[[^[\]{}]*\])?){(.+?)}|(?:\\putbib)\[(.+?)\]/g
         while (true) {
             const result = bibReg.exec(content)
