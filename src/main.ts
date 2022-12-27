@@ -193,16 +193,9 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
         }
     }))
 
-    let isLaTeXActive = false
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (e: vscode.TextEditor | undefined) => {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-
         if (vscode.window.visibleTextEditors.filter(editor => extension.manager.hasTexId(editor.document.languageId)).length > 0) {
             extension.logger.status.show()
-            if (configuration.get('view.autoFocus.enabled') && !isLaTeXActive) {
-                void vscode.commands.executeCommand('workbench.view.extension.latex-workshop-activitybar').then(() => vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'))
-            }
-            isLaTeXActive = true
         } else if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId.toLowerCase() === 'log') {
             extension.logger.status.show()
         }
@@ -212,8 +205,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
         if (e && extension.manager.hasTexId(e.document.languageId)) {
             await extension.manager.findRoot()
             extension.linter.lintRootFileIfEnabled()
-        } else if (!e || !extension.manager.hasBibtexId(e.document.languageId)) {
-            isLaTeXActive = false
         }
     }))
 
