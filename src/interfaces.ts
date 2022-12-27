@@ -109,6 +109,7 @@ export interface IManager {
     readonly cachedFilePaths: IterableIterator<string>,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): CachedContentEntry | undefined,
+    isLocalTexFile(document: vscode.TextDocument): boolean,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
     findRoot(): Promise<string | undefined>,

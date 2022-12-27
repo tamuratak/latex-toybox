@@ -148,7 +148,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
             return
         }
         extension.logger.addLogMessage(`onDidSaveTextDocument triggered: ${e.uri.toString(true)}`)
-        extension.linter.lintRootFileIfEnabled()
         void extension.manager.buildOnSaveIfEnabled(e.fileName)
     }))
 
@@ -165,7 +164,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
         if (!extension.manager.isLocalTexFile(e.document)) {
             return
         }
-        extension.linter.lintActiveFileIfEnabledAfterInterval(e.document)
         const cache = extension.manager.getCachedContent(e.document.fileName)
         if (cache === undefined) {
             return
@@ -190,12 +188,11 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
             return
         }
         await extension.manager.findRoot()
-        extension.linter.lintRootFileIfEnabled()
     }))
 
     registerProviders(extension, context)
 
-    void extension.manager.findRoot().then(() => extension.linter.lintRootFileIfEnabled())
+    void extension.manager.findRoot()
     conflictExtensionCheck()
 
     return generateLatexWorkshopApi(extension)
