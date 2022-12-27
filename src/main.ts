@@ -4,7 +4,6 @@ import * as process from 'process'
 import {Commander} from './commander'
 import {LaTeXCommanderTreeView} from './components/commander'
 import {Logger} from './components/logger'
-import {isVirtualUri} from './lib/lwfs/lwfs'
 import {Manager} from './components/manager'
 import {Builder} from './components/builder'
 import {Viewer, PdfViewerHookProvider} from './components/viewer'
@@ -145,32 +144,25 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     registerLatexWorkshopCommands(extension, context)
 
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-        if (isVirtualUri(e.uri)){
+        if (!extension.manager.isLocalTexFile(e)){
             return
         }
-        if (extension.manager.hasTexId(e.languageId)) {
-            extension.logger.addLogMessage(`onDidSaveTextDocument triggered: ${e.uri.toString(true)}`)
-            extension.linter.lintRootFileIfEnabled()
-            void extension.manager.buildOnSaveIfEnabled(e.fileName)
-        }
+        extension.logger.addLogMessage(`onDidSaveTextDocument triggered: ${e.uri.toString(true)}`)
+        extension.linter.lintRootFileIfEnabled()
+        void extension.manager.buildOnSaveIfEnabled(e.fileName)
     }))
 
     // This function will be called when a new text is opened, or an inactive editor is reactivated after vscode reload
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async (e: vscode.TextDocument) => {
-        if (isVirtualUri(e.uri)){
+        if (!extension.manager.isLocalTexFile(e)){
             return
         }
-        if (extension.manager.hasTexId(e.languageId)) {
-            await extension.manager.findRoot()
-        }
+        await extension.manager.findRoot()
     }))
 
     let updateCompleter: NodeJS.Timeout
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-        if (isVirtualUri(e.document.uri)){
-            return
-        }
-        if (!extension.manager.hasTexId(e.document.languageId)) {
+        if (!extension.manager.isLocalTexFile(e.document)) {
             return
         }
         extension.linter.lintActiveFileIfEnabledAfterInterval(e.document)
@@ -194,26 +186,11 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     }))
 
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (e: vscode.TextEditor | undefined) => {
-        if (vscode.window.visibleTextEditors.filter(editor => extension.manager.hasTexId(editor.document.languageId)).length > 0) {
-            extension.logger.status.show()
-        } else if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId.toLowerCase() === 'log') {
-            extension.logger.status.show()
-        }
-        if (e && isVirtualUri(e.document.uri)){
+        if (!e || !extension.manager.isLocalTexFile(e.document)) {
             return
         }
-        if (e && extension.manager.hasTexId(e.document.languageId)) {
-            await extension.manager.findRoot()
-            extension.linter.lintRootFileIfEnabled()
-        }
-    }))
-
-    context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-        if (extension.manager.hasTexId(e.textEditor.document.languageId) ||
-            e.textEditor.document.languageId === 'bibtex') {
-            return extension.structureViewer.showCursorItem(e)
-        }
-        return
+        await extension.manager.findRoot()
+        extension.linter.lintRootFileIfEnabled()
     }))
 
     registerProviders(extension, context)

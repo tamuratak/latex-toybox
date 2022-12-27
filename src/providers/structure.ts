@@ -635,22 +635,29 @@ export class StructureTreeView {
         this.extension = extension
         this._treeDataProvider = new SectionNodeProvider(extension)
         this._viewer = vscode.window.createTreeView('latex-workshop-structure', { treeDataProvider: this._treeDataProvider, showCollapseAll: true })
-        vscode.commands.registerCommand('latex-workshop.structure-toggle-follow-cursor', () => {
-           this._followCursor = ! this._followCursor
-           this.extension.logger.addLogMessage(`Follow cursor is set to ${this._followCursor}.`)
-        })
 
-        vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-            if (extension.manager.hasBibtexId(e.languageId)) {
-                void extension.structureViewer.computeTreeStructure()
-            }
-        })
-
-        vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
-            if (e && extension.manager.hasBibtexId(e.document.languageId)) {
-                void extension.structureViewer.refreshView()
-            }
-        })
+        extension.extensionContext.subscriptions.push(
+            vscode.commands.registerCommand('latex-workshop.structure-toggle-follow-cursor', () => {
+                this._followCursor = ! this._followCursor
+                this.extension.logger.addLogMessage(`Follow cursor is set to ${this._followCursor}.`)
+            }),
+            vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
+                if (extension.manager.hasBibtexId(e.languageId)) {
+                    void extension.structureViewer.computeTreeStructure()
+                }
+            }),
+            vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+                if (e && extension.manager.hasBibtexId(e.document.languageId)) {
+                    void extension.structureViewer.refreshView()
+                }
+            }),
+            vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
+                if (extension.manager.hasTexId(e.textEditor.document.languageId) || e.textEditor.document.languageId === 'bibtex') {
+                    return this.showCursorItem(e)
+                }
+                return
+            })
+        )
 
         this.extension.eventBus.onDidChangeRootFile(() => {
             void this.computeTreeStructure()
@@ -659,6 +666,7 @@ export class StructureTreeView {
         this.extension.eventBus.onDidEndFindRootFile(() => {
             void this.refreshView()
         })
+
     }
 
     /**

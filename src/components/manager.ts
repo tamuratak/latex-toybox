@@ -20,7 +20,7 @@ import {PathUtils} from './managerlib/pathutils'
 
 import {Mutex} from '../lib/await-semaphore'
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
-import { existsPath, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
+import { existsPath, isLocalUri, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
 
 
 export interface CachedContentEntry {
@@ -290,6 +290,10 @@ export class Manager implements IManager {
         const pdfFilePath = this.tex2pdf(rootFile)
         const pdfFileUri = vscode.Uri.file(pdfFilePath)
         this.pdfWatcher.ignorePdfFile(pdfFileUri)
+    }
+
+    isLocalTexFile(document: vscode.TextDocument) {
+        return isLocalUri(document.uri) && this.hasTexId(document.languageId)
     }
 
     /**
