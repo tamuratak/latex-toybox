@@ -206,14 +206,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
         }
     }))
 
-    context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-        if (extension.manager.hasTexId(e.textEditor.document.languageId) ||
-            e.textEditor.document.languageId === 'bibtex') {
-            return extension.structureViewer.showCursorItem(e)
-        }
-        return
-    }))
-
     registerProviders(extension, context)
 
     void extension.manager.findRoot().then(() => extension.linter.lintRootFileIfEnabled())
