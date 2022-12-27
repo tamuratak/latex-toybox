@@ -94,10 +94,8 @@ export class Builder implements IBuilder {
             if (e instanceof MaxWaitingLimitError) {
                 const msg = 'Another LaTeX build processing is already waiting for the current LaTeX build to finish. Exit.'
                 this.extension.logger.addLogMessage(msg)
-                throw new MaxWaitingLimitError(msg)
-            } else {
-                throw e
             }
+            throw e
         }
     }
 

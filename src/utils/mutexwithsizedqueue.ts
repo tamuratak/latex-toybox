@@ -31,4 +31,18 @@ export class MutexWithSizedQueue {
         return this.#waiting
     }
 
+    async noopIfOccupied(cb: () => Promise<unknown>) {
+        let release: (() => void) | undefined
+        try {
+            release = await this.acquire()
+            return await cb()
+        } catch (e) {
+            if (e instanceof MaxWaitingLimitError) {
+                return
+            }
+            throw e
+        } finally {
+            release?.()
+        }
+    }
 }

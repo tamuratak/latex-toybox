@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import { EventBusLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import type { Extension } from '../main'
-import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
+import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
 
 
@@ -122,23 +122,14 @@ export class ReferenceUpdater {
     }
 
     private async update() {
-        let release: (() => void) | undefined
-        try {
-            release = await this.mutex.acquire()
+        await this.mutex.noopIfOccupied(async () => {
             this.clear()
             const rootFile = this.extension.manager.rootFile
             if (!rootFile) {
                 return
             }
             await this.updateForFile(rootFile)
-        } catch (e) {
-            if (e instanceof MaxWaitingLimitError) {
-                return
-            }
-            throw e
-        } finally {
-            release?.()
-        }
+        })
     }
 
 }
