@@ -194,10 +194,13 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     }))
 
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (e: vscode.TextEditor | undefined) => {
-        if (e && isVirtualUri(e.document.uri)){
+        if (!e) {
             return
         }
-        if (e && extension.manager.hasTexId(e.document.languageId)) {
+        if (isVirtualUri(e.document.uri)){
+            return
+        }
+        if (extension.manager.hasTexId(e.document.languageId)) {
             await extension.manager.findRoot()
             extension.linter.lintRootFileIfEnabled()
         }
