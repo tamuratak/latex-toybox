@@ -350,7 +350,7 @@ export class Builder implements IBuilder {
         if (configuration.get('view.pdf.viewer') === 'external' && configuration.get('synctex.afterBuild.enabled')) {
             const pdfFile = this.extension.manager.tex2pdf(rootFile)
             this.extension.logger.addLogMessage('SyncTex after build invoked.')
-            this.extension.locator.syncTeX(undefined, undefined, pdfFile)
+            return this.extension.locator.syncTeX(undefined, undefined, pdfFile)
         }
     }
 

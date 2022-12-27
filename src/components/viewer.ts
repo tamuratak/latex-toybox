@@ -251,7 +251,7 @@ export class Viewer implements IViewer {
                 if (configuration.get('synctex.afterBuild.enabled') as boolean) {
                     this.extension.logger.addLogMessage('SyncTex after build invoked.')
                     const uri = vscode.Uri.parse(data.pdfFileUri, true)
-                    this.extension.locator.syncTeX(undefined, undefined, uri.fsPath)
+                    void this.extension.locator.syncTeX(undefined, undefined, uri.fsPath)
                 }
                 break
             }

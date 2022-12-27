@@ -67,7 +67,7 @@ export class BibLogParser {
         }
 
         this.extension.logger.addLogMessage(`BibTeX log parsed with ${this.buildLog.length} messages.`)
-        this.extension.compilerLogParser.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'BibTeX')
+        return this.extension.compilerLogParser.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'BibTeX')
     }
 
     private pushLog(type: string, file: string, message: string, line: number, excludeRegexp: RegExp[]) {

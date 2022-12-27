@@ -68,7 +68,7 @@ export class LatexLogParser {
             this.buildLog.push(state.currentResult)
         }
         this.extension.logger.addLogMessage(`LaTeX log parsed with ${this.buildLog.length} messages.`)
-        this.extension.compilerLogParser.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'LaTeX')
+        return this.extension.compilerLogParser.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'LaTeX')
     }
 
    private parseLine(line: string, state: ParserState, buildLog: LogEntry[]) {
