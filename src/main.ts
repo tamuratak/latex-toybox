@@ -144,7 +144,12 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     registerLatexWorkshopCommands(extension, context)
     registerProviders(extension, context)
 
-    void extension.manager.findRoot()
+    setTimeout(() => {
+        if (extension.manager.rootFile === undefined) {
+            void extension.manager.findRoot()
+        }
+    }, 500)
+
     conflictExtensionCheck()
 
     return generateLatexWorkshopApi(extension)
