@@ -28,6 +28,12 @@ export class Logger implements ILogger {
         this.addLogMessage(message + ' args: ' + JSON.stringify(args))
     }
 
+    addDebugLogMessage(message: string) {
+        if (process.env['LATEXWORKSHOP_CI']) {
+            this.addLogMessage(' [DEBUG] ' + message)
+        }
+    }
+
     addCompilerMessage(message: string) {
         this.compilerLogPanel.append(message)
     }

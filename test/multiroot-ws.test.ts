@@ -2,16 +2,14 @@ import * as assert from 'assert'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as os from 'os'
-import {sleep} from './utils/ciutils'
+import {obtainLatexWorkshop, sleep} from './utils/ciutils'
 import {activate} from '../src/main'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
     executeVscodeCommandAfterActivation,
     getFixtureDir, runTestWithFixture,
-    waitGivenRootFile,
-    waitLatexWorkshopActivated,
-    promisify
+    waitGivenRootFile
 } from './utils/ciutils'
 
 function getCompletionItems(extension: vscode.Extension<ReturnType<typeof activate>>, doc: vscode.TextDocument, pos: vscode.Position): vscode.CompletionItem[] | undefined {
@@ -51,7 +49,7 @@ suite('Multi-root workspace test suite', () => {
     //
     // Basic build tests
     //
-    runTestWithFixture('fixture001', 'basic build with default recipe name', async () => {
+    runTestWithFixture('fixture001', 'basic build with default recipe name', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 'A.tex'
@@ -61,11 +59,12 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
 
-    runTestWithFixture('fixture002', 'basic build with outDir', async () => {
+    runTestWithFixture('fixture002', 'basic build with outDir', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const outDir = 'out'
         const wsSubDir = 'A'
@@ -76,11 +75,12 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
 
-    runTestWithFixture('fixture003', 'basic build with forceRecipeUsage: true', async () => {
+    runTestWithFixture('fixture003', 'basic build with forceRecipeUsage: true', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 'A.tex'
@@ -90,11 +90,12 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
 
-    runTestWithFixture('fixture004', 'detect root with search.rootFiles.include', async () => {
+    runTestWithFixture('fixture004', 'detect root with search.rootFiles.include', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 's.tex'
@@ -104,11 +105,12 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
 
-    runTestWithFixture('fixture005', 'detect root with search.rootFiles.exclude', async () => {
+    runTestWithFixture('fixture005', 'detect root with search.rootFiles.exclude', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 's.tex'
@@ -118,6 +120,7 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
@@ -125,7 +128,7 @@ suite('Multi-root workspace test suite', () => {
     //
     // Auto build tests
     //
-    runTestWithFixture('fixture010', 'auto build with subfiles and onSave', async () => {
+    runTestWithFixture('fixture010', 'auto build with subfiles and onSave', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 's.tex'
@@ -135,8 +138,7 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             const editor = await vscode.window.showTextDocument(doc)
-            await waitLatexWorkshopActivated()
-            await promisify('findrootfileend')
+            await findRootFileEnd
             await editor.edit((builder) => {
                 builder.insert(new vscode.Position(2, 0), ' ')
             })
@@ -144,7 +146,7 @@ suite('Multi-root workspace test suite', () => {
         })
     })
 
-    runTestWithFixture('fixture011', 'auto build main.tex when editing s.tex with onSave', async () => {
+    runTestWithFixture('fixture011', 'auto build main.tex when editing s.tex with onSave', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 's.tex'
@@ -154,8 +156,7 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             const editor = await vscode.window.showTextDocument(doc)
-            await waitLatexWorkshopActivated()
-            await promisify('findrootfileend')
+            await findRootFileEnd
             await editor.edit((builder) => {
                 builder.insert(new vscode.Position(2, 0), ' ')
             })
@@ -163,7 +164,7 @@ suite('Multi-root workspace test suite', () => {
         })
     })
 
-    runTestWithFixture('fixture012', 'automatically detect root', async () => {
+    runTestWithFixture('fixture012', 'automatically detect root', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 's.tex'
@@ -173,6 +174,7 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
@@ -181,7 +183,7 @@ suite('Multi-root workspace test suite', () => {
     // Test structure and file watcher
     //
 
-    runTestWithFixture('fixture020', 'structure and file watcher', async () => {
+    runTestWithFixture('fixture020', 'structure and file watcher', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileNameA = 'A.tex'
         const texFileNameB = 'B.tex'
@@ -189,7 +191,8 @@ suite('Multi-root workspace test suite', () => {
         const texFilePathB = vscode.Uri.file(path.join(fixtureDir, 'B', texFileNameB))
         const docA = await vscode.workspace.openTextDocument(texFilePathA)
         await vscode.window.showTextDocument(docA)
-        const extension = await waitLatexWorkshopActivated()
+        await findRootFileEnd
+        const extension = obtainLatexWorkshop()
         await waitGivenRootFile(docA.fileName)
         await sleep(1000)
         const docB = await vscode.workspace.openTextDocument(texFilePathB)
@@ -211,7 +214,7 @@ suite('Multi-root workspace test suite', () => {
     //
     // Recipe name
     //
-    runTestWithFixture('fixture030', 'basic build with recipes and default recipe name defined in subdir', async () => {
+    runTestWithFixture('fixture030', 'basic build with recipes and default recipe name defined in subdir', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 'A.tex'
@@ -221,11 +224,12 @@ suite('Multi-root workspace test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
+            await findRootFileEnd
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
     })
 
-    runTestWithFixture('fixture031', 'basic build with recipes defined in subdir and lastUsed', async () => {
+    runTestWithFixture('fixture031', 'basic build with recipes defined in subdir and lastUsed', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const wsSubDir = 'A'
         const texFileName = 'A.tex'
@@ -234,7 +238,7 @@ suite('Multi-root workspace test suite', () => {
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, wsSubDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
         await vscode.window.showTextDocument(doc)
-        await waitLatexWorkshopActivated()
+        await findRootFileEnd
         await sleep(1000)
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.commands.executeCommand('latex-workshop.recipes', 'latexmk A')
@@ -245,7 +249,7 @@ suite('Multi-root workspace test suite', () => {
         })
     })
 
-    runTestWithFixture('fixture032', 'basic build with lastUsed and switching rootFile', async () => {
+    runTestWithFixture('fixture032', 'basic build with lastUsed and switching rootFile', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileNameA = 'A.tex'
         const texFileNameB = 'B.tex'
@@ -257,7 +261,7 @@ suite('Multi-root workspace test suite', () => {
 
         // Open A.tex and build
         await vscode.window.showTextDocument(docA)
-        await waitLatexWorkshopActivated()
+        await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
         await sleep(1000)
         await assertPdfIsGenerated(pdfFilePath, async () => {
@@ -280,7 +284,7 @@ suite('Multi-root workspace test suite', () => {
         })
     })
 
-    runTestWithFixture('fixture040', 'citation intellisense', async () => {
+    runTestWithFixture('fixture040', 'citation intellisense', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileNameA = 'A.tex'
         const texFileNameB = 'B.tex'
@@ -296,7 +300,8 @@ suite('Multi-root workspace test suite', () => {
 
         // Open A.tex and trigger citation completion
         await vscode.window.showTextDocument(docA)
-        const extension = await waitLatexWorkshopActivated()
+        const extension = obtainLatexWorkshop()
+        await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
         await sleep(1000)
         const itemsA = getCompletionItems(extension, docA, pos)
@@ -311,6 +316,7 @@ suite('Multi-root workspace test suite', () => {
         // Switch to B.tex and trigger citation completion
         const docB = await vscode.workspace.openTextDocument(texFilePathB)
         await vscode.window.showTextDocument(docB)
+        await findRootFileEnd
         await waitGivenRootFile(docB.fileName)
         await sleep(10000)
         const itemsB = getCompletionItems(extension, docB, pos)

@@ -6,9 +6,9 @@ import * as vscode from 'vscode'
 import {
     getFixtureDir,
     runTestWithFixture,
-    waitLatexWorkshopActivated,
     promisify,
-    sleep
+    sleep,
+    obtainLatexWorkshop
 } from './utils/ciutils'
 
 suite('RootFile test suite', () => {
@@ -26,7 +26,7 @@ suite('RootFile test suite', () => {
         await sleep(1000)
         const rootFileFound = promisify('findrootfileend')
         await vscode.window.showTextDocument(doc)
-        const extension = await waitLatexWorkshopActivated()
+        const extension = obtainLatexWorkshop()
         await rootFileFound
         console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
@@ -41,14 +41,12 @@ suite('RootFile test suite', () => {
         const rootFileFound = promisify('findrootfileend')
         const doc = await vscode.workspace.openTextDocument(aTexFilePath)
         await vscode.window.showTextDocument(doc)
-        const extension = await waitLatexWorkshopActivated()
+        const extension = obtainLatexWorkshop()
         await rootFileFound
         console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
         await sleep(2000)
         if (extension.exports.realExtension) {
-            extension.exports.realExtension.manager.rootFile = undefined
-            await extension.exports.realExtension?.manager.findRoot()
             const includedTeX = extension.exports.realExtension.manager.getIncludedTeX()
             console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
             console.log(JSON.stringify(includedTeX))

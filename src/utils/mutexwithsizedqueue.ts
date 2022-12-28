@@ -31,7 +31,7 @@ export class MutexWithSizedQueue {
         return this.#waiting
     }
 
-    async noopIfOccupied(cb: () => Promise<unknown>) {
+    async noopIfOccupied<T = unknown>(cb: () => Promise<T>) {
         let release: (() => void) | undefined
         try {
             release = await this.acquire()

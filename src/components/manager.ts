@@ -21,6 +21,8 @@ import {PathUtils} from './managerlib/pathutils'
 import {Mutex} from '../lib/await-semaphore'
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
 import { existsPath, isLocalUri, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
+import { ExternalPromise } from '../utils/externalpromise'
+import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
 
 export interface CachedContentEntry {
@@ -86,6 +88,8 @@ export class Manager implements IManager {
     private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw']
     private readonly jlweaveExt: string[] = ['.jnw', '.jtexw']
     private readonly weaveExt: string[] = []
+    #rootFilePromise: ExternalPromise<string | undefined> | undefined
+    private readonly findRootMutex = new MutexWithSizedQueue(1)
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -117,16 +121,18 @@ export class Manager implements IManager {
                 void this.buildOnSaveIfEnabled(e.fileName)
             }),
             vscode.workspace.onDidOpenTextDocument(async (e) => {
-                if (!extension.manager.isLocalTexFile(e)){
+                this.extension.logger.addDebugLogMessage(`onDidOpenTextDocument: ${e.uri.toString()}`)
+                if (!this.isLocalTexFile(e)){
                     return
                 }
-                await extension.manager.findRoot()
+                await this.findRoot()
             }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
-                if (!e || !extension.manager.isLocalTexFile(e.document)) {
+                this.extension.logger.addDebugLogMessage(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
+                if (!e || !this.isLocalTexFile(e.document)) {
                     return
                 }
-                await extension.manager.findRoot()
+                await this.findRoot()
             }),
             vscode.workspace.onDidChangeTextDocument(async (e) => {
                 if (!this.isLocalTexFile(e.document)) {
@@ -151,6 +157,7 @@ export class Manager implements IManager {
                 }
             })
         )
+
     }
 
     async dispose() {
@@ -245,6 +252,14 @@ export class Manager implements IManager {
         }
     }
 
+    get rootFilePromise(): Promise<string | undefined> {
+        if (this.#rootFilePromise) {
+            return this.#rootFilePromise.promise
+        } else {
+            return Promise.resolve(this.rootFile)
+        }
+    }
+
     get rootFileUri(): vscode.Uri | undefined {
         const root = this._rootFile
         if (root) {
@@ -331,6 +346,7 @@ export class Manager implements IManager {
 
     isLocalTexFile(document: vscode.TextDocument) {
         return isLocalUri(document.uri) && this.hasTexId(document.languageId)
+               || document.uri.scheme === 'git' && !!process.env['LATEXWORKSHOP_CI'] // VS Code bug?
     }
 
     /**
@@ -377,41 +393,50 @@ export class Manager implements IManager {
      * Finds the root file with respect to the current workspace and returns it.
      * The found root is also set to `rootFile`.
      */
-    async findRoot(): Promise<string | undefined> {
-        const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true))
-        this.extension.logger.addLogMessage(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
-        this.localRootFile = undefined
-        const findMethods = [
-            () => this.finderUtils.findRootFromMagic(),
-            () => this.findRootFromActive(),
-            () => this.findRootFromCurrentRoot(),
-            () => this.findRootInWorkspace()
-        ]
-        for (const method of findMethods) {
-            const rootFile = await method()
-            if (rootFile === undefined) {
-                continue
+    private async findRoot() {
+        return this.findRootMutex.noopIfOccupied(async () => {
+            const rootFilePromise = new ExternalPromise<string | undefined>()
+            try {
+                this.#rootFilePromise = rootFilePromise
+                const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true))
+                this.extension.logger.addLogMessage(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
+                this.localRootFile = undefined
+                const findMethods = [
+                    () => this.finderUtils.findRootFromMagic(),
+                    () => this.findRootFromActive(),
+                    () => this.findRootFromCurrentRoot(),
+                    () => this.findRootInWorkspace()
+                ]
+                for (const method of findMethods) {
+                    const rootFile = await method()
+                    if (rootFile === undefined) {
+                        continue
+                    }
+                    if (this.rootFile !== rootFile) {
+                        this.extension.logger.addLogMessage(`Root file changed: from ${this.rootFile} to ${rootFile}`)
+                        this.extension.logger.addLogMessage('Start to find all dependencies.')
+                        this.rootFile = rootFile
+                        this.rootFileLanguageId = this.inferLanguageId(rootFile)
+                        this.extension.logger.addLogMessage(`Root file languageId: ${this.rootFileLanguageId}`)
+                        await this.initiateFileWatcher()
+                        await this.parseFileAndSubs(this.rootFile, this.rootFile) // Finishing the parsing is required for subsequent refreshes.
+                        // We need to parse the fls to discover file dependencies when defined by TeX macro
+                        // It happens a lot with subfiles, https://tex.stackexchange.com/questions/289450/path-of-figures-in-different-directories-with-subfile-latex
+                        await this.parseFlsFile(this.rootFile)
+                        this.extension.eventBus.fire(eventbus.RootFileChanged, rootFile)
+                    } else {
+                        this.extension.logger.addLogMessage(`Keep using the same root file: ${this.rootFile}`)
+                    }
+                    rootFilePromise.resolve(rootFile)
+                    return rootFile
+                }
+                return undefined
+            } finally {
+                this.extension.eventBus.fire(eventbus.FindRootFileEnd)
+                // noop if already resolved
+                rootFilePromise.resolve(undefined)
             }
-            if (this.rootFile !== rootFile) {
-                this.extension.logger.addLogMessage(`Root file changed: from ${this.rootFile} to ${rootFile}`)
-                this.extension.logger.addLogMessage('Start to find all dependencies.')
-                this.rootFile = rootFile
-                this.rootFileLanguageId = this.inferLanguageId(rootFile)
-                this.extension.logger.addLogMessage(`Root file languageId: ${this.rootFileLanguageId}`)
-                await this.initiateFileWatcher()
-                await this.parseFileAndSubs(this.rootFile, this.rootFile) // Finishing the parsing is required for subsequent refreshes.
-                // We need to parse the fls to discover file dependencies when defined by TeX macro
-                // It happens a lot with subfiles, https://tex.stackexchange.com/questions/289450/path-of-figures-in-different-directories-with-subfile-latex
-                await this.parseFlsFile(this.rootFile)
-                this.extension.eventBus.fire(eventbus.RootFileChanged, rootFile)
-            } else {
-                this.extension.logger.addLogMessage(`Keep using the same root file: ${this.rootFile}`)
-            }
-            this.extension.eventBus.fire(eventbus.FindRootFileEnd)
-            return rootFile
-        }
-        this.extension.eventBus.fire(eventbus.FindRootFileEnd)
-        return undefined
+        })
     }
 
     private logWatchedFiles(delay = 2000) {

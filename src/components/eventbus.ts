@@ -1,7 +1,8 @@
 import {EventEmitter} from 'events'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type {Disposable} from 'vscode'
-import { IEventBus } from '../interfaces'
+import { IEventBus, LoggerLocator } from '../interfaces'
+
 
 export const BuildFinished = 'buildfinished'
 export const PdfViewerPagesLoaded = 'pdfviewerpagesloaded'
@@ -21,8 +22,16 @@ export type EventName = typeof BuildFinished
                     | typeof FindRootFileEnd
 
 
+interface IExtension extends
+    LoggerLocator { }
+
 export class EventBus implements IEventBus {
     private readonly eventEmitter = new EventEmitter()
+    private readonly extension: IExtension
+
+    constructor(extension: IExtension) {
+        this.extension = extension
+    }
 
     dispose() {
         this.eventEmitter.removeAllListeners()
@@ -31,6 +40,7 @@ export class EventBus implements IEventBus {
     fire<T extends keyof EventArgTypeMap>(eventName: T, arg: EventArgTypeMap[T]): void
     fire(eventName: EventName): void
     fire(eventName: EventName, arg?: any): void {
+        this.extension.logger.addDebugLogMessage(`EventBus: fire ${eventName}`)
         this.eventEmitter.emit(eventName, arg)
     }
 
@@ -67,6 +77,7 @@ export class EventBus implements IEventBus {
     }
 
     on(eventName: EventName, argCb: () => void) {
+        this.extension.logger.addDebugLogMessage(`EventBus: on ${eventName}`)
         const cb = () => argCb()
         this.eventEmitter.on(eventName, cb)
         const disposable = {

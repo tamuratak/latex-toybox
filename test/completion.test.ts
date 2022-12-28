@@ -6,11 +6,9 @@ import * as vscode from 'vscode'
 
 import {
     getFixtureDir,
-    promisify,
-//    isDockerEnabled,
+    obtainLatexWorkshop,
     runTestWithFixture,
-    sleep,
-    waitLatexWorkshopActivated
+    sleep
 } from './utils/ciutils'
 
 
@@ -48,15 +46,15 @@ suite('Completion test suite', () => {
         // noop
     })
 
-    runTestWithFixture('fixture001', 'basic completion', async () => {
+    runTestWithFixture('fixture001', 'basic completion', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileName = 't.tex'
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
-        const rootFileFound = promisify('findrootfileend')
         await vscode.window.showTextDocument(doc)
-        await rootFileFound
-        const extension = await waitLatexWorkshopActivated()
+        await findRootFileEnd
+        await sleep(1000)
+        const extension = obtainLatexWorkshop()
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
         const items = extension.exports.realExtension?.completer.provideCompletionItems?.(
@@ -69,15 +67,15 @@ suite('Completion test suite', () => {
         assert.ok(items && items.length > 0)
     })
 
-    runTestWithFixture('fixture002', '@-snippet completion', async () => {
+    runTestWithFixture('fixture002', '@-snippet completion', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileName = 't.tex'
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
-        const rootFileFound = promisify('findrootfileend')
         await vscode.window.showTextDocument(doc)
-        const extension = await waitLatexWorkshopActivated()
-        await rootFileFound
+        const extension = obtainLatexWorkshop()
+        await findRootFileEnd
+        await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
         const items = extension.exports.realExtension?.atSuggestionCompleter.provideCompletionItems(
@@ -87,22 +85,25 @@ suite('Completion test suite', () => {
                 triggerCharacter: undefined
             }
         )
-        assert.ok(items && items.length > 0)
+        if (!items) {
+            assert.fail('No realExtension')
+        }
+        assert.notStrictEqual(items.length, 0)
         assertCompletionItemContainsSnippet(items, '@+', '\\sum')
         assertCompletionItemDoesNotContainSnippet(items, '@+', '\\bigcup')
         assertCompletionItemContainsSnippet(items, '@M', '\\sum')
         assertCompletionItemDoesNotContainSnippet(items, '@8')
     })
 
-    runTestWithFixture('fixture003', '@-snippet completion with trigger #', async () => {
+    runTestWithFixture('fixture003', '@-snippet completion with trigger #', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileName = 't.tex'
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
-        const rootFileFound = promisify('findrootfileend')
         await vscode.window.showTextDocument(doc)
-        const extension = await waitLatexWorkshopActivated()
-        await rootFileFound
+        const extension = obtainLatexWorkshop()
+        await findRootFileEnd
+        await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
         const items = extension.exports.realExtension?.atSuggestionCompleter.provideCompletionItems(
@@ -112,7 +113,10 @@ suite('Completion test suite', () => {
                 triggerCharacter: undefined
             }
         )
-        assert.ok(items && items.length > 0)
+        if (!items) {
+            assert.fail('No realExtension')
+        }
+        assert.notStrictEqual(items.length, 0)
         assertCompletionItemContainsSnippet(items, '#+', '\\sum')
         assertCompletionItemContainsSnippet(items, '#ve', '\\varepsilon')
         assertCompletionItemDoesNotContainSnippet(items, '@+', '\\bigcup')
@@ -120,15 +124,15 @@ suite('Completion test suite', () => {
         assertCompletionItemDoesNotContainSnippet(items, '#8')
     })
 
-    runTestWithFixture('fixture004', 'glossary completion', async () => {
+    runTestWithFixture('fixture004', 'glossary completion', async (findRootFileEnd) => {
         const fixtureDir = getFixtureDir()
         const texFileName = 't.tex'
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
-        const rootFileFound = promisify('findrootfileend')
         await vscode.window.showTextDocument(doc)
-        const extension = await waitLatexWorkshopActivated()
-        await rootFileFound
+        const extension = obtainLatexWorkshop()
+        await findRootFileEnd
+        await sleep(1000)
         const pos = new vscode.Position(6,5)
         const token = new vscode.CancellationTokenSource().token
         await sleep(2000)
@@ -139,7 +143,10 @@ suite('Completion test suite', () => {
                 triggerCharacter: undefined
             }
         )
-        assert.ok(items && items.length === 7)
+        if (!items) {
+            assert.fail('No realExtension')
+        }
+        assert.strictEqual(items.length, 7)
         assertCompletionItemContains(items, 'rf', 'radio-frequency')
         assertCompletionItemContains(items, 'te', 'Transverse Magnetic')
         assertCompletionItemContains(items, 'E_P', 'Elastic $\\varepsilon$ toto')

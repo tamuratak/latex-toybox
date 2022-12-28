@@ -34,9 +34,6 @@ export class NewCommandFinder {
         if (path.isAbsolute(newCommandFile)) {
             newCommandFileAbs = newCommandFile
         } else {
-            if (this.extension.manager.rootFile === undefined) {
-                await this.extension.manager.findRoot()
-            }
             const rootDir = this.extension.manager.rootDir
             if (rootDir === undefined) {
                 this.extension.logger.addLogMessage(`Cannot identify the absolute path of new command file ${newCommandFile} without root file.`)

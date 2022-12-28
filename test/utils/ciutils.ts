@@ -10,6 +10,10 @@ import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/ind
 
 export {sleep}
 
+function addLogMessage(message: string) {
+    console.log(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] [DEBUG] ${message}`)
+}
+
 function getWorkspaceRootDir(): string | undefined {
     let rootDir: string | undefined
     if (vscode.workspace.workspaceFile) {
@@ -40,7 +44,7 @@ export function getFixtureDir(): string {
 export function runTestWithFixture(
     fixtureName: string,
     label: string,
-    cb: () => unknown,
+    cb: (findRootFileEnd: Promise<void>) => unknown,
     skip?: () => boolean
 ) {
     const rootPath = getWorkspaceRootDir()
@@ -48,8 +52,9 @@ export function runTestWithFixture(
     if (rootPath && path.basename(rootPath) === fixtureName && !shouldSkip) {
         test( fixtureName + ': ' + label, async () => {
             try {
-                await waitRootFileFound()
-                await cb()
+                await waitLatexWorkshopActivated()
+                const findRootFileEnd = promisify('findrootfileend')
+                await cb(findRootFileEnd)
             } catch (e) {
                 await printLogMessages()
                 throw e
@@ -152,41 +157,26 @@ export async function waitUntil<T>(
     assert.fail('Timeout Error at waitUntil')
 }
 
-export function promisifySeq(...eventArray: EventName[]): Promise<void> {
+export function promisify(event: EventName): Promise<void> {
+    addLogMessage(`promisify (${event}): Start`)
     const extension = obtainLatexWorkshop()
-    let index = 0
-    const promise = new Promise<void>((resolve, reject) => {
-        setTimeout(
-            () => reject(new Error(`Time out Error: ${JSON.stringify(eventArray)}`)),
-            process.env.CI ? 30000 : 10000
-        )
-        for (const event of eventArray) {
-            const disposable = extension.exports.realExtension?.eventBus.on(event, () => {
-                if (eventArray[index] === event) {
-                    index += 1
-                    if (index === eventArray.length) {
-                        resolve()
-                    }
-                    disposable?.dispose()
-                }
-            })
-        }
-    })
-    return promise
-}
-
-export async function promisify(event: EventName, count = 1): Promise<void> {
-    const extension = await waitLatexWorkshopActivated()
     const promise = new Promise<void>((resolve, reject) => {
         const disposable = extension.exports.realExtension?.eventBus.on(event, () => {
-            count -= 1
-            if (count === 0) {
-                resolve()
-                disposable?.dispose()
-            }
+            resolve()
+            disposable?.dispose()
         })
         setTimeout(
-            () => reject(new Error(`promisify (${event}): Timeout error`)),
+            () => {
+                const rootFile = extension.exports.realExtension?.manager.rootFile
+                if (event === 'findrootfileend' && rootFile) {
+                    addLogMessage(`promisify  (${event}): Timeout error, but already rootFile found`)
+                    resolve()
+                } else {
+                    const message = `promisify (${event}): Timeout error`
+                    addLogMessage(message)
+                    reject(new Error(message))
+                }
+            },
             process.env.CI ? 30000 : 10000
         )
     })
@@ -205,18 +195,6 @@ export function obtainLatexWorkshop() {
 export async function waitLatexWorkshopActivated() {
     await vscode.commands.executeCommand('latex-workshop.activate')
     return obtainLatexWorkshop()
-}
-
-export async function waitRootFileFound(): Promise<void> {
-    const extension = await waitLatexWorkshopActivated()
-    const rootFile = extension.exports.realExtension?.manager.rootFile
-    if (rootFile) {
-        return
-    } else {
-        const findRootFileEnd = promisify('findrootfileend')
-        await findRootFileEnd
-        return
-    }
 }
 
 export function waitGivenRootFile(file: string) {
