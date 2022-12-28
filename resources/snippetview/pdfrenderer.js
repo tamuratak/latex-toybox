@@ -94,5 +94,4 @@ async function renderPdfFile(url, opts) {
     return {canvas, pdf};
 }
 
-await import(pdfjsDistUri + "/build/pdf.js");
 createPdfWorker();
