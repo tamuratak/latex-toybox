@@ -142,54 +142,6 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', true)
 
     registerLatexWorkshopCommands(extension, context)
-
-    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-        if (!extension.manager.isLocalTexFile(e)){
-            return
-        }
-        extension.logger.addLogMessage(`onDidSaveTextDocument triggered: ${e.uri.toString(true)}`)
-        void extension.manager.buildOnSaveIfEnabled(e.fileName)
-    }))
-
-    // This function will be called when a new text is opened, or an inactive editor is reactivated after vscode reload
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async (e: vscode.TextDocument) => {
-        if (!extension.manager.isLocalTexFile(e)){
-            return
-        }
-        await extension.manager.findRoot()
-    }))
-
-    let updateCompleter: NodeJS.Timeout
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-        if (!extension.manager.isLocalTexFile(e.document)) {
-            return
-        }
-        const cache = extension.manager.getCachedContent(e.document.fileName)
-        if (cache === undefined) {
-            return
-        }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        if (configuration.get('intellisense.update.aggressive.enabled')) {
-            if (updateCompleter) {
-                clearTimeout(updateCompleter)
-            }
-            updateCompleter = setTimeout(async () => {
-                const content = e.document.getText()
-                const file = e.document.uri.fsPath
-                await extension.manager.parseFileAndSubs(file, extension.manager.rootFile)
-                await extension.manager.parseFlsFile(extension.manager.rootFile ? extension.manager.rootFile : file)
-                await extension.completionUpdater.updateCompleter(file, content)
-            }, configuration.get('intellisense.update.delay', 1000))
-        }
-    }))
-
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (e: vscode.TextEditor | undefined) => {
-        if (!e || !extension.manager.isLocalTexFile(e.document)) {
-            return
-        }
-        await extension.manager.findRoot()
-    }))
-
     registerProviders(extension, context)
 
     void extension.manager.findRoot()

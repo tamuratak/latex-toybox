@@ -107,6 +107,50 @@ export class Manager implements IManager {
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
         this.extension.eventBus.onDidChangeRootFile(() => this.logWatchedFiles())
+
+        let prevTime = 0
+        extension.extensionContext.subscriptions.push(
+            vscode.workspace.onDidSaveTextDocument((e) => {
+                if (!this.isLocalTexFile(e)){
+                    return
+                }
+                void this.buildOnSaveIfEnabled(e.fileName)
+            }),
+            vscode.workspace.onDidOpenTextDocument(async (e) => {
+                if (!extension.manager.isLocalTexFile(e)){
+                    return
+                }
+                await extension.manager.findRoot()
+            }),
+            vscode.window.onDidChangeActiveTextEditor(async (e) => {
+                if (!e || !extension.manager.isLocalTexFile(e.document)) {
+                    return
+                }
+                await extension.manager.findRoot()
+            }),
+            vscode.workspace.onDidChangeTextDocument(async (e) => {
+                if (!this.isLocalTexFile(e.document)) {
+                    return
+                }
+                const cache = this.getCachedContent(e.document.fileName)
+                if (cache === undefined) {
+                    return
+                }
+                if (configuration.get('intellisense.update.aggressive.enabled')) {
+                    const currentTime = Date.now()
+                    const iUpdateDelay = configuration.get('intellisense.update.delay', 1000)
+                    if (currentTime - prevTime < iUpdateDelay) {
+                        return
+                    }
+                    prevTime = currentTime
+                    const content = e.document.getText()
+                    const file = e.document.uri.fsPath
+                    await this.parseFileAndSubs(file, this.rootFile)
+                    await this.parseFlsFile(this.rootFile ? this.rootFile : file)
+                    await extension.completionUpdater.updateCompleter(file, content)
+                }
+            })
+        )
     }
 
     async dispose() {
@@ -115,17 +159,8 @@ export class Manager implements IManager {
         await this.bibWatcher.dispose()
     }
 
-    getCachedContent(filePath: string): CachedContentEntry | undefined {
+    getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined {
         return this.cachedContent.get(filePath)
-    }
-
-    private setCachedContent(filePath: string, cacheEntry: CachedContentEntry): CachedContentEntry {
-        this.cachedContent.set(filePath, cacheEntry)
-        return cacheEntry
-    }
-
-    private initCacheEntry(filePath: string): CachedContentEntry {
-        return this.setCachedContent(filePath, { element: {}, children: [], bibs: [] })
     }
 
     /**
@@ -136,7 +171,9 @@ export class Manager implements IManager {
         if (cache) {
             return cache
         } else {
-            return this.initCacheEntry(filePath)
+            const cacheEntry = { element: {}, children: [], bibs: [] }
+            this.cachedContent.set(filePath, cacheEntry)
+            return cacheEntry
         }
     }
 
@@ -540,14 +577,10 @@ export class Manager implements IManager {
      * Get the buffer content of a file if it is opened in vscode. Otherwise, read the file from disk
      */
     async getDirtyContent(file: string): Promise<string | undefined> {
-        const cache = this.getCachedContent(file)
-        if (cache === undefined) {
-            this.initCacheEntry(file)
-        }
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
         const content = doc?.getText() || await readFilePathGracefully(file)
         if (content === undefined) {
-            this.extension.logger.addLogMessage(`Cannot read dirty content of unknown ${file}`)
+            this.extension.logger.addLogMessage(`Cannot read dirty content of unknown: ${file}`)
             return
         }
         return content
@@ -575,7 +608,7 @@ export class Manager implements IManager {
      * @param file The path of a LaTeX file. It is added to the watcher if not being watched.
      * @param maybeRootFile The file currently considered as the rootFile. If undefined, we use `file`
      */
-    async parseFileAndSubs(file: string, maybeRootFile: string | undefined) {
+    private async parseFileAndSubs(file: string, maybeRootFile: string | undefined) {
         if (this.isExcluded(file)) {
             this.extension.logger.addLogMessage(`Ignoring: ${file}`)
             return
@@ -896,7 +929,7 @@ export class Manager implements IManager {
         return this.autoBuild(file, bibChanged)
     }
 
-    buildOnSaveIfEnabled(file: string) {
+    private buildOnSaveIfEnabled(file: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
             return
