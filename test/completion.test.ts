@@ -56,14 +56,15 @@ suite('Completion test suite', () => {
         const extension = obtainLatexWorkshop()
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
-        const items = extension.exports.realExtension?.completer.provideCompletionItems?.(
+        const items = extension.exports.realExtension.completer.provideCompletionItems?.(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
                 triggerCharacter: undefined
             }
         )
-        assert.ok(items && items.length > 0)
+        assert.ok(items)
+        assert.notStrictEqual(items.length, 0)
     })
 
     runTestWithFixture('fixture002', '@-snippet completion', async (findRootFileEnd) => {
@@ -77,16 +78,14 @@ suite('Completion test suite', () => {
         await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
-        const items = extension.exports.realExtension?.atSuggestionCompleter.provideCompletionItems(
+        const items = extension.exports.realExtension.atSuggestionCompleter.provideCompletionItems(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
                 triggerCharacter: undefined
             }
         )
-        if (!items) {
-            assert.fail('No realExtension')
-        }
+        assert.ok(items)
         assert.notStrictEqual(items.length, 0)
         assertCompletionItemContainsSnippet(items, '@+', '\\sum')
         assertCompletionItemDoesNotContainSnippet(items, '@+', '\\bigcup')
@@ -105,16 +104,14 @@ suite('Completion test suite', () => {
         await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
-        const items = extension.exports.realExtension?.atSuggestionCompleter.provideCompletionItems(
+        const items = extension.exports.realExtension.atSuggestionCompleter.provideCompletionItems(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
                 triggerCharacter: undefined
             }
         )
-        if (!items) {
-            assert.fail('No realExtension')
-        }
+        assert.ok(items)
         assert.notStrictEqual(items.length, 0)
         assertCompletionItemContainsSnippet(items, '#+', '\\sum')
         assertCompletionItemContainsSnippet(items, '#ve', '\\varepsilon')
@@ -134,16 +131,14 @@ suite('Completion test suite', () => {
         const pos = new vscode.Position(6,5)
         const token = new vscode.CancellationTokenSource().token
         await sleep(2000)
-        const items = extension.exports.realExtension?.completer.provideCompletionItems(
+        const items = extension.exports.realExtension.completer.provideCompletionItems(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
                 triggerCharacter: undefined
             }
         )
-        if (!items) {
-            assert.fail('No realExtension')
-        }
+        assert.ok(items)
         assert.strictEqual(items.length, 7)
         assertCompletionItemContains(items, 'rf', 'radio-frequency')
         assertCompletionItemContains(items, 'te', 'Transverse Magnetic')

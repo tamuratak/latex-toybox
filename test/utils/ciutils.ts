@@ -162,7 +162,7 @@ export function promisify(event: EventName): Promise<void> {
     addLogMessage(`promisify (${event}): Start`)
     const extension = obtainLatexWorkshop()
     const promise = new Promise<void>((resolve, reject) => {
-        const disposable = extension.exports.realExtension?.eventBus.on(event, () => {
+        const disposable = extension.exports.realExtension.eventBus.on(event, () => {
             resolve()
             disposable?.dispose()
         })
@@ -186,11 +186,14 @@ export function promisify(event: EventName): Promise<void> {
 
 export function obtainLatexWorkshop() {
     const extension = vscode.extensions.getExtension<ReturnType<typeof activate>>('James-Yu.latex-workshop')
-    if (extension) {
-        return extension
-    } else {
-        throw new Error('LaTeX Workshop not activated.')
+    if (extension && extension.exports && extension.exports.realExtension) {
+        const exports = extension.exports
+        if (exports.realExtension) {
+            const realExtension = exports.realExtension
+            return {...extension, exports: {...exports, realExtension}}
+        }
     }
+    throw new Error('LaTeX Workshop not activated.')
 }
 
 export async function waitLatexWorkshopActivated() {
@@ -199,9 +202,9 @@ export async function waitLatexWorkshopActivated() {
 }
 
 export function waitGivenRootFile(file: string) {
-    return waitUntil( async () => {
-        const extension = await waitLatexWorkshopActivated()
-        const rootFile = extension.exports.realExtension?.manager.rootFile
+    return waitUntil(() => {
+        const extension = obtainLatexWorkshop()
+        const rootFile = extension.exports.realExtension.manager.rootFile
         return rootFile === file
     })
 }

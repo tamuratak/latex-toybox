@@ -28,7 +28,7 @@ suite('RootFile test suite', () => {
         await vscode.window.showTextDocument(doc)
         const extension = obtainLatexWorkshop()
         await rootFileFound
-        console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
+        console.log(`rootFile: ${extension.exports.realExtension.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
     })
 
@@ -43,7 +43,7 @@ suite('RootFile test suite', () => {
         await vscode.window.showTextDocument(doc)
         const extension = obtainLatexWorkshop()
         await rootFileFound
-        console.log(`rootFile: ${extension.exports.realExtension?.manager.rootFile}`)
+        console.log(`rootFile: ${extension.exports.realExtension.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
         await sleep(2000)
         if (extension.exports.realExtension) {
