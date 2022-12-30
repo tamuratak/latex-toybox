@@ -639,7 +639,6 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await sleep(1000)
             await execCommandThenPick(
                 () => vscode.commands.executeCommand('latex-workshop.build'),
                 () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
@@ -657,7 +656,6 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await sleep(1000)
             await execCommandThenPick(
                 () => vscode.commands.executeCommand('latex-workshop.build'),
                 async () => {

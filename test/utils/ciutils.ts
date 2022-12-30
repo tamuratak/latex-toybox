@@ -108,6 +108,7 @@ export async function execCommandThenPick(
     command: () => Thenable<unknown>,
     pick: () => Thenable<undefined>
 ) {
+    await sleep(1000)
     let done = false
     setTimeout(async () => {
         while (!done) {

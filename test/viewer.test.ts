@@ -92,7 +92,6 @@ suite('PDF Viewer test suite', () => {
                 () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
             )
         })
-        await sleep(1000)
         await execCommandThenPick(
             () => viewPdf(),
             () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
@@ -122,7 +121,6 @@ suite('PDF Viewer test suite', () => {
                 }
             )
         })
-        await sleep(1000)
         await execCommandThenPick(
             () => viewPdf(),
             async () => {

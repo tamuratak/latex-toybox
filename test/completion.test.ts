@@ -131,7 +131,6 @@ suite('Completion test suite', () => {
         await vscode.window.showTextDocument(doc)
         const extension = obtainLatexWorkshop()
         await findRootFileEnd
-        await sleep(1000)
         const pos = new vscode.Position(6,5)
         const token = new vscode.CancellationTokenSource().token
         await sleep(2000)
