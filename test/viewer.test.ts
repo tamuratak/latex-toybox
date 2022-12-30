@@ -1,5 +1,4 @@
 import * as assert from 'assert'
-import * as os from 'os'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import {
@@ -219,6 +218,6 @@ suite('PDF Viewer test suite', () => {
         for (const result of secondResults) {
             assert.ok( Math.abs(result.scrollTop) > 10 )
         }
-    }, () => os.platform() === 'linux')
+    })
 
 })

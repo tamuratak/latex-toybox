@@ -1,7 +1,6 @@
 import * as assert from 'assert'
 import * as path from 'path'
 import * as fs from 'fs'
-import * as os from 'os'
 import {obtainLatexWorkshop, sleep} from './utils/ciutils'
 import {activate} from '../src/main'
 import * as vscode from 'vscode'
@@ -209,7 +208,7 @@ suite('Multi-root workspace test suite', () => {
         const isWatcherOK = filesWatched && filesWatched.length === 1 && filesWatched[0] === docA.fileName
         assert.ok(isStructureOK, JSON.stringify(structure))
         assert.ok(isWatcherOK, JSON.stringify(filesWatched))
-    }, () => os.platform() === 'win32')
+    })
 
     //
     // Recipe name
