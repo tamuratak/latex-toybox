@@ -201,12 +201,15 @@ export async function waitLatexWorkshopActivated() {
     return obtainLatexWorkshop()
 }
 
-export function waitGivenRootFile(file: string) {
-    return waitUntil(() => {
+export async function waitGivenRootFile(file: string) {
+    await sleep(1000)
+    const result = await waitUntil(() => {
         const extension = obtainLatexWorkshop()
         const rootFile = extension.exports.realExtension.manager.rootFile
         return rootFile === file
     })
+    await sleep(1000)
+    return result
 }
 
 export async function executeVscodeCommandAfterActivation(command: string) {

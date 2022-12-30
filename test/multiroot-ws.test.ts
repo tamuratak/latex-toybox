@@ -193,14 +193,11 @@ suite('Multi-root workspace test suite', () => {
         await findRootFileEnd
         const extension = obtainLatexWorkshop()
         await waitGivenRootFile(docA.fileName)
-        await sleep(1000)
         const docB = await vscode.workspace.openTextDocument(texFilePathB)
         await vscode.window.showTextDocument(docB)
         await waitGivenRootFile(docB.fileName)
-        await sleep(1000)
         await vscode.window.showTextDocument(docA)
         await waitGivenRootFile(docA.fileName)
-        await sleep(1000)
 
         const structure = extension.exports.realExtension.structureViewer.getTreeData()
         const filesWatched = extension.exports.realExtension.manager.getFilesWatched()
@@ -262,7 +259,6 @@ suite('Multi-root workspace test suite', () => {
         await vscode.window.showTextDocument(docA)
         await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
-        await sleep(1000)
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.commands.executeCommand('latex-workshop.recipes', 'latexmk A')
         })
@@ -272,12 +268,10 @@ suite('Multi-root workspace test suite', () => {
         const docB = await vscode.workspace.openTextDocument(texFilePathB)
         await vscode.window.showTextDocument(docB)
         await waitGivenRootFile(docB.fileName)
-        await sleep(1000)
 
         // Switch back to A.tex and build
         await vscode.window.showTextDocument(docA)
         await waitGivenRootFile(docA.fileName)
-        await sleep(1000)
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
@@ -302,7 +296,6 @@ suite('Multi-root workspace test suite', () => {
         const extension = obtainLatexWorkshop()
         await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
-        await sleep(1000)
         const itemsA = getCompletionItems(extension, docA, pos)
         const expectedLabelsA = [
             'A fake article',
@@ -317,7 +310,6 @@ suite('Multi-root workspace test suite', () => {
         await vscode.window.showTextDocument(docB)
         await findRootFileEnd
         await waitGivenRootFile(docB.fileName)
-        await sleep(10000)
         const itemsB = getCompletionItems(extension, docB, pos)
         const expectedLabelsB = [
             'art1',
