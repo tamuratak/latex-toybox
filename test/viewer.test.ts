@@ -35,7 +35,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         assert.ok(results.length > 0)
     })
 
@@ -52,7 +52,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
@@ -71,7 +71,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
@@ -96,7 +96,7 @@ suite('PDF Viewer test suite', () => {
             () => viewPdf(),
             () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
         )
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
@@ -129,7 +129,7 @@ suite('PDF Viewer test suite', () => {
                 return undefined
             }
         )
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         for (const result of results) {
             assert.strictEqual(result.pdfFileUri, vscode.Uri.file(pdfFilePath).toString(true))
         }
@@ -148,7 +148,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const results = await getViewerStatus(pdfFilePath)
+        const results = getViewerStatus(pdfFilePath)
         assert.ok(results.length > 0)
     })
 
@@ -165,7 +165,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const firstResults = await getViewerStatus(pdfFilePath)
+        const firstResults = getViewerStatus(pdfFilePath)
         for (const result of firstResults) {
             assert.ok( Math.abs(result.scrollTop) < 10 )
         }
@@ -176,7 +176,7 @@ suite('PDF Viewer test suite', () => {
         const promise = promisify('pdfviewerstatuschanged')
         await vscode.commands.executeCommand('latex-workshop.synctex')
         await promise
-        const secondResults = await getViewerStatus(pdfFilePath)
+        const secondResults = getViewerStatus(pdfFilePath)
         for (const result of secondResults) {
             assert.ok( Math.abs(result.scrollTop) > 10 )
         }
@@ -195,7 +195,7 @@ suite('PDF Viewer test suite', () => {
             await executeVscodeCommandAfterActivation('latex-workshop.build')
         })
         await viewPdf()
-        const firstResults = await getViewerStatus(pdfFilePath)
+        const firstResults = getViewerStatus(pdfFilePath)
         for (const result of firstResults) {
             assert.ok( Math.abs(result.scrollTop) < 10 )
         }
@@ -211,7 +211,7 @@ suite('PDF Viewer test suite', () => {
         })
         await promise
         await sleep(3000)
-        const secondResults = await getViewerStatus(pdfFilePath)
+        const secondResults = getViewerStatus(pdfFilePath)
         console.log(JSON.stringify(secondResults))
         for (const result of secondResults) {
             assert.ok( Math.abs(result.scrollTop) > 10 )

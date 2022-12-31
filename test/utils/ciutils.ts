@@ -224,8 +224,8 @@ export async function viewPdf() {
     await sleep(3000)
 }
 
-export async function getViewerStatus(pdfFilePath: string) {
-    const extension = await waitLatexWorkshopActivated()
+export function getViewerStatus(pdfFilePath: string) {
+    const extension = obtainLatexWorkshop()
     const pdfFileUri = vscode.Uri.file(pdfFilePath)
     const rs = extension.exports.realExtension?.viewer.getViewerState(pdfFileUri)
     let ret: PdfViewerState | undefined
