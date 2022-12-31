@@ -346,7 +346,6 @@ export class Manager implements IManager {
 
     isLocalTexFile(document: vscode.TextDocument) {
         return isLocalUri(document.uri) && this.hasTexId(document.languageId)
-               || document.uri.scheme === 'git' && !!process.env['LATEXWORKSHOP_CI'] // VS Code bug?
     }
 
     /**
