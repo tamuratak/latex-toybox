@@ -120,13 +120,6 @@ export class Manager implements IManager {
                 }
                 void this.buildOnSaveIfEnabled(e.fileName)
             }),
-            vscode.workspace.onDidOpenTextDocument(async (e) => {
-                this.extension.logger.addDebugLogMessage(`onDidOpenTextDocument: ${e.uri.toString()}`)
-                if (!this.isLocalTexFile(e)){
-                    return
-                }
-                await this.findRoot()
-            }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
                 this.extension.logger.addDebugLogMessage(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
                 if (!e || !this.isLocalTexFile(e.document)) {
@@ -157,6 +150,14 @@ export class Manager implements IManager {
                 }
             })
         )
+
+        setTimeout(() => {
+            const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalTexFile(edt.document))
+            if (editor && !process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
+                return vscode.window.showTextDocument(editor.document, editor.viewColumn)
+            }
+            return
+        }, 500)
 
     }
 
