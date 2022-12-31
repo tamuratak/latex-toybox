@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
 import * as os from 'os'
 import {
     assertPdfIsGenerated,
-    executeVscodeCommandAfterActivation,
+    executeVscodeCommand,
     execCommandThenPick,
     getFixtureDir,
     runTestWithFixture
@@ -31,7 +31,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -45,7 +45,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -59,7 +59,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -73,7 +73,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -87,7 +87,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -101,7 +101,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -115,7 +115,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -130,7 +130,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -144,7 +144,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -158,7 +158,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     }, () => os.platform() !== 'win32')
 
@@ -172,7 +172,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -189,7 +189,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -203,7 +203,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -217,7 +217,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -231,7 +231,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -245,7 +245,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -355,7 +355,7 @@ suite('Build TeX files test suite', () => {
         await vscode.window.showTextDocument(mainDoc)
         await findRootFileEnd
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await assertPdfIsGenerated(pdfFilePath, async () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
@@ -379,7 +379,7 @@ suite('Build TeX files test suite', () => {
         await vscode.window.showTextDocument(mainDoc)
         await findRootFileEnd
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await assertPdfIsGenerated(pdfFilePath, async () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
@@ -403,7 +403,7 @@ suite('Build TeX files test suite', () => {
         await vscode.window.showTextDocument(mainDoc)
         await findRootFileEnd
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await assertPdfIsGenerated(pdfFilePath, async () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
@@ -428,7 +428,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         fs.unlinkSync(pdfFilePath)
         const subTexFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', subTexFileName))
@@ -493,7 +493,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -507,7 +507,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -521,7 +521,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -538,7 +538,7 @@ suite('Build TeX files test suite', () => {
             const subTexFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(subTexFilePath)
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside)
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -552,7 +552,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -566,7 +566,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -580,14 +580,14 @@ suite('Build TeX files test suite', () => {
         await vscode.window.showTextDocument(mainDoc)
         await findRootFileEnd
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await assertPdfIsGenerated(pdfFilePath, async () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await sleep(1000)
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -601,14 +601,14 @@ suite('Build TeX files test suite', () => {
         await vscode.window.showTextDocument(mainDoc)
         await findRootFileEnd
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await assertPdfIsGenerated(pdfFilePath, async () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await sleep(1000)
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -625,7 +625,7 @@ suite('Build TeX files test suite', () => {
             const texFilePath = vscode.Uri.file(path.join(fixtureDir, 'sub', texFileName))
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -677,7 +677,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -694,7 +694,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -711,7 +711,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     }, () => os.platform() !== 'win32')
 
@@ -725,7 +725,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     }, () => os.platform() !== 'win32')
 
@@ -739,7 +739,7 @@ suite('Build TeX files test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     }, () => os.platform() !== 'win32')
 

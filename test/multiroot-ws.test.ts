@@ -6,7 +6,7 @@ import {activate} from '../src/main'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
-    executeVscodeCommandAfterActivation,
+    executeVscodeCommand,
     getFixtureDir, runTestWithFixture,
     waitGivenRootFile
 } from './utils/ciutils'
@@ -59,7 +59,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -75,7 +75,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -90,7 +90,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -105,7 +105,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -120,7 +120,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -174,7 +174,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -221,7 +221,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -241,7 +241,7 @@ suite('Multi-root workspace test suite', () => {
         })
         fs.unlinkSync(pdfFilePath)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 
@@ -273,7 +273,7 @@ suite('Multi-root workspace test suite', () => {
         await vscode.window.showTextDocument(docA)
         await waitGivenRootFile(docA.fileName)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
     })
 

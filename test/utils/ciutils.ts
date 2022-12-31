@@ -212,14 +212,13 @@ export async function waitGivenRootFile(file: string) {
     return result
 }
 
-export async function executeVscodeCommandAfterActivation(command: string) {
-    await waitLatexWorkshopActivated()
+export async function executeVscodeCommand(command: string) {
     return vscode.commands.executeCommand(command)
 }
 
 export async function viewPdf() {
     const promise = Promise.all([promisify('pdfviewerpagesloaded'), promisify('pdfviewerstatuschanged')])
-    await executeVscodeCommandAfterActivation('latex-workshop.view')
+    await executeVscodeCommand('latex-workshop.view')
     await promise
     await sleep(3000)
 }

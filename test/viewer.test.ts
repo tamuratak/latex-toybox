@@ -5,7 +5,7 @@ import {
     assertPdfIsGenerated,
     getFixtureDir,
     execCommandThenPick,
-    executeVscodeCommandAfterActivation,
+    executeVscodeCommand,
     getViewerStatus,
     runTestWithFixture,
     viewPdf,
@@ -32,7 +32,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -49,7 +49,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -68,7 +68,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -88,7 +88,7 @@ suite('PDF Viewer test suite', () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
             await execCommandThenPick(
-                () => executeVscodeCommandAfterActivation('latex-workshop.build'),
+                () => executeVscodeCommand('latex-workshop.build'),
                 () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
             )
         })
@@ -113,7 +113,7 @@ suite('PDF Viewer test suite', () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
             await execCommandThenPick(
-                () => executeVscodeCommandAfterActivation('latex-workshop.build'),
+                () => executeVscodeCommand('latex-workshop.build'),
                 async () => {
                     await vscode.commands.executeCommand('workbench.action.quickOpenSelectNext')
                     await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
@@ -145,7 +145,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -162,7 +162,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
@@ -192,7 +192,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
         })
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
@@ -206,7 +206,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
             await findRootFileEnd
-            await executeVscodeCommandAfterActivation('latex-workshop.build')
+            await executeVscodeCommand('latex-workshop.build')
 
         })
         await promise
