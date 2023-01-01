@@ -118,7 +118,7 @@ export class Manager implements IManager {
                 if (!this.isLocalTexFile(e)){
                     return
                 }
-                void this.buildOnSaveIfEnabled(e.fileName)
+                void this.buildOnSave(e.fileName)
             }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
                 this.extension.logger.addDebugLogMessage(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
@@ -933,10 +933,6 @@ export class Manager implements IManager {
     }
 
     private autoBuild(file: string, bibChanged: boolean ) {
-        if (this.extension.builder.disableBuildAfterSave) {
-            this.extension.logger.addLogMessage('Auto Build Run is temporarily disabled during a second.')
-            return
-        }
         this.extension.logger.addLogMessage(`Auto build started detecting the change of a file: ${file}`)
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
         if (!bibChanged && this.localRootFile && configuration.get('latex.rootFile.useSubFile')) {
@@ -954,13 +950,9 @@ export class Manager implements IManager {
         return this.autoBuild(file, bibChanged)
     }
 
-    private buildOnSaveIfEnabled(file: string) {
+    private buildOnSave(file: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
-            return
-        }
-        if (this.extension.builder.disableBuildAfterSave) {
-            this.extension.logger.addLogMessage('Auto Build Run is temporarily disabled during a second.')
             return
         }
         this.extension.logger.addLogMessage(`Auto build started on saving file: ${file}`)

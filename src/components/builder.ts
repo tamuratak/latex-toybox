@@ -20,7 +20,6 @@ export class Builder implements IBuilder {
     private readonly extension: Extension
     readonly tmpDir: string
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
-    disableBuildAfterSave: boolean = false
     private readonly buildMutex = new MutexWithSizedQueue(1)
     private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
@@ -83,10 +82,7 @@ export class Builder implements IBuilder {
     }
 
     private async preprocess(): Promise<() => void> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
-        this.disableBuildAfterSave = true
         await vscode.workspace.saveAll()
-        setTimeout(() => this.disableBuildAfterSave = false, configuration.get('latex.autoBuild.interval', 1000) as number)
         try {
             const releaseBuildMutex = await this.buildMutex.acquire()
             return releaseBuildMutex
