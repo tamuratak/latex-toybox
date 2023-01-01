@@ -144,9 +144,7 @@ export class Manager implements IManager {
                     prevTime = currentTime
                     const content = e.document.getText()
                     const file = e.document.uri.fsPath
-                    await this.parseFileAndSubs(file, this.rootFile)
-                    await this.parseFlsFile(this.rootFile ? this.rootFile : file)
-                    await extension.completionUpdater.updateCompleter(file, content)
+                    await this.updateCompleterOnChange(file, content)
                 }
             })
         )
@@ -899,8 +897,7 @@ export class Manager implements IManager {
 
     private onWatchingNewFile(file: string) {
         this.extension.logger.addLogMessage(`Added to file watcher: ${file}`)
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file)) &&
-            !file.includes('expl3-code.tex')) {
+        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
             return this.updateCompleterOnChange(file)
         }
         return
@@ -909,9 +906,7 @@ export class Manager implements IManager {
     private async onWatchedFileChanged(file: string) {
         this.extension.logger.addLogMessage(`File watcher - file changed: ${file}`)
         // It is possible for either tex or non-tex files in the watcher.
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file)) &&
-            !file.includes('expl3-code.tex')) {
-            await this.parseFileAndSubs(file, this.rootFile)
+        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
             await this.updateCompleterOnChange(file)
         }
         await this.buildOnFileChanged(file)
@@ -960,11 +955,12 @@ export class Manager implements IManager {
     }
 
     // This function updates all completers upon tex-file changes.
-    private async updateCompleterOnChange(file: string) {
-        const content = await this.getDirtyContent(file)
+    private async updateCompleterOnChange(file: string, content?: string) {
+        content ||= await this.getDirtyContent(file)
         if (!content) {
             return
         }
+        await this.parseFileAndSubs(file, this.rootFile)
         await this.extension.completionUpdater.updateCompleter(file, content)
         this.extension.completer.input.setGraphicsPath(content)
     }
