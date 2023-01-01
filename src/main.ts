@@ -237,7 +237,7 @@ export class Extension implements IExtension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
-    readonly eventBus = new EventBus(this)
+    readonly eventBus: EventBus
     readonly commander: Commander
     readonly configuration: Configuration
     readonly manager: Manager
@@ -267,20 +267,22 @@ export class Extension implements IExtension {
     constructor(context: vscode.ExtensionContext) {
         this.extensionContext = context
         this.extensionRoot = context.extensionPath
-        // We must create an instance of Logger first to enable
-        // adding log messages during initialization.
+        // We must create Logger, EventBus, Builder, and CompletionUpdater first.
+        // Other classes may use them in their constructors.
         this.logger = new Logger()
+        this.eventBus = new EventBus(this)
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
         this.referenceStore = new ReferenceStore()
+        this.builder = new Builder(this)
+        this.completionUpdater = new CompletionUpdater(this)
+
         this.commander = new Commander(this)
         this.manager = new Manager(this)
-        this.builder = new Builder(this)
         this.viewer = new Viewer(this)
         this.server = new Server(this)
         this.locator = new Locator(this)
         this.compilerLogParser = new CompilerLogParser(this)
-        this.completionUpdater = new CompletionUpdater(this)
         this.completer = new Completer(this)
         this.completionStore = new CompletionStore()
         this.atSuggestionCompleter = new AtSuggestionCompleter(this)

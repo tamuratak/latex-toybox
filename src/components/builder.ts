@@ -24,6 +24,7 @@ export class Builder implements IBuilder {
     private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
     private previousLanguageId: string | undefined
+    private readonly cbSet: Set<(rootfile: string) => unknown> = new Set()
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -49,6 +50,20 @@ export class Builder implements IBuilder {
         } catch (e) {
             this.extension.logger.addLogMessage('Cannot run pdflatex to determine if we are using MiKTeX')
         }
+    }
+
+    onDidBuild(cb: (file: string) => unknown): vscode.Disposable {
+        this.cbSet.add(cb)
+        const diposable = {
+            dispose: () => { this.cbSet.delete(cb) }
+        }
+        return diposable
+    }
+
+    private async callCbs(rootfile: string) {
+        return Promise.allSettled(
+            [...this.cbSet.values()].map(cb => cb(rootfile))
+        )
     }
 
     /**
@@ -332,20 +347,11 @@ export class Builder implements IBuilder {
     private async buildFinished(rootFile: string) {
         this.extension.logger.addLogMessage(`Successfully built ${rootFile}.`)
         this.extension.logger.displayStatus('check', 'statusBar.foreground', 'Recipe succeeded.')
-        this.extension.eventBus.fire(BuildFinished)
         if (this.extension.compilerLogParser.isLaTeXmkSkipped) {
             return
         }
-        this.extension.viewer.refreshExistingViewer(rootFile)
-        void this.extension.completer.reference.setNumbersFromAuxFile(rootFile)
-        await this.extension.manager.parseFlsFile(rootFile)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
-        // If the PDF viewer is internal, we call SyncTeX in src/components/viewer.ts.
-        if (configuration.get('view.pdf.viewer') === 'external' && configuration.get('synctex.afterBuild.enabled')) {
-            const pdfFile = this.extension.manager.tex2pdf(rootFile)
-            this.extension.logger.addLogMessage('SyncTex after build invoked.')
-            return this.extension.locator.syncTeX(undefined, undefined, pdfFile)
-        }
+        await this.callCbs(rootFile)
+        this.extension.eventBus.fire(BuildFinished)
     }
 
     private createSteps(rootFile: string, languageId: string, recipeName: string | undefined): StepCommand[] | undefined {

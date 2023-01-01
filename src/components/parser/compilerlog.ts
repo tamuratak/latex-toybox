@@ -34,6 +34,9 @@ export class CompilerLogParser {
     private readonly latexLogParser: LatexLogParser
     private readonly bibLogParser: BibLogParser
     private readonly extension: Extension
+    /**
+     * Set true when LaTeXmk did nothing because all targets are up-to-date.
+     */
     isLaTeXmkSkipped: boolean = false
 
     constructor(extension: Extension) {

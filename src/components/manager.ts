@@ -151,13 +151,18 @@ export class Manager implements IManager {
             })
         )
 
-        setTimeout(() => {
+        setTimeout(async () => {
             const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalTexFile(edt.document))
             if (editor && !process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
-                return vscode.window.showTextDocument(editor.document, editor.viewColumn)
+                await vscode.window.showTextDocument(editor.document, editor.viewColumn)
+                return this.findRoot()
             }
             return
         }, 500)
+
+        this.extension.builder.onDidBuild((rootFile) => {
+            return this.parseFlsFile(rootFile)
+        })
 
     }
 
@@ -772,7 +777,7 @@ export class Manager implements IManager {
      *
      * @param texFile The path of a LaTeX file.
      */
-    async parseFlsFile(texFile: string) {
+    private async parseFlsFile(texFile: string) {
         return this.parseFlsMutex.noopIfOccupied(async () => {
             this.extension.logger.addLogMessage('Parse fls file.')
             const flsFile = await this.pathUtils.getFlsFilePath(texFile)

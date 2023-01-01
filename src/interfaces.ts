@@ -69,7 +69,8 @@ export interface BuilderLocator {
 }
 
 export interface IBuilder {
-    readonly tmpDir: string
+    readonly tmpDir: string,
+    onDidBuild(cb: (file: string) => unknown): vscode.Disposable
 }
 
 export interface LoggerLocator {
