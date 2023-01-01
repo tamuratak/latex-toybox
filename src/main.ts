@@ -17,7 +17,7 @@ import {UtensilsParser as PEGParser} from './components/parser/syntax'
 import {Configuration} from './components/configuration'
 import {EventBus} from './components/eventbus'
 
-import {Completer, AtSuggestionCompleter} from './providers/completion'
+import {Completer} from './providers/completion'
 import {BibtexCompleter} from './providers/bibtexcompletion'
 import {DuplicateLabels} from './components/duplicatelabels'
 import {HoverProvider} from './providers/hover'
@@ -196,7 +196,11 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     const atSuggestionLatexTrigger = configuration.get('intellisense.atSuggestion.trigger.latex') as string
     if (atSuggestionLatexTrigger !== '') {
         context.subscriptions.push(
-            vscode.languages.registerCompletionItemProvider(latexDoctexSelector, extension.atSuggestionCompleter, atSuggestionLatexTrigger)
+            vscode.languages.registerCompletionItemProvider(
+                latexDoctexSelector,
+                extension.completer.atSuggestionCompleter,
+                atSuggestionLatexTrigger
+            )
         )
     }
 
@@ -250,7 +254,6 @@ export class Extension implements IExtension {
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
     readonly completionStore: CompletionStore
-    readonly atSuggestionCompleter: AtSuggestionCompleter
     readonly linter: Linter
     readonly envPair: EnvPair
     readonly section: Section
@@ -285,7 +288,6 @@ export class Extension implements IExtension {
         this.compilerLogParser = new CompilerLogParser(this)
         this.completer = new Completer(this)
         this.completionStore = new CompletionStore()
-        this.atSuggestionCompleter = new AtSuggestionCompleter(this)
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)
         this.envPair = new EnvPair(this)

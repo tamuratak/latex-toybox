@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import type {ExtensionRootLocator} from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
+import { ExternalPromise } from '../../utils/externalpromise'
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')
 
@@ -18,10 +19,15 @@ interface IExtension extends
 export class Package implements IProvider {
     private readonly extension: IExtension
     private readonly suggestions: vscode.CompletionItem[] = []
+    readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: IExtension) {
         this.extension = extension
-        void this.load()
+        void this.load().then(() => this.#readyPromise.resolve())
+    }
+
+    get readyPromise() {
+        return this.#readyPromise.promise
     }
 
     private async load() {

@@ -28,8 +28,9 @@ export interface CommandLocator {
     readonly command: ICommand
 }
 
-export interface ICompleter extends
-    CommandLocator { }
+export interface ICompleter extends CommandLocator {
+    readonly readyPromise: Promise<void>
+}
 
 export interface CompleterLocator {
     readonly completer: ICompleter

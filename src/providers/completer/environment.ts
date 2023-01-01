@@ -5,6 +5,7 @@ import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
 import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
+import { ExternalPromise } from '../../utils/externalpromise'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -36,10 +37,15 @@ export class Environment implements IProvider {
     private readonly packageEnvsAsName = new Map<string, CmdEnvSuggestion[]>()
     private readonly packageEnvsAsCommand = new Map<string, CmdEnvSuggestion[]>()
     private readonly packageEnvsForBegin= new Map<string, CmdEnvSuggestion[]>()
+    readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: IExtension) {
         this.extension = extension
-        void this.load()
+        void this.load().then(() => this.#readyPromise.resolve())
+    }
+
+    get readyPromise() {
+        return this.#readyPromise.promise
     }
 
     private async load() {

@@ -16,6 +16,7 @@ import {Glossary} from './completer/glossary'
 import {escapeRegExp} from '../utils/utils'
 import type {ICompleter} from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
+import { ExternalPromise } from '../utils/externalpromise'
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
 type DataCmdsJsonType = typeof import('../../data/commands.json')
@@ -33,6 +34,8 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     readonly import: Import
     readonly subImport: SubImport
     readonly glossary: Glossary
+    readonly atSuggestionCompleter: AtSuggestionCompleter
+    readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -46,11 +49,19 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.import = new Import(extension)
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
-        try {
-            void this.loadDefaultItems()
-        } catch (err) {
-            this.extension.logger.addLogMessage(`Error reading data: ${err}.`)
-        }
+        this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
+        const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.addLogMessage(`Error reading data: ${err}.`))
+        void Promise.allSettled([
+            loadPromise,
+            this.command.readyPromise,
+            this.environment.readyPromise,
+            this.package.readyPromise,
+            this.atSuggestionCompleter.readyPromise
+        ]).then(() => this.#readyPromise.resolve())
+    }
+
+    get readyPromise() {
+        return this.#readyPromise.promise
     }
 
     private async loadDefaultItems() {
@@ -218,6 +229,10 @@ export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
         const triggerCharacter = configuration.get('intellisense.atSuggestion.trigger.latex') as string
         this.atSuggestion = new AtSuggestion(extension, triggerCharacter)
         this.triggerCharacter = triggerCharacter
+    }
+
+    get readyPromise() {
+        return this.atSuggestion.readyPromise
     }
 
     provideCompletionItems(
