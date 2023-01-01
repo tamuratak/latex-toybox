@@ -35,6 +35,7 @@ export class MutexWithSizedQueue {
         let release: (() => void) | undefined
         try {
             release = await this.acquire()
+            // We should await cb(). Otherwise, release() will be called before cb() is finished.
             return await cb()
         } catch (e) {
             if (e instanceof MaxWaitingLimitError) {

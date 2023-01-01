@@ -90,6 +90,8 @@ export class Manager implements IManager {
     private readonly weaveExt: string[] = []
     #rootFilePromise: ExternalPromise<string | undefined> | undefined
     private readonly findRootMutex = new MutexWithSizedQueue(1)
+    private readonly parseFlsMutex = new MutexWithSizedQueue(1)
+    private readonly updateCompleterMutex = new MutexWithSizedQueue(1)
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -771,49 +773,51 @@ export class Manager implements IManager {
      * @param texFile The path of a LaTeX file.
      */
     async parseFlsFile(texFile: string) {
-        this.extension.logger.addLogMessage('Parse fls file.')
-        const flsFile = await this.pathUtils.getFlsFilePath(texFile)
-        if (flsFile === undefined) {
-            return
-        }
-        const rootDir = path.dirname(texFile)
-        const outDir = this.getOutDir(texFile)
-        const content = await readFilePath(flsFile)
-        const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
+        return this.parseFlsMutex.noopIfOccupied(async () => {
+            this.extension.logger.addLogMessage('Parse fls file.')
+            const flsFile = await this.pathUtils.getFlsFilePath(texFile)
+            if (flsFile === undefined) {
+                return
+            }
+            const rootDir = path.dirname(texFile)
+            const outDir = this.getOutDir(texFile)
+            const content = await readFilePath(flsFile)
+            const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
 
-        for (const inputFile of ioFiles.input) {
-            // Drop files that are also listed as OUTPUT or should be ignored
-            if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
-                continue
+            for (const inputFile of ioFiles.input) {
+                // Drop files that are also listed as OUTPUT or should be ignored
+                if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
+                    continue
+                }
+                if (inputFile === texFile || this.filesWatched.has(inputFile)) {
+                    // Drop the current rootFile often listed as INPUT
+                    // Drop any file that is already watched as it is handled by
+                    // onWatchedFileChange.
+                    continue
+                }
+                if (path.extname(inputFile) === '.tex') {
+                    // Parse tex files as imported subfiles.
+                    this.gracefulCachedContent(texFile).children.push({
+                        file: inputFile
+                    })
+                    await this.parseFileAndSubs(inputFile, texFile)
+                } else if (!this.filesWatched.has(inputFile)) {
+                    // Watch non-tex files.
+                    await this.addToFileWatcher(inputFile)
+                }
             }
-            if (inputFile === texFile || this.filesWatched.has(inputFile)) {
-                // Drop the current rootFile often listed as INPUT
-                // Drop any file that is already watched as it is handled by
-                // onWatchedFileChange.
-                continue
-            }
-            if (path.extname(inputFile) === '.tex') {
-                // Parse tex files as imported subfiles.
-                this.gracefulCachedContent(texFile).children.push({
-                    file: inputFile
-                })
-                await this.parseFileAndSubs(inputFile, texFile)
-            } else if (!this.filesWatched.has(inputFile)) {
-                // Watch non-tex files.
-                await this.addToFileWatcher(inputFile)
-            }
-        }
 
-        for (const outputFile of ioFiles.output) {
-            if (path.extname(outputFile) === '.aux' && await existsPath(outputFile)) {
-                this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
-                const outputFileContent = await readFilePath(outputFile)
-                await this.parseAuxFile(
-                    outputFileContent,
-                    path.dirname(outputFile).replace(outDir, rootDir)
-                )
+            for (const outputFile of ioFiles.output) {
+                if (path.extname(outputFile) === '.aux' && await existsPath(outputFile)) {
+                    this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
+                    const outputFileContent = await readFilePath(outputFile)
+                    await this.parseAuxFile(
+                        outputFileContent,
+                        path.dirname(outputFile).replace(outDir, rootDir)
+                    )
+                }
             }
-        }
+        })
     }
 
     private async parseAuxFile(content: string, srcDir: string) {
@@ -956,13 +960,15 @@ export class Manager implements IManager {
 
     // This function updates all completers upon tex-file changes.
     private async updateCompleterOnChange(file: string, content?: string) {
-        content ||= await this.getDirtyContent(file)
-        if (!content) {
-            return
-        }
-        await this.parseFileAndSubs(file, this.rootFile)
-        await this.extension.completionUpdater.updateCompleter(file, content)
-        this.extension.completer.input.setGraphicsPath(content)
+        return this.updateCompleterMutex.noopIfOccupied(async () => {
+            content ||= await this.getDirtyContent(file)
+            if (!content) {
+                return
+            }
+            await this.parseFileAndSubs(file, this.rootFile)
+            await this.extension.completionUpdater.updateCompleter(file, content)
+            this.extension.completer.input.setGraphicsPath(content)
+        })
     }
 
 }
