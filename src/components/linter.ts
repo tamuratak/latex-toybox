@@ -34,13 +34,13 @@ export class Linter {
 
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidSaveTextDocument((e) => {
-                if (!extension.manager.isLocalTexFile(e)){
+                if (!extension.manager.isLocalLatexDocument(e)){
                     return
                 }
                 void this.lintRootFileIfEnabled()
             }),
             vscode.workspace.onDidChangeTextDocument((e) => {
-                if (!extension.manager.isLocalTexFile(e.document)) {
+                if (!extension.manager.isLocalLatexDocument(e.document)) {
                     return
                 }
                 void this.lintActiveFileIfEnabledAfterInterval(e.document)

@@ -1,67 +1,62 @@
 import * as vscode from 'vscode'
-import * as chokidar from 'chokidar'
 
 import type {Extension} from '../../main'
+import { LwFileWatcher } from './lwfilewatcher'
 
 export class BibWatcher {
     private readonly extension: Extension
-    private readonly bibWatcher: chokidar.FSWatcher
-    private readonly bibsWatched = new Set<string>()
+    private readonly watchedBibs = new Set<string>()
+    private readonly lwFileWatcher: LwFileWatcher
 
-    constructor(extension: Extension) {
+    constructor(extension: Extension, watcher: LwFileWatcher) {
         this.extension = extension
-        this.bibWatcher = this.initiateBibwatcher()
+        this.lwFileWatcher = watcher
+        this.initiateBibwatcher(watcher)
     }
 
-    async dispose() {
-        await this.bibWatcher.close()
+    private toKey(pdfFileUri: vscode.Uri) {
+        return pdfFileUri.toString(true)
     }
 
-    initiateBibwatcher() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const usePolling = configuration.get('latex.watch.usePolling') as boolean
-        const interval = configuration.get('latex.watch.interval') as number
-        const delay = configuration.get('latex.watch.delay') as number
-        const watcherOptions = {
-            useFsEvents: false,
-            usePolling,
-            interval,
-            binaryInterval: Math.max(interval, 1000),
-            awaitWriteFinish: {stabilityThreshold: delay}
-        }
+    initiateBibwatcher(watcher: LwFileWatcher) {
         this.extension.logger.info('Creating Bib file watcher.')
-        this.extension.logger.info(`watcherOptions: ${JSON.stringify(watcherOptions)}`)
-        const bibWatcher = chokidar.watch([], watcherOptions)
-        bibWatcher.on('change', (file: string) => this.onWatchedBibChanged(file))
-        bibWatcher.on('unlink', (file: string) => this.onWatchedBibDeleted(file))
-        return bibWatcher
+        watcher.onDidChange((uri) => this.onWatchedBibChanged(uri))
+        watcher.onDidDelete((uri) => this.onWatchedBibDeleted(uri))
     }
 
-    private async onWatchedBibChanged(file: string) {
-        this.extension.logger.info(`Bib file watcher - file changed: ${file}`)
-        await this.extension.completer.citation.parseBibFile(file)
-        await this.extension.manager.buildOnFileChanged(file, true)
+    private async onWatchedBibChanged(fileUri: vscode.Uri) {
+        const key = this.toKey(fileUri)
+        if (!this.watchedBibs.has(key)) {
+            return
+        }
+        this.extension.logger.info(`Bib file watcher - file changed: ${fileUri}`)
+        await this.extension.completer.citation.parseBibFile(fileUri.fsPath)
+        await this.extension.manager.buildOnFileChanged(fileUri.fsPath, true)
     }
 
-    private onWatchedBibDeleted(file: string) {
-        this.extension.logger.info(`Bib file watcher - file deleted: ${file}`)
-        this.bibWatcher.unwatch(file)
-        this.bibsWatched.delete(file)
-        this.extension.completer.citation.removeEntriesInFile(file)
+    private onWatchedBibDeleted(fileUri: vscode.Uri) {
+        const key = this.toKey(fileUri)
+        if (!this.watchedBibs.has(key)) {
+            return
+        }
+        this.extension.logger.info(`Bib file watcher - file deleted: ${fileUri}`)
+        this.watchedBibs.delete(key)
+        this.extension.completer.citation.removeEntriesInFile(fileUri.fsPath)
     }
 
-    async watchBibFile(bibPath: string) {
-        if (!this.bibsWatched.has(bibPath)) {
+    async watchAndParseBibFile(bibPath: string) {
+        const uri = vscode.Uri.file(bibPath)
+        const key = this.toKey(uri)
+        if (!this.watchedBibs.has(key)) {
             this.extension.logger.info(`Added to bib file watcher: ${bibPath}`)
-            this.bibWatcher.add(bibPath)
-            this.bibsWatched.add(bibPath)
+            this.lwFileWatcher.add(uri)
+            this.watchedBibs.add(key)
             await this.extension.completer.citation.parseBibFile(bibPath)
         }
     }
 
     logWatchedFiles() {
-        this.extension.logger.debug(`BibWatcher.bibWatcher.getWatched: ${JSON.stringify(this.bibWatcher.getWatched())}`)
-        this.extension.logger.debug(`BibWatcher.bibsWatched: ${JSON.stringify(Array.from(this.bibsWatched))}`)
+        this.extension.logger.debug(`BibWatcher.bibsWatched: ${JSON.stringify(Array.from(this.watchedBibs))}`)
     }
 
 }

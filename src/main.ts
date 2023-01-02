@@ -304,7 +304,7 @@ export class Extension implements IExtension {
     }
 
     async dispose() {
-        await this.manager.dispose()
+        this.manager.dispose()
         this.server.dispose()
         await this.pegParser.dispose()
         await this.mathPreview.dispose()
