@@ -60,7 +60,7 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             localResourceRoots: [vscode.Uri.file(resourceFolder)]
         }
         await this.extension.server.serverStarted
-        this.extension.logger.addLogMessage(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${JSON.stringify(argState)}`)
+        this.extension.logger.info(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${JSON.stringify(argState)}`)
         const state = argState.state
         let pdfFileUri: vscode.Uri | undefined
         if (state.path) {
@@ -69,13 +69,13 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             pdfFileUri = vscode.Uri.parse(state.pdfFileUri, true)
         }
         if (!pdfFileUri) {
-            this.extension.logger.addLogMessage('Error of restoring PDF viewer: the path of PDF file is undefined.')
+            this.extension.logger.info('Error of restoring PDF viewer: the path of PDF file is undefined.')
             panel.webview.html = '<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>The path of PDF file is undefined.</html>'
             return
         }
         if (! await lwfs.exists(pdfFileUri)) {
             const s = escapeHtml(pdfFileUri.toString())
-            this.extension.logger.addLogMessage(`Error of restoring PDF viewer: file not found ${pdfFileUri.toString(true)}.`)
+            this.extension.logger.info(`Error of restoring PDF viewer: file not found ${pdfFileUri.toString(true)}.`)
             panel.webview.html = `<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>File not found: ${s}</html>`
             return
         }
@@ -149,7 +149,7 @@ export class PdfViewerPanelService {
         const iframeSrcOrigin = `${url.scheme}://${url.authority}`
         const iframeSrcUrl = url.toString(true)
         await this.tweakForCodespaces(url)
-        this.extension.logger.addLogMessage(`The internal PDF viewer url: ${iframeSrcUrl}`)
+        this.extension.logger.info(`The internal PDF viewer url: ${iframeSrcUrl}`)
         const rebroadcast: boolean = this.getKeyboardEventConfig()
         const jsPath = vscode.Uri.file(path.join(this.extension.extensionRoot, './resources/pdfviewerpanel/pdfviewerpanel.js'))
         const jsPathSrc = webview.asWebviewUri(jsPath)

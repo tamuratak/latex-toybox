@@ -29,8 +29,8 @@ export class BibWatcher {
             binaryInterval: Math.max(interval, 1000),
             awaitWriteFinish: {stabilityThreshold: delay}
         }
-        this.extension.logger.addLogMessage('Creating Bib file watcher.')
-        this.extension.logger.addLogMessage(`watcherOptions: ${JSON.stringify(watcherOptions)}`)
+        this.extension.logger.info('Creating Bib file watcher.')
+        this.extension.logger.info(`watcherOptions: ${JSON.stringify(watcherOptions)}`)
         const bibWatcher = chokidar.watch([], watcherOptions)
         bibWatcher.on('change', (file: string) => this.onWatchedBibChanged(file))
         bibWatcher.on('unlink', (file: string) => this.onWatchedBibDeleted(file))
@@ -38,13 +38,13 @@ export class BibWatcher {
     }
 
     private async onWatchedBibChanged(file: string) {
-        this.extension.logger.addLogMessage(`Bib file watcher - file changed: ${file}`)
+        this.extension.logger.info(`Bib file watcher - file changed: ${file}`)
         await this.extension.completer.citation.parseBibFile(file)
         await this.extension.manager.buildOnFileChanged(file, true)
     }
 
     private onWatchedBibDeleted(file: string) {
-        this.extension.logger.addLogMessage(`Bib file watcher - file deleted: ${file}`)
+        this.extension.logger.info(`Bib file watcher - file deleted: ${file}`)
         this.bibWatcher.unwatch(file)
         this.bibsWatched.delete(file)
         this.extension.completer.citation.removeEntriesInFile(file)
@@ -52,7 +52,7 @@ export class BibWatcher {
 
     async watchBibFile(bibPath: string) {
         if (!this.bibsWatched.has(bibPath)) {
-            this.extension.logger.addLogMessage(`Added to bib file watcher: ${bibPath}`)
+            this.extension.logger.info(`Added to bib file watcher: ${bibPath}`)
             this.bibWatcher.add(bibPath)
             this.bibsWatched.add(bibPath)
             await this.extension.completer.citation.parseBibFile(bibPath)
@@ -60,8 +60,8 @@ export class BibWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.addLogMessage(`BibWatcher.bibWatcher.getWatched: ${JSON.stringify(this.bibWatcher.getWatched())}`)
-        this.extension.logger.addLogMessage(`BibWatcher.bibsWatched: ${JSON.stringify(Array.from(this.bibsWatched))}`)
+        this.extension.logger.debug(`BibWatcher.bibWatcher.getWatched: ${JSON.stringify(this.bibWatcher.getWatched())}`)
+        this.extension.logger.debug(`BibWatcher.bibsWatched: ${JSON.stringify(Array.from(this.bibsWatched))}`)
     }
 
 }

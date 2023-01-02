@@ -30,27 +30,27 @@ export class FinderUtils {
             content = await readFilePathGracefully(file)
             if (content === undefined) {
                 const msg = `Not found root file specified in the magic comment: ${file}`
-                this.extension.logger.addLogMessage(msg)
+                this.extension.logger.info(msg)
                 throw new Error(msg)
             }
             fileStack.push(file)
-            this.extension.logger.addLogMessage(`Found root file by magic comment: ${file}`)
+            this.extension.logger.info(`Found root file by magic comment: ${file}`)
 
             result = content.match(regex)
             while (result) {
                 file = path.resolve(path.dirname(file), result[1])
                 if (fileStack.includes(file)) {
-                    this.extension.logger.addLogMessage(`Looped root file by magic comment found: ${file}, stop here.`)
+                    this.extension.logger.info(`Looped root file by magic comment found: ${file}, stop here.`)
                     return file
                 } else {
                     fileStack.push(file)
-                    this.extension.logger.addLogMessage(`Recursively found root file by magic comment: ${file}`)
+                    this.extension.logger.info(`Recursively found root file by magic comment: ${file}`)
                 }
 
                 content = await readFilePathGracefully(file)
                 if (content === undefined) {
                     const msg = `Not found root file specified in the magic comment: ${file}`
-                    this.extension.logger.addLogMessage(msg)
+                    this.extension.logger.info(msg)
                     throw new Error(msg)
 
                 }
@@ -70,9 +70,9 @@ export class FinderUtils {
         if (result) {
             const file = await utils.resolveFile([path.dirname(vscode.window.activeTextEditor.document.fileName)], result[1])
             if (file) {
-                this.extension.logger.addLogMessage(`Found root file of this subfile from active editor: ${file}`)
+                this.extension.logger.info(`Found root file of this subfile from active editor: ${file}`)
             } else {
-                this.extension.logger.addLogMessage(`Cannot find root file of this subfile from active editor: ${result[1]}`)
+                this.extension.logger.info(`Cannot find root file of this subfile from active editor: ${result[1]}`)
             }
             return file
         }

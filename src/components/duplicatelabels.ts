@@ -23,7 +23,7 @@ export class DuplicateLabels {
      */
     private computeDuplicates(file: string): string[] {
         if (!this.extension.manager.getCachedContent(file)) {
-            this.extension.logger.addLogMessage(`Cannot check for duplicate labels in a file not in manager: ${file}.`)
+            this.extension.logger.info(`Cannot check for duplicate labels in a file not in manager: ${file}.`)
             return []
         }
         const labelsCount = new Map<string, number>()
@@ -51,7 +51,7 @@ export class DuplicateLabels {
     }
 
     run(file: string) {
-        this.extension.logger.addLogMessage(`Checking for duplicate labels: ${file}.`)
+        this.extension.logger.info(`Checking for duplicate labels: ${file}.`)
         const duplicates = this.computeDuplicates(file)
         this.showDiagnostics(duplicates)
     }

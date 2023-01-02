@@ -63,14 +63,14 @@ export class Environment implements IProvider {
                     const envs: {[key: string]: EnvItemEntry} = JSON.parse(content) as DataEnvsJsonType
                     Object.keys(envs).forEach(key => {
                         if (! isEnvItemEntry(envs[key])) {
-                            this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
-                            this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(envs[key])}`)
+                            this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
+                            this.extension.logger.info(`Missing field in entry: "${key}": ${JSON.stringify(envs[key])}`)
                             delete envs[key]
                         }
                     })
                     pkgAndEnvs.push({pkg, envs})
                 } catch (e) {
-                    this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                    this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
                 }
             }
         }

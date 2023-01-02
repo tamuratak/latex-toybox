@@ -33,7 +33,7 @@ export class Section {
      * @param change 'promote' or 'demote'
      */
     shiftSectioningLevel(change: 'promote' | 'demote') {
-        this.extension.logger.addLogMessage(`Calling shiftSectioningLevel with parameter: ${change}`)
+        this.extension.logger.info(`Calling shiftSectioningLevel with parameter: ${change}`)
         if (change !== 'promote' && change !== 'demote') {
             throw TypeError(
             `Invalid value of function parameter 'change' (=${change})`
@@ -163,7 +163,7 @@ export class Section {
     }
 
     selectSection() {
-        this.extension.logger.addLogMessage('Calling selectSection.')
+        this.extension.logger.info('Calling selectSection.')
 
         const editor = vscode.window.activeTextEditor
         if (editor === undefined) {
@@ -171,7 +171,7 @@ export class Section {
         }
         const beginLevel = this.searchLevelUp(this.levels, editor.selection.anchor, editor.document)
         if (!beginLevel) {
-            this.extension.logger.addLogMessage('Cannot find any section command above current line.')
+            this.extension.logger.info('Cannot find any section command above current line.')
             return
         }
         const levelIndex = this.levels.indexOf(beginLevel.level)

@@ -63,7 +63,7 @@ export class MathPreview {
             return new vscode.Hover(new vscode.MarkdownString(this.mputils.addDummyCodeBlock(`![equation](${md})`)), tex.range )
         } catch(e) {
             this.extension.logger.logOnRejected(e)
-            this.extension.logger.addLogMessage(`Error when MathJax is rendering ${typesetArg}`)
+            this.extension.logger.info(`Error when MathJax is rendering ${typesetArg}`)
             throw e
         }
     }

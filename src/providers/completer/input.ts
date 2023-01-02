@@ -157,7 +157,7 @@ export class Input extends InputAbstract {
     getBaseDir(currentFile: string, _importFromDir: string, command: string): string[] {
         let baseDir: string[] = []
         if (this.extension.manager.rootDir === undefined) {
-            this.extension.logger.addLogMessage(`No root dir can be found. The current root file should be undefined, is ${this.extension.manager.rootFile}. How did you get here?`)
+            this.extension.logger.info(`No root dir can be found. The current root file should be undefined, is ${this.extension.manager.rootFile}. How did you get here?`)
             return []
         }
         // If there is no root, 'root relative' and 'both' should fall back to 'file relative'

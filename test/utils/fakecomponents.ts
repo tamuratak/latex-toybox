@@ -1,9 +1,9 @@
 import type {ILogger} from '../../src/interfaces'
 
 export class FakeLogger implements ILogger {
-    addLogMessage() {}
+    info() {}
     logCommand() {}
-    addDebugLogMessage(){}
+    debug(){}
     addCompilerMessage() {}
     logError() {}
     logOnRejected() {}

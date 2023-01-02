@@ -50,7 +50,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
         this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
-        const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.addLogMessage(`Error reading data: ${err}.`))
+        const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.info(`Error reading data: ${err}.`))
         void Promise.allSettled([
             loadPromise,
             this.command.readyPromise,
@@ -208,7 +208,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
                 break
             default:
                 // This shouldn't be possible, so mark as error case in log.
-                this.extension.logger.addLogMessage(`Error - trying to complete unknown type ${type}`)
+                this.extension.logger.info(`Error - trying to complete unknown type ${type}`)
                 return []
         }
         const result = line.match(reg)

@@ -25,7 +25,8 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}"
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--log=James-Yu.latex-workshop:debug"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/src/**/*.js"

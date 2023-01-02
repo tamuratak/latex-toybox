@@ -185,7 +185,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
 
     const userTriggersLatex = configuration.get('intellisense.triggers.latex') as string[]
     const latexTriggers = ['\\', ','].concat(userTriggersLatex)
-    extension.logger.addLogMessage(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
+    extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
 
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex'}, extension.completer, '\\', '{'),
@@ -300,7 +300,7 @@ export class Extension implements IExtension {
         this.mathPreview = new MathPreview(this)
         this.bibtexFormatter = new BibtexFormatter(this)
         this.mathPreviewPanel = new MathPreviewPanel(this)
-        this.logger.addLogMessage('LaTeX Workshop initialized.')
+        this.logger.info('LaTeX Workshop initialized.')
     }
 
     async dispose() {
@@ -311,17 +311,17 @@ export class Extension implements IExtension {
     }
 
     private addLogFundamentals() {
-        this.logger.addLogMessage('Initializing LaTeX Workshop.')
-        this.logger.addLogMessage(`Extension root: ${this.extensionRoot}`)
-        this.logger.addLogMessage(`$PATH: ${process.env.PATH}`)
-        this.logger.addLogMessage(`$SHELL: ${process.env.SHELL}`)
-        this.logger.addLogMessage(`$LANG: ${process.env.LANG}`)
-        this.logger.addLogMessage(`$LC_ALL: ${process.env.LC_ALL}`)
-        this.logger.addLogMessage(`process.platform: ${process.platform}`)
-        this.logger.addLogMessage(`process.arch: ${process.arch}`)
-        this.logger.addLogMessage(`vscode.env.appName: ${vscode.env.appName}`)
-        this.logger.addLogMessage(`vscode.env.remoteName: ${vscode.env.remoteName}`)
-        this.logger.addLogMessage(`vscode.env.uiKind: ${vscode.env.uiKind}`)
+        this.logger.info('Initializing LaTeX Workshop.')
+        this.logger.info(`Extension root: ${this.extensionRoot}`)
+        this.logger.info(`$PATH: ${process.env.PATH}`)
+        this.logger.info(`$SHELL: ${process.env.SHELL}`)
+        this.logger.info(`$LANG: ${process.env.LANG}`)
+        this.logger.info(`$LC_ALL: ${process.env.LC_ALL}`)
+        this.logger.info(`process.platform: ${process.platform}`)
+        this.logger.info(`process.arch: ${process.arch}`)
+        this.logger.info(`vscode.env.appName: ${vscode.env.appName}`)
+        this.logger.info(`vscode.env.remoteName: ${vscode.env.remoteName}`)
+        this.logger.info(`vscode.env.uiKind: ${vscode.env.uiKind}`)
     }
 
 }

@@ -30,11 +30,11 @@ export class Configuration {
     private logConfiguration() {
         const workspaceFolders = vscode.workspace.workspaceFolders || [undefined]
         for (const workspace of workspaceFolders) {
-            this.extension.logger.addLogMessage(`Configuration for workspace: ${workspace?.uri.toString(true)}`)
+            this.extension.logger.info(`Configuration for workspace: ${workspace?.uri.toString(true)}`)
             const configuration = vscode.workspace.getConfiguration(undefined, workspace)
             for(const config of this.configurationsToLog) {
                 const value = configuration.get(config)
-                this.extension.logger.addLogMessage(`${config}: ${JSON.stringify(value, null, ' ')}`)
+                this.extension.logger.info(`${config}: ${JSON.stringify(value, null, ' ')}`)
             }
         }
     }
@@ -46,7 +46,7 @@ export class Configuration {
                 if (ev.affectsConfiguration(config, workspace)) {
                     const configuration = vscode.workspace.getConfiguration(undefined, workspace)
                     const value = configuration.get(config)
-                    this.extension.logger.addLogMessage(`Configuration changed to { ${config}: ${JSON.stringify(value)} } at ${workspace?.uri.toString(true)}`)
+                    this.extension.logger.info(`Configuration changed to { ${config}: ${JSON.stringify(value)} } at ${workspace?.uri.toString(true)}`)
                 }
             }
         }

@@ -69,8 +69,8 @@ export class CompletionUpdater implements ICompleteionUpdater {
             this.environmentUpdater.update(file, nodes, lines)
             this.commandUpdater.update(file, nodes)
         } else {
-            this.extension.logger.addLogMessage(`Cannot parse a TeX file: ${file}`)
-            this.extension.logger.addLogMessage('Fall back to regex-based completion.')
+            this.extension.logger.info(`Cannot parse a TeX file: ${file}`)
+            this.extension.logger.info('Fall back to regex-based completion.')
             // Do the update with old style.
             const contentNoComment = utils.stripCommentsAndVerbatim(content)
             this.referenceUpdater.update(file, undefined, undefined, contentNoComment)

@@ -93,12 +93,12 @@ export class GraphicsPreview {
             newOpts = { height: opts.height * scale , width: opts.width * scale, pageNumber: opts.pageNumber }
             dataUrl = await this.extension.snippetView.renderPdf(vscode.Uri.file(pdfFilePath), newOpts)
             if (dataUrl && dataUrl.length >= maxDataUrlLength) {
-                this.extension.logger.addLogMessage(`Data URL still too large: ${pdfFilePath}`)
+                this.extension.logger.info(`Data URL still too large: ${pdfFilePath}`)
                 return undefined
             }
             return dataUrl
         } catch (e: unknown) {
-            this.extension.logger.addLogMessage(`Failed to renderGraphicsAsDataUrl: ${pdfFilePath}`)
+            this.extension.logger.info(`Failed to renderGraphicsAsDataUrl: ${pdfFilePath}`)
             if (e instanceof Error) {
                 this.extension.logger.logError(e)
             }

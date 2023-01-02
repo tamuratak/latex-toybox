@@ -22,9 +22,9 @@ export class ChkTeX implements ILinter {
     }
 
     async lintRootFile() {
-        this.extension.logger.addLogMessage('Linter for root file started.')
+        this.extension.logger.info('Linter for root file started.')
         if (this.extension.manager.rootFile === undefined) {
-            this.extension.logger.addLogMessage('No root file found for linting.')
+            this.extension.logger.info('No root file found for linting.')
             return
         }
         const filePath = this.extension.manager.rootFile
@@ -40,7 +40,7 @@ export class ChkTeX implements ILinter {
     }
 
     async lintFile(document: vscode.TextDocument) {
-        this.extension.logger.addLogMessage('Linter for active file started.')
+        this.extension.logger.info('Linter for active file started.')
         const filePath = document.fileName
         const content = document.getText()
         const requiredArgs = ['-I0', '-f%f:%l:%c:%d:%k:%n:%m\n']
@@ -154,7 +154,7 @@ export class ChkTeX implements ILinter {
             }
         }
         if (!filePath) {
-            this.extension.logger.addLogMessage('The .chktexrc file not found.')
+            this.extension.logger.info('The .chktexrc file not found.')
             return
         }
         const rcFile = await readFilePath(filePath)
@@ -162,10 +162,10 @@ export class ChkTeX implements ILinter {
         const match = reg.exec(rcFile)
         if (match) {
             const ret = Number(match[1])
-            this.extension.logger.addLogMessage(`TabSize and .chktexrc: ${ret}, ${filePath}`)
+            this.extension.logger.info(`TabSize and .chktexrc: ${ret}, ${filePath}`)
             return ret
         }
-        this.extension.logger.addLogMessage(`TabSize not found in the .chktexrc file: ${filePath}`)
+        this.extension.logger.info(`TabSize not found in the .chktexrc file: ${filePath}`)
         return
     }
 
@@ -193,7 +193,7 @@ export class ChkTeX implements ILinter {
             })
             match = re.exec(log)
         }
-        this.extension.logger.addLogMessage(`Linter log parsed with ${linterLog.length} messages.`)
+        this.extension.logger.info(`Linter log parsed with ${linterLog.length} messages.`)
         if (singleFileOriginalPath === undefined) {
             // A full lint of the project has taken place - clear all previous results.
             this.linterDiagnostics.clear()
@@ -212,7 +212,7 @@ export class ChkTeX implements ILinter {
         }
         const filePath = await convertFilenameEncoding(filePathArg)
         if (!filePath){
-            this.extension.logger.addLogMessage(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
+            this.extension.logger.info(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
             return column
         }
         const content = await readFilePath(filePath)
@@ -225,7 +225,7 @@ export class ChkTeX implements ILinter {
             tabSize = tabSizeArg
         }
         if (lineString === undefined) {
-            this.extension.logger.addLogMessage(`Stop converting chktex's column numbers. Invalid line number: ${line}`)
+            this.extension.logger.info(`Stop converting chktex's column numbers. Invalid line number: ${line}`)
             return column
         }
         return this.convertColumn(column, lineString, tabSize)
