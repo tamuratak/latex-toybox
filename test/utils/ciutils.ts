@@ -10,6 +10,10 @@ import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/ind
 
 export {sleep}
 
+function addLogMessage(message: string) {
+    console.log(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] [DEBUG] ${message}`)
+}
+
 function getWorkspaceRootDir(): string | undefined {
     let rootDir: string | undefined
     if (vscode.workspace.workspaceFile) {
@@ -40,7 +44,7 @@ export function getFixtureDir(): string {
 export function runTestWithFixture(
     fixtureName: string,
     label: string,
-    cb: () => unknown,
+    cb: (findRootFileEnd: Promise<void>) => unknown,
     skip?: () => boolean
 ) {
     const rootPath = getWorkspaceRootDir()
@@ -48,8 +52,9 @@ export function runTestWithFixture(
     if (rootPath && path.basename(rootPath) === fixtureName && !shouldSkip) {
         test( fixtureName + ': ' + label, async () => {
             try {
-                await waitRootFileFound()
-                await cb()
+                await waitLatexWorkshopActivated()
+                const findRootFileEnd = promisify('findrootfileend')
+                await cb(findRootFileEnd)
             } catch (e) {
                 await printLogMessages()
                 throw e
@@ -103,6 +108,7 @@ export async function execCommandThenPick(
     command: () => Thenable<unknown>,
     pick: () => Thenable<undefined>
 ) {
+    await sleep(1000)
     let done = false
     setTimeout(async () => {
         while (!done) {
@@ -152,41 +158,26 @@ export async function waitUntil<T>(
     assert.fail('Timeout Error at waitUntil')
 }
 
-export function promisifySeq(...eventArray: EventName[]): Promise<void> {
+export function promisify(event: EventName): Promise<void> {
+    addLogMessage(`promisify (${event}): Start`)
     const extension = obtainLatexWorkshop()
-    let index = 0
     const promise = new Promise<void>((resolve, reject) => {
-        setTimeout(
-            () => reject(new Error(`Time out Error: ${JSON.stringify(eventArray)}`)),
-            process.env.CI ? 30000 : 10000
-        )
-        for (const event of eventArray) {
-            const disposable = extension.exports.realExtension?.eventBus.on(event, () => {
-                if (eventArray[index] === event) {
-                    index += 1
-                    if (index === eventArray.length) {
-                        resolve()
-                    }
-                    disposable?.dispose()
-                }
-            })
-        }
-    })
-    return promise
-}
-
-export async function promisify(event: EventName, count = 1): Promise<void> {
-    const extension = await waitLatexWorkshopActivated()
-    const promise = new Promise<void>((resolve, reject) => {
-        const disposable = extension.exports.realExtension?.eventBus.on(event, () => {
-            count -= 1
-            if (count === 0) {
-                resolve()
-                disposable?.dispose()
-            }
+        const disposable = extension.exports.realExtension.eventBus.on(event, () => {
+            resolve()
+            disposable?.dispose()
         })
         setTimeout(
-            () => reject(new Error(`promisify (${event}): Timeout error`)),
+            () => {
+                const rootFile = extension.exports.realExtension?.manager.rootFile
+                if (event === 'findrootfileend' && rootFile) {
+                    addLogMessage(`promisify  (${event}): Timeout error, but already rootFile found`)
+                    resolve()
+                } else {
+                    const message = `promisify (${event}): Timeout error`
+                    addLogMessage(message)
+                    reject(new Error(message))
+                }
+            },
             process.env.CI ? 30000 : 10000
         )
     })
@@ -195,11 +186,14 @@ export async function promisify(event: EventName, count = 1): Promise<void> {
 
 export function obtainLatexWorkshop() {
     const extension = vscode.extensions.getExtension<ReturnType<typeof activate>>('James-Yu.latex-workshop')
-    if (extension) {
-        return extension
-    } else {
-        throw new Error('LaTeX Workshop not activated.')
+    if (extension && extension.exports && extension.exports.realExtension) {
+        const exports = extension.exports
+        if (exports.realExtension) {
+            const realExtension = exports.realExtension
+            return {...extension, exports: {...exports, realExtension}}
+        }
     }
+    throw new Error('LaTeX Workshop not activated.')
 }
 
 export async function waitLatexWorkshopActivated() {
@@ -207,40 +201,30 @@ export async function waitLatexWorkshopActivated() {
     return obtainLatexWorkshop()
 }
 
-export async function waitRootFileFound(): Promise<void> {
-    const extension = await waitLatexWorkshopActivated()
-    const rootFile = extension.exports.realExtension?.manager.rootFile
-    if (rootFile) {
-        return
-    } else {
-        const findRootFileEnd = promisify('findrootfileend')
-        await findRootFileEnd
-        return
-    }
-}
-
-export function waitGivenRootFile(file: string) {
-    return waitUntil( async () => {
-        const extension = await waitLatexWorkshopActivated()
-        const rootFile = extension.exports.realExtension?.manager.rootFile
+export async function waitGivenRootFile(file: string) {
+    await sleep(1000)
+    const result = await waitUntil(() => {
+        const extension = obtainLatexWorkshop()
+        const rootFile = extension.exports.realExtension.manager.rootFile
         return rootFile === file
     })
+    await sleep(1000)
+    return result
 }
 
-export async function executeVscodeCommandAfterActivation(command: string) {
-    await waitLatexWorkshopActivated()
+export async function executeVscodeCommand(command: string) {
     return vscode.commands.executeCommand(command)
 }
 
 export async function viewPdf() {
     const promise = Promise.all([promisify('pdfviewerpagesloaded'), promisify('pdfviewerstatuschanged')])
-    await executeVscodeCommandAfterActivation('latex-workshop.view')
+    await executeVscodeCommand('latex-workshop.view')
     await promise
     await sleep(3000)
 }
 
-export async function getViewerStatus(pdfFilePath: string) {
-    const extension = await waitLatexWorkshopActivated()
+export function getViewerStatus(pdfFilePath: string) {
+    const extension = obtainLatexWorkshop()
     const pdfFileUri = vscode.Uri.file(pdfFilePath)
     const rs = extension.exports.realExtension?.viewer.getViewerState(pdfFileUri)
     let ret: PdfViewerState | undefined

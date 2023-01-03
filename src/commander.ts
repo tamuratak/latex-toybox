@@ -81,7 +81,7 @@ export class Commander {
         const externalBuildCommand = configuration.get('latex.external.build.command') as string
         const externalBuildArgs = configuration.get('latex.external.build.args') as string[]
         if (rootFile === undefined && this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            rootFile = await this.extension.manager.findRoot()
+            rootFile = await this.extension.manager.rootFilePromise
             languageId = this.extension.manager.rootFileLanguageId
         }
         if (externalBuildCommand) {
@@ -154,7 +154,7 @@ export class Commander {
             this.extension.logger.addLogMessage('Active document is not a TeX file.')
             return
         }
-        const rootFile = await this.extension.manager.findRoot()
+        const rootFile = await this.extension.manager.rootFile
         if (rootFile === undefined) {
             this.extension.logger.addLogMessage('Cannot find LaTeX root PDF to view.')
             return

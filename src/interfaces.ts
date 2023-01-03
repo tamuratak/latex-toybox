@@ -80,6 +80,7 @@ export interface LoggerLocator {
 export interface ILogger {
     addLogMessage(message: string): void,
     logCommand(message: string, command: string, args: string[]): void,
+    addDebugLogMessage(message: string): void,
     addCompilerMessage(message: string): void,
     logError(e: Error): void,
     logOnRejected(e: unknown): void,
@@ -112,7 +113,6 @@ export interface IManager {
     isLocalTexFile(document: vscode.TextDocument): boolean,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
-    findRoot(): Promise<string | undefined>,
     getIncludedBib(file?: string): string[],
     getIncludedTeX(file?: string): string[],
     getDirtyContent(file: string): Promise<string | undefined>,

@@ -144,7 +144,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     registerLatexWorkshopCommands(extension, context)
     registerProviders(extension, context)
 
-    void extension.manager.findRoot()
+
     conflictExtensionCheck()
 
     return generateLatexWorkshopApi(extension)
@@ -237,7 +237,7 @@ export class Extension implements IExtension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
-    readonly eventBus = new EventBus()
+    readonly eventBus = new EventBus(this)
     readonly commander: Commander
     readonly configuration: Configuration
     readonly manager: Manager
