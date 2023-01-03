@@ -148,7 +148,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // appropriate.
         const content = await this.extension.manager.getDirtyContent(file)
         if (!content) {
-            this.extension.logger.addLogMessage(`Error loading LaTeX during structuring: ${file}.`)
+            this.extension.logger.info(`Error loading LaTeX during structuring: ${file}.`)
             return []
         }
 
@@ -159,7 +159,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         const ast = await this.extension.pegParser.parseLatex(fastparse ? stripText(content) : content).catch((e) => {
             if (latexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
-                this.extension.logger.addLogMessage(`Error parsing LaTeX during structuring: line ${line} in ${file}.`)
+                this.extension.logger.info(`Error parsing LaTeX during structuring: line ${line} in ${file}.`)
             }
             return
         })
@@ -525,7 +525,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         const ast = await this.extension.pegParser.parseBibtex(document.getText()).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
-                this.extension.logger.addLogMessage(`Error parsing BibTeX: line ${line} in ${document.fileName}.`)
+                this.extension.logger.info(`Error parsing BibTeX: line ${line} in ${document.fileName}.`)
             }
             return
         })
@@ -639,7 +639,7 @@ export class StructureTreeView {
         extension.extensionContext.subscriptions.push(
             vscode.commands.registerCommand('latex-workshop.structure-toggle-follow-cursor', () => {
                 this._followCursor = ! this._followCursor
-                this.extension.logger.addLogMessage(`Follow cursor is set to ${this._followCursor}.`)
+                this.extension.logger.info(`Follow cursor is set to ${this._followCursor}.`)
             }),
             vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
                 if (extension.manager.hasBibtexId(e.languageId)) {

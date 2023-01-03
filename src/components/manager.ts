@@ -90,6 +90,8 @@ export class Manager implements IManager {
     private readonly weaveExt: string[] = []
     #rootFilePromise: ExternalPromise<string | undefined> | undefined
     private readonly findRootMutex = new MutexWithSizedQueue(1)
+    private readonly parseFlsMutex = new MutexWithSizedQueue(1)
+    private readonly updateCompleterMutex = new MutexWithSizedQueue(1)
 
     constructor(extension: Extension) {
         this.extension = extension
@@ -121,7 +123,7 @@ export class Manager implements IManager {
                 void this.buildOnSave(e.fileName)
             }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
-                this.extension.logger.addDebugLogMessage(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
+                this.extension.logger.debug(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
                 if (!e || !this.isLocalTexFile(e.document)) {
                     return
                 }
@@ -144,20 +146,23 @@ export class Manager implements IManager {
                     prevTime = currentTime
                     const content = e.document.getText()
                     const file = e.document.uri.fsPath
-                    await this.parseFileAndSubs(file, this.rootFile)
-                    await this.parseFlsFile(this.rootFile ? this.rootFile : file)
-                    await extension.completionUpdater.updateCompleter(file, content)
+                    await this.updateCompleterOnChange(file, content)
                 }
             })
         )
 
-        setTimeout(() => {
+        setTimeout(async () => {
             const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalTexFile(edt.document))
             if (editor && !process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
-                return vscode.window.showTextDocument(editor.document, editor.viewColumn)
+                await vscode.window.showTextDocument(editor.document, editor.viewColumn)
+                return this.findRoot()
             }
             return
         }, 500)
+
+        this.extension.builder.onDidBuild((rootFile) => {
+            return this.parseFlsFile(rootFile)
+        })
 
     }
 
@@ -236,7 +241,7 @@ export class Manager implements IManager {
                 if (ret.uri.scheme === 'file') {
                     return ret.uri.fsPath
                 } else {
-                    this.extension.logger.addLogMessage(`The file cannot be used as the root file: ${ret.uri.toString(true)}`)
+                    this.extension.logger.info(`The file cannot be used as the root file: ${ret.uri.toString(true)}`)
                     return
                 }
             }
@@ -399,7 +404,7 @@ export class Manager implements IManager {
             try {
                 this.#rootFilePromise = rootFilePromise
                 const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true))
-                this.extension.logger.addLogMessage(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
+                this.extension.logger.info(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
                 this.localRootFile = undefined
                 const findMethods = [
                     () => this.finderUtils.findRootFromMagic(),
@@ -413,11 +418,11 @@ export class Manager implements IManager {
                         continue
                     }
                     if (this.rootFile !== rootFile) {
-                        this.extension.logger.addLogMessage(`Root file changed: from ${this.rootFile} to ${rootFile}`)
-                        this.extension.logger.addLogMessage('Start to find all dependencies.')
+                        this.extension.logger.info(`Root file changed: from ${this.rootFile} to ${rootFile}`)
+                        this.extension.logger.info('Start to find all dependencies.')
                         this.rootFile = rootFile
                         this.rootFileLanguageId = this.inferLanguageId(rootFile)
-                        this.extension.logger.addLogMessage(`Root file languageId: ${this.rootFileLanguageId}`)
+                        this.extension.logger.info(`Root file languageId: ${this.rootFileLanguageId}`)
                         await this.initiateFileWatcher()
                         await this.parseFileAndSubs(this.rootFile, this.rootFile) // Finishing the parsing is required for subsequent refreshes.
                         // We need to parse the fls to discover file dependencies when defined by TeX macro
@@ -425,7 +430,7 @@ export class Manager implements IManager {
                         await this.parseFlsFile(this.rootFile)
                         this.extension.eventBus.fire(eventbus.RootFileChanged, rootFile)
                     } else {
-                        this.extension.logger.addLogMessage(`Keep using the same root file: ${this.rootFile}`)
+                        this.extension.logger.info(`Keep using the same root file: ${this.rootFile}`)
                     }
                     rootFilePromise.resolve(rootFile)
                     return rootFile
@@ -442,8 +447,8 @@ export class Manager implements IManager {
     private logWatchedFiles(delay = 2000) {
         return setTimeout(
             () => {
-                this.extension.logger.addLogMessage(`Manager.fileWatcher.getWatched: ${JSON.stringify(this.fileWatcher.getWatched())}`)
-                this.extension.logger.addLogMessage(`Manager.filesWatched: ${JSON.stringify(Array.from(this.filesWatched))}`)
+                this.extension.logger.debug(`Manager.fileWatcher.getWatched: ${JSON.stringify(this.fileWatcher.getWatched())}`)
+                this.extension.logger.debug(`Manager.filesWatched: ${JSON.stringify(Array.from(this.filesWatched))}`)
                 this.bibWatcher.logWatchedFiles()
                 this.pdfWatcher.logWatchedFiles()
             },
@@ -456,7 +461,7 @@ export class Manager implements IManager {
             return undefined
         }
         if (isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
-            this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
+            this.extension.logger.info(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
         if (this.getIncludedTeX().includes(vscode.window.activeTextEditor.document.fileName)) {
@@ -470,7 +475,7 @@ export class Manager implements IManager {
             return undefined
         }
         if (isVirtualUri(vscode.window.activeTextEditor.document.uri)) {
-            this.extension.logger.addLogMessage(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
+            this.extension.logger.info(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
         const regex = /\\begin{document}/m
@@ -483,7 +488,7 @@ export class Manager implements IManager {
                this.localRootFile = file
                return rootSubFile
             } else {
-                this.extension.logger.addLogMessage(`Found root file from active editor: ${file}`)
+                this.extension.logger.info(`Found root file from active editor: ${file}`)
                 return file
             }
         }
@@ -492,7 +497,7 @@ export class Manager implements IManager {
 
     private async findRootInWorkspace(): Promise<string | undefined> {
         const currentWorkspaceDirUri = this.findWorkspace()
-        this.extension.logger.addLogMessage(`Current workspaceRootDir: ${currentWorkspaceDirUri ? currentWorkspaceDirUri.toString(true) : ''}`)
+        this.extension.logger.info(`Current workspaceRootDir: ${currentWorkspaceDirUri ? currentWorkspaceDirUri.toString(true) : ''}`)
 
         if (!currentWorkspaceDirUri) {
             return undefined
@@ -508,12 +513,12 @@ export class Manager implements IManager {
             const candidates: string[] = []
             for (const file of files) {
                 if (isVirtualUri(file)) {
-                    this.extension.logger.addLogMessage(`Skip the file: ${file.toString(true)}`)
+                    this.extension.logger.info(`Skip the file: ${file.toString(true)}`)
                     continue
                 }
                 const flsChildren = await this.getTeXChildrenFromFls(file.fsPath)
                 if (vscode.window.activeTextEditor && flsChildren.includes(vscode.window.activeTextEditor.document.fileName)) {
-                    this.extension.logger.addLogMessage(`Found root file from '.fls': ${file.fsPath}`)
+                    this.extension.logger.info(`Found root file from '.fls': ${file.fsPath}`)
                     return file.fsPath
                 }
                 let content = await readFileGracefully(file) || ''
@@ -522,7 +527,7 @@ export class Manager implements IManager {
                     // Can be a root
                     const children = await this.getTeXChildren(file.fsPath, file.fsPath)
                     if (vscode.window.activeTextEditor && children.includes(vscode.window.activeTextEditor.document.fileName)) {
-                        this.extension.logger.addLogMessage(`Found root file from parent: ${file.fsPath}`)
+                        this.extension.logger.info(`Found root file from parent: ${file.fsPath}`)
                         return file.fsPath
                     }
                     // Not including the active file, yet can still be a root candidate
@@ -530,7 +535,7 @@ export class Manager implements IManager {
                 }
             }
             if (candidates.length > 0) {
-                this.extension.logger.addLogMessage(`Found files that might be root, choose the first one: ${candidates}`)
+                this.extension.logger.info(`Found files that might be root, choose the first one: ${candidates}`)
                 return candidates[0]
             }
         } catch (e) {}
@@ -605,7 +610,7 @@ export class Manager implements IManager {
         const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
         const content = doc?.getText() || await readFilePathGracefully(file)
         if (content === undefined) {
-            this.extension.logger.addLogMessage(`Cannot read dirty content of unknown: ${file}`)
+            this.extension.logger.info(`Cannot read dirty content of unknown: ${file}`)
             return
         }
         return content
@@ -635,13 +640,13 @@ export class Manager implements IManager {
      */
     private async parseFileAndSubs(file: string, maybeRootFile: string | undefined) {
         if (this.isExcluded(file)) {
-            this.extension.logger.addLogMessage(`Ignoring: ${file}`)
+            this.extension.logger.info(`Ignoring: ${file}`)
             return
         }
         if (maybeRootFile === undefined) {
             maybeRootFile = file
         }
-        this.extension.logger.addLogMessage(`Parsing a file and its subfiles: ${file}`)
+        this.extension.logger.info(`Parsing a file and its subfiles: ${file}`)
         if (!this.filesWatched.has(file)) {
             // The file is considered for the first time.
             // We must add the file to watcher to make sure we avoid infinite loops
@@ -772,50 +777,52 @@ export class Manager implements IManager {
      *
      * @param texFile The path of a LaTeX file.
      */
-    async parseFlsFile(texFile: string) {
-        this.extension.logger.addLogMessage('Parse fls file.')
-        const flsFile = await this.pathUtils.getFlsFilePath(texFile)
-        if (flsFile === undefined) {
-            return
-        }
-        const rootDir = path.dirname(texFile)
-        const outDir = this.getOutDir(texFile)
-        const content = await readFilePath(flsFile)
-        const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
+    private async parseFlsFile(texFile: string) {
+        return this.parseFlsMutex.noopIfOccupied(async () => {
+            this.extension.logger.info('Parse fls file.')
+            const flsFile = await this.pathUtils.getFlsFilePath(texFile)
+            if (flsFile === undefined) {
+                return
+            }
+            const rootDir = path.dirname(texFile)
+            const outDir = this.getOutDir(texFile)
+            const content = await readFilePath(flsFile)
+            const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
 
-        for (const inputFile of ioFiles.input) {
-            // Drop files that are also listed as OUTPUT or should be ignored
-            if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
-                continue
+            for (const inputFile of ioFiles.input) {
+                // Drop files that are also listed as OUTPUT or should be ignored
+                if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
+                    continue
+                }
+                if (inputFile === texFile || this.filesWatched.has(inputFile)) {
+                    // Drop the current rootFile often listed as INPUT
+                    // Drop any file that is already watched as it is handled by
+                    // onWatchedFileChange.
+                    continue
+                }
+                if (path.extname(inputFile) === '.tex') {
+                    // Parse tex files as imported subfiles.
+                    this.gracefulCachedContent(texFile).children.push({
+                        file: inputFile
+                    })
+                    await this.parseFileAndSubs(inputFile, texFile)
+                } else if (!this.filesWatched.has(inputFile)) {
+                    // Watch non-tex files.
+                    await this.addToFileWatcher(inputFile)
+                }
             }
-            if (inputFile === texFile || this.filesWatched.has(inputFile)) {
-                // Drop the current rootFile often listed as INPUT
-                // Drop any file that is already watched as it is handled by
-                // onWatchedFileChange.
-                continue
-            }
-            if (path.extname(inputFile) === '.tex') {
-                // Parse tex files as imported subfiles.
-                this.gracefulCachedContent(texFile).children.push({
-                    file: inputFile
-                })
-                await this.parseFileAndSubs(inputFile, texFile)
-            } else if (!this.filesWatched.has(inputFile)) {
-                // Watch non-tex files.
-                await this.addToFileWatcher(inputFile)
-            }
-        }
 
-        for (const outputFile of ioFiles.output) {
-            if (path.extname(outputFile) === '.aux' && await existsPath(outputFile)) {
-                this.extension.logger.addLogMessage(`Parse aux file: ${outputFile}`)
-                const outputFileContent = await readFilePath(outputFile)
-                await this.parseAuxFile(
-                    outputFileContent,
-                    path.dirname(outputFile).replace(outDir, rootDir)
-                )
+            for (const outputFile of ioFiles.output) {
+                if (path.extname(outputFile) === '.aux' && await existsPath(outputFile)) {
+                    this.extension.logger.info(`Parse aux file: ${outputFile}`)
+                    const outputFileContent = await readFilePath(outputFile)
+                    await this.parseAuxFile(
+                        outputFileContent,
+                        path.dirname(outputFile).replace(outDir, rootDir)
+                    )
+                }
             }
-        }
+        })
     }
 
     private async parseAuxFile(content: string, srcDir: string) {
@@ -869,8 +876,8 @@ export class Manager implements IManager {
     }
 
     private createFileWatcher() {
-        this.extension.logger.addLogMessage('Creating a new file watcher.')
-        this.extension.logger.addLogMessage(`watcherOptions: ${JSON.stringify(this.watcherOptions)}`)
+        this.extension.logger.info('Creating a new file watcher.')
+        this.extension.logger.info(`watcherOptions: ${JSON.stringify(this.watcherOptions)}`)
         const fileWatcher = chokidar.watch([], this.watcherOptions)
         this.registerListeners(fileWatcher)
         return fileWatcher
@@ -885,7 +892,7 @@ export class Manager implements IManager {
     private async resetFileWatcher() {
         const release = await this.fileWatcherMutex.acquire()
         try {
-            this.extension.logger.addLogMessage('Reset file watcher.')
+            this.extension.logger.info('Reset file watcher.')
             await this.fileWatcher.close()
             this.registerListeners(this.fileWatcher)
             this.filesWatched.clear()
@@ -898,32 +905,29 @@ export class Manager implements IManager {
     }
 
     private onWatchingNewFile(file: string) {
-        this.extension.logger.addLogMessage(`Added to file watcher: ${file}`)
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file)) &&
-            !file.includes('expl3-code.tex')) {
+        this.extension.logger.info(`Added to file watcher: ${file}`)
+        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
             return this.updateCompleterOnChange(file)
         }
         return
     }
 
     private async onWatchedFileChanged(file: string) {
-        this.extension.logger.addLogMessage(`File watcher - file changed: ${file}`)
+        this.extension.logger.info(`File watcher - file changed: ${file}`)
         // It is possible for either tex or non-tex files in the watcher.
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file)) &&
-            !file.includes('expl3-code.tex')) {
-            await this.parseFileAndSubs(file, this.rootFile)
+        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
             await this.updateCompleterOnChange(file)
         }
         await this.buildOnFileChanged(file)
     }
 
     private async onWatchedFileDeleted(file: string) {
-        this.extension.logger.addLogMessage(`File watcher - file deleted: ${file}`)
+        this.extension.logger.info(`File watcher - file deleted: ${file}`)
         await this.deleteFromFileWatcher(file)
         this.cachedContent.delete(file)
         if (file === this.rootFile) {
-            this.extension.logger.addLogMessage(`Root file deleted: ${file}`)
-            this.extension.logger.addLogMessage('Start searching a new root file.')
+            this.extension.logger.info(`Root file deleted: ${file}`)
+            this.extension.logger.info('Start searching a new root file.')
             void this.findRoot()
         }
     }
@@ -933,7 +937,7 @@ export class Manager implements IManager {
     }
 
     private autoBuild(file: string, bibChanged: boolean ) {
-        this.extension.logger.addLogMessage(`Auto build started detecting the change of a file: ${file}`)
+        this.extension.logger.info(`Auto build started detecting the change of a file: ${file}`)
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
         if (!bibChanged && this.localRootFile && configuration.get('latex.rootFile.useSubFile')) {
             return this.extension.commander.build(true, this.localRootFile, this.rootFileLanguageId)
@@ -955,18 +959,21 @@ export class Manager implements IManager {
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
             return
         }
-        this.extension.logger.addLogMessage(`Auto build started on saving file: ${file}`)
+        this.extension.logger.info(`Auto build started on saving file: ${file}`)
         return this.autoBuild(file, false)
     }
 
     // This function updates all completers upon tex-file changes.
-    private async updateCompleterOnChange(file: string) {
-        const content = await this.getDirtyContent(file)
-        if (!content) {
-            return
-        }
-        await this.extension.completionUpdater.updateCompleter(file, content)
-        this.extension.completer.input.setGraphicsPath(content)
+    private async updateCompleterOnChange(file: string, content?: string) {
+        return this.updateCompleterMutex.noopIfOccupied(async () => {
+            content ||= await this.getDirtyContent(file)
+            if (!content) {
+                return
+            }
+            await this.parseFileAndSubs(file, this.rootFile)
+            await this.extension.completionUpdater.updateCompleter(file, content)
+            this.extension.completer.input.setGraphicsPath(content)
+        })
     }
 
 }

@@ -67,13 +67,13 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
                 entriesReplacements = configuration.get('intellisense.biblatexJSON.replace') as {[key: string]: string[]}
                 break
             default:
-                this.extension.logger.addLogMessage(`Unknown citation backend: ${citationBackend}`)
+                this.extension.logger.info(`Unknown citation backend: ${citationBackend}`)
                 return
         }
         try {
             void this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)
         } catch (err) {
-            this.extension.logger.addLogMessage(`Error reading data: ${err}.`)
+            this.extension.logger.info(`Error reading data: ${err}.`)
         }
     }
 

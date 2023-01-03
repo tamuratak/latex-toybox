@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type {IProvider} from './interface'
-import { CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
+import { BuilderLocator, CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 
 export interface LabelDefinitionElement {
@@ -26,6 +26,7 @@ export interface LabelDefinitionEntry extends LabelDefinitionStored {
 }
 
 interface IExtension extends
+    BuilderLocator,
     CompletionUpdaterLocator,
     ManagerLocator { }
 
@@ -38,6 +39,9 @@ export class LabelDefinition implements IProvider {
         this.extension = extension
         this.extension.completionUpdater.onDidUpdate(() => {
             this.updateAll()
+        })
+        this.extension.builder.onDidBuild((rootFile) => {
+            return void this.setNumbersFromAuxFile(rootFile)
         })
     }
 
@@ -89,7 +93,7 @@ export class LabelDefinition implements IProvider {
         })
     }
 
-    async setNumbersFromAuxFile(rootFile: string) {
+    private async setNumbersFromAuxFile(rootFile: string) {
         const outDir = this.extension.manager.getOutDir(rootFile)
         const rootDir = path.dirname(rootFile)
         const auxFile = path.resolve(rootDir, path.join(outDir, path.basename(rootFile, '.tex') + '.aux'))

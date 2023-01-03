@@ -17,7 +17,7 @@ import {UtensilsParser as PEGParser} from './components/parser/syntax'
 import {Configuration} from './components/configuration'
 import {EventBus} from './components/eventbus'
 
-import {Completer, AtSuggestionCompleter} from './providers/completion'
+import {Completer} from './providers/completion'
 import {BibtexCompleter} from './providers/bibtexcompletion'
 import {DuplicateLabels} from './components/duplicatelabels'
 import {HoverProvider} from './providers/hover'
@@ -185,7 +185,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
 
     const userTriggersLatex = configuration.get('intellisense.triggers.latex') as string[]
     const latexTriggers = ['\\', ','].concat(userTriggersLatex)
-    extension.logger.addLogMessage(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
+    extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
 
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex'}, extension.completer, '\\', '{'),
@@ -196,7 +196,11 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     const atSuggestionLatexTrigger = configuration.get('intellisense.atSuggestion.trigger.latex') as string
     if (atSuggestionLatexTrigger !== '') {
         context.subscriptions.push(
-            vscode.languages.registerCompletionItemProvider(latexDoctexSelector, extension.atSuggestionCompleter, atSuggestionLatexTrigger)
+            vscode.languages.registerCompletionItemProvider(
+                latexDoctexSelector,
+                extension.completer.atSuggestionCompleter,
+                atSuggestionLatexTrigger
+            )
         )
     }
 
@@ -237,7 +241,7 @@ export class Extension implements IExtension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
-    readonly eventBus = new EventBus(this)
+    readonly eventBus: EventBus
     readonly commander: Commander
     readonly configuration: Configuration
     readonly manager: Manager
@@ -250,7 +254,6 @@ export class Extension implements IExtension {
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
     readonly completionStore: CompletionStore
-    readonly atSuggestionCompleter: AtSuggestionCompleter
     readonly linter: Linter
     readonly envPair: EnvPair
     readonly section: Section
@@ -267,23 +270,24 @@ export class Extension implements IExtension {
     constructor(context: vscode.ExtensionContext) {
         this.extensionContext = context
         this.extensionRoot = context.extensionPath
-        // We must create an instance of Logger first to enable
-        // adding log messages during initialization.
+        // We must create Logger, EventBus, Builder, and CompletionUpdater first.
+        // Other classes may use them in their constructors.
         this.logger = new Logger()
+        this.eventBus = new EventBus(this)
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
         this.referenceStore = new ReferenceStore()
+        this.builder = new Builder(this)
+        this.completionUpdater = new CompletionUpdater(this)
+
         this.commander = new Commander(this)
         this.manager = new Manager(this)
-        this.builder = new Builder(this)
         this.viewer = new Viewer(this)
         this.server = new Server(this)
         this.locator = new Locator(this)
         this.compilerLogParser = new CompilerLogParser(this)
-        this.completionUpdater = new CompletionUpdater(this)
         this.completer = new Completer(this)
         this.completionStore = new CompletionStore()
-        this.atSuggestionCompleter = new AtSuggestionCompleter(this)
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)
         this.envPair = new EnvPair(this)
@@ -296,7 +300,7 @@ export class Extension implements IExtension {
         this.mathPreview = new MathPreview(this)
         this.bibtexFormatter = new BibtexFormatter(this)
         this.mathPreviewPanel = new MathPreviewPanel(this)
-        this.logger.addLogMessage('LaTeX Workshop initialized.')
+        this.logger.info('LaTeX Workshop initialized.')
     }
 
     async dispose() {
@@ -307,17 +311,17 @@ export class Extension implements IExtension {
     }
 
     private addLogFundamentals() {
-        this.logger.addLogMessage('Initializing LaTeX Workshop.')
-        this.logger.addLogMessage(`Extension root: ${this.extensionRoot}`)
-        this.logger.addLogMessage(`$PATH: ${process.env.PATH}`)
-        this.logger.addLogMessage(`$SHELL: ${process.env.SHELL}`)
-        this.logger.addLogMessage(`$LANG: ${process.env.LANG}`)
-        this.logger.addLogMessage(`$LC_ALL: ${process.env.LC_ALL}`)
-        this.logger.addLogMessage(`process.platform: ${process.platform}`)
-        this.logger.addLogMessage(`process.arch: ${process.arch}`)
-        this.logger.addLogMessage(`vscode.env.appName: ${vscode.env.appName}`)
-        this.logger.addLogMessage(`vscode.env.remoteName: ${vscode.env.remoteName}`)
-        this.logger.addLogMessage(`vscode.env.uiKind: ${vscode.env.uiKind}`)
+        this.logger.info('Initializing LaTeX Workshop.')
+        this.logger.info(`Extension root: ${this.extensionRoot}`)
+        this.logger.info(`$PATH: ${process.env.PATH}`)
+        this.logger.info(`$SHELL: ${process.env.SHELL}`)
+        this.logger.info(`$LANG: ${process.env.LANG}`)
+        this.logger.info(`$LC_ALL: ${process.env.LC_ALL}`)
+        this.logger.info(`process.platform: ${process.platform}`)
+        this.logger.info(`process.arch: ${process.arch}`)
+        this.logger.info(`vscode.env.appName: ${vscode.env.appName}`)
+        this.logger.info(`vscode.env.remoteName: ${vscode.env.remoteName}`)
+        this.logger.info(`vscode.env.uiKind: ${vscode.env.uiKind}`)
     }
 
 }

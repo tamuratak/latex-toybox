@@ -247,13 +247,13 @@ export class Citation implements IProvider {
      * @param file The path of `.bib` file.
      */
     async parseBibFile(file: string) {
-        this.extension.logger.addLogMessage(`Parsing .bib entries from ${file}`)
+        this.extension.logger.info(`Parsing .bib entries from ${file}`)
         const newEntry: CiteSuggestion[] = []
         const bibtex = await readFilePath(file)
         const ast = await this.extension.pegParser.parseBibtex(bibtex).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
-                this.extension.logger.addLogMessage(`Error parsing BibTeX: line ${line} in ${file}.`)
+                this.extension.logger.info(`Error parsing BibTeX: line ${line} in ${file}.`)
             }
             throw e
         })
@@ -275,7 +275,7 @@ export class Citation implements IProvider {
                 newEntry.push(item)
             })
         this.bibEntries.set(file, newEntry)
-        this.extension.logger.addLogMessage(`Parsed ${newEntry.length} bib entries from ${file}.`)
+        this.extension.logger.info(`Parsed ${newEntry.length} bib entries from ${file}.`)
     }
 
     entryToFields(entry: bibtexParser.Entry) {
@@ -288,7 +288,7 @@ export class Citation implements IProvider {
     }
 
     removeEntriesInFile(file: string) {
-        this.extension.logger.addLogMessage(`Remove parsed bib entries for ${file}`)
+        this.extension.logger.info(`Remove parsed bib entries for ${file}`)
         this.bibEntries.delete(file)
     }
 

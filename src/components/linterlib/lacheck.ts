@@ -21,9 +21,9 @@ export class LaCheck implements ILinter {
     }
 
     async lintRootFile() {
-        this.extension.logger.addLogMessage('Linter for root file started.')
+        this.extension.logger.info('Linter for root file started.')
         if (this.extension.manager.rootFile === undefined) {
-            this.extension.logger.addLogMessage('No root file found for linting.')
+            this.extension.logger.info('No root file found for linting.')
             return
         }
         const filePath = this.extension.manager.rootFile
@@ -37,7 +37,7 @@ export class LaCheck implements ILinter {
     }
 
     async lintFile(document: vscode.TextDocument) {
-        this.extension.logger.addLogMessage('Linter for active file started.')
+        this.extension.logger.info('Linter for active file started.')
         const filePath = document.fileName
         const content = document.getText()
 
@@ -103,7 +103,7 @@ export class LaCheck implements ILinter {
                 })
             }
         }
-        this.extension.logger.addLogMessage(`Linter log parsed with ${linterLog.length} messages.`)
+        this.extension.logger.info(`Linter log parsed with ${linterLog.length} messages.`)
         this.linterDiagnostics.clear()
         return this.showLinterDiagnostics(linterLog)
     }

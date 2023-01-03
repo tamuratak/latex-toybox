@@ -40,7 +40,7 @@ export class EventBus implements IEventBus {
     fire<T extends keyof EventArgTypeMap>(eventName: T, arg: EventArgTypeMap[T]): void
     fire(eventName: EventName): void
     fire(eventName: EventName, arg?: any): void {
-        this.extension.logger.addDebugLogMessage(`EventBus: fire ${eventName}`)
+        this.extension.logger.debug(`EventBus: fire ${eventName}`)
         this.eventEmitter.emit(eventName, arg)
     }
 
@@ -77,7 +77,7 @@ export class EventBus implements IEventBus {
     }
 
     on(eventName: EventName, argCb: () => void) {
-        this.extension.logger.addDebugLogMessage(`EventBus: on ${eventName}`)
+        this.extension.logger.debug(`EventBus: on ${eventName}`)
         const cb = () => argCb()
         this.eventEmitter.on(eventName, cb)
         const disposable = {

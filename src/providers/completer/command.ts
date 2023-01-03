@@ -6,6 +6,7 @@ import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isT
 import {SurroundCommand} from './commandlib/surround'
 import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
+import { ExternalPromise } from '../../utils/externalpromise'
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
 
@@ -120,19 +121,24 @@ export class Command implements IProvider, ICommand {
     private readonly defaultCmds: CmdEnvSuggestion[] = []
     private readonly defaultSymbols: CmdEnvSuggestion[] = []
     private readonly packageCmds = new Map<string, CmdEnvSuggestion[]>()
+    readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: IExtension, environment: Environment) {
         this.extension = extension
         this.environment = environment
         this.surroundCommand = new SurroundCommand()
-        void this.load()
+        void this.load().then(() => this.#readyPromise.resolve())
     }
 
-    async load() {
+    get readyPromise() {
+        return this.#readyPromise.promise
+    }
+
+    private async load() {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const packageDirUri = vscode.Uri.file(`${this.extension.extensionRoot}/data/packages/`)
         const files = await vscode.workspace.fs.readDirectory(packageDirUri)
-        files.forEach(async (file) => {
+        for (const file of files) {
             const fileName = file[0]
             const match = /(.*)_cmd.json/.exec(fileName)
             if (match) {
@@ -147,17 +153,17 @@ export class Command implements IProvider, ICommand {
                             if (isCmdItemEntry(cmds[key])) {
                                 pkgEntry.push(this.entryCmdToCompletion(key, cmds[key]))
                             } else {
-                                this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
-                                this.extension.logger.addLogMessage(`Missing field in entry: "${key}": ${JSON.stringify(cmds[key])}`)
+                                this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
+                                this.extension.logger.info(`Missing field in entry: "${key}": ${JSON.stringify(cmds[key])}`)
                             }
                         })
                     } catch (e) {
-                        this.extension.logger.addLogMessage(`Cannot parse intellisense file: ${filePathUri}`)
+                        this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
                     }
                 }
                 this.packageCmds.set(pkg, pkgEntry)
             }
-        })
+        }
         if (configuration.get('intellisense.unimathsymbols.enabled')) {
             const content = await lwfs.readFilePath(`${this.extension.extensionRoot}/data/unimathsymbols.json`)
             const symbols: { [key: string]: CmdItemEntry } = JSON.parse(content) as DataUnimathSymbolsJsonType

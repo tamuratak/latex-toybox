@@ -36,14 +36,14 @@ export class NewCommandFinder {
         } else {
             const rootDir = this.extension.manager.rootDir
             if (rootDir === undefined) {
-                this.extension.logger.addLogMessage(`Cannot identify the absolute path of new command file ${newCommandFile} without root file.`)
+                this.extension.logger.info(`Cannot identify the absolute path of new command file ${newCommandFile} without root file.`)
                 return ''
             }
             newCommandFileAbs = path.join(rootDir, newCommandFile)
         }
         commandsString = await readFilePathGracefully(newCommandFileAbs)
         if (commandsString === undefined) {
-            this.extension.logger.addLogMessage(`Cannot read file ${newCommandFileAbs}`)
+            this.extension.logger.info(`Cannot read file ${newCommandFileAbs}`)
             return ''
         }
         commandsString = commandsString.replace(/^\s*$/gm, '')
@@ -70,7 +70,7 @@ export class NewCommandFinder {
                 return ''
             }
             if (exceeded) {
-                this.extension.logger.addLogMessage('Timeout error when parsing preambles in findProjectNewCommand.')
+                this.extension.logger.info('Timeout error when parsing preambles in findProjectNewCommand.')
                 throw new Error('Timeout Error in findProjectNewCommand')
             }
             const cache = this.extension.manager.getCachedContent(tex)

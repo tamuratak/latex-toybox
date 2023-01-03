@@ -2,12 +2,12 @@ import * as vscode from 'vscode'
 import type {ILogger} from '../interfaces'
 
 export class Logger implements ILogger {
-    private readonly logPanel: vscode.OutputChannel
+    private readonly logPanel: vscode.LogOutputChannel
     private readonly compilerLogPanel: vscode.OutputChannel
     readonly status: vscode.StatusBarItem
 
     constructor() {
-        this.logPanel = vscode.window.createOutputChannel('LaTeX Workshop')
+        this.logPanel = vscode.window.createOutputChannel('LaTeX Workshop', { log: true })
         this.compilerLogPanel = vscode.window.createOutputChannel('LaTeX Compiler')
         this.compilerLogPanel.append('Ready')
         this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10000)
@@ -16,22 +16,20 @@ export class Logger implements ILogger {
         this.displayStatus('check', 'statusBar.foreground')
     }
 
-    addLogMessage(message: string) {
+    info(message: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         if (configuration.get('message.log.show')) {
-            this.logPanel.append(`[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${message}\n`)
+            this.logPanel.info(message)
         }
     }
 
     logCommand(message: string, command: string, args: string[] = []) {
-        this.addLogMessage(message + ': ' + command)
-        this.addLogMessage(message + ' args: ' + JSON.stringify(args))
+        this.info(message + ': ' + command)
+        this.info(message + ' args: ' + JSON.stringify(args))
     }
 
-    addDebugLogMessage(message: string) {
-        if (process.env['LATEXWORKSHOP_CI']) {
-            this.addLogMessage(' [DEBUG] ' + message)
-        }
+    debug(message: string) {
+        this.logPanel.debug(message)
     }
 
     addCompilerMessage(message: string) {
@@ -39,9 +37,9 @@ export class Logger implements ILogger {
     }
 
     logError(e: Error) {
-        this.addLogMessage(e.message)
+        this.info(e.message)
         if (e.stack) {
-            this.addLogMessage(e.stack)
+            this.info(e.stack)
         }
     }
 
@@ -49,7 +47,7 @@ export class Logger implements ILogger {
         if (e instanceof Error) {
             this.logError(e)
         } else {
-            this.addLogMessage(String(e))
+            this.info(String(e))
         }
     }
 

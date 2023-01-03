@@ -40,6 +40,7 @@ async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer'
                 '--user-data-dir=' + tmpdir.name,
                 '--extensions-dir=' + extTmpdir.name,
                 '--lang=C',
+                '--log=James-Yu.latex-workshop:debug',
                 '--disable-keytar',
                 '--disable-telemetry',
                 '--disable-gpu'

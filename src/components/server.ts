@@ -28,8 +28,8 @@ class WsServer extends ws.Server {
     shouldHandle(req: http.IncomingMessage): boolean {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
-            this.extension.logger.addLogMessage(`[Server] Origin in WebSocket upgrade request is invalid: ${JSON.stringify(req.headers)}`)
-            this.extension.logger.addLogMessage(`[Server] Valid origin: ${this.validOrigin}`)
+            this.extension.logger.info(`[Server] Origin in WebSocket upgrade request is invalid: ${JSON.stringify(req.headers)}`)
+            this.extension.logger.info(`[Server] Valid origin: ${this.validOrigin}`)
             return false
         } else {
             return true
@@ -57,7 +57,7 @@ export class Server {
         this.pdfFilePathEncoder = new PdfFilePathEncoder(extension)
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
-        this.extension.logger.addLogMessage('[Server] Creating LaTeX Workshop http and websocket server.')
+        this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')
     }
 
     dispose() {
@@ -67,7 +67,7 @@ export class Server {
     get port(): number {
         const portNum = this.address?.port
         if (portNum === undefined) {
-            this.extension.logger.addLogMessage('Server port number is undefined.')
+            this.extension.logger.info('Server port number is undefined.')
             throw new Error('Server port number is undefined.')
         }
         return portNum
@@ -88,17 +88,17 @@ export class Server {
             const address = this.httpServer.address()
             if (address && typeof address !== 'string') {
                 this.address = address
-                this.extension.logger.addLogMessage(`[Server] Server successfully started: ${JSON.stringify(address)}`)
+                this.extension.logger.info(`[Server] Server successfully started: ${JSON.stringify(address)}`)
                 this.validOriginUri = await this.obtainValidOrigin(address.port)
-                this.extension.logger.addLogMessage(`[Server] valdOrigin is ${this.validOrigin}`)
+                this.extension.logger.info(`[Server] valdOrigin is ${this.validOrigin}`)
                 this.initializeWsServer()
                 this.eventEmitter.emit(ServerStartedEvent)
             } else {
-                this.extension.logger.addLogMessage(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
+                this.extension.logger.info(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
             }
         })
         this.httpServer.on('error', (err) => {
-            this.extension.logger.addLogMessage(`[Server] Error creating LaTeX Workshop http server: ${JSON.stringify(err)}.`)
+            this.extension.logger.info(`[Server] Error creating LaTeX Workshop http server: ${JSON.stringify(err)}.`)
         })
     }
 
@@ -112,7 +112,7 @@ export class Server {
         const wsServer = new WsServer(this.httpServer, this.extension, this.validOrigin)
         wsServer.on('connection', (websocket) => {
             websocket.on('message', (msg: string) => this.extension.viewer.handler(websocket, msg))
-            websocket.on('error', (err) => this.extension.logger.addLogMessage(`[Server] Error on WebSocket connection. ${JSON.stringify(err)}`))
+            websocket.on('error', (err) => this.extension.logger.info(`[Server] Error on WebSocket connection. ${JSON.stringify(err)}`))
         })
     }
 
@@ -125,8 +125,8 @@ export class Server {
     private checkHttpOrigin(req: http.IncomingMessage, response: http.ServerResponse): boolean {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
-            this.extension.logger.addLogMessage(`[Server] Origin in http request is invalid: ${JSON.stringify(req.headers)}`)
-            this.extension.logger.addLogMessage(`[Server] Valid origin: ${this.validOrigin}`)
+            this.extension.logger.info(`[Server] Origin in http request is invalid: ${JSON.stringify(req.headers)}`)
+            this.extension.logger.info(`[Server] Valid origin: ${this.validOrigin}`)
             response.writeHead(403)
             response.end()
             return false
@@ -172,15 +172,15 @@ export class Server {
             const encodedFileUri = request.url.replace('/', '')
             const fileUri = this.pdfFilePathEncoder.decodePathWithPrefix(encodedFileUri)
             if (this.extension.viewer.getClientSet(fileUri) === undefined) {
-                this.extension.logger.addLogMessage(`Invalid PDF request: ${fileUri.toString(true)}`)
+                this.extension.logger.info(`Invalid PDF request: ${fileUri.toString(true)}`)
                 return
             }
             try {
                 const buf: Buffer = await readFileAsBuffer(fileUri)
                 this.sendOkResponse(response, buf, 'application/pdf')
-                this.extension.logger.addLogMessage(`Preview PDF file: ${fileUri.toString(true)}`)
+                this.extension.logger.info(`Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
-                this.extension.logger.addLogMessage(`Error reading PDF file: ${fileUri.toString(true)}`)
+                this.extension.logger.info(`Error reading PDF file: ${fileUri.toString(true)}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }

@@ -28,8 +28,9 @@ export interface CommandLocator {
     readonly command: ICommand
 }
 
-export interface ICompleter extends
-    CommandLocator { }
+export interface ICompleter extends CommandLocator {
+    readonly readyPromise: Promise<void>
+}
 
 export interface CompleterLocator {
     readonly completer: ICompleter
@@ -69,7 +70,8 @@ export interface BuilderLocator {
 }
 
 export interface IBuilder {
-    readonly tmpDir: string
+    readonly tmpDir: string,
+    onDidBuild(cb: (file: string) => unknown): vscode.Disposable
 }
 
 export interface LoggerLocator {
@@ -77,9 +79,9 @@ export interface LoggerLocator {
 }
 
 export interface ILogger {
-    addLogMessage(message: string): void,
+    info(message: string): void,
     logCommand(message: string, command: string, args: string[]): void,
-    addDebugLogMessage(message: string): void,
+    debug(message: string): void,
     addCompilerMessage(message: string): void,
     logError(e: Error): void,
     logOnRejected(e: unknown): void,

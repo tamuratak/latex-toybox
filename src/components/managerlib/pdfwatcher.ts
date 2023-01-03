@@ -37,8 +37,8 @@ export class PdfWatcher {
             binaryInterval: Math.max(interval, 1000),
             awaitWriteFinish: {stabilityThreshold: pdfDelay}
         }
-        this.extension.logger.addLogMessage('Creating PDF file watcher.')
-        this.extension.logger.addLogMessage(`watcherOptions: ${JSON.stringify(pdfWatcherOptions)}`)
+        this.extension.logger.info('Creating PDF file watcher.')
+        this.extension.logger.info(`watcherOptions: ${JSON.stringify(pdfWatcherOptions)}`)
         const pdfWatcher = chokidar.watch([], pdfWatcherOptions)
         pdfWatcher.on('change', (file: string) => this.onWatchedPdfChanged(file))
         pdfWatcher.on('unlink', (file: string) => this.onWatchedPdfDeleted(file))
@@ -75,12 +75,12 @@ export class PdfWatcher {
         if (this.isIgnored(file)) {
             return
         }
-        this.extension.logger.addLogMessage(`PDF file watcher - file changed: ${file}`)
+        this.extension.logger.info(`PDF file watcher - file changed: ${file}`)
         this.extension.viewer.refreshExistingViewer()
     }
 
     private onWatchedPdfDeleted(file: string) {
-        this.extension.logger.addLogMessage(`PDF file watcher - file deleted: ${file}`)
+        this.extension.logger.info(`PDF file watcher - file deleted: ${file}`)
         this.pdfWatcher.unwatch(file)
         this.watchedPdfLocalPaths.delete(file)
     }
@@ -90,7 +90,7 @@ export class PdfWatcher {
         if (isLocal) {
             const pdfFilePath = pdfFileUri.fsPath
             if (!this.watchedPdfLocalPaths.has(pdfFilePath)) {
-                this.extension.logger.addLogMessage(`Added to PDF file watcher: ${pdfFileUri.toString(true)}`)
+                this.extension.logger.info(`Added to PDF file watcher: ${pdfFileUri.toString(true)}`)
                 this.pdfWatcher.add(pdfFilePath)
                 this.watchedPdfLocalPaths.add(pdfFilePath)
             }
@@ -115,10 +115,10 @@ export class PdfWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.addLogMessage(`PdfWatcher.pdfWatcher.getWatched: ${JSON.stringify(this.pdfWatcher.getWatched())}`)
-        this.extension.logger.addLogMessage(`PdfWatcher.pdfsWatched: ${JSON.stringify(Array.from(this.watchedPdfLocalPaths))}`)
-        this.extension.logger.addLogMessage(`PdfWatcher.watchedPdfVirtualUris: ${JSON.stringify(Array.from(this.watchedPdfVirtualUris))}`)
-        this.extension.logger.addLogMessage(`PdfWatcher.ignoredPdfUris: ${JSON.stringify(Array.from(this.ignoredPdfUris))}`)
+        this.extension.logger.debug(`PdfWatcher.pdfWatcher.getWatched: ${JSON.stringify(this.pdfWatcher.getWatched())}`)
+        this.extension.logger.debug(`PdfWatcher.pdfsWatched: ${JSON.stringify(Array.from(this.watchedPdfLocalPaths))}`)
+        this.extension.logger.debug(`PdfWatcher.watchedPdfVirtualUris: ${JSON.stringify(Array.from(this.watchedPdfVirtualUris))}`)
+        this.extension.logger.debug(`PdfWatcher.ignoredPdfUris: ${JSON.stringify(Array.from(this.ignoredPdfUris))}`)
     }
 
 }

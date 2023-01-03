@@ -91,7 +91,7 @@ export class SyncTexJs {
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (await existsPath(synctexFile)) {
-                this.extension.logger.addLogMessage(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
+                this.extension.logger.info(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
@@ -105,7 +105,7 @@ export class SyncTexJs {
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (await existsPath(synctexFileGz)) {
-                this.extension.logger.addLogMessage(`[SyncTexJs] parseSyncTex failed with: ${synctexFileGz}`)
+                this.extension.logger.info(`[SyncTexJs] parseSyncTex failed with: ${synctexFileGz}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
@@ -113,7 +113,7 @@ export class SyncTexJs {
         }
 
         if (!await existsPath(synctexFile) && !await existsPath(synctexFileGz)) {
-            this.extension.logger.addLogMessage(`[SyncTexJs] .synctex and .synctex.gz file not found: ${JSON.stringify({synctexFile, synctexFileGz})}`)
+            this.extension.logger.info(`[SyncTexJs] .synctex and .synctex.gz file not found: ${JSON.stringify({synctexFile, synctexFileGz})}`)
         }
 
         throw new SyncTexJsError(`parseSyncTexForPdf failed with: ${pdfFile}`)
@@ -142,7 +142,7 @@ export class SyncTexJs {
     }
 
     async syncTexJsForward(line: number, filePath: string, pdfFile: string) {
-        this.extension.logger.addLogMessage(`[SyncTexJs] Execute syncTexJsForward: ${JSON.stringify({pdfFile, filePath, line})}`)
+        this.extension.logger.info(`[SyncTexJs] Execute syncTexJsForward: ${JSON.stringify({pdfFile, filePath, line})}`)
         const pdfSyncObject = await this.parseSyncTexForPdf(pdfFile)
         const inputFilePath = this.findInputFilePathForward(filePath, pdfSyncObject)
         if (inputFilePath === undefined) {
@@ -186,7 +186,7 @@ export class SyncTexJs {
     }
 
     async syncTexJsBackward(page: number, x: number, y: number, pdfPath: string) {
-        this.extension.logger.addLogMessage(`[SyncTexJs] Execute syncTexJsBackward: ${JSON.stringify({pdfPath, page, x, y})}`)
+        this.extension.logger.info(`[SyncTexJs] Execute syncTexJsBackward: ${JSON.stringify({pdfPath, page, x, y})}`)
         const pdfSyncObject = await this.parseSyncTexForPdf(pdfPath)
         const y0 = y - pdfSyncObject.offset.y
         const x0 = x - pdfSyncObject.offset.x

@@ -32,25 +32,25 @@ export class TeXDoc {
         })
 
         proc.on('error', err => {
-            this.extension.logger.addLogMessage(`Cannot run texdoc: ${err.message}, ${stderr}`)
+            this.extension.logger.info(`Cannot run texdoc: ${err.message}, ${stderr}`)
             void this.extension.logger.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
         })
 
         proc.on('exit', exitCode => {
             if (exitCode !== 0) {
-                this.extension.logger.addLogMessage(`Cannot find documentation for ${pkg}.`)
+                this.extension.logger.info(`Cannot find documentation for ${pkg}.`)
                 void this.extension.logger.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
             } else {
                 const regex = new RegExp(`(no documentation found)|(Documentation for ${pkg} could not be found)`)
                 if (stdout.match(regex) || stderr.match(regex)) {
-                    this.extension.logger.addLogMessage(`Cannot find documentation for ${pkg}.`)
+                    this.extension.logger.info(`Cannot find documentation for ${pkg}.`)
                     void this.extension.logger.showErrorMessage(`Cannot find documentation for ${pkg}.`)
                 } else {
-                    this.extension.logger.addLogMessage(`Opening documentation for ${pkg}.`)
+                    this.extension.logger.info(`Opening documentation for ${pkg}.`)
                 }
             }
-            this.extension.logger.addLogMessage(`texdoc stdout: ${stdout}`)
-            this.extension.logger.addLogMessage(`texdoc stderr: ${stderr}`)
+            this.extension.logger.info(`texdoc stdout: ${stdout}`)
+            this.extension.logger.info(`texdoc stderr: ${stderr}`)
         })
     }
 
