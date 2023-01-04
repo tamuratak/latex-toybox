@@ -1,9 +1,10 @@
 import * as vscode from 'vscode'
 import * as cs from 'cross-spawn'
-import type {LoggerLocator, ManagerLocator} from '../interfaces'
+import type {LoggerLocator, ManagerLocator, NotificationLocator} from '../interfaces'
 
 interface IExtension extends
     LoggerLocator,
+    NotificationLocator,
     ManagerLocator { }
 
 export class TeXDoc {
@@ -33,18 +34,18 @@ export class TeXDoc {
 
         proc.on('error', err => {
             this.extension.logger.info(`Cannot run texdoc: ${err.message}, ${stderr}`)
-            void this.extension.logger.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
+            void this.extension.notification.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
         })
 
         proc.on('exit', exitCode => {
             if (exitCode !== 0) {
                 this.extension.logger.info(`Cannot find documentation for ${pkg}.`)
-                void this.extension.logger.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
+                void this.extension.notification.showErrorMessage('Texdoc failed. Please refer to LaTeX Workshop Output for details.')
             } else {
                 const regex = new RegExp(`(no documentation found)|(Documentation for ${pkg} could not be found)`)
                 if (stdout.match(regex) || stderr.match(regex)) {
                     this.extension.logger.info(`Cannot find documentation for ${pkg}.`)
-                    void this.extension.logger.showErrorMessage(`Cannot find documentation for ${pkg}.`)
+                    void this.extension.notification.showErrorMessage(`Cannot find documentation for ${pkg}.`)
                 } else {
                     this.extension.logger.info(`Opening documentation for ${pkg}.`)
                 }

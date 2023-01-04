@@ -8,10 +8,6 @@ export class FakeLogger implements ILogger {
     logError() {}
     logOnRejected() {}
     clearCompilerMessage() {}
-    displayStatus() {}
-    showErrorMessage(): Thenable<string | undefined> | undefined { return }
-    showErrorMessageWithCompilerLogButton() {}
-    showErrorMessageWithExtensionLogButton() {}
     showLog() {}
     showCompilerLog() {}
 }
