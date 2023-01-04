@@ -1,111 +1,55 @@
 import * as vscode from 'vscode'
-import * as chokidar from 'chokidar'
 
 import type {Extension} from '../../main'
-import { isLocalUri, isVirtualUri } from '../../lib/lwfs/lwfs'
+import { LwFileWatcher } from './lwfilewatcher'
 
 export class PdfWatcher {
     private readonly extension: Extension
-    private readonly watchedPdfLocalPaths = new Set<string>()
-    private readonly pdfWatcher: chokidar.FSWatcher
-    private readonly watchedPdfVirtualUris = new Set<string>()
+    private readonly watchedPdfs = new Set<string>()
     private readonly ignoredPdfUris = new Set<string>()
+    private readonly lwFileWatcher: LwFileWatcher
 
-    constructor(extension: Extension) {
+    constructor(extension: Extension, watcher: LwFileWatcher) {
         this.extension = extension
-        this.pdfWatcher = this.initiatePdfWatcher()
-        this.initiateVirtualUriWatcher()
-    }
-
-    async dispose() {
-        await this.pdfWatcher.close()
+        this.lwFileWatcher = watcher
+        this.initiatePdfWatcher(watcher)
     }
 
     private toKey(pdfFileUri: vscode.Uri) {
         return pdfFileUri.toString(true)
     }
 
-    private initiatePdfWatcher() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const usePolling = configuration.get('latex.watch.usePolling') as boolean
-        const interval = configuration.get('latex.watch.interval') as number
-        const pdfDelay = configuration.get('latex.watch.pdfDelay') as number
-        const pdfWatcherOptions = {
-            useFsEvents: false,
-            usePolling,
-            interval,
-            binaryInterval: Math.max(interval, 1000),
-            awaitWriteFinish: {stabilityThreshold: pdfDelay}
-        }
-        this.extension.logger.info('Creating PDF file watcher.')
-        this.extension.logger.info(`watcherOptions: ${JSON.stringify(pdfWatcherOptions)}`)
-        const pdfWatcher = chokidar.watch([], pdfWatcherOptions)
-        pdfWatcher.on('change', (file: string) => this.onWatchedPdfChanged(file))
-        pdfWatcher.on('unlink', (file: string) => this.onWatchedPdfDeleted(file))
-        return pdfWatcher
+    private initiatePdfWatcher(pdfWatcher: LwFileWatcher) {
+        pdfWatcher.onDidChange((uri) => this.onPdfChanged(uri))
+        pdfWatcher.onDidDelete((uri) => this.onPdfDeleted(uri))
     }
 
-    private isWatchedVirtualUri(pdfFile: vscode.Uri): boolean {
-        if (isVirtualUri(pdfFile)) {
-            const key = this.toKey(pdfFile)
-            return this.watchedPdfVirtualUris.has(key)
-        } else {
-            return false
-        }
-    }
-
-    private initiateVirtualUriWatcher() {
-        const virtualUriWatcher = vscode.workspace.createFileSystemWatcher('**/*.{pdf,PDF}', false, false, true)
-        const cb = (fileUri: vscode.Uri) => {
-            if (this.isIgnored(fileUri)) {
-                return
-            }
-            if (this.isWatchedVirtualUri(fileUri)) {
-                this.extension.viewer.refreshExistingViewer()
-            }
-        }
-        // It is recommended to react to both change and create events.
-        // See https://github.com/microsoft/vscode/issues/136460#issuecomment-982605100
-        virtualUriWatcher.onDidChange(cb)
-        virtualUriWatcher.onDidCreate(cb)
-        return virtualUriWatcher
-    }
-
-    private onWatchedPdfChanged(file: string) {
-        if (this.isIgnored(file)) {
+    private onPdfChanged(fileUri: vscode.Uri) {
+        const pdfKey = this.toKey(fileUri)
+        if (!this.watchedPdfs.has(pdfKey)) {
             return
         }
-        this.extension.logger.info(`PDF file watcher - file changed: ${file}`)
+        if (this.isIgnored(fileUri)) {
+            return
+        }
+        this.extension.logger.info(`PDF file watcher - file changed: ${fileUri}`)
         this.extension.viewer.refreshExistingViewer()
     }
 
-    private onWatchedPdfDeleted(file: string) {
-        this.extension.logger.info(`PDF file watcher - file deleted: ${file}`)
-        this.pdfWatcher.unwatch(file)
-        this.watchedPdfLocalPaths.delete(file)
+    private onPdfDeleted(fileUri: vscode.Uri) {
+        const pdfKey = this.toKey(fileUri)
+        this.watchedPdfs.delete(pdfKey)
+        this.extension.logger.info(`PDF file watcher - file deleted: ${fileUri}`)
     }
 
     watchPdfFile(pdfFileUri: vscode.Uri) {
-        const isLocal = isLocalUri(pdfFileUri)
-        if (isLocal) {
-            const pdfFilePath = pdfFileUri.fsPath
-            if (!this.watchedPdfLocalPaths.has(pdfFilePath)) {
-                this.extension.logger.info(`Added to PDF file watcher: ${pdfFileUri.toString(true)}`)
-                this.pdfWatcher.add(pdfFilePath)
-                this.watchedPdfLocalPaths.add(pdfFilePath)
-            }
-        } else {
-            this.watchedPdfVirtualUris.add(this.toKey(pdfFileUri))
-        }
+        this.extension.logger.info(`Added to PDF file watcher: ${pdfFileUri}`)
+        const pdfKey = this.toKey(pdfFileUri)
+        this.lwFileWatcher.add(pdfFileUri)
+        this.watchedPdfs.add(pdfKey)
     }
 
-    private isIgnored(pdfFile: vscode.Uri | string): boolean {
-        let pdfFileUri: vscode.Uri
-        if (typeof pdfFile === 'string') {
-            pdfFileUri = vscode.Uri.file(pdfFile)
-        } else {
-            pdfFileUri = pdfFile
-        }
+    private isIgnored(pdfFileUri: vscode.Uri): boolean {
         const key = this.toKey(pdfFileUri)
         return this.ignoredPdfUris.has(key)
     }
@@ -115,9 +59,7 @@ export class PdfWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.debug(`PdfWatcher.pdfWatcher.getWatched: ${JSON.stringify(this.pdfWatcher.getWatched())}`)
-        this.extension.logger.debug(`PdfWatcher.pdfsWatched: ${JSON.stringify(Array.from(this.watchedPdfLocalPaths))}`)
-        this.extension.logger.debug(`PdfWatcher.watchedPdfVirtualUris: ${JSON.stringify(Array.from(this.watchedPdfVirtualUris))}`)
+        this.extension.logger.debug(`PdfWatcher.pdfsWatched: ${JSON.stringify(Array.from(this.watchedPdfs))}`)
         this.extension.logger.debug(`PdfWatcher.ignoredPdfUris: ${JSON.stringify(Array.from(this.ignoredPdfUris))}`)
     }
 

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import * as os from 'os'
 import * as path from 'path'
-import * as chokidar from 'chokidar'
 import * as micromatch from 'micromatch'
 import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
@@ -18,11 +17,11 @@ import {BibWatcher} from './managerlib/bibwatcher'
 import {FinderUtils} from './managerlib/finderutils'
 import {PathUtils} from './managerlib/pathutils'
 
-import {Mutex} from '../lib/await-semaphore'
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
 import { existsPath, isLocalUri, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
+import { LwFileWatcher } from './managerlib/lwfilewatcher'
 
 
 export interface CachedContentEntry {
@@ -77,14 +76,13 @@ export class Manager implements IManager {
     private _rootFile: RootFileType | undefined
 
     private readonly extension: Extension
-    private readonly fileWatcher: chokidar.FSWatcher
+    private readonly lwFileWatcher: LwFileWatcher
+    // key is fsPath
+    private readonly watchedFiles = new Set<string>()
     private readonly pdfWatcher: PdfWatcher
     private readonly bibWatcher: BibWatcher
     private readonly finderUtils: FinderUtils
     private readonly pathUtils: PathUtils
-    private readonly filesWatched = new Set<string>()
-    private readonly fileWatcherMutex = new Mutex()
-    private readonly watcherOptions: chokidar.WatchOptions
     private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw']
     private readonly jlweaveExt: string[] = ['.jnw', '.jtexw']
     private readonly weaveExt: string[] = []
@@ -92,24 +90,19 @@ export class Manager implements IManager {
     private readonly findRootMutex = new MutexWithSizedQueue(1)
     private readonly parseFlsMutex = new MutexWithSizedQueue(1)
     private readonly updateCompleterMutex = new MutexWithSizedQueue(1)
+    private readonly updateContentEntryMutex = new MutexWithSizedQueue(1)
 
     constructor(extension: Extension) {
         this.extension = extension
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const usePolling = configuration.get('latex.watch.usePolling') as boolean
-        const interval = configuration.get('latex.watch.interval') as number
-        const delay = configuration.get('latex.watch.delay') as number
         this.weaveExt = this.jlweaveExt.concat(this.rsweaveExt)
-        this.watcherOptions = {
-            useFsEvents: false,
-            usePolling,
-            interval,
-            binaryInterval: Math.max(interval, 1000),
-            awaitWriteFinish: {stabilityThreshold: delay}
-        }
-        this.fileWatcher = this.createFileWatcher()
-        this.pdfWatcher = new PdfWatcher(extension)
-        this.bibWatcher = new BibWatcher(extension)
+
+        const lwFileWatcher = new LwFileWatcher()
+        this.lwFileWatcher = lwFileWatcher
+        this.registerListeners(lwFileWatcher)
+        this.pdfWatcher = new PdfWatcher(extension, lwFileWatcher)
+        this.bibWatcher = new BibWatcher(extension, lwFileWatcher)
+
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
         this.extension.eventBus.onDidChangeRootFile(() => this.logWatchedFiles())
@@ -117,20 +110,20 @@ export class Manager implements IManager {
         let prevTime = 0
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidSaveTextDocument((e) => {
-                if (!this.isLocalTexFile(e)){
+                if (!this.isLocalLatexDocument(e)){
                     return
                 }
                 void this.buildOnSave(e.fileName)
             }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
                 this.extension.logger.debug(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
-                if (!e || !this.isLocalTexFile(e.document)) {
+                if (!e || !this.isLocalLatexDocument(e.document)) {
                     return
                 }
                 await this.findRoot()
             }),
             vscode.workspace.onDidChangeTextDocument(async (e) => {
-                if (!this.isLocalTexFile(e.document)) {
+                if (!this.isLocalLatexDocument(e.document)) {
                     return
                 }
                 const cache = this.getCachedContent(e.document.fileName)
@@ -144,15 +137,14 @@ export class Manager implements IManager {
                         return
                     }
                     prevTime = currentTime
-                    const content = e.document.getText()
-                    const file = e.document.uri.fsPath
-                    await this.updateCompleterOnChange(file, content)
+                    const fileUri = e.document.uri
+                    await this.updateContentEntry(fileUri)
                 }
             })
         )
 
         setTimeout(async () => {
-            const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalTexFile(edt.document))
+            const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalLatexDocument(edt.document))
             if (editor && !process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
                 await vscode.window.showTextDocument(editor.document, editor.viewColumn)
                 return this.findRoot()
@@ -166,10 +158,8 @@ export class Manager implements IManager {
 
     }
 
-    async dispose() {
-        await this.fileWatcher.close()
-        await this.pdfWatcher.dispose()
-        await this.bibWatcher.dispose()
+    dispose() {
+        this.lwFileWatcher.dispose()
     }
 
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined {
@@ -195,7 +185,7 @@ export class Manager implements IManager {
     }
 
     getFilesWatched() {
-        return Array.from(this.filesWatched)
+        return Array.from(this.watchedFiles)
     }
 
     /**
@@ -350,7 +340,7 @@ export class Manager implements IManager {
         this.pdfWatcher.ignorePdfFile(pdfFileUri)
     }
 
-    isLocalTexFile(document: vscode.TextDocument) {
+    isLocalLatexDocument(document: vscode.TextDocument) {
         return isLocalUri(document.uri) && this.hasTexId(document.languageId)
     }
 
@@ -361,6 +351,10 @@ export class Manager implements IManager {
      */
     hasTexId(id: string) {
         return ['tex', 'latex', 'latex-expl3', 'doctex', 'jlweave', 'rsweave'].includes(id)
+    }
+
+    private isTexOrWeaveFile(fileUri: vscode.Uri) {
+        return ['.tex', ...this.weaveExt].find(suffix => fileUri.path.toLocaleLowerCase().endsWith(suffix))
     }
 
     /**
@@ -423,7 +417,7 @@ export class Manager implements IManager {
                         this.rootFile = rootFile
                         this.rootFileLanguageId = this.inferLanguageId(rootFile)
                         this.extension.logger.info(`Root file languageId: ${this.rootFileLanguageId}`)
-                        await this.initiateFileWatcher()
+                        await this.resetFileWatcherAndComponents()
                         await this.parseFileAndSubs(this.rootFile, this.rootFile) // Finishing the parsing is required for subsequent refreshes.
                         // We need to parse the fls to discover file dependencies when defined by TeX macro
                         // It happens a lot with subfiles, https://tex.stackexchange.com/questions/289450/path-of-figures-in-different-directories-with-subfile-latex
@@ -447,8 +441,7 @@ export class Manager implements IManager {
     private logWatchedFiles(delay = 2000) {
         return setTimeout(
             () => {
-                this.extension.logger.debug(`Manager.fileWatcher.getWatched: ${JSON.stringify(this.fileWatcher.getWatched())}`)
-                this.extension.logger.debug(`Manager.filesWatched: ${JSON.stringify(Array.from(this.filesWatched))}`)
+                this.extension.logger.debug(`Manager.filesWatched: ${JSON.stringify(Array.from(this.watchedFiles))}`)
                 this.bibWatcher.logWatchedFiles()
                 this.pdfWatcher.logWatchedFiles()
             },
@@ -647,11 +640,14 @@ export class Manager implements IManager {
             maybeRootFile = file
         }
         this.extension.logger.info(`Parsing a file and its subfiles: ${file}`)
-        if (!this.filesWatched.has(file)) {
+        // Initialize the cache for the file
+        this.gracefulCachedContent(file)
+        if (!this.isWatched(file)) {
             // The file is considered for the first time.
             // We must add the file to watcher to make sure we avoid infinite loops
             // in case of circular inclusion
-            await this.addToFileWatcher(file)
+            this.addToFileWatcher(file)
+            await this.updateCompleterElement(vscode.Uri.file(file))
         }
         let content = await this.getDirtyContent(file)
         if (!content) {
@@ -659,7 +655,7 @@ export class Manager implements IManager {
         }
         content = utils.stripCommentsAndVerbatim(content)
         await this.parseInputFiles(content, file, maybeRootFile)
-        await this.parseBibFiles(content, file)
+        await this.findAndParseBibFilesInContent(content, file)
     }
 
     /**
@@ -734,7 +730,7 @@ export class Manager implements IManager {
                 file: result.path
             })
 
-            if (this.filesWatched.has(result.path)) {
+            if (this.isWatched(result.path)) {
                 // This file is already watched. Ignore it to avoid infinite loops
                 // in case of circular inclusion.
                 // Note that parseFileAndSubs calls parseInputFiles in return
@@ -744,7 +740,7 @@ export class Manager implements IManager {
         }
     }
 
-    private async parseBibFiles(content: string, currentFile: string) {
+    private async findAndParseBibFilesInContent(content: string, currentFile: string) {
         this.gracefulCachedContent(currentFile).bibs = []
         const bibReg = /(?:\\(?:bibliography|addbibresource)(?:\[[^[\]{}]*\])?){(.+?)}|(?:\\putbib)\[(.+?)\]/g
         while (true) {
@@ -761,7 +757,7 @@ export class Manager implements IManager {
                     continue
                 }
                 this.gracefulCachedContent(currentFile).bibs.push(bibPath)
-                await this.bibWatcher.watchBibFile(bibPath)
+                await this.bibWatcher.watchAndParseBibFile(bibPath)
             }
         }
     }
@@ -794,21 +790,21 @@ export class Manager implements IManager {
                 if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
                     continue
                 }
-                if (inputFile === texFile || this.filesWatched.has(inputFile)) {
+                if (inputFile === texFile || this.isWatched(inputFile)) {
                     // Drop the current rootFile often listed as INPUT
                     // Drop any file that is already watched as it is handled by
                     // onWatchedFileChange.
                     continue
                 }
-                if (path.extname(inputFile) === '.tex') {
+                if (this.isTexOrWeaveFile(vscode.Uri.file(inputFile))) {
                     // Parse tex files as imported subfiles.
                     this.gracefulCachedContent(texFile).children.push({
                         file: inputFile
                     })
                     await this.parseFileAndSubs(inputFile, texFile)
-                } else if (!this.filesWatched.has(inputFile)) {
+                } else if (!this.isWatched(inputFile)) {
                     // Watch non-tex files.
-                    await this.addToFileWatcher(inputFile)
+                    this.addToFileWatcher(inputFile)
                 }
             }
 
@@ -843,90 +839,72 @@ export class Manager implements IManager {
                 if (this.rootFile && !this.gracefulCachedContent(this.rootFile).bibs.includes(bibPath)) {
                     this.gracefulCachedContent(this.rootFile).bibs.push(bibPath)
                 }
-                await this.bibWatcher.watchBibFile(bibPath)
+                await this.bibWatcher.watchAndParseBibFile(bibPath)
             }
         }
     }
 
-    private async initiateFileWatcher() {
-        await this.resetFileWatcher()
-        if (this.rootFile !== undefined) {
-            await this.addToFileWatcher(this.rootFile)
-        }
+    private isWatched(file: string | vscode.Uri) {
+        const uri = file instanceof vscode.Uri ? file : vscode.Uri.file(file)
+        const key = this.toKey(uri)
+        return this.watchedFiles.has(key)
     }
 
-    private async addToFileWatcher(file: string) {
-        const release = await this.fileWatcherMutex.acquire()
-        try {
-            this.fileWatcher.add(file)
-            this.filesWatched.add(file)
-        } finally {
-            release()
-        }
+    private addToFileWatcher(file: string) {
+        const uri = vscode.Uri.file(file)
+        const key = this.toKey(uri)
+        this.lwFileWatcher.add(uri)
+        this.watchedFiles.add(key)
     }
 
-    private async deleteFromFileWatcher(file: string) {
-        const release = await this.fileWatcherMutex.acquire()
-        try {
-            this.fileWatcher.unwatch(file)
-            this.filesWatched.delete(file)
-        } finally {
-            release()
-        }
+    private registerListeners(fileWatcher: LwFileWatcher) {
+        fileWatcher.onDidCreate((uri) => this.onWatchingNewFile(uri))
+        fileWatcher.onDidChange((uri) => this.onWatchedFileChanged(uri))
+        fileWatcher.onDidDelete((uri) => this.onWatchedFileDeleted(uri))
     }
 
-    private createFileWatcher() {
-        this.extension.logger.info('Creating a new file watcher.')
-        this.extension.logger.info(`watcherOptions: ${JSON.stringify(this.watcherOptions)}`)
-        const fileWatcher = chokidar.watch([], this.watcherOptions)
-        this.registerListeners(fileWatcher)
-        return fileWatcher
-    }
-
-    private registerListeners(fileWatcher: chokidar.FSWatcher) {
-        fileWatcher.on('add', (file: string) => this.onWatchingNewFile(file))
-        fileWatcher.on('change', (file: string) => this.onWatchedFileChanged(file))
-        fileWatcher.on('unlink', (file: string) => this.onWatchedFileDeleted(file))
-    }
-
-    private async resetFileWatcher() {
-        const release = await this.fileWatcherMutex.acquire()
-        try {
-            this.extension.logger.info('Reset file watcher.')
-            await this.fileWatcher.close()
-            this.registerListeners(this.fileWatcher)
-            this.filesWatched.clear()
-        } finally {
-            release()
-        }
+    private resetFileWatcherAndComponents() {
+        this.extension.logger.info('Clear watched files.')
+        this.watchedFiles.clear()
         // We also clean the completions from the old project
         this.extension.completer.input.reset()
         this.extension.duplicateLabels.reset()
     }
 
-    private onWatchingNewFile(file: string) {
-        this.extension.logger.info(`Added to file watcher: ${file}`)
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
-            return this.updateCompleterOnChange(file)
+    private toKey(fileUri: vscode.Uri) {
+        return fileUri.fsPath
+    }
+
+    private onWatchingNewFile(fileUri: vscode.Uri) {
+        this.extension.logger.info(`Added to file watcher: ${fileUri}`)
+        if (this.isTexOrWeaveFile(fileUri)) {
+            return this.updateContentEntry(fileUri)
         }
         return
     }
 
-    private async onWatchedFileChanged(file: string) {
-        this.extension.logger.info(`File watcher - file changed: ${file}`)
-        // It is possible for either tex or non-tex files in the watcher.
-        if (['.tex', '.bib'].concat(this.weaveExt).includes(path.extname(file))) {
-            await this.updateCompleterOnChange(file)
+    private async onWatchedFileChanged(fileUri: vscode.Uri) {
+        if (!this.isWatched(fileUri)) {
+            return
         }
-        await this.buildOnFileChanged(file)
+        this.extension.logger.info(`File watcher - file changed: ${fileUri}`)
+        // It is possible for either tex or non-tex files in the watcher.
+        if (this.isTexOrWeaveFile(fileUri)) {
+            await this.updateContentEntry(fileUri)
+        }
+        await this.buildOnFileChanged(fileUri.fsPath)
     }
 
-    private async onWatchedFileDeleted(file: string) {
-        this.extension.logger.info(`File watcher - file deleted: ${file}`)
-        await this.deleteFromFileWatcher(file)
-        this.cachedContent.delete(file)
-        if (file === this.rootFile) {
-            this.extension.logger.info(`Root file deleted: ${file}`)
+    private onWatchedFileDeleted(fileUri: vscode.Uri) {
+        const key = this.toKey(fileUri)
+        if (!this.isWatched(fileUri)) {
+            return
+        }
+        this.extension.logger.info(`File watcher - file deleted: ${fileUri}`)
+        this.watchedFiles.delete(key)
+        this.cachedContent.delete(fileUri.fsPath)
+        if (fileUri.fsPath === this.rootFile) {
+            this.extension.logger.info(`Root file deleted: ${fileUri}`)
             this.extension.logger.info('Start searching a new root file.')
             void this.findRoot()
         }
@@ -963,15 +941,23 @@ export class Manager implements IManager {
         return this.autoBuild(file, false)
     }
 
+    private async updateContentEntry(fileUri: vscode.Uri) {
+        return this.updateContentEntryMutex.noopIfOccupied(async () => {
+            const filePath = fileUri.fsPath
+            await this.parseFileAndSubs(filePath, this.rootFile)
+            await this.updateCompleterElement(fileUri)
+        })
+    }
+
     // This function updates all completers upon tex-file changes.
-    private async updateCompleterOnChange(file: string, content?: string) {
+    private async updateCompleterElement(texFileUri: vscode.Uri) {
+        const filePath = texFileUri.fsPath
         return this.updateCompleterMutex.noopIfOccupied(async () => {
-            content ||= await this.getDirtyContent(file)
+            const content = await this.getDirtyContent(filePath)
             if (!content) {
                 return
             }
-            await this.parseFileAndSubs(file, this.rootFile)
-            await this.extension.completionUpdater.updateCompleter(file, content)
+            await this.extension.completionUpdater.updateCompleter(filePath, content)
             this.extension.completer.input.setGraphicsPath(content)
         })
     }

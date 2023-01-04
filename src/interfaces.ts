@@ -111,7 +111,7 @@ export interface IManager {
     readonly cachedFilePaths: IterableIterator<string>,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined,
-    isLocalTexFile(document: vscode.TextDocument): boolean,
+    isLocalLatexDocument(document: vscode.TextDocument): boolean,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
     getIncludedBib(file?: string): string[],
