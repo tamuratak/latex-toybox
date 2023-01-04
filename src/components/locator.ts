@@ -298,7 +298,7 @@ export class Locator {
                     break
                 }
             } catch(e) {
-                this.extension.logger.info(`[SyncTexJs] isSameRealPath throws error: ${record.input} and ${ed}`)
+                this.extension.logger.error(`[SyncTexJs] isSameRealPath throws error: ${record.input} and ${ed}`)
             }
         }
 
@@ -464,7 +464,7 @@ export class Locator {
         const command = configuration.get('view.pdf.external.synctex.command') as string
         let args = configuration.get('view.pdf.external.synctex.args') as string[]
         if (command === '') {
-            this.extension.logger.info('Error: the external SyncTeX command is an empty string. Set view.pdf.external.synctex.command')
+            this.extension.logger.error('Error: the external SyncTeX command is an empty string. Set view.pdf.external.synctex.command')
             return
         }
         if (args) {

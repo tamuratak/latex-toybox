@@ -48,7 +48,7 @@ export class HoverPreviewOnRefProvider {
             return svg
         } catch(e) {
             this.extension.logger.logOnRejected(e)
-            this.extension.logger.info(`Error when MathJax is rendering ${typesetArg}`)
+            this.extension.logger.error(`Error when MathJax is rendering ${typesetArg}`)
             throw e
         }
     }

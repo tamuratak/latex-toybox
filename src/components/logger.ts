@@ -9,7 +9,6 @@ export class Logger implements ILogger {
         this.logPanel = vscode.window.createOutputChannel('LaTeX Workshop', { log: true })
         this.compilerLogPanel = vscode.window.createOutputChannel('LaTeX Compiler')
         this.compilerLogPanel.append('Ready')
-
     }
 
     info(message: string) {
@@ -28,14 +27,18 @@ export class Logger implements ILogger {
         this.logPanel.debug(message)
     }
 
+    error(message: string) {
+        this.logPanel.error(message)
+    }
+
     addCompilerMessage(message: string) {
         this.compilerLogPanel.append(message)
     }
 
     logError(e: Error) {
-        this.info(e.message)
+        this.error(e.message)
         if (e.stack) {
-            this.info(e.stack)
+            this.error(e.stack)
         }
     }
 
@@ -43,7 +46,7 @@ export class Logger implements ILogger {
         if (e instanceof Error) {
             this.logError(e)
         } else {
-            this.info(String(e))
+            this.error(String(e))
         }
     }
 

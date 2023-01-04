@@ -82,7 +82,7 @@ export class Builder implements IBuilder {
                 }
             } catch (e) {
                 if (e instanceof Error) {
-                    this.extension.logger.info(`Error when killing child processes of the current process. ${e.message}`)
+                    this.extension.logger.error(`Error when killing child processes of the current process. ${e.message}`)
                 }
             } finally {
                 proc.kill()
@@ -151,7 +151,7 @@ export class Builder implements IBuilder {
         })
 
         this.currentProcess.on('error', err => {
-            this.extension.logger.info(`Build fatal error: ${err.message}, ${stderr}. PID: ${pid}. Does the executable exist?`)
+            this.extension.logger.error(`Build fatal error: ${err.message}, ${stderr}. PID: ${pid}. Does the executable exist?`)
             this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'error')
             void this.extension.notification.showErrorMessageWithExtensionLogButton(`Build terminated with fatal error: ${err.message}.`)
             this.currentProcess = undefined
@@ -161,7 +161,7 @@ export class Builder implements IBuilder {
         this.currentProcess.on('exit', async (exitCode, signal) => {
             void this.extension.compilerLogParser.parse(stdout)
             if (exitCode !== 0) {
-                this.extension.logger.info(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
+                this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
                 this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'warning')
                 void this.extension.notification.showErrorMessageWithCompilerLogButton('Build terminated with error.')
             } else {
@@ -232,7 +232,7 @@ export class Builder implements IBuilder {
             })
             this.buildInitiator(rootFile, languageId, recipeName, releaseBuildMutex)
         } catch (e) {
-            this.extension.logger.info('Unexpected Error: please see the console log of the Developer Tools of VS Code.')
+            this.extension.logger.error('Unexpected Error: please see the console log of the Developer Tools of VS Code.')
             this.extension.notification.displayStatus('x', 'errorForeground')
             releaseBuildMutex()
             throw(e)
@@ -305,10 +305,10 @@ export class Builder implements IBuilder {
         })
 
         this.currentProcess.on('error', err => {
-            this.extension.logger.info(`LaTeX fatal error: ${err.message}, ${stderr}. PID: ${pid}.`)
-            this.extension.logger.info(`Does the executable exist? $PATH: ${envVarsPATH}`)
-            this.extension.logger.info(`Does the executable exist? $Path: ${envVarsPath}`)
-            this.extension.logger.info(`The environment variable $SHELL: ${process.env.SHELL}`)
+            this.extension.logger.error(`LaTeX fatal error: ${err.message}, ${stderr}. PID: ${pid}.`)
+            this.extension.logger.error(`Does the executable exist? $PATH: ${envVarsPATH}`)
+            this.extension.logger.error(`Does the executable exist? $Path: ${envVarsPath}`)
+            this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
             this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'error')
             void this.extension.notification.showErrorMessageWithExtensionLogButton(`Recipe terminated with fatal error: ${err.message}.`)
             this.currentProcess = undefined

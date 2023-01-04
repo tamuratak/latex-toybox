@@ -35,7 +35,7 @@ export class LinterUtil {
             })
 
             proc.on('error', err => {
-                this.extension.logger.info(`Linter for ${linterId} failed to spawn command, encountering error: ${err.message}`)
+                this.extension.logger.error(`Linter for ${linterId} failed to spawn command, encountering error: ${err.message}`)
                 return reject(err)
             })
 
@@ -47,7 +47,7 @@ export class LinterUtil {
                     } else {
                         msg = '\n' + stderr
                     }
-                    this.extension.logger.info(`Linter for ${linterId} failed with exit code ${exitCode} and error:${msg}`)
+                    this.extension.logger.error(`Linter for ${linterId} failed with exit code ${exitCode} and error:${msg}`)
                     return reject({ exitCode, stdout, stderr})
                 } else {
                     const [s, ms] = process.hrtime(startTime)

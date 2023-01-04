@@ -253,7 +253,7 @@ export class Citation implements IProvider {
         const ast = await this.extension.pegParser.parseBibtex(bibtex).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
-                this.extension.logger.info(`Error parsing BibTeX: line ${line} in ${file}.`)
+                this.extension.logger.error(`Error parsing BibTeX: line ${line} in ${file}.`)
             }
             throw e
         })

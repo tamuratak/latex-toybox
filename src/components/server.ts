@@ -98,7 +98,7 @@ export class Server {
             }
         })
         this.httpServer.on('error', (err) => {
-            this.extension.logger.info(`[Server] Error creating LaTeX Workshop http server: ${JSON.stringify(err)}.`)
+            this.extension.logger.error(`[Server] Error creating LaTeX Workshop http server: ${JSON.stringify(err)}.`)
         })
     }
 
@@ -112,7 +112,7 @@ export class Server {
         const wsServer = new WsServer(this.httpServer, this.extension, this.validOrigin)
         wsServer.on('connection', (websocket) => {
             websocket.on('message', (msg: string) => this.extension.viewer.handler(websocket, msg))
-            websocket.on('error', (err) => this.extension.logger.info(`[Server] Error on WebSocket connection. ${JSON.stringify(err)}`))
+            websocket.on('error', (err) => this.extension.logger.error(`[Server] Error on WebSocket connection. ${JSON.stringify(err)}`))
         })
     }
 
@@ -180,7 +180,7 @@ export class Server {
                 this.sendOkResponse(response, buf, 'application/pdf')
                 this.extension.logger.info(`Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
-                this.extension.logger.info(`Error reading PDF file: ${fileUri.toString(true)}`)
+                this.extension.logger.error(`Error reading PDF file: ${fileUri.toString(true)}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
