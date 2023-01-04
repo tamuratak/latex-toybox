@@ -84,9 +84,10 @@ export class Viewer implements IViewer {
      * @param sourceFile The path of a LaTeX file. If `sourceFile` is `undefined`,
      * refreshes all the PDF viewers.
      */
-    refreshExistingViewer(sourceFile?: string): void {
+    refreshExistingViewer(sourceFile?: string, pdfFileUri?: vscode.Uri): void {
         this.extension.logger.info(`Call refreshExistingViewer: ${JSON.stringify({sourceFile})}`)
-        if (sourceFile === undefined) {
+        const pdfFile = pdfFileUri || (sourceFile ? this.tex2pdf(sourceFile, true) : undefined)
+        if (pdfFile === undefined) {
             this.clientMap.forEach(clientSet => {
                 clientSet.forEach(client => {
                     client.send({type: 'refresh'})
@@ -94,7 +95,6 @@ export class Viewer implements IViewer {
             })
             return
         }
-        const pdfFile = this.tex2pdf(sourceFile, true)
         const clientSet = this.getClientSet(pdfFile)
         if (!clientSet) {
             this.extension.logger.info(`Not found PDF viewers to refresh: ${pdfFile}`)

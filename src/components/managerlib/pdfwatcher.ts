@@ -33,7 +33,7 @@ export class PdfWatcher {
             return
         }
         this.extension.logger.info(`PDF file watcher - file changed: ${fileUri}`)
-        this.extension.viewer.refreshExistingViewer()
+        this.extension.viewer.refreshExistingViewer(undefined, fileUri)
     }
 
     private onPdfDeleted(fileUri: vscode.Uri) {
