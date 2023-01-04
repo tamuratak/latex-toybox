@@ -191,9 +191,8 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
             forcePageColors: true,
             ...color
         }
+        document.addEventListener('webviewerloaded', () => PDFViewerApplicationOptions.setAll(options))
         this.setupAppOptionsPromise.resolve()
-        await this.webViewerLoaded
-        PDFViewerApplicationOptions.setAll(options)
     }
 
     private async applyParamsOnStart() {
