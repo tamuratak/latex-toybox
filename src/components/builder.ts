@@ -125,7 +125,7 @@ export class Builder implements IBuilder {
             this.extension.manager.ignorePdfFile(rootFile)
         }
         const releaseBuildMutex = await this.preprocess()
-        this.extension.logger.displayStatus('sync~spin', 'statusBar.foreground')
+        this.extension.notification.displayStatus('sync~spin', 'statusBar.foreground')
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
         const wd = workspaceFolder?.uri.fsPath || pwd
 
@@ -152,8 +152,8 @@ export class Builder implements IBuilder {
 
         this.currentProcess.on('error', err => {
             this.extension.logger.info(`Build fatal error: ${err.message}, ${stderr}. PID: ${pid}. Does the executable exist?`)
-            this.extension.logger.displayStatus('x', 'errorForeground', undefined, 'error')
-            void this.extension.logger.showErrorMessageWithExtensionLogButton(`Build terminated with fatal error: ${err.message}.`)
+            this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'error')
+            void this.extension.notification.showErrorMessageWithExtensionLogButton(`Build terminated with fatal error: ${err.message}.`)
             this.currentProcess = undefined
             releaseBuildMutex()
         })
@@ -162,11 +162,11 @@ export class Builder implements IBuilder {
             void this.extension.compilerLogParser.parse(stdout)
             if (exitCode !== 0) {
                 this.extension.logger.info(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
-                this.extension.logger.displayStatus('x', 'errorForeground', undefined, 'warning')
-                void this.extension.logger.showErrorMessageWithCompilerLogButton('Build terminated with error.')
+                this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'warning')
+                void this.extension.notification.showErrorMessageWithCompilerLogButton('Build terminated with error.')
             } else {
                 this.extension.logger.info(`Successfully built. PID: ${pid}`)
-                this.extension.logger.displayStatus('check', 'statusBar.foreground', 'Build succeeded.')
+                this.extension.notification.displayStatus('check', 'statusBar.foreground', 'Build succeeded.')
                 try {
                     if (rootFile === undefined) {
                         this.extension.viewer.refreshExistingViewer()
@@ -208,7 +208,7 @@ export class Builder implements IBuilder {
             return
         }
         const releaseBuildMutex = await this.preprocess()
-        this.extension.logger.displayStatus('sync~spin', 'statusBar.foreground')
+        this.extension.notification.displayStatus('sync~spin', 'statusBar.foreground')
         this.extension.logger.info(`Build root file ${rootFile}`)
         try {
             // Create sub directories of output directory
@@ -233,7 +233,7 @@ export class Builder implements IBuilder {
             this.buildInitiator(rootFile, languageId, recipeName, releaseBuildMutex)
         } catch (e) {
             this.extension.logger.info('Unexpected Error: please see the console log of the Developer Tools of VS Code.')
-            this.extension.logger.displayStatus('x', 'errorForeground')
+            this.extension.notification.displayStatus('x', 'errorForeground')
             releaseBuildMutex()
             throw(e)
         }
@@ -257,7 +257,7 @@ export class Builder implements IBuilder {
                 this.extension.logger.clearCompilerMessage()
             }
         }
-        this.extension.logger.displayStatus('sync~spin', 'statusBar.foreground', undefined, undefined, ` ${this.progressString(recipeName, steps, index)}`)
+        this.extension.notification.displayStatus('sync~spin', 'statusBar.foreground', undefined, undefined, ` ${this.progressString(recipeName, steps, index)}`)
         this.extension.logger.logCommand(`Recipe step ${index + 1}`, steps[index].command, steps[index].args)
         this.extension.logger.info(`Recipe step env: ${JSON.stringify(steps[index].env)}`)
         const envVars = Object.create(null) as ProcessEnv
@@ -309,8 +309,8 @@ export class Builder implements IBuilder {
             this.extension.logger.info(`Does the executable exist? $PATH: ${envVarsPATH}`)
             this.extension.logger.info(`Does the executable exist? $Path: ${envVarsPath}`)
             this.extension.logger.info(`The environment variable $SHELL: ${process.env.SHELL}`)
-            this.extension.logger.displayStatus('x', 'errorForeground', undefined, 'error')
-            void this.extension.logger.showErrorMessageWithExtensionLogButton(`Recipe terminated with fatal error: ${err.message}.`)
+            this.extension.notification.displayStatus('x', 'errorForeground', undefined, 'error')
+            void this.extension.notification.showErrorMessageWithExtensionLogButton(`Recipe terminated with fatal error: ${err.message}.`)
             this.currentProcess = undefined
             releaseBuildMutex()
         })
@@ -323,8 +323,8 @@ export class Builder implements IBuilder {
                 this.extension.logger.info(`The environment variable $Path: ${envVarsPath}`)
                 this.extension.logger.info(`The environment variable $SHELL: ${process.env.SHELL}`)
 
-                this.extension.logger.displayStatus('x', 'errorForeground')
-                void this.extension.logger.showErrorMessageWithCompilerLogButton('Recipe terminated with error.')
+                this.extension.notification.displayStatus('x', 'errorForeground')
+                void this.extension.notification.showErrorMessageWithCompilerLogButton('Recipe terminated with error.')
                 this.currentProcess = undefined
                 releaseBuildMutex()
             } else {
@@ -346,7 +346,7 @@ export class Builder implements IBuilder {
 
     private async buildFinished(rootFile: string) {
         this.extension.logger.info(`Successfully built ${rootFile}.`)
-        this.extension.logger.displayStatus('check', 'statusBar.foreground', 'Recipe succeeded.')
+        this.extension.notification.displayStatus('check', 'statusBar.foreground', 'Recipe succeeded.')
         if (this.extension.compilerLogParser.isLaTeXmkSkipped) {
             return
         }
@@ -379,7 +379,7 @@ export class Builder implements IBuilder {
             const tools = configuration.get('latex.tools') as StepCommand[]
             if (recipes.length < 1) {
                 this.extension.logger.info('No recipes defined.')
-                void this.extension.logger.showErrorMessage('No recipes defined.')
+                void this.extension.notification.showErrorMessage('No recipes defined.')
                 return undefined
             }
             let recipe: Recipe | undefined = undefined
@@ -393,7 +393,7 @@ export class Builder implements IBuilder {
                 const candidates = recipes.filter(candidate => candidate.name === recipeName)
                 if (candidates.length < 1) {
                     this.extension.logger.info(`Failed to resolve build recipe: ${recipeName}`)
-                    void this.extension.logger.showErrorMessage(`Failed to resolve build recipe: ${recipeName}`)
+                    void this.extension.notification.showErrorMessage(`Failed to resolve build recipe: ${recipeName}`)
                 }
                 recipe = candidates[0]
             }
@@ -410,7 +410,7 @@ export class Builder implements IBuilder {
                    }
                     if (candidates.length < 1) {
                         this.extension.logger.info(`Failed to resolve build recipe: ${recipeName}`)
-                        void this.extension.logger.showErrorMessage(`Failed to resolve build recipe: ${recipeName}`)
+                        void this.extension.notification.showErrorMessage(`Failed to resolve build recipe: ${recipeName}`)
                     }
                     recipe = candidates[0]
                 }
@@ -426,7 +426,7 @@ export class Builder implements IBuilder {
                     const candidates = tools.filter(candidate => candidate.name === tool)
                     if (candidates.length < 1) {
                         this.extension.logger.info(`Skipping undefined tool: ${tool} in ${recipe?.name}`)
-                        void this.extension.logger.showErrorMessage(`Skipping undefined tool "${tool}" in recipe "${recipe?.name}."`)
+                        void this.extension.notification.showErrorMessage(`Skipping undefined tool "${tool}" in recipe "${recipe?.name}."`)
                     } else {
                         steps.push(candidates[0])
                     }

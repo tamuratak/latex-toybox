@@ -32,12 +32,13 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, NotificationLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
 import { CompletionStore } from './components/completionstore'
+import { Notification } from './components/notification'
 
 
 function conflictExtensionCheck() {
@@ -232,6 +233,7 @@ interface IExtension extends
     CompletionUpdaterLocator,
     CompletionStoreLocator,
     LoggerLocator,
+    NotificationLocator,
     ManagerLocator,
     ReferenceStoreLocator,
     UtensilsParserLocator,
@@ -241,6 +243,7 @@ export class Extension implements IExtension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
+    readonly notification: Notification
     readonly eventBus: EventBus
     readonly commander: Commander
     readonly configuration: Configuration
@@ -280,6 +283,7 @@ export class Extension implements IExtension {
         this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 
+        this.notification = new Notification(this)
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.viewer = new Viewer(this)

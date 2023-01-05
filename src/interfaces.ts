@@ -86,6 +86,11 @@ export interface ILogger {
     logError(e: Error): void,
     logOnRejected(e: unknown): void,
     clearCompilerMessage(): void,
+    showLog(): void,
+    showCompilerLog(): void
+}
+
+export interface INotification {
     displayStatus(
         icon: string,
         color: string,
@@ -95,9 +100,11 @@ export interface ILogger {
     ): void,
     showErrorMessage(message: string, ...args: string[]): Thenable<string | undefined> | undefined,
     showErrorMessageWithCompilerLogButton(message: string): void,
-    showErrorMessageWithExtensionLogButton(message: string): void,
-    showLog(): void,
-    showCompilerLog(): void
+    showErrorMessageWithExtensionLogButton(message: string): void
+}
+
+export interface NotificationLocator {
+    readonly notification: INotification
 }
 
 export interface ManagerLocator {
