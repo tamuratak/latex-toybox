@@ -1731,12 +1731,6 @@
           "default": true,
           "markdownDescription": "Display error messages in popup notifications."
         },
-        "latex-workshop.message.log.show": {
-          "scope": "window",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Display LaTeX Workshop debug log in output panel. This property defines whether LaTeX Workshop will output its debug log to the log panel."
-        },
         "latex-workshop.message.convertFilenameEncoding": {
           "scope": "window",
           "type": "boolean",

@@ -12,10 +12,7 @@ export class Logger implements ILogger {
     }
 
     info(message: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        if (configuration.get('message.log.show')) {
-            this.logPanel.info(message)
-        }
+        this.logPanel.info(message)
     }
 
     logCommand(message: string, command: string, args: string[] = []) {
