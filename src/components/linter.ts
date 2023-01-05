@@ -83,22 +83,22 @@ export class Linter {
     }
 
     async lintActiveFileIfEnabledAfterInterval(document: vscode.TextDocument) {
-        await this.lintMutex.noopIfOccupied(async () => {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
-            const linters = this.getLinters(document)
-            this.clear(document)
-            if (linters.length > 0 && (configuration.get('linting.run') as string) === 'onType') {
-                const interval = configuration.get('linting.delay') as number
-                const now = Date.now()
-                if (now - this.prevTime < interval) {
-                    return
-                }
-                this.prevTime = now
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
+        const linters = this.getLinters(document)
+        this.clear(document)
+        if (linters.length > 0 && (configuration.get('linting.run') as string) === 'onType') {
+            const interval = configuration.get('linting.delay') as number
+            const now = Date.now()
+            if (now - this.prevTime < interval) {
+                return
+            }
+            this.prevTime = now
+            await this.lintMutex.noopIfOccupied(async () => {
                 await Promise.allSettled(
                     linters.map(linter => linter.lintFile(document))
                 )
-            }
-        })
+            })
+        }
     }
 
 }
