@@ -142,7 +142,7 @@ export class LaCheck implements ILinter {
 }
 
 interface LaCheckLogEntry {
-    file: string,
-    line: number,
-    text: string
+    readonly file: string,
+    readonly line: number,
+    readonly text: string
 }
