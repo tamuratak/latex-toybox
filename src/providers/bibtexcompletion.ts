@@ -73,7 +73,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         try {
             void this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)
         } catch (err) {
-            this.extension.logger.info(`Error reading data: ${err}.`)
+            this.extension.logger.error(`Error reading data: ${err}.`)
         }
     }
 

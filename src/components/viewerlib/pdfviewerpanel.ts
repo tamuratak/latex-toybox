@@ -69,13 +69,13 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             pdfFileUri = vscode.Uri.parse(state.pdfFileUri, true)
         }
         if (!pdfFileUri) {
-            this.extension.logger.info('Error of restoring PDF viewer: the path of PDF file is undefined.')
+            this.extension.logger.error('Error of restoring PDF viewer: the path of PDF file is undefined.')
             panel.webview.html = '<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>The path of PDF file is undefined.</html>'
             return
         }
         if (! await lwfs.exists(pdfFileUri)) {
             const s = escapeHtml(pdfFileUri.toString())
-            this.extension.logger.info(`Error of restoring PDF viewer: file not found ${pdfFileUri.toString(true)}.`)
+            this.extension.logger.error(`Error of restoring PDF viewer: file not found ${pdfFileUri.toString(true)}.`)
             panel.webview.html = `<!DOCTYPE html> <html lang="en"><meta charset="utf-8"/><br>File not found: ${s}</html>`
             return
         }
