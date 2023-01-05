@@ -212,7 +212,7 @@ export class ChkTeX implements ILinter {
         }
         const filePath = await convertFilenameEncoding(filePathArg)
         if (!filePath){
-            this.extension.logger.info(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
+            this.extension.logger.error(`Stop converting chktex's column numbers. File not found: ${filePathArg}`)
             return column
         }
         const content = await readFilePath(filePath)
@@ -225,7 +225,7 @@ export class ChkTeX implements ILinter {
             tabSize = tabSizeArg
         }
         if (lineString === undefined) {
-            this.extension.logger.info(`Stop converting chktex's column numbers. Invalid line number: ${line}`)
+            this.extension.logger.error(`Stop converting chktex's column numbers. Invalid line number: ${line}`)
             return column
         }
         return this.convertColumn(column, lineString, tabSize)
@@ -256,8 +256,9 @@ export class ChkTeX implements ILinter {
     }
 
     private async showLinterDiagnostics(linterLog: ChkTeXLogEntry[]) {
-        const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
-        for (const item of linterLog) {
+        const diagsCollection = new Map<string, vscode.Diagnostic[]>()
+        for (let item of linterLog) {
+            item = this.tweakChktexLogEntry(item)
             const range = new vscode.Range(
                 new vscode.Position(item.line - 1, item.column - 1),
                 new vscode.Position(item.line - 1, item.column - 1 + item.length)
@@ -265,38 +266,51 @@ export class ChkTeX implements ILinter {
             const diag = new vscode.Diagnostic(range, item.text, DIAGNOSTIC_SEVERITY[item.type])
             diag.code = item.code
             diag.source = this.#linterName
-            if (diagsCollection[item.file] === undefined) {
-                diagsCollection[item.file] = []
+            let diagArray = diagsCollection.get(item.file)
+            if (!diagArray) {
+                diagArray = []
+                diagsCollection.set(item.file, diagArray)
             }
-            diagsCollection[item.file].push(diag)
+            diagArray.push(diag)
         }
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
-        for (const file in diagsCollection) {
-            let file1 = file
+        for (const [file, diagArray] of diagsCollection) {
+            // Only report ChkTeX errors on TeX files. We should avoid
+            // reporting errors in .sty files, which are irrelevant for most users.
             if (['.tex', '.bbx', '.cbx', '.dtx'].includes(path.extname(file))) {
-                // Only report ChkTeX errors on TeX files. This is done to avoid
-                // reporting errors in .sty files, which are irrelevant for most users.
-                if (!await existsPath(file1) && convEnc) {
-                    const f = await convertFilenameEncoding(file1)
-                    if (f !== undefined) {
-                        file1 = f
-                    }
+                let convFile: string | undefined
+                if (!await existsPath(file) && convEnc) {
+                    convFile = await convertFilenameEncoding(file)
                 }
-                this.linterDiagnostics.set(vscode.Uri.file(file1), diagsCollection[file])
+                convFile ||= file
+                this.linterDiagnostics.set(vscode.Uri.file(convFile), diagArray)
             }
         }
     }
+
+    private tweakChktexLogEntry(entry: ChkTeXLogEntry): ChkTeXLogEntry {
+        if (entry.code === 15 && entry.length === 1) {
+            return {
+                ...entry,
+                length: 3,
+                column: Math.max(0, entry.column - 1),
+            }
+        } else {
+            return entry
+        }
+    }
+
 }
 
 interface ChkTeXLogEntry {
-    file: string,
-    line: number,
-    column: number,
-    length: number,
-    type: string,
-    code: number,
-    text: string
+    readonly file: string,
+    readonly line: number,
+    readonly column: number,
+    readonly length: number,
+    readonly type: string,
+    readonly code: number,
+    readonly text: string
 }
 
 const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
