@@ -20,6 +20,7 @@ interface IExtension extends
 
 export class Linter {
     private readonly lintMutex = new MutexWithSizedQueue(1)
+    private readonly lintActiveFileMutex = new MutexWithSizedQueue(1)
     readonly lacheck: ILinter
     readonly chktex: ILinter
     private prevTime: number = 0
@@ -93,7 +94,7 @@ export class Linter {
                 return
             }
             this.prevTime = now
-            await this.lintMutex.noopIfOccupied(async () => {
+            await this.lintActiveFileMutex.noopIfOccupied(async () => {
                 await Promise.allSettled(
                     linters.map(linter => linter.lintFile(document))
                 )
