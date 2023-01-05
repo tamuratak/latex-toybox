@@ -110,7 +110,7 @@ export class Viewer implements IViewer {
         const pdfFile = this.tex2pdf(sourceFile, respectOutDir)
         if (!await lwfs.exists(pdfFile)) {
             this.extension.logger.info(`Cannot find PDF file ${pdfFile}`)
-            this.extension.notification.displayStatus('check', 'statusBar.foreground', `Cannot view file PDF file. File not found: ${pdfFile}`, 'warning')
+            this.extension.statusbaritem.displayStatus('fail', `Cannot view file PDF file. File not found: ${pdfFile}`)
             return
         }
         const url = `http://127.0.0.1:${this.extension.server.port}/viewer.html?file=${this.encodePathWithPrefix(pdfFile)}`

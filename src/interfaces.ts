@@ -91,21 +91,16 @@ export interface ILogger {
     showCompilerLog(): void
 }
 
-export interface INotification {
+export interface ILwStatusBarItem {
     displayStatus(
-        icon: string,
-        color: string,
-        message: string | undefined,
-        severity: 'info' | 'warning' | 'error',
-        build: string
-    ): void,
-    showErrorMessage(message: string, ...args: string[]): Thenable<string | undefined> | undefined,
-    showErrorMessageWithCompilerLogButton(message: string): void,
-    showErrorMessageWithExtensionLogButton(message: string): void
+        status: 'success' | 'fail' | 'ongoing',
+        message?: string,
+        build?: string
+    ): void
 }
 
-export interface NotificationLocator {
-    readonly notification: INotification
+export interface LwStatusBarItemLocator {
+    readonly statusbaritem: ILwStatusBarItem
 }
 
 export interface ManagerLocator {

@@ -32,13 +32,13 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, NotificationLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
 import { CompletionStore } from './components/completionstore'
-import { Notification } from './components/notification'
+import { LwStatusBarItem } from './components/statusbaritem'
 
 
 function conflictExtensionCheck() {
@@ -233,7 +233,7 @@ interface IExtension extends
     CompletionUpdaterLocator,
     CompletionStoreLocator,
     LoggerLocator,
-    NotificationLocator,
+    LwStatusBarItemLocator,
     ManagerLocator,
     ReferenceStoreLocator,
     UtensilsParserLocator,
@@ -243,7 +243,7 @@ export class Extension implements IExtension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
-    readonly notification: Notification
+    readonly statusbaritem: LwStatusBarItem
     readonly eventBus: EventBus
     readonly commander: Commander
     readonly configuration: Configuration
@@ -283,7 +283,7 @@ export class Extension implements IExtension {
         this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 
-        this.notification = new Notification(this)
+        this.statusbaritem = new LwStatusBarItem()
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.viewer = new Viewer(this)
@@ -310,6 +310,7 @@ export class Extension implements IExtension {
     async dispose() {
         this.manager.dispose()
         this.server.dispose()
+        this.statusbaritem.dispose()
         await this.pegParser.dispose()
         await this.mathPreview.dispose()
     }

@@ -1713,24 +1713,6 @@
           "default": [],
           "markdownDescription": "Exclude latex log messages matching the given regexp from the problems panel."
         },
-        "latex-workshop.message.information.show": {
-          "scope": "window",
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Display information messages in popup notifications."
-        },
-        "latex-workshop.message.warning.show": {
-          "scope": "window",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Display warning messages in popup notifications."
-        },
-        "latex-workshop.message.error.show": {
-          "scope": "window",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Display error messages in popup notifications."
-        },
         "latex-workshop.message.convertFilenameEncoding": {
           "scope": "window",
           "type": "boolean",
