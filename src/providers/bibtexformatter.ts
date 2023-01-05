@@ -4,11 +4,11 @@ import {performance} from 'perf_hooks'
 
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
-import type {LoggerLocator, NotificationLocator, UtensilsParserLocator} from '../interfaces'
+import type {LoggerLocator, LwStatusBarItemLocator, UtensilsParserLocator} from '../interfaces'
 
 interface IExtension extends
     LoggerLocator,
-    NotificationLocator,
+    LwStatusBarItemLocator,
     UtensilsParserLocator { }
 
 export class BibtexFormatter {
@@ -51,7 +51,7 @@ export class BibtexFormatter {
                 const t1 = performance.now()
                 this.extension.logger.info(`BibTeX action successful. Took ${t1 - t0} ms.`)
             } else {
-                void this.extension.notification.showErrorMessage('Something went wrong while processing the bibliography.')
+                void this.extension.logger.error('Something went wrong while processing the bibliography.')
             }
         })
 
@@ -67,9 +67,9 @@ export class BibtexFormatter {
 
         const ast = await this.extension.pegParser.parseBibtex(document.getText(range)).catch((error) => {
             if (error instanceof(Error)) {
-                this.extension.logger.info('Bibtex parser failed.')
-                this.extension.logger.info(error.message)
-                void this.extension.notification.showErrorMessage('Bibtex parser failed with error: ' + error.message)
+                this.extension.logger.error('Bibtex parser failed.')
+                this.extension.logger.error(error.message)
+                void this.extension.logger.error('Bibtex parser failed with error: ' + error.message)
             }
             return undefined
         })
