@@ -239,7 +239,7 @@ export class Commander {
     log(compiler?: string) {
         this.extension.logger.info(`LOG command invoked: ${compiler || 'default'}`)
         if (compiler) {
-            this.extension.logger.showCompilerLog()
+            this.extension.compilerLog.show()
             return
         }
         this.extension.logger.showLog()

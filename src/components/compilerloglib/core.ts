@@ -5,6 +5,7 @@ import { convertFilenameEncoding } from '../../utils/convertfilename'
 import { LatexLogParser } from './latexlog'
 import { BibLogParser } from './biblogparser'
 import { existsPath } from '../../lib/lwfs/lwfs'
+import { BuildStepLog } from '../compilerlog'
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
@@ -28,7 +29,15 @@ const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
     'error': vscode.DiagnosticSeverity.Error,
 }
 
-export interface LogEntry { type: string, file: string, text: string, line: number, errorPosText?: string }
+export interface LogEntry {
+    readonly type: string,
+    readonly file: string,
+    text: string,
+    line: number,
+    errorPosText?: string,
+    readonly logUri?: vscode.Uri,
+    readonly lineInLogFile?: number
+}
 
 export class CompilerLogParser {
     private readonly latexLogParser: LatexLogParser
@@ -45,7 +54,8 @@ export class CompilerLogParser {
         this.extension = extension
     }
 
-    parse(log: string, rootFile?: string) {
+    parse(stepLog: BuildStepLog, rootFile?: string) {
+        let log = stepLog.stdout
         this.isLaTeXmkSkipped = false
         // Canonicalize line-endings
         log = log.replace(/(\r\n)|\r/g, '\n')
@@ -63,7 +73,7 @@ export class CompilerLogParser {
             log = this.trimTexify(log)
         }
         if (log.match(latexPattern) || log.match(latexFatalPattern)) {
-            return this.latexLogParser.parse(log, rootFile)
+            return this.latexLogParser.parse(log, rootFile, stepLog)
         } else if (this.latexmkSkipped(log)) {
             this.isLaTeXmkSkipped = true
         }
@@ -164,6 +174,17 @@ export class CompilerLogParser {
             diag.source = source
             if (diagsCollection[item.file] === undefined) {
                 diagsCollection[item.file] = []
+            }
+            if (item.logUri !== undefined && item.lineInLogFile !== undefined) {
+                diag.relatedInformation = [
+                    new vscode.DiagnosticRelatedInformation(
+                        new vscode.Location(
+                            item.logUri,
+                            new vscode.Range(item.lineInLogFile, 0, item.lineInLogFile, 1000)
+                        ),
+                        'Output Log'
+                    )
+                ]
             }
             diagsCollection[item.file].push(diag)
         }

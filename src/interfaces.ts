@@ -83,12 +83,9 @@ export interface ILogger {
     logCommand(message: string, command: string, args: string[]): void,
     debug(message: string): void,
     error(message: string): void,
-    addCompilerMessage(message: string): void,
     logError(e: Error): void,
     logOnRejected(e: unknown): void,
-    clearCompilerMessage(): void,
-    showLog(): void,
-    showCompilerLog(): void
+    showLog(): void
 }
 
 export interface ILwStatusBarItem {

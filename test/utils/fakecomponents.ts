@@ -5,10 +5,7 @@ export class FakeLogger implements ILogger {
     logCommand() {}
     debug(){}
     error(){}
-    addCompilerMessage() {}
     logError() {}
     logOnRejected() {}
-    clearCompilerMessage() {}
     showLog() {}
-    showCompilerLog() {}
 }
