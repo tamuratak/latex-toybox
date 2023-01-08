@@ -12,7 +12,6 @@ import {Locator} from './components/locator'
 import {Linter} from './components/linter'
 import {EnvPair} from './components/envpair'
 import {Section} from './components/section'
-import {CompilerLogParser} from './components/parser/compilerlog'
 import {UtensilsParser as PEGParser} from './components/parser/syntax'
 import {Configuration} from './components/configuration'
 import {EventBus} from './components/eventbus'
@@ -39,6 +38,7 @@ import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
 import { CompletionStore } from './components/completionstore'
 import { LwStatusBarItem } from './components/statusbaritem'
+import { CompilerLog } from './components/compilerlog'
 
 
 function conflictExtensionCheck() {
@@ -252,7 +252,7 @@ export class Extension implements IExtension {
     readonly viewer: Viewer
     readonly server: Server
     readonly locator: Locator
-    readonly compilerLogParser: CompilerLogParser
+    readonly compilerLog: CompilerLog
     readonly pegParser: PEGParser
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
@@ -283,13 +283,13 @@ export class Extension implements IExtension {
         this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 
+        this.compilerLog = new CompilerLog(this)
         this.statusbaritem = new LwStatusBarItem()
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.viewer = new Viewer(this)
         this.server = new Server(this)
         this.locator = new Locator(this)
-        this.compilerLogParser = new CompilerLogParser(this)
         this.completer = new Completer(this)
         this.completionStore = new CompletionStore()
         this.duplicateLabels = new DuplicateLabels(this)
@@ -310,6 +310,7 @@ export class Extension implements IExtension {
     async dispose() {
         this.manager.dispose()
         this.server.dispose()
+        this.compilerLog.dispose()
         this.statusbaritem.dispose()
         await this.pegParser.dispose()
         await this.mathPreview.dispose()

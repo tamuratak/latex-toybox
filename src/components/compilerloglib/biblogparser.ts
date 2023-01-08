@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type { Extension } from '../../main'
-import type { LogEntry } from './compilerlog'
+import type { LogEntry } from './core'
 
 const multiLineWarning = /^Warning--(.+)\n--line (\d+) of file (.+)$/gm
 const singleLineWarning = /^Warning--(.+) in ([^\s]+)\s*$/gm
@@ -67,7 +67,7 @@ export class BibLogParser {
         }
 
         this.extension.logger.info(`BibTeX log parsed with ${this.buildLog.length} messages.`)
-        return this.extension.compilerLogParser.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'BibTeX')
+        return this.extension.compilerLog.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'BibTeX')
     }
 
     private pushLog(type: string, file: string, message: string, line: number, excludeRegexp: RegExp[]) {

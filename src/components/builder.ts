@@ -48,7 +48,7 @@ export class Builder implements IBuilder {
                 this.extension.logger.info('pdflatex is provided by MiKTeX')
             }
         } catch (e) {
-            this.extension.logger.info('Cannot run pdflatex to determine if we are using MiKTeX')
+            this.extension.logger.error('Cannot run pdflatex to determine if we are using MiKTeX')
         }
     }
 
@@ -138,27 +138,24 @@ export class Builder implements IBuilder {
         const pid = this.currentProcess.pid
         this.extension.logger.info(`External build process spawned. PID: ${pid}.`)
 
-        let stdout = ''
+        const stepLog = this.extension.compilerLog.createStepLog(rootFile, [{name: 'external', command, args}], 0)
         this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
-            stdout += newStdout
-            this.extension.logger.addCompilerMessage(newStdout.toString())
+            stepLog.append(newStdout.toString())
         })
 
-        let stderr = ''
         this.currentProcess.stderr.on('data', (newStderr: Buffer | string) => {
-            stderr += newStderr
-            this.extension.logger.addCompilerMessage(newStderr.toString())
+            stepLog.appendError(newStderr.toString())
         })
 
         this.currentProcess.on('error', err => {
-            this.extension.logger.error(`Build fatal error: ${err.message}, ${stderr}. PID: ${pid}. Does the executable exist?`)
+            this.extension.logger.error(`Build fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}. Does the executable exist?`)
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
             this.currentProcess = undefined
             releaseBuildMutex()
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
-            void this.extension.compilerLogParser.parse(stdout)
+            void this.extension.compilerLog.parse(stepLog)
             if (exitCode !== 0) {
                 this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
                 this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
@@ -184,7 +181,7 @@ export class Builder implements IBuilder {
     private buildInitiator(rootFile: string, languageId: string, recipeName: string | undefined = undefined, releaseBuildMutex: () => void) {
         const steps = this.createSteps(rootFile, languageId, recipeName)
         if (steps === undefined) {
-            this.extension.logger.info('Invalid toolchain.')
+            this.extension.logger.error('Invalid toolchain.')
             return
         }
         this.buildStep(rootFile, steps, 0, recipeName || 'Build', releaseBuildMutex) // use 'Build' as default name
@@ -247,13 +244,7 @@ export class Builder implements IBuilder {
 
     private buildStep(rootFile: string, steps: StepCommand[], index: number, recipeName: string, releaseBuildMutex: () => void) {
         if (index === 0) {
-            this.extension.logger.clearCompilerMessage()
-        }
-        if (index > 0) {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
-            if (configuration.get('latex.build.clearLog.everyRecipeStep.enabled')) {
-                this.extension.logger.clearCompilerMessage()
-            }
+            this.extension.compilerLog.clear()
         }
         this.extension.statusbaritem.displayStatus('ongoing', '', ` ${this.progressString(recipeName, steps, index)}`)
         this.extension.logger.logCommand(`Recipe step ${index + 1}`, steps[index].command, steps[index].args)
@@ -290,20 +281,18 @@ export class Builder implements IBuilder {
         const pid = this.currentProcess.pid
         this.extension.logger.info(`LaTeX build process spawned. PID: ${pid}.`)
 
-        let stdout = ''
+        const stepLog = this.extension.compilerLog.createStepLog(rootFile, steps, index)
+
         this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
-            stdout += newStdout
-            this.extension.logger.addCompilerMessage(newStdout.toString())
+            stepLog.append(newStdout.toString())
         })
 
-        let stderr = ''
         this.currentProcess.stderr.on('data', (newStderr: Buffer | string) => {
-            stderr += newStderr
-            this.extension.logger.addCompilerMessage(newStderr.toString())
+            stepLog.appendError(newStderr.toString())
         })
 
         this.currentProcess.on('error', err => {
-            this.extension.logger.error(`LaTeX fatal error: ${err.message}, ${stderr}. PID: ${pid}.`)
+            this.extension.logger.error(`LaTeX fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}.`)
             this.extension.logger.error(`Does the executable exist? $PATH: ${envVarsPATH}`)
             this.extension.logger.error(`Does the executable exist? $Path: ${envVarsPath}`)
             this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
@@ -313,9 +302,9 @@ export class Builder implements IBuilder {
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
-            void this.extension.compilerLogParser.parse(stdout, rootFile)
+            void this.extension.compilerLog.parse(stepLog, rootFile)
             if (exitCode !== 0) {
-                this.extension.logger.error(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stderr}.`)
+                this.extension.logger.error(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stepLog.stderr}.`)
                 this.extension.logger.error(`The environment variable $PATH: ${envVarsPATH}`)
                 this.extension.logger.error(`The environment variable $Path: ${envVarsPath}`)
                 this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
@@ -343,7 +332,7 @@ export class Builder implements IBuilder {
     private async buildFinished(rootFile: string) {
         this.extension.logger.info(`Successfully built ${rootFile}.`)
         this.extension.statusbaritem.displayStatus('success', 'Recipe succeeded.')
-        if (this.extension.compilerLogParser.isLaTeXmkSkipped) {
+        if (this.extension.compilerLog.isLaTeXmkSkipped) {
             return
         }
         await this.callCbs(rootFile)
@@ -508,7 +497,7 @@ interface ProcessEnv {
     [key: string]: string | undefined
 }
 
-interface StepCommand {
+export interface StepCommand {
     name: string,
     command: string,
     args?: string[],
