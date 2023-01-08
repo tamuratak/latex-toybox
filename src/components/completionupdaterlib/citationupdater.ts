@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import {CiteSuggestion, Fields} from '../../providers/completer/citation'
 
 interface IExtension extends

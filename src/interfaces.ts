@@ -1,10 +1,14 @@
 import type {latexParser, bibtexParser} from 'latex-utensils'
 import type vscode from 'vscode'
+import { StepCommand } from './components/builder'
+import { BuildStepLog } from './components/compilerlog'
+import { LogEntry } from './components/compilerloglib/core'
 import type { EventArgTypeMap, EventBus, EventName } from './components/eventbus'
 import type {SyncTeXRecordForward} from './components/locator'
 import type {CachedContentEntry} from './components/manager'
 import { ReferenceStore } from './components/referencestore'
-import type {ICommand} from './providers/completer/interface'
+import { CiteSuggestion } from './providers/completer/citation'
+import type {ICommand, ILwCompletionItem} from './providers/completer/interface'
 
 
 export interface ReferenceStoreLocator {
@@ -29,7 +33,9 @@ export interface CommandLocator {
 }
 
 export interface ICompleter extends CommandLocator {
-    readonly readyPromise: Promise<void>
+    readonly readyPromise: Promise<void>,
+    readonly citation: ICitation,
+    readonly input: IInput
 }
 
 export interface CompleterLocator {
@@ -80,7 +86,7 @@ export interface LoggerLocator {
 
 export interface ILogger {
     info(message: string): void,
-    logCommand(message: string, command: string, args: string[]): void,
+    logCommand(message: string, command: string, args?: string[]): void,
     debug(message: string): void,
     error(message: string): void,
     logError(e: Error): void,
@@ -100,8 +106,18 @@ export interface LwStatusBarItemLocator {
     readonly statusbaritem: ILwStatusBarItem
 }
 
-export interface ManagerLocator {
-    readonly manager: IManager
+export interface ICompilerLog {
+    createStepLog(_rootfile: string | undefined, steps: StepCommand[], stepIndex: number): BuildStepLog,
+    dispose(): void,
+    clear(): void,
+    parse(stepLog: BuildStepLog, rootFile?: string): Promise<void> | void,
+    showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string): void,
+    isLaTeXmkSkipped: boolean,
+    show(): void
+}
+
+export interface CompilerLogLocator {
+    readonly compilerLog: ICompilerLog
 }
 
 export interface IManager {
@@ -109,11 +125,13 @@ export interface IManager {
     readonly rootFile: string | undefined,
     readonly rootFileUri: vscode.Uri | undefined,
     readonly cachedFilePaths: IterableIterator<string>,
+    localRootFile: string | undefined,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined,
     isLocalLatexDocument(document: vscode.TextDocument): boolean,
     hasTexId(id: string): boolean,
     hasBibtexId(id: string): boolean,
+    ignorePdfFile(rootFile: string): void,
     getIncludedBib(file?: string): string[],
     getIncludedTeX(file?: string): string[],
     getDirtyContent(file: string): Promise<string | undefined>,
@@ -121,8 +139,8 @@ export interface IManager {
     tex2pdf(texPath: string, respectOutDir?: boolean): string
 }
 
-export interface UtensilsParserLocator {
-    readonly pegParser: IUtensilsParser
+export interface ManagerLocator {
+    readonly manager: IManager
 }
 
 export interface IUtensilsParser {
@@ -132,10 +150,35 @@ export interface IUtensilsParser {
     parseBibtex(s: string, options?: bibtexParser.ParserOptions): Promise<bibtexParser.BibtexAst>
 }
 
+export interface UtensilsParserLocator {
+    readonly utensilsParser: IUtensilsParser
+}
+
+export interface IViewer {
+    syncTeX(pdfFile: string, record: SyncTeXRecordForward): void,
+    refreshExistingViewer(sourceFile?: string, pdfFileUri?: vscode.Uri): void
+}
+
 export interface ViewerLocator {
     readonly viewer: IViewer
 }
 
-export interface IViewer {
-    syncTeX(pdfFile: string, record: SyncTeXRecordForward): void
+export interface ICitation {
+    getEntry(key: string): CiteSuggestion | undefined,
+    getEntryWithDocumentation(key: string, configurationScope: vscode.ConfigurationScope | undefined): ILwCompletionItem | undefined
+}
+
+export interface IInput {
+    graphicsPath: string[]
+}
+
+export interface ISnippetView {
+    renderPdf(pdfFileUri: vscode.Uri, opts: { height: number, width: number, pageNumber: number }): Promise<string | undefined>,
+    readonly snippetViewProvider: {
+        webviewView: vscode.WebviewView | undefined
+    }
+}
+
+export interface SnippetViewLocator {
+    readonly snippetView: ISnippetView
 }

@@ -13,7 +13,7 @@ interface IExtension extends
     LoggerLocator,
     ManagerLocator { }
 
-abstract class InputAbstract implements IProvider {
+abstract class AbstractInput implements IProvider {
     protected readonly extension: IExtension
     graphicsPath: string[] = []
 
@@ -144,7 +144,7 @@ abstract class InputAbstract implements IProvider {
     }
 }
 
-export class Input extends InputAbstract {
+export class Input extends AbstractInput {
 
     constructor(extension: IExtension) {
         super(extension)
@@ -188,7 +188,7 @@ export class Input extends InputAbstract {
     }
 }
 
-export class Import extends InputAbstract {
+export class Import extends AbstractInput {
 
     constructor(extension: IExtension) {
         super(extension)
@@ -208,7 +208,7 @@ export class Import extends InputAbstract {
 }
 
 
-export class SubImport extends InputAbstract {
+export class SubImport extends AbstractInput {
 
     constructor(extension: IExtension) {
         super(extension)

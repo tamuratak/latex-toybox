@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { CompleterLocator, ManagerLocator } from '../../../interfaces'
+import type { CompleterLocator, ManagerLocator } from '../../../interfaces'
 import { CmdEnvSuggestion } from '../../../providers/completer/command'
 import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completer/commandlib/commandlib'
 

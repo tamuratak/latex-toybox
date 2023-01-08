@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import type { Extension } from '../../main'
+import type { CompilerLogLocator, CompleterLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import type { LogEntry } from './core'
 
 const multiLineWarning = /^Warning--(.+)\n--line (\d+) of file (.+)$/gm
@@ -9,12 +9,18 @@ const badCrossReference = /^(A bad cross reference---entry ".+?"\nrefers to entr
 const multiLineCommandError = /^(.*)\n?---line (\d+) of file (.*)\n([^]+?)\nI'm skipping whatever remains of this command$/gm
 const errorAuxFile = /^(.*)---while reading file (.*)$/gm
 
+interface IExtension extends
+    CompilerLogLocator,
+    CompleterLocator,
+    LoggerLocator,
+    ManagerLocator { }
+
 export class BibLogParser {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     buildLog: LogEntry[] = []
     readonly compilerDiagnostics = vscode.languages.createDiagnosticCollection('BibTeX')
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 

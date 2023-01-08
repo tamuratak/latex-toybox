@@ -4,7 +4,7 @@ import {trimMultiLineString} from '../../utils/utils'
 import type {ILwCompletionItem} from './interface'
 
 import type {IProvider} from './interface'
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {ICitation, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 
 
@@ -70,7 +70,7 @@ interface IExtension extends
     ManagerLocator,
     UtensilsParserLocator { }
 
-export class Citation implements IProvider {
+export class Citation implements IProvider, ICitation {
     private readonly extension: IExtension
     private readonly bibEntries = new Map<string, CiteSuggestion[]>() // key: filePath
 
@@ -250,7 +250,7 @@ export class Citation implements IProvider {
         this.extension.logger.info(`Parsing .bib entries from ${file}`)
         const newEntry: CiteSuggestion[] = []
         const bibtex = await readFilePath(file)
-        const ast = await this.extension.pegParser.parseBibtex(bibtex).catch((e) => {
+        const ast = await this.extension.utensilsParser.parseBibtex(bibtex).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
                 this.extension.logger.error(`Error parsing BibTeX: line ${line} in ${file}.`)
@@ -278,7 +278,7 @@ export class Citation implements IProvider {
         this.extension.logger.info(`Parsed ${newEntry.length} bib entries from ${file}.`)
     }
 
-    entryToFields(entry: bibtexParser.Entry) {
+    private entryToFields(entry: bibtexParser.Entry) {
         const fields = new Fields()
         entry.content.forEach(field => {
             const value = Array.isArray(field.value.content) ? field.value.content.join(' ') : this.deParenthesis(field.value.content)

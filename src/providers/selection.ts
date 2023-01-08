@@ -20,7 +20,7 @@ export class SelectionRangeProvider implements vscode.SelectionRangeProvider {
 
     async provideSelectionRanges(document: vscode.TextDocument, positions: vscode.Position[]) {
         const content = document.getText()
-        const latexAst = await this.extension.pegParser.parseLatex(content, {enableMathCharacterLocation: true})
+        const latexAst = await this.extension.utensilsParser.parseLatex(content, {enableMathCharacterLocation: true})
         if (!latexAst) {
             return []
         }

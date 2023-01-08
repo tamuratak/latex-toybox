@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
-import {stripCommentsAndVerbatim, isNewCommand, NewCommand} from '../../../utils/utils'
+import {stripCommentsAndVerbatim, isNewCommand, NewCommand} from '../../utils/utils'
 import * as path from 'path'
 
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../../interfaces'
-import { readFilePathGracefully } from '../../../lib/lwfs/lwfs'
+import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
     LoggerLocator,
@@ -89,7 +89,7 @@ export class NewCommandFinder {
     async findNewCommand(content: string): Promise<string[]> {
         let commands: string[] = []
         try {
-            const ast = await this.extension.pegParser.parseLatexPreamble(content)
+            const ast = await this.extension.utensilsParser.parseLatexPreamble(content)
             for (const node of ast.content) {
                 if ((isNewCommand(node) || latexParser.isDefCommand(node)) && node.args.length > 0) {
                     node.name = node.name.replace(/\*$/, '') as NewCommand['name']

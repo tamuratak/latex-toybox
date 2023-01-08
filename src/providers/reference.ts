@@ -1,14 +1,14 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import { EventBusLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
+import type { CompleterLocator, EventBusLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
-import type { Extension } from '../main'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
 
 
 interface IExtension extends
     EventBusLocator,
+    CompleterLocator,
     ManagerLocator,
     UtensilsParserLocator,
     ReferenceStoreLocator { }
@@ -109,7 +109,7 @@ export class ReferenceUpdater {
         if (content === undefined) {
             return
         }
-        const ast = await this.extension.pegParser.parseLatex(content)
+        const ast = await this.extension.utensilsParser.parseLatex(content)
         if (!ast) {
             return
         }
@@ -135,9 +135,9 @@ export class ReferenceUpdater {
 }
 
 export class ReferenceProvider implements vscode.ReferenceProvider {
-    private readonly extension: Extension
+    private readonly extension: IExtension
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
         new ReferenceUpdater(extension)
     }

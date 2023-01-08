@@ -6,7 +6,7 @@ import {EnvironmentUpdater} from './completionupdaterlib/environmentupdater'
 import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupdater'
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
-import { CompleterLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
+import type { CompleterLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
 
 interface IExtension extends
     CompleterLocator,
@@ -58,7 +58,7 @@ export class CompletionUpdater implements ICompleteionUpdater {
         const languageId: string | undefined = vscode.window.activeTextEditor?.document.languageId
         let latexAst: latexParser.AstRoot | latexParser.AstPreamble | undefined = undefined
         if (!languageId || languageId !== 'latex-expl3') {
-            latexAst = await this.extension.pegParser.parseLatex(content)
+            latexAst = await this.extension.utensilsParser.parseLatex(content)
         }
 
         if (latexAst) {

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 
-import type { Extension } from '../../main'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
-import { LatexLogParser } from './latexlog'
+import { LatexLogParser } from './latexlogparser'
 import { BibLogParser } from './biblogparser'
 import { existsPath } from '../../lib/lwfs/lwfs'
 import { BuildStepLog } from '../compilerlog'
+import type { CompilerLogLocator, CompleterLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
@@ -39,16 +39,22 @@ export interface LogEntry {
     readonly lineInLogFile?: number
 }
 
+interface IExtension extends
+    CompilerLogLocator,
+    CompleterLocator,
+    LoggerLocator,
+    ManagerLocator { }
+
 export class CompilerLogParser {
     private readonly latexLogParser: LatexLogParser
     private readonly bibLogParser: BibLogParser
-    private readonly extension: Extension
+    private readonly extension: IExtension
     /**
      * Set true when LaTeXmk did nothing because all targets are up-to-date.
      */
     isLaTeXmkSkipped: boolean = false
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.latexLogParser = new LatexLogParser(extension)
         this.bibLogParser = new BibLogParser(extension)
         this.extension = extension

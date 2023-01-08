@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 
 import {runUnitTestWithFixture, getFixtureDir} from '../../../../utils/ciutils'
-import {ITextDocumentLike, TextDocumentLike} from '../../../../../src/providers/preview/mathpreviewlib/textdocumentlike'
+import {ITextDocumentLike, TextDocumentLike} from '../../../../../src/components/mathpreviewlib/textdocumentlike'
 
 suite('unit test suite: mathpreviewlib/textdocumentlike', () => {
 

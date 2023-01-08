@@ -12,7 +12,7 @@ import {Locator} from './components/locator'
 import {Linter} from './components/linter'
 import {EnvPair} from './components/envpair'
 import {Section} from './components/section'
-import {UtensilsParser as PEGParser} from './components/parser/syntax'
+import {UtensilsParser} from './components/utensilsparser'
 import {Configuration} from './components/configuration'
 import {EventBus} from './components/eventbus'
 
@@ -20,8 +20,8 @@ import {Completer} from './providers/completion'
 import {BibtexCompleter} from './providers/bibtexcompletion'
 import {DuplicateLabels} from './components/duplicatelabels'
 import {HoverProvider} from './providers/hover'
-import {GraphicsPreview} from './providers/preview/graphicspreview'
-import {MathPreview} from './providers/preview/mathpreview'
+import {GraphicsPreview} from './components/graphicspreview'
+import {MathPreview} from './components/mathpreview'
 import {MathPreviewPanel} from './components/mathpreviewpanel'
 import {DocSymbolProvider} from './providers/docsymbol'
 import {ProjectSymbolProvider} from './providers/projectsymbol'
@@ -31,7 +31,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator} from './interfaces'
+import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -233,9 +233,11 @@ interface IExtension extends
     CompletionUpdaterLocator,
     CompletionStoreLocator,
     LoggerLocator,
+    CompilerLogLocator,
     LwStatusBarItemLocator,
     ManagerLocator,
     ReferenceStoreLocator,
+    SnippetViewLocator,
     UtensilsParserLocator,
     ViewerLocator { }
 
@@ -253,7 +255,7 @@ export class Extension implements IExtension {
     readonly server: Server
     readonly locator: Locator
     readonly compilerLog: CompilerLog
-    readonly pegParser: PEGParser
+    readonly utensilsParser: UtensilsParser
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
     readonly completionStore: CompletionStore
@@ -299,7 +301,7 @@ export class Extension implements IExtension {
         this.latexCommanderTreeView = new LaTeXCommanderTreeView(this)
         this.structureViewer = new StructureTreeView(this)
         this.snippetView = new SnippetView(this)
-        this.pegParser = new PEGParser()
+        this.utensilsParser = new UtensilsParser()
         this.graphicsPreview = new GraphicsPreview(this)
         this.mathPreview = new MathPreview(this)
         this.bibtexFormatter = new BibtexFormatter(this)
@@ -312,7 +314,7 @@ export class Extension implements IExtension {
         this.server.dispose()
         this.compilerLog.dispose()
         this.statusbaritem.dispose()
-        await this.pegParser.dispose()
+        await this.utensilsParser.dispose()
         await this.mathPreview.dispose()
     }
 
