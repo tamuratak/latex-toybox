@@ -6,7 +6,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 
 import type {Extension} from '../main'
-import {PdfFilePathEncoder} from './serverlib/encodepath'
+import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
 import {EventEmitter} from 'events'
 import { readFileAsBuffer } from '../lib/lwfs/lwfs'
 
@@ -44,7 +44,6 @@ export class Server {
     private readonly extension: Extension
     private readonly httpServer: http.Server
     private address?: AddressInfo
-    readonly pdfFilePathEncoder: PdfFilePathEncoder
     private validOriginUri: vscode.Uri | undefined
     readonly serverStarted: Promise<void>
     private readonly eventEmitter = new EventEmitter()
@@ -54,7 +53,6 @@ export class Server {
         this.serverStarted = new Promise((resolve) => {
             this.eventEmitter.on(ServerStartedEvent, () => resolve() )
         })
-        this.pdfFilePathEncoder = new PdfFilePathEncoder()
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
         this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')
@@ -168,9 +166,9 @@ export class Server {
         if (!isValidOrigin) {
             return
         }
-        if (request.url.startsWith('/' + this.pdfFilePathEncoder.pdfFilePrefix)) {
+        if (request.url.startsWith('/' + pdfFilePrefix)) {
             const encodedFileUri = request.url.replace('/', '')
-            const fileUri = this.pdfFilePathEncoder.decodePathWithPrefix(encodedFileUri)
+            const fileUri = decodePathWithPrefix(encodedFileUri)
             if (this.extension.viewer.getClientSet(fileUri) === undefined) {
                 this.extension.logger.info(`Invalid PDF request: ${fileUri.toString(true)}`)
                 return

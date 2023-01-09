@@ -16,6 +16,7 @@ import {PdfViewerManagerService} from './viewerlib/pdfviewermanager'
 import {PdfViewerPagesLoaded} from './eventbus'
 import type {IViewer} from '../interfaces'
 import * as lwfs from '../lib/lwfs/lwfs'
+import { encodePathWithPrefix } from '../utils/encodepdffilepath'
 export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
 
 
@@ -74,10 +75,6 @@ export class Viewer implements IViewer {
         return this.managerService.initiatePdfViewerPanel(pdfPanel)
     }
 
-    private encodePathWithPrefix(pdfFileUri: vscode.Uri): string {
-        return this.extension.server.pdfFilePathEncoder.encodePathWithPrefix(pdfFileUri)
-    }
-
     /**
      * Refreshes PDF viewers of `sourceFile`.
      *
@@ -113,7 +110,7 @@ export class Viewer implements IViewer {
             this.extension.statusbaritem.displayStatus('fail', `Cannot view file PDF file. File not found: ${pdfFile}`)
             return
         }
-        const url = `http://127.0.0.1:${this.extension.server.port}/viewer.html?file=${this.encodePathWithPrefix(pdfFile)}`
+        const url = `http://127.0.0.1:${this.extension.server.port}/viewer.html?file=${encodePathWithPrefix(pdfFile)}`
         return url
     }
 
