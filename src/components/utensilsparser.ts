@@ -2,19 +2,19 @@ import type {latexParser, bibtexParser} from 'latex-utensils'
 import * as path from 'path'
 import * as workerpool from 'workerpool'
 import type {Proxy} from 'workerpool'
-import type {ISyntaxWorker} from './syntax_worker'
-import type {IUtensilsParser} from '../../interfaces'
+import type {IUtensilsParserWorker} from './utensilsparserlib/utensilsparser_worker'
+import type {IUtensilsParser} from '../interfaces'
 
 export class UtensilsParser implements IUtensilsParser {
     private readonly pool: workerpool.WorkerPool
-    private readonly proxy: workerpool.Promise<Proxy<ISyntaxWorker>>
+    private readonly proxy: workerpool.Promise<Proxy<IUtensilsParserWorker>>
 
     constructor() {
         this.pool = workerpool.pool(
-            path.join(__dirname, 'syntax_worker.js'),
+            path.join(__dirname, 'utensilsparserlib', 'utensilsparser_worker.js'),
             { minWorkers: 1, maxWorkers: 1, workerType: 'process' }
         )
-        this.proxy = this.pool.proxy<ISyntaxWorker>()
+        this.proxy = this.pool.proxy<IUtensilsParserWorker>()
     }
 
     async dispose() {

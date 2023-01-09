@@ -1,13 +1,16 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { Extension } from '../main'
+import type { UtensilsParserLocator } from '../interfaces'
 import { toLuPos, convertOffsetToPosition, toVscodePosition } from '../utils/utensils'
 
 
-export class EnvPair {
-    private readonly extension: Extension
+interface IExtension extends
+    UtensilsParserLocator { }
 
-    constructor(extension: Extension) {
+export class EnvPair {
+    private readonly extension: IExtension
+
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 
@@ -28,7 +31,7 @@ export class EnvPair {
         const beginOrEnd = /\\begin/.exec(command) ? 'begin' : 'end'
         const cursorPos = beginOrEnd === 'begin' ? commandRange.end : commandRange.start
         const content = editor.document.getText()
-        const ast = await this.extension.pegParser.parseLatex(content)
+        const ast = await this.extension.utensilsParser.parseLatex(content)
         if (!ast) {
             return
         }
@@ -68,7 +71,7 @@ export class EnvPair {
             return
         }
         const content = editor.document.getText()
-        const ast = await this.extension.pegParser.parseLatex(content)
+        const ast = await this.extension.utensilsParser.parseLatex(content)
         if (!ast) {
             return
         }

@@ -2,17 +2,17 @@ import assert from 'assert'
 import * as vscode from 'vscode'
 
 import { runUnitTestWithFixture } from '../../../../utils/ciutils'
-import { UtensilsParser } from '../../../../../src/components/parser/syntax'
-import { TeXMathEnvFinder } from '../../../../../src/providers/preview/mathpreviewlib/texmathenvfinder'
-import { CursorRenderer } from '../../../../../src/providers/preview/mathpreviewlib/cursorrenderer'
-import { TextDocumentLike } from '../../../../../src/providers/preview/mathpreviewlib/textdocumentlike'
+import { UtensilsParser } from '../../../../../src/components/utensilsparser'
+import { TeXMathEnvFinder } from '../../../../../src/components/mathpreviewlib/texmathenvfinder'
+import { CursorRenderer } from '../../../../../src/components/mathpreviewlib/cursorrenderer'
+import { TextDocumentLike } from '../../../../../src/components/mathpreviewlib/textdocumentlike'
 
-const pegParser = new UtensilsParser()
+const utensilsParser = new UtensilsParser()
 
 suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
 
     suiteTeardown(() => {
-        return pegParser.dispose()
+        return utensilsParser.dispose()
     })
 
     runUnitTestWithFixture('fixture001', 'test insertCursor', async () => {
@@ -22,7 +22,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 2)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
         assert.strictEqual(result, '$a{~|~}+b$')
     })
@@ -34,7 +34,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 0)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
 
         const result = renderer.isCursorInsideTexMath(texMath.range, cursorPos)
         assert.strictEqual(result, false)
@@ -60,7 +60,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 3)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
         assert.strictEqual(result, undefined)
     })
@@ -72,7 +72,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 3)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
         assert.strictEqual(result, '$a^{~|b~}$')
     })
@@ -84,7 +84,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 4)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
         assert.strictEqual(result, '$a^{~b|~} $')
     })
@@ -96,7 +96,7 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 3)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({pegParser})
+        const renderer = new CursorRenderer({utensilsParser})
         const result = texMath && await renderer.insertCursor(texMath, cursorPos, '|')
         assert.strictEqual(result, '$a_{~|b~}$')
     })

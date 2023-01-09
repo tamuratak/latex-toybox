@@ -156,7 +156,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         const fastparse = configuration.get('view.outline.fastparse.enabled') as boolean
 
         // Use `latex-utensils` to generate the AST.
-        const ast = await this.extension.pegParser.parseLatex(fastparse ? stripText(content) : content).catch((e) => {
+        const ast = await this.extension.utensilsParser.parseLatex(fastparse ? stripText(content) : content).catch((e) => {
             if (latexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
                 this.extension.logger.error(`Error parsing LaTeX during structuring: line ${line} in ${file}.`)
@@ -522,7 +522,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     }
 
     async buildBibTeXModel(document: vscode.TextDocument): Promise<Section[]> {
-        const ast = await this.extension.pegParser.parseBibtex(document.getText()).catch((e) => {
+        const ast = await this.extension.utensilsParser.parseBibtex(document.getText()).catch((e) => {
             if (bibtexParser.isSyntaxError(e)) {
                 const line = e.location.start.line
                 this.extension.logger.error(`Error parsing BibTeX: line ${line} in ${document.fileName}.`)

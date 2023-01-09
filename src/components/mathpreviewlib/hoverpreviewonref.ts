@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import * as utils from '../../../utils/svg'
-import type {MathJaxPool} from '../mathjaxpool'
-import type {LabelDefinitionEntry} from '../../completer/labeldefinition'
+import * as utils from '../../utils/svg'
+import type {MathJaxPool} from './mathjaxpool'
+import type {LabelDefinitionEntry} from '../../providers/completer/labeldefinition'
 import type {TexMathEnv} from './texmathenvfinder'
 import type {MathPreviewUtils} from './mathpreviewutils'
-import type {LoggerLocator} from '../../../interfaces'
+import type {LoggerLocator} from '../../interfaces'
 
 interface IExtension extends LoggerLocator { }
 

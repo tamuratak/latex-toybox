@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type { Extension } from '../../main'
 import type { LogEntry } from './core'
 import { BuildStepLog } from '../compilerlog'
+import type { CompilerLogLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 
 const latexError = /^(?:(.*):(\d+):|!)(?: (.+) Error:)? (.+?)$/
 const latexBox = /^((?:Over|Under)full \\[vh]box \([^)]*\)) in paragraph at lines (\d+)--(\d+)$/
@@ -37,13 +37,18 @@ class ParserState {
     }
 }
 
+interface IExtension extends
+    LoggerLocator,
+    ManagerLocator,
+    CompilerLogLocator { }
+
 export class LatexLogParser {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     isLaTeXmkSkipped: boolean = false
     buildLog: LogEntry[] = []
     readonly compilerDiagnostics = vscode.languages.createDiagnosticCollection('LaTeX')
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 

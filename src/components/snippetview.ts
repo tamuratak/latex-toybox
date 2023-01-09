@@ -2,8 +2,8 @@ import * as vscode from 'vscode'
 import {readFileSync} from 'fs'
 import * as path from 'path'
 
-import type {Extension} from '../main'
 import {replaceWebviewPlaceholders} from '../utils/webview'
+import { ExtensionRootLocator, ISnippetView, ManagerLocator } from '../interfaces'
 
 
 type SnippetViewResult = RenderResult | {
@@ -17,12 +17,14 @@ type RenderResult = {
     data: string | undefined
 }
 
-export class SnippetView {
-    readonly extension: Extension
+interface IExtension extends
+    ExtensionRootLocator,
+    ManagerLocator { }
+
+export class SnippetView implements ISnippetView {
     readonly snippetViewProvider: SnippetViewProvider
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(extension: IExtension) {
         this.snippetViewProvider = new SnippetViewProvider(extension)
     }
 
@@ -61,13 +63,14 @@ export class SnippetView {
     }
 }
 
+
 class SnippetViewProvider implements vscode.WebviewViewProvider {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private view: vscode.WebviewView | undefined
     private lastActiveTextEditor: vscode.TextEditor | undefined
     private readonly cbSet = new Set<(e: SnippetViewResult) => void>()
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
         const editor = vscode.window.activeTextEditor
         if (editor && this.extension.manager.hasTexId(editor.document.languageId)) {

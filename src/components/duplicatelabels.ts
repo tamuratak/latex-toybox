@@ -1,14 +1,18 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type {Extension} from '../main'
+import type { CompletionUpdaterLocator, LoggerLocator, ManagerLocator } from '../interfaces'
 
+interface IExtension extends
+    CompletionUpdaterLocator,
+    LoggerLocator,
+    ManagerLocator { }
 
 export class DuplicateLabels {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly duplicatedLabelsDiagnostics = vscode.languages.createDiagnosticCollection('Duplicate Labels')
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
         this.extension.completionUpdater.onDidUpdate((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop')

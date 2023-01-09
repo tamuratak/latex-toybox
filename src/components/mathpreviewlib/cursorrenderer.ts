@@ -2,9 +2,9 @@ import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
 import { TexMathEnv } from './texmathenvfinder'
 
-import type { UtensilsParserLocator } from '../../../interfaces'
+import type { UtensilsParserLocator } from '../../interfaces'
 import type { ITextDocumentLike } from './textdocumentlike'
-import { convertPositionToOffset, toLuPos } from '../../../utils/utensils'
+import { convertPositionToOffset, toLuPos } from '../../utils/utensils'
 
 type PrevNextNodes = {
     readonly prev: latexParser.Node | undefined,
@@ -114,7 +114,7 @@ export class CursorRenderer {
         if (texMath.texString === this.currentTeXString && this.currentAst) {
             ast = this.currentAst
         } else {
-            ast = await this.extension.pegParser.parseLatex(texMath.texString, {enableMathCharacterLocation: true})
+            ast = await this.extension.utensilsParser.parseLatex(texMath.texString, {enableMathCharacterLocation: true})
             this.currentAst = ast
             this.currentTeXString = texMath.texString
         }

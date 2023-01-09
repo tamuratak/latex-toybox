@@ -65,7 +65,7 @@ export class BibtexFormatter {
         const lineOffset = range ? range.start.line : 0
         const columnOffset = range ? range.start.character : 0
 
-        const ast = await this.extension.pegParser.parseBibtex(document.getText(range)).catch((error) => {
+        const ast = await this.extension.utensilsParser.parseBibtex(document.getText(range)).catch((error) => {
             if (error instanceof(Error)) {
                 this.extension.logger.error('Bibtex parser failed.')
                 this.extension.logger.error(error.message)

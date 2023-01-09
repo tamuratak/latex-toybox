@@ -7,17 +7,24 @@ import * as os from 'os'
 import * as tmp from 'tmp'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 
-import type {Extension} from '../main'
 import {BuildFinished} from './eventbus'
-import type {IBuilder} from '../interfaces'
+import type {CompilerLogLocator, EventBusLocator, IBuilder, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
 const maxPrintLine = '10000'
 const texMagicProgramName = 'TeXMagicProgram'
 const bibMagicProgramName = 'BibMagicProgram'
 
+interface IExtension extends
+    EventBusLocator,
+    LoggerLocator,
+    CompilerLogLocator,
+    ManagerLocator,
+    LwStatusBarItemLocator,
+    ViewerLocator { }
+
 export class Builder implements IBuilder {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     readonly tmpDir: string
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     private readonly buildMutex = new MutexWithSizedQueue(1)
@@ -26,7 +33,7 @@ export class Builder implements IBuilder {
     private previousLanguageId: string | undefined
     private readonly cbSet: Set<(rootfile: string) => unknown> = new Set()
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
         try {
             this.tmpDir = tmp.dirSync({unsafeCleanup: true}).name.split(path.sep).join('/')

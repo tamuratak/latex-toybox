@@ -54,7 +54,7 @@ export class Server {
         this.serverStarted = new Promise((resolve) => {
             this.eventEmitter.on(ServerStartedEvent, () => resolve() )
         })
-        this.pdfFilePathEncoder = new PdfFilePathEncoder(extension)
+        this.pdfFilePathEncoder = new PdfFilePathEncoder()
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
         this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')

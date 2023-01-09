@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { readFilePath } from '../../../lib/lwfs/lwfs'
+import { readFilePath } from '../../lib/lwfs/lwfs'
 
 export interface ITextDocumentLike {
     readonly lineCount: number,

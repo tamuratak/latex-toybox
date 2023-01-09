@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { Extension } from '../main'
+import type { CompilerLogLocator, CompleterLocator, ICompilerLog, LoggerLocator, ManagerLocator } from '../interfaces'
 import type { StepCommand } from './builder'
 import { CompilerLogParser, LogEntry } from './compilerloglib/core'
 
@@ -58,12 +58,18 @@ export class BuildStepLog {
 
 }
 
-export class CompilerLog {
+interface IExtension extends
+    CompilerLogLocator,
+    CompleterLocator,
+    LoggerLocator,
+    ManagerLocator { }
+
+export class CompilerLog implements ICompilerLog {
     private readonly compilerLogParser: CompilerLogParser
     private stepLogs: BuildStepLog[] = []
     private count = 1
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.compilerLogParser = new CompilerLogParser(extension)
     }
 

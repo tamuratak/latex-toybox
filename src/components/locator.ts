@@ -35,8 +35,6 @@ export class Locator {
     constructor(extension: IExtension) {
         this.extension = extension
         this.synctexjs = new SyncTexJs(extension)
-
-
     }
 
     private parseSyncTeXForward(result: string): SyncTeXRecordForward {

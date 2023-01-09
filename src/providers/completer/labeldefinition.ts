@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type {IProvider} from './interface'
-import { BuilderLocator, CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
+import type { BuilderLocator, CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 
 export interface LabelDefinitionElement {

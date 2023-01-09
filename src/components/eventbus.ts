@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type {Disposable} from 'vscode'
-import { IEventBus, LoggerLocator } from '../interfaces'
+import type { IEventBus, LoggerLocator } from '../interfaces'
 
 
 export const BuildFinished = 'buildfinished'

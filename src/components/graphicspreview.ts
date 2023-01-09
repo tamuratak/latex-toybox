@@ -1,13 +1,19 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import type { Extension } from '../../main'
-import { existsPath } from '../../lib/lwfs/lwfs'
+import { existsPath } from '../lib/lwfs/lwfs'
+import { CompleterLocator, LoggerLocator, ManagerLocator, SnippetViewLocator } from '../interfaces'
 
+
+interface IExtension extends
+    CompleterLocator,
+    LoggerLocator,
+    ManagerLocator,
+    SnippetViewLocator { }
 
 export class GraphicsPreview {
-    private readonly extension: Extension
+    private readonly extension: IExtension
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 
