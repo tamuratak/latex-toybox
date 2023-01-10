@@ -6,9 +6,10 @@ import {EnvironmentUpdater} from './completionupdaterlib/environmentupdater'
 import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupdater'
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
-import type { CompleterLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
+import type { CompleterLocator, EventBusLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
 
 interface IExtension extends
+    EventBusLocator,
     CompleterLocator,
     LoggerLocator,
     ManagerLocator,
@@ -21,7 +22,6 @@ export class CompletionUpdater implements ICompleteionUpdater {
     private readonly environmentUpdater: EnvironmentUpdater
     private readonly referenceUpdater: LabelDefinitionUpdater
     private readonly glossaryUpdater: GlossaryUpdater
-    private readonly cbSet: Set<(file: string) => void> = new Set()
 
     constructor(extension: IExtension) {
         this.extension = extension
@@ -34,17 +34,6 @@ export class CompletionUpdater implements ICompleteionUpdater {
 
     get definedCmds() {
         return this.commandUpdater.commandFinder.definedCmds
-    }
-
-    onDidUpdate(cb: (file: string) => void): vscode.Disposable {
-        this.cbSet.add(cb)
-        return new vscode.Disposable(() => this.cbSet.delete(cb))
-    }
-
-    private callCbs(file: string) {
-        this.cbSet.forEach((cb) => {
-            cb(file)
-        })
     }
 
     /**
@@ -75,6 +64,6 @@ export class CompletionUpdater implements ICompleteionUpdater {
             this.environmentUpdater.update(file, undefined, undefined, contentNoComment)
             this.commandUpdater.update(file, undefined, contentNoComment)
         }
-        this.callCbs(file)
+        await this.extension.eventBus.completionUpdated.fire(file)
     }
 }

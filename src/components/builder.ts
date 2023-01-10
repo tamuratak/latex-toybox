@@ -7,7 +7,6 @@ import * as os from 'os'
 import * as tmp from 'tmp'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 
-import {BuildFinished} from './eventbus'
 import type {CompilerLogLocator, EventBusLocator, IBuilder, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
@@ -31,7 +30,6 @@ export class Builder implements IBuilder {
     private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
     private previousLanguageId: string | undefined
-    private readonly cbSet: Set<(rootfile: string) => unknown> = new Set()
 
     constructor(extension: IExtension) {
         this.extension = extension
@@ -57,17 +55,6 @@ export class Builder implements IBuilder {
         } catch (e) {
             this.extension.logger.error('Cannot run pdflatex to determine if we are using MiKTeX')
         }
-    }
-
-    onDidBuild(cb: (file: string) => unknown): vscode.Disposable {
-        this.cbSet.add(cb)
-        return new vscode.Disposable(() => this.cbSet.delete(cb))
-    }
-
-    private async callCbs(rootfile: string) {
-        return Promise.allSettled(
-            [...this.cbSet.values()].map(cb => cb(rootfile))
-        )
     }
 
     /**
@@ -339,8 +326,7 @@ export class Builder implements IBuilder {
         if (this.extension.compilerLog.isLaTeXmkSkipped) {
             return
         }
-        await this.callCbs(rootFile)
-        this.extension.eventBus.fire(BuildFinished)
+        await this.extension.eventBus.buildFinished.fire(rootFile)
     }
 
     private createSteps(rootFile: string, languageId: string, recipeName: string | undefined): StepCommand[] | undefined {

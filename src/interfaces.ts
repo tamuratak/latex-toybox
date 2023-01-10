@@ -3,29 +3,30 @@ import type vscode from 'vscode'
 import { StepCommand } from './components/builder'
 import { BuildStepLog } from './components/compilerlog'
 import { LogEntry } from './components/compilerloglib/core'
-import type { EventArgTypeMap, EventBus, EventName } from './components/eventbus'
 import type {SyncTeXRecordForward} from './components/locator'
 import type {CachedContentEntry} from './components/manager'
 import { ReferenceStore } from './components/referencestore'
 import { CiteSuggestion } from './providers/completer/citation'
 import type {ICommand, ILwCompletionItem} from './providers/completer/interface'
-import type {ClientRequest} from '../types/latex-workshop-protocol-types'
+import type {ClientRequest, PdfViewerState} from '../types/latex-workshop-protocol-types'
+import { AwaitableEventEmitter } from './utils/awaitableeventemitter'
+
 
 export interface ReferenceStoreLocator {
     readonly referenceStore: ReferenceStore
 }
 
 export interface IEventBus {
-    fire<T extends keyof EventArgTypeMap>(eventName: T, arg: EventArgTypeMap[T]): void,
-    fire(eventName: EventName): void,
-    fire(eventName: EventName, arg?: any): void,
-    onDidChangeRootFile(cb: (rootFile: EventArgTypeMap['rootfilechanged']) => void): vscode.Disposable,
-    onDidEndFindRootFile(cb: () => void): vscode.Disposable,
-    onDidChangePdfViewerStatus(cb: (status: EventArgTypeMap['pdfviewerstatuschanged']) => void): vscode.Disposable
+    readonly buildFinished: AwaitableEventEmitter<string, 'buildfinished'>,
+    readonly pdfViewerStatusChanged: AwaitableEventEmitter<PdfViewerState, 'pdfviewerstatuschanged'>,
+    readonly pdfViewerPagesLoaded: AwaitableEventEmitter<vscode.Uri, 'pdfviewerpagesloaded'>,
+    readonly rootFileChanged: AwaitableEventEmitter<string, 'rootfilechanged'>,
+    readonly findRootFileEnd: AwaitableEventEmitter<string | undefined, 'findrootfileend'>,
+    readonly completionUpdated: AwaitableEventEmitter<string, 'completionupdated'>
 }
 
 export interface EventBusLocator {
-    readonly eventBus: EventBus
+    readonly eventBus: IEventBus
 }
 
 export interface CommandLocator {
@@ -59,7 +60,6 @@ export interface ICompleteionUpdater {
         file: string,
         location: vscode.Location
     }>,
-    onDidUpdate(cb: (file: string) => void): vscode.Disposable,
     updateCompleter(file: string, content: string): Promise<void>
 }
 
@@ -76,8 +76,7 @@ export interface BuilderLocator {
 }
 
 export interface IBuilder {
-    readonly tmpDir: string,
-    onDidBuild(cb: (file: string) => unknown): vscode.Disposable
+    readonly tmpDir: string
 }
 
 export interface LoggerLocator {

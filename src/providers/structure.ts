@@ -660,11 +660,11 @@ export class StructureTreeView {
             this._viewer
         )
 
-        this.extension.eventBus.onDidChangeRootFile(() => {
+        this.extension.eventBus.rootFileChanged.event(() => {
             void this.computeTreeStructure()
         })
 
-        this.extension.eventBus.onDidEndFindRootFile(() => {
+        this.extension.eventBus.findRootFileEnd.event(() => {
             void this.refreshView()
         })
 

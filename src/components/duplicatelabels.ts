@@ -1,9 +1,10 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type { CompletionUpdaterLocator, LoggerLocator, ManagerLocator } from '../interfaces'
+import type { CompletionUpdaterLocator, EventBusLocator, LoggerLocator, ManagerLocator } from '../interfaces'
 
 interface IExtension extends
+    EventBusLocator,
     CompletionUpdaterLocator,
     LoggerLocator,
     ManagerLocator { }
@@ -14,7 +15,7 @@ export class DuplicateLabels {
 
     constructor(extension: IExtension) {
         this.extension = extension
-        this.extension.completionUpdater.onDidUpdate((file: string) => {
+        this.extension.eventBus.completionUpdated.event((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop')
             if (configuration.get('check.duplicatedLabels.enabled')) {
                 this.run(file)
