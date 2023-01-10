@@ -56,10 +56,15 @@ export class Server implements IServer {
         })
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
+
+        extension.extensionContext.subscriptions.push(
+            new vscode.Disposable(() => this.dispose())
+        )
+
         this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')
     }
 
-    dispose() {
+    private dispose() {
         this.httpServer.close()
     }
 

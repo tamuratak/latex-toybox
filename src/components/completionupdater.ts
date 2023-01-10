@@ -38,10 +38,7 @@ export class CompletionUpdater implements ICompleteionUpdater {
 
     onDidUpdate(cb: (file: string) => void): vscode.Disposable {
         this.cbSet.add(cb)
-        const diposable = {
-            dispose: () => { this.cbSet.delete(cb) }
-        }
-        return diposable
+        return new vscode.Disposable(() => this.cbSet.delete(cb))
     }
 
     private callCbs(file: string) {

@@ -41,6 +41,10 @@ export class PdfViewerPanel {
         })
     }
 
+    dispose() {
+        this.webviewPanel.dispose()
+    }
+
     get state() {
         return this.#state
     }

@@ -41,29 +41,17 @@ export class LwFileWatcher {
 
     onDidCreate(cb: (uri: vscode.Uri) => unknown): vscode.Disposable {
         this.onDidCreateCbs.add(cb)
-        return {
-            dispose: () => {
-                this.onDidCreateCbs.delete(cb)
-            }
-        }
+        return new vscode.Disposable(() => this.onDidCreateCbs.delete(cb))
     }
 
     onDidChange(cb: (uri: vscode.Uri) => unknown): vscode.Disposable {
         this.onDidChangeCbs.add(cb)
-        return {
-            dispose: () => {
-                this.onDidChangeCbs.delete(cb)
-            }
-        }
+        return new vscode.Disposable(() => this.onDidChangeCbs.delete(cb))
     }
 
     onDidDelete(cb: (uri: vscode.Uri) => unknown): vscode.Disposable {
         this.onDidDeleteCbs.add(cb)
-        return {
-            dispose: () => {
-                this.onDidDeleteCbs.delete(cb)
-            }
-        }
+        return new vscode.Disposable(() => this.onDidDeleteCbs.delete(cb))
     }
 
 }

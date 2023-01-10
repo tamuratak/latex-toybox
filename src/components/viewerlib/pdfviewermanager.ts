@@ -17,6 +17,14 @@ export class PdfViewerManagerService {
         this.extension = extension
     }
 
+    dispose() {
+        this.webviewPanelMap.forEach(panelSet => {
+            panelSet.forEach(panel => {
+                panel.dispose()
+            })
+        })
+    }
+
     private toKey(pdfFileUri: vscode.Uri): string {
         return pdfFileUri.toString(true).toLocaleUpperCase()
     }

@@ -140,7 +140,8 @@ export class Manager implements IManager {
                     const fileUri = e.document.uri
                     await this.updateContentEntry(fileUri)
                 }
-            })
+            }),
+            new vscode.Disposable(() => this.dispose())
         )
 
         setTimeout(async () => {
@@ -158,7 +159,7 @@ export class Manager implements IManager {
 
     }
 
-    dispose() {
+    private dispose() {
         this.lwFileWatcher.dispose()
     }
 

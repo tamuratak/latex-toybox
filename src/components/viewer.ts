@@ -57,6 +57,14 @@ export class Viewer implements IViewer {
             return
         })
 
+        extension.extensionContext.subscriptions.push(
+            new vscode.Disposable(() => this.dispose())
+        )
+
+    }
+
+    private dispose() {
+        this.managerService.dispose()
     }
 
     private createClientSet(pdfFileUri: vscode.Uri): void {

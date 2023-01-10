@@ -51,12 +51,15 @@ export class MathPreviewPanel {
         this.mathPreviewPanelSerializer = new MathPreviewPanelSerializer(extension)
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         this.needCursor = configuration.get('mathpreviewpanel.cursor.enabled', false)
-        vscode.workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('latex-workshop.mathpreviewpanel.cursor.enabled')) {
-                const conf = vscode.workspace.getConfiguration('latex-workshop')
-                this.needCursor = conf.get('mathpreviewpanel.cursor.enabled', false)
-            }
-        })
+        extension.extensionContext.subscriptions.push(
+            vscode.workspace.onDidChangeConfiguration((e) => {
+                if (e.affectsConfiguration('latex-workshop.mathpreviewpanel.cursor.enabled')) {
+                    const conf = vscode.workspace.getConfiguration('latex-workshop')
+                    this.needCursor = conf.get('mathpreviewpanel.cursor.enabled', false)
+                }
+            }),
+            new vscode.Disposable(() => void this.panel?.dispose())
+        )
     }
 
     private get mathPreview() {

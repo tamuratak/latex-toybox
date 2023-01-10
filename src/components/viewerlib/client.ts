@@ -23,7 +23,7 @@ export class Client {
     }
 
     onDidDispose(cb: () => unknown) {
-        this.disposables.add( { dispose: cb } )
+        this.disposables.add(new vscode.Disposable(cb))
     }
 
     send(message: ServerResponse) {
