@@ -656,7 +656,8 @@ export class StructureTreeView {
                     return this.showCursorItem(e)
                 }
                 return
-            })
+            }),
+            this._viewer
         )
 
         this.extension.eventBus.onDidChangeRootFile(() => {

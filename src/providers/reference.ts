@@ -1,12 +1,13 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { CompleterLocator, EventBusLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
+import type { CompleterLocator, EventBusLocator, ExtensionContextLocator, ManagerLocator, ReferenceStoreLocator, UtensilsParserLocator } from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../utils/utensils'
 
 
 interface IExtension extends
+    ExtensionContextLocator,
     EventBusLocator,
     CompleterLocator,
     ManagerLocator,
@@ -19,12 +20,14 @@ export class ReferenceUpdater {
 
     constructor(extension: IExtension) {
         this.extension = extension
-        this.extension.eventBus.onDidChangeRootFile(() => {
-            void this.update()
-        })
-        vscode.workspace.onDidChangeTextDocument(() => {
-            void this.update()
-        })
+        extension.extensionContext.subscriptions.push(
+            this.extension.eventBus.onDidChangeRootFile(() => {
+                void this.update()
+            }),
+            vscode.workspace.onDidChangeTextDocument(() => {
+                void this.update()
+            })
+        )
     }
 
     private get labelCommandLocationMap() {

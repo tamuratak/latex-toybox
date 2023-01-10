@@ -1,8 +1,9 @@
 import * as vscode from 'vscode'
-import type { LoggerLocator } from '../interfaces'
+import type { ExtensionContextLocator, LoggerLocator } from '../interfaces'
 
 
 interface IExtension extends
+    ExtensionContextLocator,
     LoggerLocator { }
 
 export class Configuration {
@@ -11,9 +12,11 @@ export class Configuration {
     constructor(extension: IExtension) {
         this.extension = extension
         this.logConfiguration()
-        vscode.workspace.onDidChangeConfiguration((ev) => {
-            this.logChangeOnConfiguration(ev)
-        })
+        extension.extensionContext.subscriptions.push(
+            vscode.workspace.onDidChangeConfiguration((ev) => {
+                this.logChangeOnConfiguration(ev)
+            })
+        )
     }
 
     private readonly configurationsToLog = [

@@ -140,7 +140,8 @@ export class Manager implements IManager {
                     const fileUri = e.document.uri
                     await this.updateContentEntry(fileUri)
                 }
-            })
+            }),
+            new vscode.Disposable(() => this.dispose())
         )
 
         setTimeout(async () => {
@@ -155,10 +156,6 @@ export class Manager implements IManager {
         this.extension.builder.onDidBuild((rootFile) => {
             return this.parseFlsFile(rootFile)
         })
-
-        extension.extensionContext.subscriptions.push(
-            new vscode.Disposable(() => this.dispose())
-        )
 
     }
 

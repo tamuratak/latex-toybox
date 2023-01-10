@@ -1,8 +1,9 @@
 import * as vscode from 'vscode'
-import type { ManagerLocator } from '../interfaces'
+import type { ExtensionContextLocator, ManagerLocator } from '../interfaces'
 
 
 interface IExtension extends
+    ExtensionContextLocator,
     ManagerLocator { }
 
 export class LaTeXCommanderTreeView {
@@ -10,12 +11,15 @@ export class LaTeXCommanderTreeView {
 
     constructor(extension: IExtension) {
         this.latexCommanderProvider = new LaTeXCommanderProvider(extension)
-        vscode.window.createTreeView(
-            'latex-workshop-commands',
-            {
-              treeDataProvider: this.latexCommanderProvider,
-              showCollapseAll: true
-            })
+        extension.extensionContext.subscriptions.push(
+            vscode.window.createTreeView(
+                'latex-workshop-commands',
+                {
+                    treeDataProvider: this.latexCommanderProvider,
+                    showCollapseAll: true
+                }
+            )
+        )
     }
 
     update() {
@@ -32,11 +36,14 @@ class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
     constructor(extension: IExtension) {
         this.extension = extension
         this.onDidChangeTreeData = this._onDidChangeTreeData.event
-        vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {
-            if (ev.affectsConfiguration('latex-workshop.latex.recipes', this.extension.manager.getWorkspaceFolderRootDir())) {
-                this.update()
-            }
-        })
+        extension.extensionContext.subscriptions.push(
+            vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {
+                if (ev.affectsConfiguration('latex-workshop.latex.recipes', this.extension.manager.getWorkspaceFolderRootDir())) {
+                    this.update()
+                }
+            }),
+            this._onDidChangeTreeData
+        )
         this.commands = this.buildCommandTree()
     }
 

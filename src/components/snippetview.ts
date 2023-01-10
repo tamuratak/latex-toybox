@@ -3,7 +3,7 @@ import {readFileSync} from 'fs'
 import * as path from 'path'
 
 import {replaceWebviewPlaceholders} from '../utils/webview'
-import { ExtensionRootLocator, ISnippetView, ManagerLocator } from '../interfaces'
+import { ExtensionContextLocator, ExtensionRootLocator, ISnippetView, ManagerLocator } from '../interfaces'
 
 
 type SnippetViewResult = RenderResult | {
@@ -18,6 +18,7 @@ type RenderResult = {
 }
 
 interface IExtension extends
+    ExtensionContextLocator,
     ExtensionRootLocator,
     ManagerLocator { }
 
@@ -76,11 +77,13 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
         if (editor && this.extension.manager.hasTexId(editor.document.languageId)) {
             this.lastActiveTextEditor = editor
         }
-        vscode.window.onDidChangeActiveTextEditor(textEditor => {
-            if (textEditor && this.extension.manager.hasTexId(textEditor.document.languageId)) {
-                this.lastActiveTextEditor = textEditor
-            }
-        })
+        extension.extensionContext.subscriptions.push(
+            vscode.window.onDidChangeActiveTextEditor(textEditor => {
+                if (textEditor && this.extension.manager.hasTexId(textEditor.document.languageId)) {
+                    this.lastActiveTextEditor = textEditor
+                }
+            })
+        )
     }
 
     get webviewView() {
