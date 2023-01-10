@@ -14,12 +14,8 @@ export class LwStatusBarItem implements ILwStatusBarItem {
         this.status.show()
         this.displayStatus('success')
         extension.extensionContext.subscriptions.push(
-            new vscode.Disposable(() => this.dispose())
+            new vscode.Disposable(() => this.status.dispose())
         )
-    }
-
-    private dispose() {
-        this.status.dispose()
     }
 
     displayStatus(
