@@ -9,6 +9,7 @@ import type {Extension} from '../main'
 import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
 import {EventEmitter} from 'events'
 import { readFileAsBuffer } from '../lib/lwfs/lwfs'
+import type { IServer } from '../interfaces'
 
 class WsServer extends ws.Server {
     private readonly extension: Extension
@@ -40,7 +41,7 @@ class WsServer extends ws.Server {
 
 const ServerStartedEvent = 'serverstarted'
 
-export class Server {
+export class Server implements IServer {
     private readonly extension: Extension
     private readonly httpServer: http.Server
     private address?: AddressInfo

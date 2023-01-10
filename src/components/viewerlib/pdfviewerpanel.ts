@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type {Extension} from '../../main'
 import type {PanelRequest, PdfViewerState} from '../../../types/latex-workshop-protocol-types/index'
 import {escapeHtml, sleep} from '../../utils/utils'
 import type {PdfViewerManagerService} from './pdfviewermanager'
@@ -9,15 +8,22 @@ import {PdfViewerStatusChanged} from '../eventbus'
 import { getNonce } from '../../utils/getnonce'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
+import type { EventBusLocator, ExtensionRootLocator, LoggerLocator, ServerLocator } from '../../interfaces'
 
+
+interface IExtension extends
+    ExtensionRootLocator,
+    EventBusLocator,
+    LoggerLocator,
+    ServerLocator { }
 
 export class PdfViewerPanel {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     readonly webviewPanel: vscode.WebviewPanel
     readonly pdfFileUri: vscode.Uri
     #state: PdfViewerState | undefined
 
-    constructor(extension: Extension, pdfFileUri: vscode.Uri, panel: vscode.WebviewPanel) {
+    constructor(extension: IExtension, pdfFileUri: vscode.Uri, panel: vscode.WebviewPanel) {
         this.extension = extension
         this.pdfFileUri = pdfFileUri
         this.webviewPanel = panel
@@ -42,11 +48,11 @@ export class PdfViewerPanel {
 }
 
 export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly panelService: PdfViewerPanelService
     private readonly managerService: PdfViewerManagerService
 
-    constructor(extension: Extension, panelService: PdfViewerPanelService, service: PdfViewerManagerService) {
+    constructor(extension: IExtension, panelService: PdfViewerPanelService, service: PdfViewerManagerService) {
         this.extension = extension
         this.panelService = panelService
         this.managerService = service
@@ -88,10 +94,10 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
 }
 
 export class PdfViewerPanelService {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private alreadyOpened = false
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 
