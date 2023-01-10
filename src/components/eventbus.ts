@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
-import type {Disposable} from 'vscode'
-import type { IEventBus, LoggerLocator } from '../interfaces'
+import {Disposable} from 'vscode'
+import type { ExtensionContextLocator, IEventBus, LoggerLocator } from '../interfaces'
 
 
 export const BuildFinished = 'buildfinished'
@@ -23,6 +23,7 @@ export type EventName = typeof BuildFinished
 
 
 interface IExtension extends
+    ExtensionContextLocator,
     LoggerLocator { }
 
 export class EventBus implements IEventBus {
@@ -31,9 +32,12 @@ export class EventBus implements IEventBus {
 
     constructor(extension: IExtension) {
         this.extension = extension
+        extension.extensionContext.subscriptions.push(
+            new Disposable(() => this.dispose())
+        )
     }
 
-    dispose() {
+    private dispose() {
         this.eventEmitter.removeAllListeners()
     }
 

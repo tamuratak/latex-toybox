@@ -156,9 +156,13 @@ export class Manager implements IManager {
             return this.parseFlsFile(rootFile)
         })
 
+        extension.extensionContext.subscriptions.push(
+            new vscode.Disposable(() => this.dispose())
+        )
+
     }
 
-    dispose() {
+    private dispose() {
         this.lwFileWatcher.dispose()
     }
 

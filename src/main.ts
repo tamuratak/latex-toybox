@@ -132,6 +132,8 @@ function generateLatexWorkshopApi(extension: Extension) {
 let extensionToDispose: Extension | undefined
 
 // We should clean up file watchers and wokerpool pools.
+// We have to call async dispose() through deactivate()
+// since vscode.Disposable doesn't support async dispose().
 // - https://github.com/microsoft/vscode/issues/114688#issuecomment-768253918
 export function deactivate() {
     return extensionToDispose?.dispose()
@@ -288,7 +290,7 @@ export class Extension implements IExtension {
         this.completionUpdater = new CompletionUpdater(this)
 
         this.compilerLog = new CompilerLog(this)
-        this.statusbaritem = new LwStatusBarItem()
+        this.statusbaritem = new LwStatusBarItem(this)
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.viewer = new Viewer(this)
@@ -312,10 +314,6 @@ export class Extension implements IExtension {
     }
 
     async dispose() {
-        this.manager.dispose()
-        this.server.dispose()
-        this.compilerLog.dispose()
-        this.statusbaritem.dispose()
         await this.utensilsParser.dispose()
         await this.mathPreview.dispose()
     }

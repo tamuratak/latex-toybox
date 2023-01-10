@@ -108,7 +108,6 @@ export interface LwStatusBarItemLocator {
 
 export interface ICompilerLog {
     createStepLog(_rootfile: string | undefined, steps: StepCommand[], stepIndex: number): BuildStepLog,
-    dispose(): void,
     clear(): void,
     parse(stepLog: BuildStepLog, rootFile?: string): Promise<void> | void,
     showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string): void,
@@ -157,8 +156,7 @@ export interface UtensilsParserLocator {
 
 export interface IServer {
     readonly serverStarted: Promise<void>,
-    readonly port: number,
-    dispose(): void
+    readonly port: number
 }
 
 export interface ServerLocator {

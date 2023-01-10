@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import type { CompilerLogLocator, CompleterLocator, ICompilerLog, LoggerLocator, ManagerLocator } from '../interfaces'
+import type { CompilerLogLocator, CompleterLocator, ExtensionContextLocator, ICompilerLog, LoggerLocator, ManagerLocator } from '../interfaces'
 import type { StepCommand } from './builder'
 import { CompilerLogParser, LogEntry } from './compilerloglib/core'
 
@@ -59,6 +59,7 @@ export class BuildStepLog {
 }
 
 interface IExtension extends
+    ExtensionContextLocator,
     CompilerLogLocator,
     CompleterLocator,
     LoggerLocator,
@@ -71,6 +72,9 @@ export class CompilerLog implements ICompilerLog {
 
     constructor(extension: IExtension) {
         this.compilerLogParser = new CompilerLogParser(extension)
+        extension.extensionContext.subscriptions.push(
+            new vscode.Disposable(() => this.dispose())
+        )
     }
 
     createStepLog(_rootfile: string | undefined, steps: StepCommand[], stepIndex: number): BuildStepLog {
@@ -80,7 +84,7 @@ export class CompilerLog implements ICompilerLog {
         return stepLog
     }
 
-    dispose() {
+    private dispose() {
         this.clear()
     }
 
