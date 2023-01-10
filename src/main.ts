@@ -281,7 +281,7 @@ export class Extension implements IExtension {
         this.extensionRoot = context.extensionPath
         // We must create Logger, EventBus, Builder, and CompletionUpdater first.
         // Other classes may use them in their constructors.
-        this.logger = new Logger()
+        this.logger = new Logger(context.subscriptions)
         this.eventBus = new EventBus(this)
         this.addLogFundamentals()
         this.configuration = new Configuration(this)

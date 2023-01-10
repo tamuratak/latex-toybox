@@ -4,8 +4,9 @@ import type {ILogger} from '../interfaces'
 export class Logger implements ILogger {
     private readonly logPanel: vscode.LogOutputChannel
 
-    constructor() {
+    constructor(extensionContextSubscriptions: vscode.ExtensionContext['subscriptions']) {
         this.logPanel = vscode.window.createOutputChannel('LaTeX Workshop', { log: true })
+        extensionContextSubscriptions.push(this.logPanel)
     }
 
     info(message: string) {
