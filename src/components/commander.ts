@@ -29,27 +29,27 @@ export class LaTeXCommanderTreeView {
 
 class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
     private readonly extension: IExtension
-    private readonly _onDidChangeTreeData: vscode.EventEmitter<LaTeXCommand | undefined> = new vscode.EventEmitter<LaTeXCommand | undefined>()
+    private readonly treeDataEventEmitter: vscode.EventEmitter<LaTeXCommand | undefined> = new vscode.EventEmitter<LaTeXCommand | undefined>()
     readonly onDidChangeTreeData: vscode.Event<LaTeXCommand | undefined>
     private commands: LaTeXCommand[] = []
 
     constructor(extension: IExtension) {
         this.extension = extension
-        this.onDidChangeTreeData = this._onDidChangeTreeData.event
+        this.onDidChangeTreeData = this.treeDataEventEmitter.event
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {
                 if (ev.affectsConfiguration('latex-workshop.latex.recipes', this.extension.manager.getWorkspaceFolderRootDir())) {
                     this.update()
                 }
             }),
-            this._onDidChangeTreeData
+            this.treeDataEventEmitter
         )
         this.commands = this.buildCommandTree()
     }
 
     update() {
         this.commands = this.buildCommandTree()
-        this._onDidChangeTreeData.fire(undefined)
+        this.treeDataEventEmitter.fire(undefined)
     }
 
     private buildNode(parent: LaTeXCommand, children: LaTeXCommand[]) {
