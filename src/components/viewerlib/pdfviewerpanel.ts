@@ -8,6 +8,7 @@ import type {PdfViewerManagerService} from './pdfviewermanager'
 import {PdfViewerStatusChanged} from '../eventbus'
 import { getNonce } from '../../utils/getnonce'
 import * as lwfs from '../../lib/lwfs/lwfs'
+import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
 
 
 export class PdfViewerPanel {
@@ -94,10 +95,6 @@ export class PdfViewerPanelService {
         this.extension = extension
     }
 
-    private encodePathWithPrefix(pdfFileUri: vscode.Uri): string {
-        return this.extension.server.pdfFilePathEncoder.encodePathWithPrefix(pdfFileUri)
-    }
-
     private async tweakForCodespaces(url: vscode.Uri) {
         if (this.alreadyOpened) {
             return
@@ -144,7 +141,7 @@ export class PdfViewerPanelService {
     async getPDFViewerContent(pdfFile: vscode.Uri, webview: vscode.Webview): Promise<string> {
         const serverPort = this.extension.server.port
         // viewer/viewer.js automatically requests the file to server.ts, and server.ts decodes the encoded path of PDF file.
-        const origUrl = `http://127.0.0.1:${serverPort}/viewer.html?file=${this.encodePathWithPrefix(pdfFile)}`
+        const origUrl = `http://127.0.0.1:${serverPort}/viewer.html?file=${encodePathWithPrefix(pdfFile)}`
         const url = await vscode.env.asExternalUri(vscode.Uri.parse(origUrl, true))
         const iframeSrcOrigin = `${url.scheme}://${url.authority}`
         const iframeSrcUrl = url.toString(true)
