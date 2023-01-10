@@ -9,7 +9,7 @@ import type {CachedContentEntry} from './components/manager'
 import { ReferenceStore } from './components/referencestore'
 import { CiteSuggestion } from './providers/completer/citation'
 import type {ICommand, ILwCompletionItem} from './providers/completer/interface'
-
+import type {ClientRequest} from '../types/latex-workshop-protocol-types'
 
 export interface ReferenceStoreLocator {
     readonly referenceStore: ReferenceStore
@@ -136,7 +136,8 @@ export interface IManager {
     getIncludedTeX(file?: string): string[],
     getDirtyContent(file: string): Promise<string | undefined>,
     getWorkspaceFolderRootDir(): vscode.WorkspaceFolder | undefined,
-    tex2pdf(texPath: string, respectOutDir?: boolean): string
+    tex2pdf(texPath: string, respectOutDir?: boolean): string,
+    watchPdfFile(pdfFileUri: vscode.Uri): void
 }
 
 export interface ManagerLocator {
@@ -154,6 +155,16 @@ export interface UtensilsParserLocator {
     readonly utensilsParser: IUtensilsParser
 }
 
+export interface IServer {
+    readonly serverStarted: Promise<void>,
+    readonly port: number,
+    dispose(): void
+}
+
+export interface ServerLocator {
+    readonly server: IServer
+}
+
 export interface IViewer {
     syncTeX(pdfFile: string, record: SyncTeXRecordForward): void,
     refreshExistingViewer(sourceFile?: string, pdfFileUri?: vscode.Uri): void
@@ -161,6 +172,15 @@ export interface IViewer {
 
 export interface ViewerLocator {
     readonly viewer: IViewer
+}
+
+export interface ILocator {
+    syncTeX(args?: {line: number, filePath: string}, forcedViewer?: 'auto' | 'tabOrBrowser' | 'external', pdfFile?: string): Promise<void>,
+    locate(data: Extract<ClientRequest, {type: 'reverse_synctex'}>, pdfPath: string): Promise<void>
+}
+
+export interface LocatorLocator {
+    readonly locator: ILocator
 }
 
 export interface ICitation {

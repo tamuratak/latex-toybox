@@ -6,7 +6,7 @@ import {replaceArgumentPlaceholders} from '../utils/utils'
 import {isSameRealPath} from '../utils/pathnormalize'
 
 import type {ClientRequest} from '../../types/latex-workshop-protocol-types'
-import type {BuilderLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, ViewerLocator} from '../interfaces'
+import type {BuilderLocator, ExtensionRootLocator, ILocator, LoggerLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { existsPath } from '../lib/lwfs/lwfs'
 
 export type SyncTeXRecordForward = {
@@ -28,7 +28,7 @@ interface IExtension extends
     ManagerLocator,
     ViewerLocator { }
 
-export class Locator {
+export class Locator implements ILocator {
     private readonly extension: IExtension
     private readonly synctexjs: SyncTexJs
 

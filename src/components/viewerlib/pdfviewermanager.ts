@@ -1,17 +1,19 @@
 import * as vscode from 'vscode'
 import type ws from 'ws'
 
-import type {Extension} from '../../main'
+import type { ManagerLocator } from '../../interfaces'
 import type {Client} from './client'
 import type {PdfViewerPanel} from './pdfviewerpanel'
 
+interface IExtension extends
+    ManagerLocator { }
 
 export class PdfViewerManagerService {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly webviewPanelMap = new Map<string, Set<PdfViewerPanel>>()
     readonly clientMap = new Map<string, Set<Client>>()
 
-    constructor(extension: Extension) {
+    constructor(extension: IExtension) {
         this.extension = extension
     }
 
