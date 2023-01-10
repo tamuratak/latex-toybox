@@ -34,7 +34,7 @@ export class SnippetView implements ISnippetView {
             return
         }
         const uri = webview.asWebviewUri(pdfFileUri).toString()
-        let disposable: { dispose: () => void } | undefined
+        let disposable: vscode.Disposable | undefined
         const promise = new Promise<RenderResult | undefined>((resolve) => {
             disposable = this.snippetViewProvider.onDidReceiveMessage((e: SnippetViewResult) => {
                 if (e.type !== 'png') {
@@ -128,8 +128,6 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
 
     onDidReceiveMessage(cb: (e: SnippetViewResult) => void) {
         this.cbSet.add(cb)
-        return {
-            dispose: () => this.cbSet.delete(cb)
-        }
+        return new vscode.Disposable(() => this.cbSet.delete(cb))
     }
 }

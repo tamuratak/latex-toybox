@@ -74,20 +74,14 @@ export class EventBus implements IEventBus {
     ): Disposable
      {
         this.eventEmitter.on(eventName, cb)
-        const disposable = {
-            dispose: () => { this.eventEmitter.removeListener(eventName, cb) }
-        }
-        return disposable
+        return new Disposable(() => this.eventEmitter.removeListener(eventName, cb))
     }
 
     on(eventName: EventName, argCb: () => void) {
         this.extension.logger.debug(`EventBus: on ${eventName}`)
         const cb = () => argCb()
         this.eventEmitter.on(eventName, cb)
-        const disposable = {
-            dispose: () => { this.eventEmitter.removeListener(eventName, cb) }
-        }
-        return disposable
+        return new Disposable(() => this.eventEmitter.removeListener(eventName, cb))
     }
 
 }

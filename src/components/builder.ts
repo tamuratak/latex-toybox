@@ -61,10 +61,7 @@ export class Builder implements IBuilder {
 
     onDidBuild(cb: (file: string) => unknown): vscode.Disposable {
         this.cbSet.add(cb)
-        const diposable = {
-            dispose: () => { this.cbSet.delete(cb) }
-        }
-        return diposable
+        return new vscode.Disposable(() => this.cbSet.delete(cb))
     }
 
     private async callCbs(rootfile: string) {
