@@ -1,87 +1,52 @@
-import {EventEmitter} from 'events'
+import * as vscode from 'vscode'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
-import {Disposable} from 'vscode'
 import type { ExtensionContextLocator, IEventBus, LoggerLocator } from '../interfaces'
+import { AwaitableEventEmitter } from '../utils/awaitableeventemitter'
 
-
-export const BuildFinished = 'buildfinished'
-export const PdfViewerPagesLoaded = 'pdfviewerpagesloaded'
-export const PdfViewerStatusChanged = 'pdfviewerstatuschanged'
-export const RootFileChanged = 'rootfilechanged'
-export const FindRootFileEnd = 'findrootfileend'
-
-export type EventArgTypeMap = {
-    [PdfViewerStatusChanged]: PdfViewerState,
-    [RootFileChanged]: string
-}
-
-export type EventName = typeof BuildFinished
-                    | typeof PdfViewerPagesLoaded
-                    | typeof PdfViewerStatusChanged
-                    | typeof RootFileChanged
-                    | typeof FindRootFileEnd
-
+export type EventName = 'buildfinished' | 'pdfviewerpagesloaded' | 'pdfviewerstatuschanged' | 'rootfilechanged' | 'findrootfileend' | 'completionupdated'
 
 interface IExtension extends
     ExtensionContextLocator,
     LoggerLocator { }
 
 export class EventBus implements IEventBus {
-    private readonly eventEmitter = new EventEmitter()
     private readonly extension: IExtension
+    readonly buildFinished = new AwaitableEventEmitter<string, 'buildfinished'>('buildfinished')
+    readonly pdfViewerStatusChanged = new AwaitableEventEmitter<PdfViewerState, 'pdfviewerstatuschanged'>('pdfviewerstatuschanged')
+    readonly pdfViewerPagesLoaded = new AwaitableEventEmitter<vscode.Uri, 'pdfviewerpagesloaded'>('pdfviewerpagesloaded')
+    readonly rootFileChanged = new AwaitableEventEmitter<string, 'rootfilechanged'>('rootfilechanged')
+    readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
+    readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
 
     constructor(extension: IExtension) {
         this.extension = extension
-        extension.extensionContext.subscriptions.push(
-            new Disposable(() => this.dispose())
-        )
+        this.allEmitters.forEach((emitter) => {
+            emitter.event((arg) => {
+                this.extension.logger.debug(`Event ${emitter.eventName} triggered. Payload: ${JSON.stringify(arg)}`)
+            })
+        })
     }
 
-    private dispose() {
-        this.eventEmitter.removeAllListeners()
+    get allEmitters() {
+        return [
+            this.buildFinished,
+            this.pdfViewerStatusChanged,
+            this.pdfViewerPagesLoaded,
+            this.rootFileChanged,
+            this.findRootFileEnd,
+            this.completionUpdated
+        ]
     }
 
-    fire<T extends keyof EventArgTypeMap>(eventName: T, arg: EventArgTypeMap[T]): void
-    fire(eventName: EventName): void
-    fire(eventName: EventName, arg?: any): void {
-        this.extension.logger.debug(`EventBus: fire ${eventName}`)
-        this.eventEmitter.emit(eventName, arg)
-    }
-
-    onDidChangeRootFile(cb: (rootFile: EventArgTypeMap['rootfilechanged']) => void): Disposable {
-        return this.registerListener('rootfilechanged', cb)
-    }
-
-    onDidEndFindRootFile(cb: () => void): Disposable {
-        return this.registerListener('findrootfileend', cb)
-    }
-
-    onDidChangePdfViewerStatus(cb: (status: EventArgTypeMap['pdfviewerstatuschanged']) => void): Disposable {
-        return this.registerListener('pdfviewerstatuschanged', cb)
-    }
-
-    private registerListener<T extends keyof EventArgTypeMap>(
-        eventName: T,
-        cb: (arg: EventArgTypeMap[T]) => void
-    ): Disposable
-    private registerListener<T extends EventName>(
-        eventName: T,
-        cb: () => void
-    ): Disposable
-    private registerListener<T extends EventName>(
-        eventName: T,
-        cb: (arg?: any) => void
-    ): Disposable
-     {
-        this.eventEmitter.on(eventName, cb)
-        return new Disposable(() => this.eventEmitter.removeListener(eventName, cb))
-    }
-
-    on(eventName: EventName, argCb: () => void) {
-        this.extension.logger.debug(`EventBus: on ${eventName}`)
-        const cb = () => argCb()
-        this.eventEmitter.on(eventName, cb)
-        return new Disposable(() => this.eventEmitter.removeListener(eventName, cb))
+    on(event: EventName, cb: (eventname: string, arg: unknown) => unknown) {
+        for (const emitter of this.allEmitters) {
+            if (emitter.eventName === event) {
+                return emitter.event((arg) => {
+                    cb(event, arg)
+                })
+            }
+        }
+        throw new Error(`Unknown event name: ${event}`)
     }
 
 }

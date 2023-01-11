@@ -12,8 +12,7 @@ import type {ClientRequest, PdfViewerParams, PdfViewerState} from '../../types/l
 import {Client} from './viewerlib/client'
 import {PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService} from './viewerlib/pdfviewerpanel'
 import {PdfViewerManagerService} from './viewerlib/pdfviewermanager'
-import {PdfViewerPagesLoaded} from './eventbus'
-import type {BuilderLocator, EventBusLocator, ExtensionContextLocator, ExtensionRootLocator, IViewer, LocatorLocator, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ServerLocator} from '../interfaces'
+import type {EventBusLocator, ExtensionContextLocator, ExtensionRootLocator, IViewer, LocatorLocator, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ServerLocator} from '../interfaces'
 import * as lwfs from '../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../utils/encodepdffilepath'
 export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
@@ -23,7 +22,6 @@ interface IExtension extends
     ExtensionRootLocator,
     ExtensionContextLocator,
     EventBusLocator,
-    BuilderLocator,
     LocatorLocator,
     LoggerLocator,
     ManagerLocator,
@@ -42,11 +40,11 @@ export class Viewer implements IViewer {
         this.managerService = new PdfViewerManagerService(extension)
         this.pdfViewerPanelSerializer = new PdfViewerPanelSerializer(extension, this.panelService, this.managerService)
 
-        this.extension.builder.onDidBuild((rootFile: string) => {
+        this.extension.eventBus.buildFinished.event((rootFile: string) => {
             this.refreshExistingViewer(rootFile)
         })
 
-        this.extension.builder.onDidBuild((rootFile) => {
+        this.extension.eventBus.buildFinished.event((rootFile) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
             // If the PDF viewer is internal, we call SyncTeX in src/components/viewer.ts.
             if (configuration.get('view.pdf.viewer') === 'external' && configuration.get('synctex.afterBuild.enabled')) {
@@ -277,11 +275,12 @@ export class Viewer implements IViewer {
                 break
             }
             case 'loaded': {
-                this.extension.eventBus.fire(PdfViewerPagesLoaded)
+                const uri = vscode.Uri.parse(data.pdfFileUri, true)
+                void this.extension.eventBus.pdfViewerPagesLoaded.fire(uri)
                 const configuration = vscode.workspace.getConfiguration('latex-workshop')
                 if (configuration.get('synctex.afterBuild.enabled') as boolean) {
                     this.extension.logger.info('SyncTex after build invoked.')
-                    const uri = vscode.Uri.parse(data.pdfFileUri, true)
+
                     void this.extension.locator.syncTeX(undefined, undefined, uri.fsPath)
                 }
                 break

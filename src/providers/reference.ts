@@ -21,7 +21,7 @@ export class ReferenceUpdater {
     constructor(extension: IExtension) {
         this.extension = extension
         extension.extensionContext.subscriptions.push(
-            this.extension.eventBus.onDidChangeRootFile(() => {
+            this.extension.eventBus.rootFileChanged.event(() => {
                 void this.update()
             }),
             vscode.workspace.onDidChangeTextDocument(() => {

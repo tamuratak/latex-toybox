@@ -4,7 +4,6 @@ import * as path from 'path'
 import type {PanelRequest, PdfViewerState} from '../../../types/latex-workshop-protocol-types/index'
 import {escapeHtml, sleep} from '../../utils/utils'
 import type {PdfViewerManagerService} from './pdfviewermanager'
-import {PdfViewerStatusChanged} from '../eventbus'
 import { getNonce } from '../../utils/getnonce'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
@@ -31,7 +30,7 @@ export class PdfViewerPanel {
             switch(msg.type) {
                 case 'state': {
                     this.#state = msg.state
-                    this.extension.eventBus.fire(PdfViewerStatusChanged, msg.state)
+                    void this.extension.eventBus.pdfViewerStatusChanged.fire(msg.state)
                     break
                 }
                 default: {

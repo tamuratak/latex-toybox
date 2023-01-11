@@ -7,9 +7,9 @@ import * as vscode from 'vscode'
 
 import type {Extension} from '../main'
 import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
-import {EventEmitter} from 'events'
 import { readFileAsBuffer } from '../lib/lwfs/lwfs'
 import type { IServer } from '../interfaces'
+import { ExternalPromise } from '../utils/externalpromise'
 
 class WsServer extends ws.Server {
     private readonly extension: Extension
@@ -39,21 +39,15 @@ class WsServer extends ws.Server {
 
 }
 
-const ServerStartedEvent = 'serverstarted'
-
 export class Server implements IServer {
     private readonly extension: Extension
     private readonly httpServer: http.Server
     private address?: AddressInfo
     private validOriginUri: vscode.Uri | undefined
-    readonly serverStarted: Promise<void>
-    private readonly eventEmitter = new EventEmitter()
+    readonly #serverStarted = new ExternalPromise<void>()
 
     constructor(extension: Extension) {
         this.extension = extension
-        this.serverStarted = new Promise((resolve) => {
-            this.eventEmitter.on(ServerStartedEvent, () => resolve() )
-        })
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
 
@@ -62,6 +56,10 @@ export class Server implements IServer {
         )
 
         this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')
+    }
+
+    get serverStarted(): Promise<void> {
+        return this.#serverStarted.promise
     }
 
     private dispose() {
@@ -96,7 +94,7 @@ export class Server implements IServer {
                 this.validOriginUri = await this.obtainValidOrigin(address.port)
                 this.extension.logger.info(`[Server] valdOrigin is ${this.validOrigin}`)
                 this.initializeWsServer()
-                this.eventEmitter.emit(ServerStartedEvent)
+                this.#serverStarted.resolve()
             } else {
                 this.extension.logger.info(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
             }

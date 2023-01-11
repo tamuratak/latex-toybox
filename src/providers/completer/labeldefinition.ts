@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type {IProvider} from './interface'
-import type { BuilderLocator, CompletionUpdaterLocator, ManagerLocator } from '../../interfaces'
+import type { CompletionUpdaterLocator, EventBusLocator, ManagerLocator } from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 
 export interface LabelDefinitionElement {
@@ -26,7 +26,7 @@ export interface LabelDefinitionEntry extends LabelDefinitionStored {
 }
 
 interface IExtension extends
-    BuilderLocator,
+    EventBusLocator,
     CompletionUpdaterLocator,
     ManagerLocator { }
 
@@ -37,10 +37,10 @@ export class LabelDefinition implements IProvider {
 
     constructor(extension: IExtension) {
         this.extension = extension
-        this.extension.completionUpdater.onDidUpdate(() => {
+        this.extension.eventBus.completionUpdated.event(() => {
             this.updateAll()
         })
-        this.extension.builder.onDidBuild((rootFile) => {
+        this.extension.eventBus.buildFinished.event((rootFile) => {
             return void this.setNumbersFromAuxFile(rootFile)
         })
     }

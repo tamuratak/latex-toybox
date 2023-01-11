@@ -29,7 +29,7 @@ export class Linter {
         this.chktex = new ChkTeX(this.extension)
         this.lacheck = new LaCheck(this.extension)
 
-        extension.eventBus.onDidChangeRootFile(() => {
+        extension.eventBus.rootFileChanged.event(() => {
             void this.lintRootFileIfEnabled()
         })
 

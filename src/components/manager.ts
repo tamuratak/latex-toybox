@@ -6,7 +6,6 @@ import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
 
 import type {Extension} from '../main'
-import * as eventbus from './eventbus'
 import type {CmdEnvSuggestion} from '../providers/completer/command'
 import type {CiteSuggestion} from '../providers/completer/citation'
 import type {GlossarySuggestion} from '../providers/completer/glossary'
@@ -105,7 +104,7 @@ export class Manager implements IManager {
 
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
-        this.extension.eventBus.onDidChangeRootFile(() => this.logWatchedFiles())
+        this.extension.eventBus.rootFileChanged.event(() => this.logWatchedFiles())
 
         let prevTime = 0
         extension.extensionContext.subscriptions.push(
@@ -153,7 +152,7 @@ export class Manager implements IManager {
             return
         }, 500)
 
-        this.extension.builder.onDidBuild((rootFile) => {
+        this.extension.eventBus.buildFinished.event((rootFile) => {
             return this.parseFlsFile(rootFile)
         })
 
@@ -423,16 +422,17 @@ export class Manager implements IManager {
                         // We need to parse the fls to discover file dependencies when defined by TeX macro
                         // It happens a lot with subfiles, https://tex.stackexchange.com/questions/289450/path-of-figures-in-different-directories-with-subfile-latex
                         await this.parseFlsFile(this.rootFile)
-                        this.extension.eventBus.fire(eventbus.RootFileChanged, rootFile)
+                        rootFilePromise.resolve(rootFile)
+                        await this.extension.eventBus.rootFileChanged.fire(rootFile)
                     } else {
+                        rootFilePromise.resolve(rootFile)
                         this.extension.logger.info(`Keep using the same root file: ${this.rootFile}`)
                     }
-                    rootFilePromise.resolve(rootFile)
                     return rootFile
                 }
                 return undefined
             } finally {
-                this.extension.eventBus.fire(eventbus.FindRootFileEnd)
+                await this.extension.eventBus.findRootFileEnd.fire(this.rootFile)
                 // noop if already resolved
                 rootFilePromise.resolve(undefined)
             }
