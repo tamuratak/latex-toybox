@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import type {Extension} from '../main'
-import {tokenizer, onAPackage} from './tokenizer'
+import {tokenizer, onAPackage} from '../utils/tokenizer'
 
 export class HoverProvider implements vscode.HoverProvider {
     private readonly extension: Extension
