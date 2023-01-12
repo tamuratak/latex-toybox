@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type {Extension} from '../main'
-import {tokenizer} from './tokenizer'
+import {tokenizer} from '../utils/tokenizer'
 import * as utils from '../utils/utils'
 import { existsPath, isVirtualUri } from '../lib/lwfs/lwfs'
 
