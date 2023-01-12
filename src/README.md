@@ -4,11 +4,11 @@
 
 ## Root file
 
-Where LaTeX Workshop differs from other extensions of VS Code is in treating the root file. For other extensions of programming languages, generally, there is only one compilation target per workspace. However, LaTeX Workshop dynamically detects the root file and the target depending on the document being currently edited. See [wiki](https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file) for the details. `Manager.findRoot()` does the job. We register `findRoot` with `onDidChangeActiveTextEditor` in `main.ts`. This works well with multi-root workspaces.
+Where LaTeX Workshop differs from other extensions of VS Code is in treating the root file. For other extensions of programming languages, generally, there is only one compilation target per workspace. However, LaTeX Workshop dynamically detects the root file and the target depending on the document being currently edited. See [wiki](https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file) for the details. `Manager.findRoot()` does the job. This works well with multi-root workspaces.
 
 ## Application Log
 
-When something goes wrong, we always add to log messages what went wrong with `Extension.logger.addLogMessage()`. It is much beneficial for debugging.
+When something goes wrong, we always add to log messages what went wrong with `Extension.logger`. It is much beneficial for debugging.
 
 ## VS Code filesystem and virtual workspaces
 
@@ -24,8 +24,8 @@ To avoid blocking the main loop of the extension host process, we execute some h
 
 See:
 
-- https://github.com/James-Yu/LaTeX-Workshop/tree/master/src/components/parser
-- https://github.com/James-Yu/LaTeX-Workshop/tree/master/src/providers/preview
+- https://github.com/tamuratak/LaTeX-Workshop/blob/main/src/components/utensilsparser.ts
+- https://github.com/tamuratak/LaTeX-Workshop/blob/main/src/components/mathpreviewlib/mathjaxpool.ts
 
 
 ## Architecture
