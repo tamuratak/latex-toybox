@@ -128,8 +128,7 @@ export class CursorRenderer {
 
     findPrevNextNode(cursorOffset: number, nodeArray: latexParser.Node[]): PrevNextNodes {
         let prev: latexParser.Node | undefined
-        for (let i = 0; i < nodeArray.length; i++) {
-            const node = nodeArray[i]
+        for (const node of nodeArray) {
             const loc = node.location
             if (loc && cursorOffset <= loc.start.offset) {
                 return { prev, next: node }
