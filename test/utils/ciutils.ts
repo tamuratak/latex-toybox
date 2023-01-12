@@ -19,7 +19,7 @@ function getWorkspaceRootDir(): string | undefined {
     if (vscode.workspace.workspaceFile) {
         rootDir = path.dirname(vscode.workspace.workspaceFile.fsPath)
     } else {
-        rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath
+        rootDir = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
     }
     return rootDir
 }
