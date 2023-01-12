@@ -59,8 +59,8 @@ export class Commander {
         try {
             const extensionSnippets = await readFilePath(`${this.extension.extensionRoot}/snippets/latex.json`)
             const snipObj: { [key: string]: { body: string } } = JSON.parse(extensionSnippets) as SnippetsLatexJsonType
-            Object.keys(snipObj).forEach(key => {
-                this.snippets.set(key, new vscode.SnippetString(snipObj[key]['body']))
+            Object.entries(snipObj).forEach(([key, value]) => {
+                this.snippets.set(key, new vscode.SnippetString(value.body))
             })
             this.extension.logger.info('Snippet data loaded.')
         } catch(err) {
