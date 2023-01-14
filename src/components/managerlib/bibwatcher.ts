@@ -16,7 +16,6 @@ export class BibWatcher {
     }
 
     initiateBibwatcher(watcher: LwFileWatcher) {
-        this.extension.logger.info('Creating Bib file watcher.')
         watcher.onDidChange((uri) => this.onWatchedBibChanged(uri))
         watcher.onDidDelete((uri) => this.onWatchedBibDeleted(uri))
     }
