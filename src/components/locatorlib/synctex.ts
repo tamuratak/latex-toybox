@@ -91,7 +91,7 @@ export class SyncTexJs {
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (await existsPath(synctexFile)) {
-                this.extension.logger.info(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
+                this.extension.logger.error(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
@@ -105,7 +105,7 @@ export class SyncTexJs {
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (await existsPath(synctexFileGz)) {
-                this.extension.logger.info(`[SyncTexJs] parseSyncTex failed with: ${synctexFileGz}`)
+                this.extension.logger.error(`[SyncTexJs] parseSyncTex failed with: ${synctexFileGz}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
@@ -113,7 +113,7 @@ export class SyncTexJs {
         }
 
         if (!await existsPath(synctexFile) && !await existsPath(synctexFileGz)) {
-            this.extension.logger.info(`[SyncTexJs] .synctex and .synctex.gz file not found: ${JSON.stringify({synctexFile, synctexFileGz})}`)
+            this.extension.logger.error(`[SyncTexJs] .synctex and .synctex.gz file not found: ${JSON.stringify({synctexFile, synctexFileGz})}`)
         }
 
         throw new SyncTexJsError(`parseSyncTexForPdf failed with: ${pdfFile}`)
