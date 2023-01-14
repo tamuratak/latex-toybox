@@ -21,6 +21,7 @@ import { existsPath, isLocalUri, isVirtualUri, readFileGracefully, readFilePath,
 import { ExternalPromise } from '../utils/externalpromise'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { LwFileWatcher } from './managerlib/lwfilewatcher'
+import { toKey } from '../utils/tokey'
 
 
 export interface CachedContentEntry {
@@ -847,15 +848,13 @@ export class Manager implements IManager {
 
     private isWatched(file: string | vscode.Uri) {
         const uri = file instanceof vscode.Uri ? file : vscode.Uri.file(file)
-        const key = this.toKey(uri)
-        return this.watchedFiles.has(key)
+        return this.watchedFiles.has(toKey(uri))
     }
 
     private addToFileWatcher(file: string) {
         const uri = vscode.Uri.file(file)
-        const key = this.toKey(uri)
         this.lwFileWatcher.add(uri)
-        this.watchedFiles.add(key)
+        this.watchedFiles.add(toKey(uri))
     }
 
     private registerListeners(fileWatcher: LwFileWatcher) {
@@ -870,10 +869,6 @@ export class Manager implements IManager {
         // We also clean the completions from the old project
         this.extension.completer.input.reset()
         this.extension.duplicateLabels.reset()
-    }
-
-    private toKey(fileUri: vscode.Uri) {
-        return fileUri.fsPath
     }
 
     private onWatchingNewFile(fileUri: vscode.Uri) {
@@ -897,13 +892,12 @@ export class Manager implements IManager {
     }
 
     private onWatchedFileDeleted(fileUri: vscode.Uri) {
-        const key = this.toKey(fileUri)
         if (!this.isWatched(fileUri)) {
             return
         }
-        this.extension.logger.info(`File watcher - file deleted: ${fileUri}`)
-        this.watchedFiles.delete(key)
+        this.watchedFiles.delete(toKey(fileUri))
         this.cachedContent.delete(fileUri.fsPath)
+        this.extension.logger.info(`File watcher - file deleted: ${fileUri}`)
         if (fileUri.fsPath === this.rootFile) {
             this.extension.logger.info(`Root file deleted: ${fileUri}`)
             this.extension.logger.info('Start searching a new root file.')

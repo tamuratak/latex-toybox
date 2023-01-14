@@ -10,6 +10,7 @@ import {
     getFixtureDir, runTestWithFixture,
     waitGivenRootFile
 } from './utils/ciutils'
+import { toKey } from '../src/utils/tokey'
 
 function getCompletionItems(extension: vscode.Extension<ReturnType<typeof activate>>, doc: vscode.TextDocument, pos: vscode.Position): vscode.CompletionItem[] | undefined {
     const token = new vscode.CancellationTokenSource().token
@@ -202,7 +203,7 @@ suite('Multi-root workspace test suite', () => {
         const structure = extension.exports.realExtension.structureViewer.getTreeData()
         const filesWatched = extension.exports.realExtension.manager.getFilesWatched()
         assert.strictEqual(structure[0].fileName, docA.fileName)
-        assert.strictEqual(filesWatched[0], docA.fileName)
+        assert.strictEqual(filesWatched[0], toKey(vscode.Uri.file(docA.fileName)))
         const isStructureOK = structure && structure.length > 0
         const isWatcherOK = filesWatched && filesWatched.length === 1
         assert.ok(isStructureOK, JSON.stringify(structure))
