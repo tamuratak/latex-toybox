@@ -299,7 +299,7 @@ export class Viewer implements IViewer {
                 break
             }
             default: {
-                this.extension.logger.info(`Unknown websocket message: ${msg}`)
+                this.extension.logger.error(`Unknown websocket message: ${msg}`)
                 break
             }
         }

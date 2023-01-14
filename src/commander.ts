@@ -90,7 +90,7 @@ export class Commander {
             return
         }
         if (rootFile === undefined || languageId === undefined) {
-            this.extension.logger.info('Cannot find LaTeX root file. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file')
+            this.extension.logger.error('Cannot find LaTeX root file. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file')
             return
         }
         let pickedRootFile: string | undefined = rootFile
@@ -154,7 +154,7 @@ export class Commander {
             this.extension.logger.info('Active document is not a TeX file.')
             return
         }
-        const rootFile = await this.extension.manager.rootFile
+        const rootFile = this.extension.manager.rootFile
         if (rootFile === undefined) {
             this.extension.logger.info('Cannot find LaTeX root PDF to view.')
             return

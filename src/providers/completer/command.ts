@@ -158,7 +158,7 @@ export class Command implements IProvider, ICommand {
                             }
                         })
                     } catch (e) {
-                        this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
+                        this.extension.logger.error(`Cannot parse intellisense file: ${filePathUri}`)
                     }
                 }
                 this.packageCmds.set(pkg, pkgEntry)

@@ -69,7 +69,7 @@ export class Server implements IServer {
     get port(): number {
         const portNum = this.address?.port
         if (portNum === undefined) {
-            this.extension.logger.info('Server port number is undefined.')
+            this.extension.logger.error('[Server] Server port number is undefined.')
             throw new Error('Server port number is undefined.')
         }
         return portNum
@@ -96,7 +96,7 @@ export class Server implements IServer {
                 this.initializeWsServer()
                 this.#serverStarted.resolve()
             } else {
-                this.extension.logger.info(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
+                this.extension.logger.error(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
             }
         })
         this.httpServer.on('error', (err) => {
@@ -174,15 +174,15 @@ export class Server implements IServer {
             const encodedFileUri = request.url.replace('/', '')
             const fileUri = decodePathWithPrefix(encodedFileUri)
             if (this.extension.viewer.getClientSet(fileUri) === undefined) {
-                this.extension.logger.info(`Invalid PDF request: ${fileUri.toString(true)}`)
+                this.extension.logger.error(`[Server] Invalid PDF request: ${fileUri.toString(true)}`)
                 return
             }
             try {
                 const buf: Buffer = await readFileAsBuffer(fileUri)
                 this.sendOkResponse(response, buf, 'application/pdf')
-                this.extension.logger.info(`Preview PDF file: ${fileUri.toString(true)}`)
+                this.extension.logger.info(`[Server] Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
-                this.extension.logger.error(`Error reading PDF file: ${fileUri.toString(true)}`)
+                this.extension.logger.error(`[Server] Error reading PDF file: ${fileUri.toString(true)}`)
                 if (e instanceof Error) {
                     this.extension.logger.logError(e)
                 }
