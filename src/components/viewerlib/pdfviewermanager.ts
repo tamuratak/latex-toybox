@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import type ws from 'ws'
 
+import { toKey } from '../../utils/tokey'
 import type { ManagerLocator } from '../../interfaces'
 import type {Client} from './client'
 import type {PdfViewerPanel} from './pdfviewerpanel'
@@ -25,12 +26,8 @@ export class PdfViewerManagerService {
         })
     }
 
-    private toKey(pdfFileUri: vscode.Uri): string {
-        return pdfFileUri.toString(true).toLocaleUpperCase()
-    }
-
     createClientSet(pdfFileUri: vscode.Uri): void {
-        const key = this.toKey(pdfFileUri)
+        const key = toKey(pdfFileUri)
         if (!this.clientMap.has(key)) {
             this.clientMap.set(key, new Set())
         }
@@ -46,11 +43,11 @@ export class PdfViewerManagerService {
      * @param pdfFileUri The path of a PDF file.
      */
     getClientSet(pdfFileUri: vscode.Uri): Set<Client> | undefined {
-        return this.clientMap.get(this.toKey(pdfFileUri))
+        return this.clientMap.get(toKey(pdfFileUri))
     }
 
     getPanelSet(pdfFileUri: vscode.Uri): Set<PdfViewerPanel> | undefined {
-        return this.webviewPanelMap.get(this.toKey(pdfFileUri))
+        return this.webviewPanelMap.get(toKey(pdfFileUri))
     }
 
     findClient(pdfFileUri: vscode.Uri, websocket: ws): Client | undefined {
