@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 
 import type {Extension} from '../../main'
+import { toKey } from '../../utils/tokey'
 import { LwFileWatcher } from './lwfilewatcher'
 
 export class BibWatcher {
@@ -14,10 +15,6 @@ export class BibWatcher {
         this.initiateBibwatcher(watcher)
     }
 
-    private toKey(bibFileUri: vscode.Uri) {
-        return bibFileUri.toString(true)
-    }
-
     initiateBibwatcher(watcher: LwFileWatcher) {
         this.extension.logger.info('Creating Bib file watcher.')
         watcher.onDidChange((uri) => this.onWatchedBibChanged(uri))
@@ -25,7 +22,7 @@ export class BibWatcher {
     }
 
     private async onWatchedBibChanged(bibFileUri: vscode.Uri) {
-        const key = this.toKey(bibFileUri)
+        const key = toKey(bibFileUri)
         if (!this.watchedBibs.has(key)) {
             return
         }
@@ -35,7 +32,7 @@ export class BibWatcher {
     }
 
     private onWatchedBibDeleted(bibFileUri: vscode.Uri) {
-        const key = this.toKey(bibFileUri)
+        const key = toKey(bibFileUri)
         if (!this.watchedBibs.has(key)) {
             return
         }
@@ -46,7 +43,7 @@ export class BibWatcher {
 
     async watchAndParseBibFile(bibFilePath: string) {
         const uri = vscode.Uri.file(bibFilePath)
-        const key = this.toKey(uri)
+        const key = toKey(uri)
         if (!this.watchedBibs.has(key)) {
             this.extension.logger.info(`Added to bib file watcher: ${bibFilePath}`)
             this.lwFileWatcher.add(uri)
