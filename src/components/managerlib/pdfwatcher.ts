@@ -1,22 +1,22 @@
 import * as vscode from 'vscode'
-
-import type {Extension} from '../../main'
+import { toKey } from '../../utils/tokey'
 import { LwFileWatcher } from './lwfilewatcher'
+import type { LoggerLocator, ViewerLocator } from '../../interfaces'
+
+interface IExtension extends
+    LoggerLocator,
+    ViewerLocator { }
 
 export class PdfWatcher {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly watchedPdfs = new Set<string>()
     private readonly ignoredPdfUris = new Set<string>()
     private readonly lwFileWatcher: LwFileWatcher
 
-    constructor(extension: Extension, watcher: LwFileWatcher) {
+    constructor(extension: IExtension, watcher: LwFileWatcher) {
         this.extension = extension
         this.lwFileWatcher = watcher
         this.initiatePdfWatcher(watcher)
-    }
-
-    private toKey(pdfFileUri: vscode.Uri) {
-        return pdfFileUri.toString(true)
     }
 
     private initiatePdfWatcher(pdfWatcher: LwFileWatcher) {
@@ -24,38 +24,38 @@ export class PdfWatcher {
         pdfWatcher.onDidDelete((uri) => this.onPdfDeleted(uri))
     }
 
-    private onPdfChanged(fileUri: vscode.Uri) {
-        const pdfKey = this.toKey(fileUri)
+    private onPdfChanged(pdfFileUri: vscode.Uri) {
+        const pdfKey = toKey(pdfFileUri)
         if (!this.watchedPdfs.has(pdfKey)) {
             return
         }
-        if (this.isIgnored(fileUri)) {
+        if (this.isIgnored(pdfFileUri)) {
             return
         }
-        this.extension.logger.info(`PDF file watcher - file changed: ${fileUri}`)
-        this.extension.viewer.refreshExistingViewer(undefined, fileUri)
+        this.extension.logger.info(`PDF file watcher - file changed: ${pdfFileUri}`)
+        this.extension.viewer.refreshExistingViewer(undefined, pdfFileUri)
     }
 
-    private onPdfDeleted(fileUri: vscode.Uri) {
-        const pdfKey = this.toKey(fileUri)
+    private onPdfDeleted(pdfFileUri: vscode.Uri) {
+        const pdfKey = toKey(pdfFileUri)
         this.watchedPdfs.delete(pdfKey)
-        this.extension.logger.info(`PDF file watcher - file deleted: ${fileUri}`)
+        this.extension.logger.info(`PDF file watcher - file deleted: ${pdfFileUri}`)
     }
 
     watchPdfFile(pdfFileUri: vscode.Uri) {
         this.extension.logger.info(`Added to PDF file watcher: ${pdfFileUri}`)
-        const pdfKey = this.toKey(pdfFileUri)
+        const pdfKey = toKey(pdfFileUri)
         this.lwFileWatcher.add(pdfFileUri)
         this.watchedPdfs.add(pdfKey)
     }
 
     private isIgnored(pdfFileUri: vscode.Uri): boolean {
-        const key = this.toKey(pdfFileUri)
+        const key = toKey(pdfFileUri)
         return this.ignoredPdfUris.has(key)
     }
 
     ignorePdfFile(pdfFileUri: vscode.Uri) {
-        this.ignoredPdfUris.add(this.toKey(pdfFileUri))
+        this.ignoredPdfUris.add(toKey(pdfFileUri))
     }
 
     logWatchedFiles() {
