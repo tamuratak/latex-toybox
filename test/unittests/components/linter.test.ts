@@ -13,7 +13,6 @@ suite('linter test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const linter = new ChkTeX(extension)
         await linter.lintRootFile()
@@ -25,7 +24,6 @@ suite('linter test suite', () => {
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const subFilePath = path.join(fixtureDir, 'sub/sub.tex')
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const linter = new ChkTeX(extension)
         const log = fs.readFileSync(path.join(fixtureDir, 'chktex.linterlog')).toString()
@@ -40,7 +38,6 @@ suite('linter test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const linter = new LaCheck(extension)
         await linter.lintRootFile()
@@ -52,7 +49,6 @@ suite('linter test suite', () => {
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const subFilePath = path.join(fixtureDir, 'sub/sub.tex')
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const linter = new LaCheck(extension)
         const log = fs.readFileSync(path.join(fixtureDir, 'lacheck.linterlog')).toString()

@@ -21,7 +21,6 @@ suite('unit test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -51,7 +50,6 @@ suite('unit test suite', () => {
         const config = vscode.workspace.getConfiguration()
         await config.update('latex-workshop.view.outline.numbers.enabled', false)
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -70,7 +68,6 @@ suite('unit test suite', () => {
             'subsubsection'
         ])
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -86,7 +83,6 @@ suite('unit test suite', () => {
         const config = vscode.workspace.getConfiguration()
         await config.update('latex-workshop.view.outline.floats.enabled', false)
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -104,7 +100,6 @@ suite('unit test suite', () => {
         const config = vscode.workspace.getConfiguration()
         await config.update('latex-workshop.view.outline.fastparse.enabled', true)
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        assert.ok(extension)
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -131,8 +126,6 @@ suite('unit test suite', () => {
     teardown(async () => {
         await resetConfig()
         const extension = (await waitLatexWorkshopActivated()).exports.realExtension
-        if (extension) {
-            extension.manager.rootFile = undefined
-        }
+        extension.manager.rootFile = undefined
     })
 })
