@@ -1,16 +1,19 @@
 import * as vscode from 'vscode'
-
-import type {Extension} from '../../main'
 import { toKey } from '../../utils/tokey'
 import { LwFileWatcher } from './lwfilewatcher'
+import type { LoggerLocator, ViewerLocator } from '../../interfaces'
+
+interface IExtension extends
+    LoggerLocator,
+    ViewerLocator { }
 
 export class PdfWatcher {
-    private readonly extension: Extension
+    private readonly extension: IExtension
     private readonly watchedPdfs = new Set<string>()
     private readonly ignoredPdfUris = new Set<string>()
     private readonly lwFileWatcher: LwFileWatcher
 
-    constructor(extension: Extension, watcher: LwFileWatcher) {
+    constructor(extension: IExtension, watcher: LwFileWatcher) {
         this.extension = extension
         this.lwFileWatcher = watcher
         this.initiatePdfWatcher(watcher)
