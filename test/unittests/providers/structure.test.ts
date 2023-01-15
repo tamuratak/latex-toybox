@@ -25,7 +25,6 @@ suite('unit test suite', () => {
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
         const sections = structure.ds
-        assert.ok(sections)
         assert.strictEqual(sections.length, 6)
         assert.strictEqual(sections[0].children.length, 3)
         assert.strictEqual(sections[0].children[1].children.length, 2)
@@ -54,7 +53,6 @@ suite('unit test suite', () => {
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
         const sections = structure.ds
-        assert.ok(sections)
         assert.strictEqual(sections[1].children[0].label, '2.0.1')
     })
 
@@ -72,7 +70,6 @@ suite('unit test suite', () => {
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
         const sections = structure.ds
-        assert.ok(sections)
         assert.strictEqual(sections[0].children.length, 2)
         assert.strictEqual(sections[0].children[1].label, '1.1 1.1?')
     })
@@ -87,7 +84,6 @@ suite('unit test suite', () => {
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
         const sections = structure.ds
-        assert.ok(sections)
         assert.strictEqual(sections[5].children.length, 3)
         assert.strictEqual(sections[5].children[0].label, 'Frame: Frame Title 1')
         assert.strictEqual(sections[5].children[1].label, 'Frame: Frame Title 2')
@@ -104,7 +100,6 @@ suite('unit test suite', () => {
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
         const sections = structure.ds
-        assert.ok(sections)
         assert.strictEqual(sections.length, 6)
         assert.strictEqual(sections[0].children.length, 3)
         assert.strictEqual(sections[0].children[1].children.length, 2)

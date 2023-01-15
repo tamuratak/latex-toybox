@@ -204,10 +204,8 @@ suite('Multi-root workspace test suite', () => {
         const filesWatched = extension.exports.realExtension.manager.getFilesWatched()
         assert.strictEqual(structure[0].fileName, docA.fileName)
         assert.strictEqual(filesWatched[0], toKey(vscode.Uri.file(docA.fileName)))
-        const isStructureOK = structure && structure.length > 0
-        const isWatcherOK = filesWatched && filesWatched.length === 1
-        assert.ok(isStructureOK, JSON.stringify(structure))
-        assert.ok(isWatcherOK, JSON.stringify(filesWatched))
+        assert.ok(structure.length > 0, JSON.stringify(structure))
+        assert.strictEqual(filesWatched.length, 1, JSON.stringify(filesWatched))
     })
 
     //

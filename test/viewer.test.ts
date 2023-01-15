@@ -36,7 +36,7 @@ suite('PDF Viewer test suite', () => {
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
-        assert.ok(results.length > 0)
+        assert.notStrictEqual(results.length, 0)
     })
 
     runTestWithFixture('fixture002', 'build a subfile and view it', async (findRootFileEnd) => {
@@ -149,7 +149,7 @@ suite('PDF Viewer test suite', () => {
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
-        assert.ok(results.length > 0)
+        assert.notStrictEqual(results.length, 0)
     })
 
     runTestWithFixture('fixture020', 'basic build, view, and synctex', async (findRootFileEnd) => {
@@ -167,7 +167,7 @@ suite('PDF Viewer test suite', () => {
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
         for (const result of firstResults) {
-            assert.ok( Math.abs(result.scrollTop) < 10 )
+            assert.ok(Math.abs(result.scrollTop) < 10, 'The initial position is not correct.')
         }
         await vscode.window.showTextDocument(doc)
         await findRootFileEnd
@@ -178,7 +178,7 @@ suite('PDF Viewer test suite', () => {
         await promise
         const secondResults = getViewerStatus(pdfFilePath)
         for (const result of secondResults) {
-            assert.ok( Math.abs(result.scrollTop) > 10 )
+            assert.ok(Math.abs(result.scrollTop) > 10, 'Did not scroll to the correct position with SyncTeX.')
         }
     })
 
@@ -197,7 +197,7 @@ suite('PDF Viewer test suite', () => {
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
         for (const result of firstResults) {
-            assert.ok( Math.abs(result.scrollTop) < 10 )
+            assert.ok(Math.abs(result.scrollTop) < 10, 'The initial scrollTop is not 0')
         }
         await vscode.commands.executeCommand('workbench.action.focusFirstEditorGroup')
         const editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
@@ -214,7 +214,7 @@ suite('PDF Viewer test suite', () => {
         const secondResults = getViewerStatus(pdfFilePath)
         console.log(JSON.stringify(secondResults))
         for (const result of secondResults) {
-            assert.ok( Math.abs(result.scrollTop) > 10 )
+            assert.ok(Math.abs(result.scrollTop) > 10, 'Did not scroll to the correct position with SyncTeX.')
         }
     })
 
