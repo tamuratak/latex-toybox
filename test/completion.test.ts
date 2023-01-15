@@ -25,10 +25,10 @@ function assertCompletionItemDoesNotContainSnippet(items: vscode.CompletionItem[
             item.label === prefix &&
             item.insertText instanceof vscode.SnippetString &&
             item.insertText.value === snippet)
-        assert.ok(matches === undefined, `Snippet (${prefix}, ${snippet}) found`)
+        assert.strictEqual(matches, undefined, `Snippet (${prefix}, ${snippet}) found`)
     } else {
         const matches = items.find(item => item.label === prefix)
-        assert.ok(matches === undefined, `Snippet ${prefix} found`)
+        assert.strictEqual(matches, undefined, `Snippet ${prefix} found`)
     }
 }
 

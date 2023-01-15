@@ -45,7 +45,7 @@ suite('unit test suite', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const file = `${extensionRoot}/data/environments.json`
         const envs = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as {[key: string]: EnvType}
-        assert.ok(Object.keys(envs).length > 0)
+        assert.notStrictEqual(Object.keys(envs).length, 0)
         Object.keys(envs).forEach(name => {
             assertDictKeyNames(
                 Object.keys(envs[name]),
@@ -61,7 +61,7 @@ suite('unit test suite', () => {
         const files = glob.sync('data/packages/*_env.json', {cwd: extensionRoot})
         files.forEach(file => {
             const envs = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as {[key: string]: EnvType}
-            assert.ok(Object.keys(envs).length > 0)
+            assert.notStrictEqual(Object.keys(envs).length, 0)
             Object.keys(envs).forEach(name => {
                 assertDictKeyNames(
                     Object.keys(envs[name]),
@@ -77,7 +77,7 @@ suite('unit test suite', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const file = `${extensionRoot}/data/commands.json`
         const cmds = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as {[key: string]: CmdType}
-        assert.ok(Object.keys(cmds).length > 0)
+        assert.notStrictEqual(Object.keys(cmds).length, 0)
         Object.keys(cmds).forEach(name => {
             assertDictKeyNames(
                 Object.keys(cmds[name]),
@@ -93,7 +93,7 @@ suite('unit test suite', () => {
         const files = glob.sync('data/packages/*_cmd.json', {cwd: extensionRoot})
         files.forEach(file => {
             const cmds = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as {[key: string]: CmdType}
-            assert.ok(Object.keys(cmds).length > 0)
+            assert.notStrictEqual(Object.keys(cmds).length, 0)
             Object.keys(cmds).forEach(name => {
                 assertDictKeyNames(
                     Object.keys(cmds[name]),
