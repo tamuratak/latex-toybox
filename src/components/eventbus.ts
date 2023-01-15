@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import type * as vscode from 'vscode'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type { ExtensionContextLocator, IEventBus, LoggerLocator } from '../interfaces'
 import { AwaitableEventEmitter } from '../utils/awaitableeventemitter'
