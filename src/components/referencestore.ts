@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import type * as vscode from 'vscode'
 
 export class ReferenceStore {
     readonly refCommandLocationMap: Map<string, vscode.Location[]> = new Map()
