@@ -1,23 +1,9 @@
-export const pdfFilePrefix = 'pdf..'
+import { decodePath, pdfFilePrefix } from './encodepdffilepath.js'
 
-// We use base64url to encode the path of PDF file.
-// https://github.com/James-Yu/LaTeX-Workshop/pull/1501
-export function encodePath(path: string): string {
-  const s = encodeURIComponent(path)
-  const b64 = window.btoa(s)
-  const b64url = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-  return b64url
-}
+export const isEmbedded = window.parent !== window
 
-export function decodePath(b64url: string): string {
-  const tmp = b64url + '='.repeat((4 - b64url.length % 4) % 4)
-  const b64 = tmp.replace(/-/g, '+').replace(/_/g, '/')
-  const s = window.atob(b64)
-  return decodeURIComponent(s)
-}
-
-export function isEmbedded(): boolean {
-    return window.parent !== window
+export function isPrefersColorSchemeDark() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
 export function isPdfjsShortcut(e: Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'code' | 'key'>) {
@@ -37,7 +23,7 @@ export function isPdfjsShortcut(e: Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'm
         if (/^[-+=0f]$/.exec(e.key)) {
             return true
         }
-        if ( 'p' === e.key && !isEmbedded() ) {
+        if ( 'p' === e.key && !isEmbedded ) {
             return true
         }
         return false
@@ -82,3 +68,20 @@ export function elementWidth(element: HTMLElement, forceDisplay = true): number 
     }
     return width + margin
 }
+
+export function decodeQuery() {
+    const query = document.location.search.substring(1)
+    const parts = query.split('&')
+
+    for (let i = 0, ii = parts.length; i < ii; ++i) {
+        const param = parts[i].split('=')
+        if (param[0].toLowerCase() === 'file') {
+            const encodedPdfFilePath = param[1].replace(pdfFilePrefix, '')
+            const pdfFileUri = decodePath(encodedPdfFilePath)
+            const documentTitle = pdfFileUri.split(/[\\/]/).pop()
+            return {encodedPdfFilePath, pdfFileUri, documentTitle}
+        }
+    }
+    throw new Error('file not given in the query.')
+}
+

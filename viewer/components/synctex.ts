@@ -10,12 +10,51 @@ export class SyncTex {
         this.lwApp = lwApp
         // Since DOM of each page is recreated when a PDF document is reloaded,
         // we must register listeners every time.
-        this.lwApp.onPagesInit(() => {
+        this.lwApp.lwEventBus.onPagesInit(() => {
             this.registerListenerOnEachPage()
         })
     }
 
-    private callSynctex(e: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
+    forwardSynctex(position: { page: number, x: number, y: number }) {
+        if (!this.lwApp.synctexEnabled) {
+            this.lwApp.addLogMessage('SyncTeX temporarily disabled.')
+            return
+        }
+        // use the offsetTop of the actual page, much more accurate than multiplying the offsetHeight of the first page
+        // https://github.com/James-Yu/LaTeX-Workshop/pull/417
+        const container = document.getElementById('viewerContainer') as HTMLElement
+        const pos = PDFViewerApplication.pdfViewer.getPageView(position.page - 1).viewport.convertToViewportPoint(position.x, position.y)
+        const page = document.getElementsByClassName('page')[position.page - 1] as HTMLElement
+        const maxScrollX = window.innerWidth * 0.9
+        const minScrollX = window.innerWidth * 0.1
+        let scrollX = page.offsetLeft + pos[0]
+        scrollX = Math.min(scrollX, maxScrollX)
+        scrollX = Math.max(scrollX, minScrollX)
+        const scrollY = page.offsetTop + page.offsetHeight - pos[1]
+
+        // set positions before and after SyncTeX to viewerHistory
+        this.lwApp.viewerHistory.pushCurrentPositionToHistory()
+        if (PDFViewerApplication.pdfViewer.scrollMode === 1) {
+            // horizontal scrolling
+            container.scrollLeft = page.offsetLeft
+        } else {
+            // vertical scrolling
+            container.scrollTop = scrollY - document.body.offsetHeight * 0.4
+        }
+        this.lwApp.viewerHistory.pushCurrentPositionToHistory()
+
+        const indicator = document.getElementById('synctex-indicator') as HTMLElement
+        indicator.className = 'show'
+        indicator.style.left = `${scrollX}px`
+        indicator.style.top = `${scrollY}px`
+        setTimeout(() => indicator.className = 'hide', 10)
+        setTimeout(() => {
+            indicator.style.left = ''
+            indicator.style.top = ''
+        }, 1000)
+    }
+
+    private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
         const canvasDom = pageDom.getElementsByTagName('canvas')[0]
         const selection = window.getSelection()
         let textBeforeSelection = ''
@@ -29,8 +68,8 @@ export class SyncTex {
             }
         }
         const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
-        let left = e.pageX - pageDom.offsetLeft + viewerContainer.scrollLeft
-        const top = e.pageY - pageDom.offsetTop + viewerContainer.scrollTop
+        let left = mouseEvent.pageX - pageDom.offsetLeft + viewerContainer.scrollLeft
+        const top = mouseEvent.pageY - pageDom.offsetTop + viewerContainer.scrollTop
         if (trimSelect.selectedIndex > 0) {
             const m = canvasDom.style.left.match(/-(.*)px/)
             const offsetLeft = m ? Number(m[1]) : 0
@@ -52,13 +91,13 @@ export class SyncTex {
                         if (!(e.ctrlKey || e.metaKey)) {
                             return
                         }
-                        this.callSynctex(e, page, pageDom, viewerContainer)
+                        this.reverseSynctex(e, page, pageDom, viewerContainer)
                     }
                     break
                 }
                 case 'double-click': {
                     pageDom.ondblclick = (e) => {
-                        this.callSynctex(e, page, pageDom, viewerContainer)
+                        this.reverseSynctex(e, page, pageDom, viewerContainer)
                     }
                     break
                 }
