@@ -1,45 +1,57 @@
 import type {ILatexWorkshopPdfViewer} from './interface.js'
 
+// Static HTML elements
+const viewerContainerElement = document.getElementById('viewerContainer') as HTMLElement
+const sidebarContainerElement = document.getElementById('sidebarContainer') as HTMLElement
+const historyBackElement = document.getElementById('historyBack') as HTMLElement
+const historyForwardElement = document.getElementById('historyForward') as HTMLElement
+
+
+type HistoryEntry = {
+    readonly scroll: number
+}
+
 export class ViewerHistory {
-    private history: { scroll: number, temporary: boolean}[]
-    private currentIndex: number | undefined
+    private history: HistoryEntry[] = []
+    /**
+     * Index, at which a previous position is stored. When the Back button is clicked,
+     * the viewer scrolls to the position.
+     */
+    private currentPrevIndex: number | 'historyIsEmpty' = 'historyIsEmpty'
     private readonly lwApp: ILatexWorkshopPdfViewer
+    /**
+     * The scroll position when the Back button is clicked newly.
+     */
+    private scrollPositionWhenGoingBack: number | undefined
 
     constructor(lwApp: ILatexWorkshopPdfViewer) {
-        this.history = []
-        this.currentIndex = undefined
         this.lwApp = lwApp
         this.registerKeybinding()
     }
 
     private registerKeybinding() {
         const setHistory = () => {
-            const container = document.getElementById('viewerContainer') as HTMLElement
             // set positions before and after clicking to viewerHistory
-            this.lwApp.viewerHistory.set(container.scrollTop)
-            setTimeout(() => {this.lwApp.viewerHistory.set(container.scrollTop)}, 500)
-        };
+            this.lwApp.viewerHistory.pushCurrentPositionToHistory()
+            setTimeout(() => {this.lwApp.viewerHistory.pushCurrentPositionToHistory()}, 500)
+        }
 
-        (document.getElementById('viewerContainer') as HTMLElement).addEventListener('click', setHistory);
-        (document.getElementById('sidebarContainer') as HTMLElement).addEventListener('click', setHistory);
+        viewerContainerElement.addEventListener('click', setHistory)
+        sidebarContainerElement.addEventListener('click', setHistory)
 
         // back button (mostly useful for the embedded viewer)
-        (document.getElementById('historyBack') as HTMLElement).addEventListener('click', () => {
+        historyBackElement.addEventListener('click', () => {
             this.lwApp.viewerHistory.back()
-        });
+        })
 
-        (document.getElementById('historyForward') as HTMLElement).addEventListener('click', () => {
+        historyForwardElement.addEventListener('click', () => {
             this.lwApp.viewerHistory.forward()
         })
     }
 
-    private last() {
-        return this.history[this.history.length-1]
-    }
-
     private lastIndex() {
         if (this.history.length === 0) {
-            return undefined
+            return 'historyIsEmpty'
         } else {
             return this.history.length - 1
         }
@@ -49,29 +61,28 @@ export class ViewerHistory {
         return this.history.length
     }
 
-    set(scroll: number, force = false) {
+    pushCurrentPositionToHistory() {
+        this.scrollPositionWhenGoingBack = undefined
+        const scroll = viewerContainerElement.scrollTop
         if (this.history.length === 0) {
-            this.history.push({scroll, temporary: false})
-            this.currentIndex = 0
+            this.history.push({scroll})
+            this.currentPrevIndex = 0
             return
         }
 
-        if (this.currentIndex === undefined) {
-            console.log('this._current === undefined never happens here.')
+        if (this.currentPrevIndex === 'historyIsEmpty') {
+            console.log('this.currentIndex === historyIsEmpty never happens here.')
             return
         }
 
-        const curScroll = this.history[this.currentIndex].scroll
-        if (curScroll !== scroll || force) {
-            this.history = this.history.slice(0, this.currentIndex + 1)
-            if (this.last()) {
-                this.last().temporary = false
-            }
-            this.history.push({scroll, temporary: false})
+        const curScroll = this.history[this.currentPrevIndex].scroll
+        if (curScroll !== scroll) {
+            this.history = this.history.slice(0, this.currentPrevIndex + 1)
+            this.history.push({scroll})
             if (this.length() > 30) {
                 this.history = this.history.slice(this.length() - 30)
             }
-            this.currentIndex = this.lastIndex()
+            this.currentPrevIndex = this.lastIndex()
         }
     }
 
@@ -79,57 +90,55 @@ export class ViewerHistory {
         if (this.length() === 0) {
             return
         }
-        const container = document.getElementById('viewerContainer') as HTMLElement
-        let cur = this.currentIndex
-        if (cur === undefined) {
+        const cur = this.currentPrevIndex
+        if (cur === 'historyIsEmpty') {
             return
         }
-        let prevScroll = this.history[cur].scroll
-        if (this.length() > 0 && prevScroll !== container.scrollTop) {
-            if (this.currentIndex === this.lastIndex() && this.last()) {
-                if (this.last().temporary) {
-                    this.last().scroll = container.scrollTop
-                    cur = cur - 1
-                    prevScroll = this.history[cur].scroll
-                } else {
-                    const tmp = {scroll: container.scrollTop, temporary: true}
-                    this.history.push(tmp)
-                }
-            }
+        const prevScroll = this.history[cur].scroll
+        if (this.currentPrevIndex === this.lastIndex() && prevScroll !== viewerContainerElement.scrollTop) {
+            // We have to store the current scroll position, because
+            // the viewer should go back to it when users click the last Forward button.
+            this.scrollPositionWhenGoingBack = viewerContainerElement.scrollTop
         }
-        if (prevScroll !== container.scrollTop) {
-            this.currentIndex = cur
-            container.scrollTop = prevScroll
+        if (prevScroll !== viewerContainerElement.scrollTop) {
+            viewerContainerElement.scrollTop = prevScroll
         } else {
-            if (cur === 0) {
+            if (cur <= 0) {
                 return
             }
-            const scrl = this.history[cur-1].scroll
-            this.currentIndex = cur - 1
-            container.scrollTop = scrl
+            const newIndex = cur - 1
+            const scrl = this.history[newIndex].scroll
+            this.currentPrevIndex = newIndex
+            viewerContainerElement.scrollTop = scrl
         }
     }
 
     forward() {
-        if (this.currentIndex === this.lastIndex()) {
+        if (this.currentPrevIndex === this.lastIndex()) {
+            if (this.scrollPositionWhenGoingBack !== undefined) {
+                viewerContainerElement.scrollTop = this.scrollPositionWhenGoingBack
+                this.scrollPositionWhenGoingBack = undefined
+            }
             return
         }
-        const container = document.getElementById('viewerContainer') as HTMLElement
-        const cur = this.currentIndex
-        if (cur === undefined) {
+        const cur = this.currentPrevIndex
+        if (cur === 'historyIsEmpty') {
             return
         }
-        const nextScroll = this.history[cur+1].scroll
-        if (nextScroll !== container.scrollTop) {
-            this.currentIndex = cur + 1
-            container.scrollTop = nextScroll
+        let newIndex = cur + 1
+        const nextScroll = this.history[newIndex].scroll
+        if (nextScroll !== viewerContainerElement.scrollTop) {
+            this.currentPrevIndex = newIndex
+            viewerContainerElement.scrollTop = nextScroll
         } else {
-            if (cur >= this.history.length - 2) {
+            newIndex = cur + 2
+            if (newIndex >= this.history.length) {
                 return
             }
-            const scrl = this.history[cur+2].scroll
-            this.currentIndex = cur + 2
-            container.scrollTop = scrl
+            const scrl = this.history[newIndex].scroll
+            this.currentPrevIndex = newIndex
+            viewerContainerElement.scrollTop = scrl
         }
     }
+
 }
