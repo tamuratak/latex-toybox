@@ -1,7 +1,8 @@
-import type {PageTrimmer} from './pagetrimmer.js'
-import type {ClientRequest} from '../../types/latex-workshop-protocol-types/index'
+import type {ClientRequest, PanelRequest, PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type {SyncTex} from './synctex.js'
 import type {ViewerHistory} from './viewerhistory.js'
+import type { ViewerLoading } from './viewerloading.js'
+
 
 export interface IDisposable {
     dispose(): unknown
@@ -9,29 +10,30 @@ export interface IDisposable {
 
 export interface ILatexWorkshopPdfViewer {
     readonly documentTitle: string,
-    readonly embedded: boolean,
     readonly encodedPdfFilePath: string,
-    readonly pageTrimmer: PageTrimmer,
     readonly pdfFileUri: string,
     readonly synctex: SyncTex,
     readonly viewerHistory: ViewerHistory,
+    readonly viewerLoading: ViewerLoading,
+    readonly lwEventBus: ILwEventBus,
+    readonly synctexEnabled: boolean,
+    readonly autoReloadEnabled: boolean,
+    readonly pdfViewerStarted: Promise<void>,
+    readonly pdfPagesLoaded: Promise<void>,
 
-    /**
-     * `cb` is called after the viewer started.
-     */
+    send(message: ClientRequest): void,
+    sendToPanelManager(msg: PanelRequest): void,
+    sendCurrentStateToPanelManager(): void,
+    addLogMessage(message: string): void,
+    setSynctex(flag: boolean): void,
+    setAutoReload(flag: boolean): void,
+    getPdfViewerState(): PdfViewerState
+}
+
+export interface ILwEventBus {
     onDidStartPdfViewer(cb: () => unknown): IDisposable,
-
-    /**
-     * `cb` is called after a PDF document is loaded and reloaded.
-     */
     onPagesInit(cb: () => unknown, option?: {once: boolean}): IDisposable,
-
-    /**
-     * `cb` is called after the a PDF document is rendered.
-     */
-    onPagesLoaded(cb: () => unknown, option?: {once: boolean}): IDisposable,
-
-    send(message: ClientRequest): void
+    onPagesLoaded(cb: () => unknown, option?: {once: boolean}): IDisposable
 }
 
 export type PdfjsEventName
