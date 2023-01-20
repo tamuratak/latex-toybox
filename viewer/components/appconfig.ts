@@ -3,14 +3,14 @@ import type { ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicat
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isPrefersColorSchemeDark } from '../utils/utils.js'
 
-
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
+
 
 export class AppConfig {
     readonly #setupAppOptionsPromise = new ExternalPromise<void>()
     readonly #paramsPromise = new ExternalPromise<PdfViewerParams>()
-    lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexWorkshopPdfViewer
 
     constructor(lwApp: ILatexWorkshopPdfViewer) {
         this.lwApp = lwApp

@@ -2,6 +2,7 @@ import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.j
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
+
 export class SyncTex {
     private readonly lwApp: ILatexWorkshopPdfViewer
     reverseSynctexKeybinding: string = 'ctrl-click'

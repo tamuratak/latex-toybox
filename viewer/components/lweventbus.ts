@@ -5,7 +5,6 @@ declare const PDFViewerApplication: IPDFViewerApplication
 
 export class LwEventBus implements ILwEventBus {
     // The 'webviewerloaded' event is fired just before the initialization of PDF.js.
-    // We can set PDFViewerApplicationOptions at the time.
     // - https://github.com/mozilla/pdf.js/wiki/Third-party-viewer-usage#initialization-promise
     // - https://github.com/mozilla/pdf.js/pull/10318
     private readonly webViewerLoaded: Promise<void> = new Promise((resolve) => {

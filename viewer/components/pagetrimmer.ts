@@ -2,6 +2,7 @@ import type { ILatexWorkshopPdfViewer, IPDFViewerApplication } from './interface
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
+
 let pdfViewerCurrentScale: number | undefined
 let originalSelectedIndex: number | undefined
 // 'page-width' and others

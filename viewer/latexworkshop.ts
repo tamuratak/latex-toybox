@@ -15,8 +15,8 @@ import { PanelManagerConnection } from './components/panelmanagerconnection.js'
 import { VolatileConfig } from './components/volatileconfig.js'
 import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
 
-
 declare const PDFViewerApplication: IPDFViewerApplication
+
 
 class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
     readonly documentTitle: string = ''
