@@ -2,6 +2,8 @@ import { elementWidth, isEmbedded } from '../utils/utils.js'
 import type { IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
+
+
 let hideToolbarInterval: number | undefined
 
 export function showToolbar(animate: boolean) {

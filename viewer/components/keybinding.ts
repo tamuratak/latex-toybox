@@ -4,6 +4,7 @@ import { showToolbar } from './toolbar.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
+
 export class Keybinding {
     private readonly lwApp: ILatexWorkshopPdfViewer
 

@@ -6,6 +6,7 @@ import type { ILatexWorkshopPdfViewer, IPDFViewerApplication, PdfjsEventName } f
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
+
 export class PanelManagerConnection {
     private readonly lwApp: ILatexWorkshopPdfViewer
     readonly #restoredState = new ExternalPromise<PdfViewerState | undefined>()
