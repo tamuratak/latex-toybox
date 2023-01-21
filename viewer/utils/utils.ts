@@ -73,10 +73,10 @@ export function decodeQuery() {
     const query = document.location.search.substring(1)
     const parts = query.split('&')
 
-    for (let i = 0, ii = parts.length; i < ii; ++i) {
-        const param = parts[i].split('=')
-        if (param[0].toLowerCase() === 'file') {
-            const encodedPdfFilePath = param[1].replace(pdfFilePrefix, '')
+    for (const part of parts) {
+        const [key, value] = part.split('=')
+        if (key && value && key.toLowerCase() === 'file') {
+            const encodedPdfFilePath = value.replace(pdfFilePrefix, '')
             const pdfFileUri = decodePath(encodedPdfFilePath)
             const documentTitle = pdfFileUri.split(/[\\/]/).pop()
             return {encodedPdfFilePath, pdfFileUri, documentTitle}

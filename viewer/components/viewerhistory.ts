@@ -49,6 +49,14 @@ export class ViewerHistory {
         })
     }
 
+    private historyAt(index: number) {
+        const result = this.history[index]
+        if (result === undefined) {
+            throw new Error(`historyAt: result is undefined. index: ${index}, history.length: ${this.history.length}`)
+        }
+        return result
+    }
+
     private lastIndex() {
         if (this.history.length === 0) {
             return 'historyIsEmpty'
@@ -75,7 +83,7 @@ export class ViewerHistory {
             return
         }
 
-        const curScroll = this.history[this.currentPrevIndex].scroll
+        const curScroll = this.historyAt(this.currentPrevIndex).scroll
         if (curScroll !== scroll) {
             this.history = this.history.slice(0, this.currentPrevIndex + 1)
             this.history.push({scroll})
@@ -94,7 +102,7 @@ export class ViewerHistory {
         if (cur === 'historyIsEmpty') {
             return
         }
-        const prevScroll = this.history[cur].scroll
+        const prevScroll = this.historyAt(cur).scroll
         if (this.currentPrevIndex === this.lastIndex() && prevScroll !== viewerContainerElement.scrollTop) {
             // We have to store the current scroll position, because
             // the viewer should go back to it when users click the last Forward button.
@@ -107,7 +115,7 @@ export class ViewerHistory {
                 return
             }
             const newIndex = cur - 1
-            const scrl = this.history[newIndex].scroll
+            const scrl = this.historyAt(newIndex).scroll
             this.currentPrevIndex = newIndex
             viewerContainerElement.scrollTop = scrl
         }
@@ -126,7 +134,7 @@ export class ViewerHistory {
             return
         }
         let newIndex = cur + 1
-        const nextScroll = this.history[newIndex].scroll
+        const nextScroll = this.historyAt(newIndex).scroll
         if (nextScroll !== viewerContainerElement.scrollTop) {
             this.currentPrevIndex = newIndex
             viewerContainerElement.scrollTop = nextScroll
@@ -135,7 +143,7 @@ export class ViewerHistory {
             if (newIndex >= this.history.length) {
                 return
             }
-            const scrl = this.history[newIndex].scroll
+            const scrl = this.historyAt(newIndex).scroll
             this.currentPrevIndex = newIndex
             viewerContainerElement.scrollTop = scrl
         }

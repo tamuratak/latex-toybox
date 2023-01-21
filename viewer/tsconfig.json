@@ -6,6 +6,7 @@
         "module": "es2022",
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "outDir": "../out/viewer",

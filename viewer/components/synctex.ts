@@ -57,6 +57,9 @@ export class SyncTex {
 
     private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
         const canvasDom = pageDom.getElementsByTagName('canvas')[0]
+        if (!canvasDom) {
+            throw new Error('Cannot find canvas element.')
+        }
         const selection = window.getSelection()
         let textBeforeSelection = ''
         let textAfterSelection = ''
