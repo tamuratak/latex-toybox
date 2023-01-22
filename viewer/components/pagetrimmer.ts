@@ -21,7 +21,10 @@ function getTrimScale() {
     if (trimSelectElement.selectedIndex <= 0) {
         return 1.0
     }
-    const trimValue = trimSelectElement.options[trimSelectElement.selectedIndex].value
+    const trimValue = trimSelectElement.options[trimSelectElement.selectedIndex]?.value
+    if (trimValue === undefined) {
+        throw new Error('trimValue is undefined')
+    }
     return 1.0 / (1 - 2 * Number(trimValue))
 }
 

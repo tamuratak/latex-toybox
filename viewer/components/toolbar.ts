@@ -10,15 +10,18 @@ export function showToolbar(animate: boolean) {
     if (hideToolbarInterval !== undefined) {
         clearInterval(hideToolbarInterval)
     }
-    const d = document.getElementsByClassName('toolbar')[0]
-    d.classList.remove('hide')
+    const toolbarDiv = document.getElementsByClassName('toolbar')[0]
+    if (!toolbarDiv) {
+        throw new Error('toolbarDiv is undefined.')
+    }
+    toolbarDiv.classList.remove('hide')
     if (!animate) {
-        d.classList.add('notransition')
+        toolbarDiv.classList.add('notransition')
     }
     hideToolbarInterval = setInterval(() => {
         if(!PDFViewerApplication.findBar.opened && !PDFViewerApplication.pdfSidebar.isOpen && !PDFViewerApplication.secondaryToolbar.isOpen) {
-            d.classList.remove('notransition')
-            d.classList.add('hide')
+            toolbarDiv.classList.remove('notransition')
+            toolbarDiv.classList.add('hide')
             clearInterval(hideToolbarInterval)
         }
     }, 3000)
