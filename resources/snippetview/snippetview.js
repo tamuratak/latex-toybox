@@ -1,7 +1,6 @@
 const mathSymbols = [];
 const mathSymbolCategories = ['All'];
 const grid = document.querySelector('#Symbols .grid');
-var vscodeApi;
 
 // Based on https://css-tricks.com/scrollbars-on-hover/
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,10 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 });
 
-(function() {
-    vscodeApi = acquireVsCodeApi();
-    tikzInitialise();
-})();
+const vscodeApi = acquireVsCodeApi();
 
 async function loadMathSymbols() {
     const res = await fetch(mathSymbolsJsonUrl);
@@ -93,17 +89,6 @@ function getSearchText(symbol) {
     return searchText;
 }
 
-function tikzInitialise() {
-    document.querySelectorAll('#TikZ a.cmd').forEach(elem => {
-        elem.addEventListener('click', _evt => {
-            vscodeApi.postMessage({
-                type: 'insertSnippet',
-                snippet: elem.getAttribute('data-snippet').replace(/\\n/g, '\n')
-            });
-        });
-    });
-}
-
 function openTab(evt, tabName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName('tabcontent');
@@ -118,14 +103,6 @@ function openTab(evt, tabName) {
     evt.currentTarget.classList.add('active');
 }
 
-document.getElementById("tabSymbols").addEventListener("click", (event) => {
-    openTab(event, 'Symbols');
-});
-
-document.getElementById("tabTikz").addEventListener("click", (event) => {
-    openTab(event, 'TikZ');
-});
-
 document.getElementById("symbolsearch").addEventListener("input", () => {
     mathSymbolSearch();
 });
@@ -133,5 +110,3 @@ document.getElementById("symbolsearch").addEventListener("input", () => {
 document.getElementById("symbolsearchselect").addEventListener("change", () => {
     mathSymbolSearch();
 });
-
-document.getElementById('tabSymbols').click();
