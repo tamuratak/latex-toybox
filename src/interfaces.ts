@@ -97,7 +97,8 @@ export interface ILwStatusBarItem {
     displayStatus(
         status: 'success' | 'fail' | 'ongoing',
         message?: string,
-        build?: string
+        build?: string,
+        type?: 'build' | 'other'
     ): void
 }
 
