@@ -10,7 +10,7 @@ export class LwStatusBarItem implements ILwStatusBarItem {
 
     constructor(extension: IExtension) {
         this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10000)
-        this.status.command = 'latex-workshop.compilerlog'
+        this.status.command = 'latex-workshop.log'
         this.status.show()
         this.displayStatus('success')
         extension.extensionContext.subscriptions.push(
@@ -21,7 +21,8 @@ export class LwStatusBarItem implements ILwStatusBarItem {
     displayStatus(
         status: 'success' | 'fail' | 'ongoing',
         message = '',
-        build = ''
+        build = '',
+        type: 'build' | 'other' = 'build'
     ) {
         const icon = status === 'success' ? 'check' : status === 'fail' ? 'x' : 'sync~spin'
         this.status.text = `$(${icon})${build}`
@@ -30,6 +31,11 @@ export class LwStatusBarItem implements ILwStatusBarItem {
             this.status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground')
         } else {
             this.status.backgroundColor = undefined
+        }
+        if (type === 'build') {
+            this.status.command = 'latex-workshop.compilerlog'
+        } else if (type === 'other') {
+            this.status.command = 'latex-workshop.log'
         }
     }
 
