@@ -257,13 +257,17 @@ export class ChkTeX implements ILinter {
 
     private async showLinterDiagnostics(linterLog: ChkTeXLogEntry[]) {
         const diagsCollection = new Map<string, vscode.Diagnostic[]>()
-        for (let item of linterLog) {
-            item = this.tweakChktexLogEntry(item)
+        for (const origItem of linterLog) {
+            const item = this.tweakChktexLogEntry(origItem)
+            if (!item) {
+                continue
+            }
             const range = new vscode.Range(
                 new vscode.Position(item.line - 1, item.column - 1),
                 new vscode.Position(item.line - 1, item.column - 1 + item.length)
             )
-            const diag = new vscode.Diagnostic(range, item.text, DIAGNOSTIC_SEVERITY[item.type])
+            const severity = DIAGNOSTIC_SEVERITY[item.type] || vscode.DiagnosticSeverity.Error
+            const diag = new vscode.Diagnostic(range, item.text, severity)
             diag.code = item.code
             diag.source = this.#linterName
             let diagArray = diagsCollection.get(item.file)
@@ -289,16 +293,32 @@ export class ChkTeX implements ILinter {
         }
     }
 
-    private tweakChktexLogEntry(entry: ChkTeXLogEntry): ChkTeXLogEntry {
-        if (entry.code === 15 && entry.length === 1) {
-            return {
+    private tweakChktexLogEntry(origEntry: ChkTeXLogEntry): ChkTeXLogEntry | undefined {
+        let entry = {...origEntry}
+
+        if (entry.code === 9) {
+            if (entry.text.startsWith('9: `}\' expected,')) {
+                entry.type = 'error'
+            } else {
+                return
+            }
+        }
+
+        if (entry.code === 10) {
+            if (entry.text.includes('}')) {
+                entry.type = 'error'
+            }
+        }
+
+        if ([9, 10, 15].includes(entry.code) && entry.length === 1) {
+            entry = {
                 ...entry,
                 length: 3,
-                column: Math.max(0, entry.column - 1),
+                column: Math.max(1, entry.column - 1),
             }
-        } else {
-            return entry
         }
+
+        return entry
     }
 
 }
