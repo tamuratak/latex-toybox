@@ -55,8 +55,8 @@ export class AtSuggestion implements IProvider {
             }
             const completionItem = new vscode.CompletionItem(prefix.replace('@', this.triggerCharacter), vscode.CompletionItemKind.Function)
             completionItem.insertText = new vscode.SnippetString(body)
-            completionItem.documentation = 'User defined @suggestion'
-            completionItem.detail = 'User defined @suggestion'
+            completionItem.documentation = body
+            completionItem.detail = body
             this.suggestions.push(completionItem)
         })
 
