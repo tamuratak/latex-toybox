@@ -17,6 +17,8 @@ import {escapeRegExp} from '../utils/utils'
 import type {ICompleter} from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
+import { BracketReplacer } from './completer/bracketreplacer'
+
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
 type DataCmdsJsonType = typeof import('../../data/commands.json')
@@ -35,6 +37,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     readonly subImport: SubImport
     readonly glossary: Glossary
     readonly atSuggestionCompleter: AtSuggestionCompleter
+    readonly bracketReplacer: BracketReplacer
     readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: Extension) {
@@ -50,6 +53,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
         this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
+        this.bracketReplacer = new BracketReplacer(extension)
         const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.error(`Error reading data: ${err}.`))
         void Promise.allSettled([
             loadPromise,
@@ -85,17 +89,18 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.command.initialize(maths)
     }
 
-    provideCompletionItems(
+    async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.CompletionItem[] | undefined {
+    ) {
         const currentLine = document.lineAt(position.line).text
         if (position.character > 1 && currentLine[position.character - 1] === '\\' && currentLine[position.character - 2] === '\\') {
             return
         }
         const line = document.lineAt(position.line).text.substring(0, position.character)
+        const item = await this.bracketReplacer.provide(document, position)
         // Note that the order of the following array affects the result.
         // 'command' must be at the last because it matches any commands.
         for (const type of ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command']) {
@@ -108,10 +113,10 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
                         return
                     }
                 }
-                return suggestions
+                return [...suggestions, ...item]
             }
         }
-        return
+        return item
     }
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
@@ -158,7 +163,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         }
     }
 
-    private completion(type: string, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}): vscode.CompletionItem[] {
+    private completion(type: string, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
         switch (type) {
