@@ -4,8 +4,7 @@ import * as path from 'path'
 import type {Extension} from './main'
 import {TeXDoc} from './components/texdoc'
 import {getSurroundingCommandRange} from './utils/utils'
-import { readFilePath } from './lib/lwfs/lwfs'
-type SnippetsLatexJsonType = typeof import('../snippets/latex.json')
+
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
     const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
@@ -47,25 +46,10 @@ async function quickPickRootFile(rootFile: string, localRootFile: string): Promi
 export class Commander {
     private readonly extension: Extension
     private readonly _texdoc: TeXDoc
-    private readonly snippets = new Map<string, vscode.SnippetString>()
 
     constructor(extension: Extension) {
         this.extension = extension
         this._texdoc = new TeXDoc(extension)
-        void this.initialize()
-    }
-
-    async initialize() {
-        try {
-            const extensionSnippets = await readFilePath(`${this.extension.extensionRoot}/snippets/latex.json`)
-            const snipObj: { [key: string]: { body: string } } = JSON.parse(extensionSnippets) as SnippetsLatexJsonType
-            Object.entries(snipObj).forEach(([key, value]) => {
-                this.snippets.set(key, new vscode.SnippetString(value.body))
-            })
-            this.extension.logger.info('Snippet data loaded.')
-        } catch(err) {
-            this.extension.logger.error(`Error reading data: ${err}.`)
-        }
     }
 
     async build(skipSelection: boolean = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {
@@ -288,22 +272,6 @@ export class Commander {
     actions() {
         this.extension.logger.info('ACTIONS command invoked.')
         return vscode.commands.executeCommand('workbench.view.extension.latex-workshop-activitybar').then(() => vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'))
-    }
-
-    /**
-     * Insert the snippet with name name.
-     * @param name  the name of a snippet contained in latex.json
-     */
-    insertSnippet(name: string) {
-        const editor = vscode.window.activeTextEditor
-        if (!editor) {
-            return
-        }
-        const entry = this.snippets.get(name)
-        if (entry) {
-            return editor.insertSnippet(entry)
-        }
-        return
     }
 
     /**
