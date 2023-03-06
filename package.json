@@ -224,24 +224,6 @@
         }
       }
     ],
-    "snippets": [
-      {
-        "language": "latex",
-        "path": "./snippets/latex.json"
-      },
-      {
-        "language": "jlweave",
-        "path": "./snippets/latex.json"
-      },
-      {
-        "language": "rsweave",
-        "path": "./snippets/latex.json"
-      },
-      {
-        "language": "latex-expl3",
-        "path": "./snippets/latex.json"
-      }
-    ],
     "commands": [
       {
         "command": "latex-workshop.navigate-envpair",
@@ -251,11 +233,6 @@
       {
         "command": "latex-workshop.select-envname",
         "title": "Select the current environment name",
-        "category": "LaTeX Workshop"
-      },
-      {
-        "command": "latex-workshop.wrap-env",
-        "title": "Surround selection with \\begin{}...\\end{}",
         "category": "LaTeX Workshop"
       },
       {
@@ -494,12 +471,6 @@
         "mac": "cmd+alt+]",
         "when": "!config.latex-workshop.bind.altKeymap.enabled && editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
         "command": "latex-workshop.demote-sectioning"
-      },
-      {
-        "key": "ctrl+l ctrl+enter",
-        "mac": "cmd+l cmd+enter",
-        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.shortcut.item"
       },
       {
         "key": "ctrl+l ctrl+b",
