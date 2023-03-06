@@ -3,6 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
 import { ILwCompletionItem } from './interface'
 import { UtensilsParserLocator } from '../../interfaces'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
 
 interface IExtension extends
     UtensilsParserLocator { }
@@ -113,10 +114,7 @@ export class BracketReplacer {
         const suggestions: ILwCompletionItem[] = []
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
-                const sortText = sortkey + left.replace(/[a-zA-Z]/, c => {
-                    const n = c.match(/[a-z]/) ? c.toUpperCase().charCodeAt(0): c.toLowerCase().charCodeAt(0)
-                    return n !== undefined ? n.toString(16): c
-                })
+                const sortText = sortkey + reverseCaseOfFirstCharacterAndConvertToHex(left)
                 const ledit = vscode.TextEdit.replace(leftBracketRange, left)
                 const redit = vscode.TextEdit.replace(rightBracketRange, right)
                 const item: ILwCompletionItem = {

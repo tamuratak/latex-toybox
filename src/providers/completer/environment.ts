@@ -6,6 +6,7 @@ import {CmdEnvSuggestion, splitSignatureString} from './command'
 import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -251,10 +252,7 @@ export class Environment implements IProvider {
         } else {
             documentation = item.name
         }
-        const sortText = label.replace(/^[a-zA-Z]/, c => {
-            const n = c.match(/[a-z]/) ? c.toUpperCase().charCodeAt(0): c.toLowerCase().charCodeAt(0)
-            return n !== undefined ? n.toString(16): c
-        })
+        const sortText = reverseCaseOfFirstCharacterAndConvertToHex(label)
 
         if (type === EnvSnippetType.AsName) {
             return new CmdEnvSuggestion(

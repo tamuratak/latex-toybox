@@ -7,6 +7,7 @@ import {SurroundCommand} from './commandlib/surround'
 import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
@@ -329,10 +330,7 @@ export class Command implements IProvider, ICommand {
         const filterText = itemKey
         const detail = item.detail
         const documentation = item.documentation ? item.documentation : '`' + item.command + '`'
-        const sortText = item.command.replace(/^[a-zA-Z]/, c => {
-            const n = c.match(/[a-z]/) ? c.toUpperCase().charCodeAt(0): c.toLowerCase().charCodeAt(0)
-            return n !== undefined ? n.toString(16): c
-        })
+        const sortText = reverseCaseOfFirstCharacterAndConvertToHex(item.command)
         let command: vscode.Command | undefined
         if (item.postAction) {
             command = { title: 'Post-Action', command: item.postAction }
