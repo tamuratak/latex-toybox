@@ -24,6 +24,9 @@ type DataEnvsJsonType = typeof import('../../data/environments.json')
 type DataCmdsJsonType = typeof import('../../data/commands.json')
 type DataLatexMathSymbolsJsonType = typeof import('../../data/packages/latex-mathsymbols_cmd.json')
 
+const CompletionType = ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command'] as const
+type CompletionType = typeof CompletionType[number]
+
 export class Completer implements vscode.CompletionItemProvider, ICompleter {
     private readonly extension: Extension
     readonly citation: Citation
@@ -103,7 +106,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         const item = await this.bracketReplacer.provide(document, position)
         // Note that the order of the following array affects the result.
         // 'command' must be at the last because it matches any commands.
-        for (const type of ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command']) {
+        for (const type of CompletionType) {
             const suggestions = this.completion(type, line, {document, position, token, context})
             if (suggestions.length > 0) {
                 if (type === 'citation') {
@@ -163,7 +166,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         }
     }
 
-    private completion(type: string, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
+    private completion(type: CompletionType, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
         switch (type) {
