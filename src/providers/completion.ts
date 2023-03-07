@@ -103,7 +103,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
             return
         }
         const line = document.lineAt(position.line).text.substring(0, position.character)
-        const item = await this.bracketReplacer.provide(document, position)
+        const item = await this.provideContextAawareItems(document, position, token, context)
         // Note that the order of the following array affects the result.
         // 'command' must be at the last because it matches any commands.
         for (const type of CompletionType) {
@@ -120,6 +120,15 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
             }
         }
         return item
+    }
+
+    async provideContextAawareItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        _token: vscode.CancellationToken,
+        _context: vscode.CompletionContext
+    ) {
+        return this.bracketReplacer.provide(document, position)
     }
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
