@@ -1,6 +1,7 @@
 import type * as vscode from 'vscode'
 import { CmdEnvSuggestion } from './command'
 import type {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
+import { latexParser } from 'latex-utensils'
 
 export interface IProvider {
 
@@ -20,4 +21,9 @@ export interface ILwCompletionItem extends vscode.CompletionItem {
 export interface ICommand {
     getExtraPkgs(languageId: string): string[],
     provideCmdInPkg(pkg: string, cmdDuplicationDetector: CommandSignatureDuplicationDetector): CmdEnvSuggestion[]
+}
+
+export interface IContexAwareProvider {
+    test(document: vscode.TextDocument, position: vscode.Position): boolean,
+    provide(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): vscode.CompletionItem[]
 }

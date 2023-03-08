@@ -1,15 +1,11 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
-import { ILwCompletionItem } from './interface'
-import { UtensilsParserLocator } from '../../interfaces'
+import { IContexAwareProvider, ILwCompletionItem } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 
-interface IExtension extends
-    UtensilsParserLocator { }
 
-export class BracketReplacer {
-    private readonly extension: IExtension
+export class BracketReplacer implements IContexAwareProvider {
     private readonly bracketPairs = new Map<string, [string, string][]>(
         [
             ['01', [
@@ -80,16 +76,16 @@ export class BracketReplacer {
         ]
     )
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    test(document: vscode.TextDocument, position: vscode.Position): boolean {
+        const line = document.lineAt(position.line).text.substring(0, position.character)
+        if (/[({[]$/.exec(line)) {
+            return true
+        } else {
+            return false
+        }
     }
 
-    async provide(document: vscode.TextDocument, position: vscode.Position): Promise<ILwCompletionItem[]> {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
-        if (!/[({[]$/.exec(line)) {
-            return []
-        }
-        const ast = await this.extension.utensilsParser.parseLatex(document.getText())
+    provide(_document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): ILwCompletionItem[] {
         if (!ast) {
             return []
         }

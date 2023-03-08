@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import type {Extension} from '../main'
-import type {IProvider} from './completer/interface'
+import type {IContexAwareProvider, IProvider} from './completer/interface'
 import {Citation} from './completer/citation'
 import {DocumentClass} from './completer/documentclass'
 import {Command} from './completer/command'
@@ -56,7 +56,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
         this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
-        this.bracketReplacer = new BracketReplacer(extension)
+        this.bracketReplacer = new BracketReplacer()
         const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.error(`Error reading data: ${err}.`))
         void Promise.allSettled([
             loadPromise,
@@ -103,7 +103,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
             return
         }
         const line = document.lineAt(position.line).text.substring(0, position.character)
-        const item = await this.provideContextAawareItems(document, position, token, context)
+        const item = await this.provideContextAwareItems(document, position, token, context)
         // Note that the order of the following array affects the result.
         // 'command' must be at the last because it matches any commands.
         for (const type of CompletionType) {
@@ -122,13 +122,24 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         return item
     }
 
-    async provideContextAawareItems(
+    async provideContextAwareItems(
         document: vscode.TextDocument,
         position: vscode.Position,
-        _token: vscode.CancellationToken,
-        _context: vscode.CompletionContext
+        _: vscode.CancellationToken,
+        context: vscode.CompletionContext
     ) {
-        return this.bracketReplacer.provide(document, position)
+        const providers: IContexAwareProvider[] = [
+            this.bracketReplacer
+        ].filter(p => p.test(document, position))
+        let items: vscode.CompletionItem[] = []
+        if (providers.length === 0) {
+            return []
+        }
+        const ast = await this.extension.utensilsParser.parseLatex(document.getText(), {enableMathCharacterLocation: true})
+        for (const provider of providers) {
+            items = [...items, ...provider.provide(document, position, context, ast)]
+        }
+        return items
     }
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
