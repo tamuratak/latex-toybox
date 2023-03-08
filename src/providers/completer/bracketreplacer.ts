@@ -3,7 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
 import { ILwCompletionItem } from './interface'
 import { UtensilsParserLocator } from '../../interfaces'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 
 interface IExtension extends
     UtensilsParserLocator { }
@@ -115,11 +115,24 @@ export class BracketReplacer {
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
                 const sortText = sortkey + reverseCaseOfFirstCharacterAndConvertToHex(left)
-                const ledit = vscode.TextEdit.replace(leftBracketRange, left)
+                // Workaround for https://github.com/microsoft/vscode/issues/176154
+                let leditRange: vscode.Range
+                let leditString: string
+                let insertText: string
+                if (position.character - leftBracketRange.start.character > left.length) {
+                    leditRange = leftBracketRange
+                    leditString = left
+                    insertText = ''
+                } else {
+                    leditRange = new vscode.Range(leftBracketRange.start, position)
+                    leditString = left.substring(0, position.character - leftBracketRange.start.character)
+                    insertText = left.substring(position.character - leftBracketRange.start.character)
+                }
+                const ledit = vscode.TextEdit.replace(leditRange, leditString)
                 const redit = vscode.TextEdit.replace(rightBracketRange, right)
                 const item: ILwCompletionItem = {
                     label: left,
-                    insertText: '',
+                    insertText,
                     sortText,
                     kind: vscode.CompletionItemKind.Issue,
                     additionalTextEdits: [ledit, redit]

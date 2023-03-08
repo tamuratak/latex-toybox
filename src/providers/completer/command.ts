@@ -7,7 +7,7 @@ import {SurroundCommand} from './commandlib/surround'
 import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')

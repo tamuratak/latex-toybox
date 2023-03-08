@@ -6,7 +6,7 @@ import {CmdEnvSuggestion, splitSignatureString} from './command'
 import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from '../../utils/sortkey'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
