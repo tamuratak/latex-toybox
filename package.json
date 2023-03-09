@@ -632,7 +632,8 @@
     "configurationDefaults": {
       "[latex]": {
         "editor.formatOnPaste": false,
-        "editor.suggestSelection": "recentlyUsedByPrefix"
+        "editor.suggestSelection": "recentlyUsedByPrefix",
+        "editor.suggest.matchOnWordStartOnly": false
       }
     },
     "configuration": {
@@ -1434,20 +1435,6 @@
           "type": "number",
           "default": 1000,
           "markdownDescription": "Defines the delay in milliseconds for the extension to update current active file content for intellisense after stopped typing. This config works only when `intellisense.update.aggressive.enabled` is enabled. Lower this value to let the extension know newly defined commands/references/environments more quickly, at the cost of more frequent content parsing: more computational burden."
-        },
-        "latex-workshop.intellisense.citation.type": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "inline",
-            "browser"
-          ],
-          "default": "inline",
-          "markdownDescription": "Defines which type of hint to show when intellisense provides citation suggestions.",
-          "enumDescriptions": [
-            "Use the inline intellisense to provide citation completion items.",
-            "Use a dropdown menu to provide citation completion items."
-          ]
         },
         "latex-workshop.intellisense.citation.label": {
           "scope": "resource",

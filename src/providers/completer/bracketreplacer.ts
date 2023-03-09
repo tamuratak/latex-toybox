@@ -7,6 +7,8 @@ import { sanitizeReplace } from './utils/sanitize'
 
 
 export class BracketReplacer implements IContexAwareProvider {
+    readonly needsAst = true
+
     private readonly bracketPairs = new Map<string, [string, string][]>(
         [
             ['01', [

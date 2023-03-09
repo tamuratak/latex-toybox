@@ -136,8 +136,8 @@ export class Environment implements IProvider {
     }
 
     provideFrom(
-        _result: RegExpMatchArray,
-        args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}
+        _: RegExpMatchArray | undefined,
+        args: {document: vscode.TextDocument, position: vscode.Position}
     ) {
         const payload = {document: args.document, position: args.position}
         return this.provide(payload)
