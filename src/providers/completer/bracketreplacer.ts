@@ -96,18 +96,29 @@ export class BracketReplacer implements IContexAwareProvider {
             return []
         }
         const node = findResult.node
-        if (!latexParser.isMathDelimiters(node)) {
+        let leftBracketRange: vscode.Range
+        let rightBracketRange: vscode.Range
+        if (latexParser.isMathDelimiters(node)) {
+            leftBracketRange = new vscode.Range(
+                toVscodePosition(node.location.start),
+                toVscodePosition({line: node.location.start.line, column: node.location.start.column + node.lcommand.length + node.left.length })
+            )
+            rightBracketRange = new vscode.Range(
+                toVscodePosition({line: node.location.end.line, column: node.location.end.column - node.rcommand.length - node.right.length }),
+                toVscodePosition(node.location.end),
+            )
+        } else if (latexParser.isMatchingDelimiters(node)) {
+            leftBracketRange = new vscode.Range(
+                toVscodePosition(node.location.start),
+                toVscodePosition({line: node.location.start.line, column: node.location.start.column + '\\left'.length + node.left.length })
+            )
+            rightBracketRange = new vscode.Range(
+                toVscodePosition({line: node.location.end.line, column: node.location.end.column - '\\right'.length - node.right.length }),
+                toVscodePosition(node.location.end),
+            )
+        } else {
             return []
         }
-        const leftBracketRange = new vscode.Range(
-            toVscodePosition(node.location.start),
-            toVscodePosition({line: node.location.start.line, column: node.location.start.column + node.lcommand.length + node.left.length })
-        )
-        const rightBracketRange = new vscode.Range(
-            toVscodePosition({line: node.location.end.line, column: node.location.end.column - node.rcommand.length - node.right.length }),
-            toVscodePosition(node.location.end),
-        )
-
         const suggestions: ILwCompletionItem[] = []
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
