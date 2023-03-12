@@ -3,7 +3,6 @@ import * as vscode from 'vscode'
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
-import {SurroundCommand} from './commandlib/surround'
 import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
@@ -119,7 +118,6 @@ interface IExtension extends
 export class Command implements IProvider, ICommand {
     private readonly extension: IExtension
     private readonly environment: Environment
-    private readonly surroundCommand: SurroundCommand
 
     private readonly defaultCmds: CmdEnvSuggestion[] = []
     private readonly defaultSymbols: CmdEnvSuggestion[] = []
@@ -129,7 +127,6 @@ export class Command implements IProvider, ICommand {
     constructor(extension: IExtension, environment: Environment) {
         this.extension = extension
         this.environment = environment
-        this.surroundCommand = new SurroundCommand()
         void this.load().then(() => this.#readyPromise.resolve())
     }
 
@@ -280,20 +277,6 @@ export class Command implements IProvider, ICommand {
         })
 
         return suggestions
-    }
-
-    /**
-     * Surrounds `content` with a command picked in QuickPick.
-     *
-     * @param content A string to be surrounded. If not provided, then we loop over all the selections and surround each of them.
-     */
-    surround() {
-        if (!vscode.window.activeTextEditor) {
-            return
-        }
-        const editor = vscode.window.activeTextEditor
-        const cmdItems = this.provide(editor.document.languageId)
-        this.surroundCommand.surround(cmdItems)
     }
 
     getExtraPkgs(languageId: string): string[] {

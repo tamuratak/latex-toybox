@@ -236,11 +236,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop.surround",
-        "title": "Surround selection with LaTeX command",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.close-env",
         "title": "Close current environment",
         "category": "LaTeX Workshop"
@@ -591,12 +586,6 @@
         "key": "ctrl+l ctrl+m",
         "mac": "cmd+l cmd+m",
         "when": "textInputFocus && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
-      },
-      {
-        "key": "ctrl+l ctrl+w",
-        "mac": "cmd+l cmd+w",
-        "when": "editorTextFocus && !editorReadonly && editorHasSelection && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.surround"
       },
       {
         "command": "latex-workshop.onEnterKey",
