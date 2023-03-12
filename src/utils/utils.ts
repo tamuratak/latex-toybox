@@ -76,95 +76,9 @@ export function trimMultiLineString(text: string): string {
     return text.replace(/^\s\s*/gm, '').replace(/\s\s*$/gm, '')
 }
 
-/**
- * Find the longest substring containing balanced curly braces {...}
- * The string `s` can either start on the opening `{` or at the next character
- *
- * @param s A string to be searched.
- */
-export function getLongestBalancedString(s: string, bracket: 'curly' | 'square'='curly'): string {
-    const openner = bracket === 'curly' ? '{' : '['
-    const closer = bracket === 'curly' ? '}' : ']'
-    let nested = s[0] === openner ? 0 : 1
-    let i = 0
-    for (i = 0; i < s.length; i++) {
-        switch (s[i]) {
-            case openner:
-                nested++
-                break
-            case closer:
-                nested--
-                break
-            case '\\':
-                // skip an escaped character
-                i++
-                break
-            default:
-        }
-        if (nested === 0) {
-            break
-        }
-    }
-    return s.substring(s[0] === openner ? 1 : 0, i)
-}
-
-/**
- * If the current position is inside command{...}, return the range of command{...} and its argument. Otherwise return undefined
- *
- * @param command the command name, with or without the leading '\\'
- * @param position the current position in the document
- * @param document a TextDocument
- */
-export function getSurroundingCommandRange(command: string, position: vscode.Position, document: vscode.TextDocument): {range: vscode.Range, arg: string} | undefined {
-    if (!command.startsWith('\\')) {
-        command = '\\' + command
-    }
-    const line = document.lineAt(position.line).text
-    const regex = new RegExp('\\' + command + '{', 'g')
-    while (true) {
-        const match = regex.exec(line)
-        if (!match) {
-            break
-        }
-        const matchPos = match.index
-        const openingBracePos = matchPos + command.length + 1
-        const arg = getLongestBalancedString(line.slice(openingBracePos))
-        if (position.character >= openingBracePos && position.character <= openingBracePos + arg.length + 1) {
-            const start = new vscode.Position(position.line, matchPos)
-            const end = new vscode.Position(position.line, openingBracePos + arg.length + 1)
-            return {range: new vscode.Range(start, end), arg}
-        }
-    }
-    return undefined
-}
-
-
 export type CommandArgument = {
     arg: string, // The argument we are looking for
     index: number // the starting position of the argument
-}
-
-/**
- * @param text a string starting with a command call
- * @param nth the index of the argument to return
- */
-export function getNthArgument(text: string, nth: number): CommandArgument | undefined {
-    let arg: string = ''
-    let index: number = 0 // start of the nth argument
-    let offset: number = 0 // current offset of the new text to consider
-    for (let i=0; i<nth; i++) {
-        text = text.slice(offset)
-        index += offset
-        const start = text.indexOf('{')
-        if (start === -1) {
-            return undefined
-        }
-        text = text.slice(start)
-        index += start
-        arg = getLongestBalancedString(text)
-        offset = arg.length + 2 // 2 counts '{' and '}'
-    }
-    return {arg, index}
 }
 
 /**
