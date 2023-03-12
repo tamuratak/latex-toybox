@@ -260,14 +260,6 @@ export class Commander {
         return this.extension.envPair.envNameAction()
     }
 
-    closeEnv() {
-        this.extension.logger.info('CloseEnv command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        return this.extension.envPair.closeEnv()
-    }
-
     actions() {
         this.extension.logger.info('ACTIONS command invoked.')
         return vscode.commands.executeCommand('workbench.view.extension.latex-workshop-activitybar').then(() => vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'))

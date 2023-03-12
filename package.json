@@ -236,11 +236,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop.close-env",
-        "title": "Close current environment",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.saveWithoutBuilding",
         "title": "Save without Building",
         "category": "LaTeX Workshop"

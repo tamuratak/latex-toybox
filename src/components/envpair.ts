@@ -87,9 +87,4 @@ export class EnvPair {
         editor.selections = [new vscode.Selection(beginEnvPosA, beginEnvPosB), new vscode.Selection(endEnvPosA, endEnvPosB)]
     }
 
-    /* TODO */
-    closeEnv() {
-
-    }
-
 }

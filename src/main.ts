@@ -81,7 +81,6 @@ function registerLatexWorkshopCommands(extension: Extension, context: vscode.Ext
         vscode.commands.registerCommand('latex-workshop.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
         vscode.commands.registerCommand('latex-workshop.navigate-envpair', () => extension.commander.navigateToEnvPair()),
         vscode.commands.registerCommand('latex-workshop.select-envname', () => extension.commander.selectEnvName()),
-        vscode.commands.registerCommand('latex-workshop.close-env', () => extension.commander.closeEnv()),
         vscode.commands.registerCommand('latex-workshop.onEnterKey', () => extension.commander.onEnterKey()),
         vscode.commands.registerCommand('latex-workshop.onAltEnterKey', () => extension.commander.onEnterKey('alt')),
         vscode.commands.registerCommand('latex-workshop.revealOutputDir', () => extension.commander.revealOutputDir()),
