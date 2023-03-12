@@ -231,11 +231,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop.select-envname",
-        "title": "Select the current environment name",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.saveWithoutBuilding",
         "title": "Save without Building",
         "category": "LaTeX Workshop"
