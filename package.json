@@ -503,8 +503,7 @@
     "configurationDefaults": {
       "[latex]": {
         "editor.formatOnPaste": false,
-        "editor.suggestSelection": "recentlyUsedByPrefix",
-        "editor.suggest.matchOnWordStartOnly": false
+        "editor.suggestSelection": "recentlyUsedByPrefix"
       }
     },
     "configuration": {
