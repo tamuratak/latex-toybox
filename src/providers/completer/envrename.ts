@@ -3,7 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
 import { Environment } from './environment'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
-import { sanitizedReplacingItem } from './utils/sanitize'
+import { sanitizedReplacingItemFilterable } from './utils/sanitize'
 
 export class EnvRename implements IContexAwareProvider {
     readonly needsAst = true
@@ -54,7 +54,7 @@ export class EnvRename implements IContexAwareProvider {
             if (/[{[]/.test(env.label)) {
                 continue
             }
-            const item = sanitizedReplacingItem(env.label, document, beginNameRange, env.label + '}', position)
+            const item = sanitizedReplacingItemFilterable(env.label, document, beginNameRange, env.label + '}', position)
             item.additionalTextEdits?.push(vscode.TextEdit.replace(endNameRange, env.label))
             items.push(item)
         }
