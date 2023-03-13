@@ -23,6 +23,7 @@ import { CommandRemover } from './completer/commandremover'
 import { CommandReplacer } from './completer/commandreplacer'
 import { EnvCloser } from './completer/envcloser'
 import { EnvRename } from './completer/envrename'
+import { CommandAdder } from './completer/commandadder'
 
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
@@ -46,6 +47,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     readonly glossary: Glossary
     readonly atSuggestionCompleter: AtSuggestionCompleter
     private readonly bracketReplacer: BracketReplacer
+    private readonly commandAdder: CommandAdder
     private readonly commandRemover: CommandRemover
     private readonly commandReplacer: CommandReplacer
     private readonly envCloser: EnvCloser
@@ -66,6 +68,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.glossary = new Glossary(extension)
         this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
         this.bracketReplacer = new BracketReplacer()
+        this.commandAdder = new CommandAdder(this.command)
         this.commandRemover = new CommandRemover()
         this.commandReplacer = new CommandReplacer()
         this.envCloser = new EnvCloser()
@@ -140,6 +143,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     ) {
         const providers: IContexAwareProvider[] = [
             this.bracketReplacer,
+            this.commandAdder,
             this.commandRemover,
             this.commandReplacer,
             this.envCloser,
