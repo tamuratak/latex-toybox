@@ -11,14 +11,17 @@ import { sanitizedRemovingItem } from './utils/sanitize'
 export class CommandRemover implements IContexAwareProvider {
     readonly needsAst = true
 
-    test(document: vscode.TextDocument, position: vscode.Position): boolean {
+    test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
+        if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+            return false
+        }
         const positionChar = document.getText(
             new vscode.Range(
                 position.translate(0, -1),
                 position
             )
         )
-        const wordRange = document.getWordRangeAtPosition(position, /\\[a-zA-Z]+/)
+        const wordRange = document.getWordRangeAtPosition(position, /\\[a-zA-Z]+\{/)
         if (positionChar === '}' || wordRange) {
             return true
         } else {

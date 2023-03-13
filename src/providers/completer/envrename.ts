@@ -14,6 +14,9 @@ export class EnvRename implements IContexAwareProvider {
     }
 
     test(document: vscode.TextDocument, position: vscode.Position): boolean {
+        if (document.languageId !== 'latex') {
+            return false
+        }
         const wordRange = document.getWordRangeAtPosition(position, /\\begin\{[^}]*\}/)
         if (wordRange && wordRange.end.isEqual(position)) {
             return true
