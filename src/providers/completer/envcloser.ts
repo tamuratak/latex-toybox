@@ -1,21 +1,21 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
-import { toLuPos } from '../../utils/utensils'
+import { toLuPos, toVscodePosition } from '../../utils/utensils'
 
 export class EnvCloser implements IContexAwareProvider {
     readonly needsAst = true
 
     test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
-        if (/^\s*$/.test(line) || vscode.CompletionTriggerKind.TriggerCharacter === context.triggerKind) {
+        const line = document.lineAt(position.line).text
+        if (/^\s*$/.test(line) || /^\s*\\\s*$/.test(line) && vscode.CompletionTriggerKind.TriggerCharacter === context.triggerKind) {
             return true
         } else {
             return false
         }
     }
 
-    provide(_document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): vscode.CompletionItem[] {
+    provide(_document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined) {
         if (!ast) {
             return []
         }
@@ -28,7 +28,8 @@ export class EnvCloser implements IContexAwareProvider {
         const beginEndCommands = node.content.filter(latexParser.isCommand).filter(commnadNode => commnadNode.name === 'begin' || commnadNode.name === 'end')
         if (beginEndCommands.length === 1) {
             const beginEnd = beginEndCommands[0]
-            if (beginEnd.name === 'begin') {
+            const beginEndPos = toVscodePosition(beginEnd.location.end)
+            if (beginEnd.name === 'begin' && beginEndPos.isBefore(position)) {
                 const envName = latexParser.stringify(beginEnd.args[0].content)
                 const prefix = vscode.CompletionTriggerKind.TriggerCharacter === context.triggerKind ? '' : '\\'
                 const item = new vscode.CompletionItem(`${prefix}end{${envName}}`, vscode.CompletionItemKind.Issue)

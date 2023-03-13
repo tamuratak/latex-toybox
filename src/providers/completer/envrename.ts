@@ -3,7 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
 import { Environment } from './environment'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
-import { sanitizeReplace } from './utils/sanitize'
+import { sanitizedReplacingItem } from './utils/sanitize'
 
 export class EnvRename implements IContexAwareProvider {
     readonly needsAst = true
@@ -22,7 +22,7 @@ export class EnvRename implements IContexAwareProvider {
         }
     }
 
-    provide(document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): vscode.CompletionItem[] {
+    provide(document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined) {
         if (!ast) {
             return []
         }
@@ -54,13 +54,8 @@ export class EnvRename implements IContexAwareProvider {
             if (/[{[]/.test(env.label)) {
                 continue
             }
-            const item = new vscode.CompletionItem(env.label, vscode.CompletionItemKind.Issue)
-            const { leditRange, leditString, insertText } = sanitizeReplace(beginNameRange, env.label + '}', position)
-            item.insertText = insertText
-            item.additionalTextEdits = [
-                vscode.TextEdit.replace(leditRange, leditString),
-                vscode.TextEdit.replace(endNameRange, env.label)
-            ]
+            const item = sanitizedReplacingItem(env.label, document, beginNameRange, env.label + '}', position)
+            item.additionalTextEdits?.push(vscode.TextEdit.replace(endNameRange, env.label))
             items.push(item)
         }
         return items

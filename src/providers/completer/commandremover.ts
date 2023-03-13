@@ -5,14 +5,21 @@ import { IContexAwareProvider } from './interface'
 import { toLuPos } from '../../utils/utensils'
 import { toVscodePosition } from '../../utils/utensils'
 import { toVscodeRange } from '../../utils/utensils'
+import { sanitizedRemovingItem } from './utils/sanitize'
 
 
 export class CommandRemover implements IContexAwareProvider {
     readonly needsAst = true
 
     test(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
-        if (/[}]$/.exec(line)) {
+        const positionChar = document.getText(
+            new vscode.Range(
+                position.translate(0, -1),
+                position
+            )
+        )
+        const wordRange = document.getWordRangeAtPosition(position, /\\[a-zA-Z]+/)
+        if (positionChar === '}' || wordRange) {
             return true
         } else {
             return false
@@ -26,22 +33,30 @@ export class CommandRemover implements IContexAwareProvider {
         const positionOffset = document.offsetAt(position)
         const luPos = toLuPos(position)
         const findResult = latexParser.findNodeAt(ast.content, luPos)
-        if (!findResult || !latexParser.hasContentArray(findResult.node)) {
+        if (!findResult) {
             return []
         }
-        const prevNext = findPrevNextNode(positionOffset, findResult.node.content)
-        const node = prevNext.prev
-        if (!node || !node.location || !latexParser.isCommand(node)) {
-            return []
-        }
-        if (!toVscodePosition(node.location.end).isEqual(position)) {
+        let commandNode: latexParser.Command
+        if (latexParser.hasContentArray(findResult.node)) {
+            const prevNext = findPrevNextNode(positionOffset, findResult.node.content)
+            const node = prevNext.prev
+            if (!node || !node.location || !latexParser.isCommand(node)) {
+                return []
+            }
+            if (!toVscodePosition(node.location.end).isEqual(position)) {
+                return []
+            }
+            commandNode = node
+        } else if (latexParser.isCommand(findResult.node)) {
+            commandNode = findResult.node
+        } else {
             return []
         }
         const edits: vscode.TextEdit[] = []
-        const commandStart = toVscodePosition(node.location.start)
-        const removeCommand = vscode.TextEdit.delete(new vscode.Range(commandStart, commandStart.translate(0, node.name.length + 1)))
-        edits.push(removeCommand)
-        node.args.forEach(arg => {
+        const commandStart = toVscodePosition(commandNode.location.start)
+        const removeRange = new vscode.Range(commandStart, commandStart.translate(0, commandNode.name.length + 1))
+        const item = sanitizedRemovingItem('Remove Command', document, removeRange, position)
+        commandNode.args.forEach(arg => {
             if (latexParser.isOptionalArg(arg)) {
                 edits.push(vscode.TextEdit.delete(toVscodeRange(arg.location)))
             } else {
@@ -53,9 +68,7 @@ export class CommandRemover implements IContexAwareProvider {
                 edits.push(endEdit)
             }
         })
-        const item = new vscode.CompletionItem('Remove command', vscode.CompletionItemKind.Issue)
-        item.insertText = ''
-        item.additionalTextEdits = edits
+        item.additionalTextEdits?.push(...edits)
         return [item]
     }
 

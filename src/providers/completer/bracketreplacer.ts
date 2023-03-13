@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
-import { IContexAwareProvider, ILwCompletionItem } from './interface'
+import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
-import { sanitizeReplace } from './utils/sanitize'
+import { sanitizedReplacingItem } from './utils/sanitize'
 
 
 export class BracketReplacer implements IContexAwareProvider {
@@ -88,7 +88,7 @@ export class BracketReplacer implements IContexAwareProvider {
         }
     }
 
-    provide(_document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): ILwCompletionItem[] {
+    provide(document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined) {
         if (!ast) {
             return []
         }
@@ -101,41 +101,39 @@ export class BracketReplacer implements IContexAwareProvider {
         let leftBracketRange: vscode.Range
         let rightBracketRange: vscode.Range
         if (latexParser.isMathDelimiters(node)) {
+            const nodeStartPos = toVscodePosition(node.location.start)
+            const nodeEndPos = toVscodePosition(node.location.end)
             leftBracketRange = new vscode.Range(
-                toVscodePosition(node.location.start),
-                toVscodePosition({line: node.location.start.line, column: node.location.start.column + node.lcommand.length + node.left.length })
+                nodeStartPos,
+                nodeStartPos.translate(0, node.lcommand.length + node.left.length)
             )
             rightBracketRange = new vscode.Range(
-                toVscodePosition({line: node.location.end.line, column: node.location.end.column - node.rcommand.length - node.right.length }),
-                toVscodePosition(node.location.end),
+                nodeEndPos.translate(0, - node.rcommand.length - node.right.length),
+                nodeEndPos
             )
         } else if (latexParser.isMatchingDelimiters(node)) {
+            const nodeStartPos = toVscodePosition(node.location.start)
+            const nodeEndPos = toVscodePosition(node.location.end)
             leftBracketRange = new vscode.Range(
-                toVscodePosition(node.location.start),
-                toVscodePosition({line: node.location.start.line, column: node.location.start.column + '\\left'.length + node.left.length })
+                nodeStartPos,
+                nodeStartPos.translate(0, '\\left'.length + node.left.length)
             )
             rightBracketRange = new vscode.Range(
-                toVscodePosition({line: node.location.end.line, column: node.location.end.column - '\\right'.length - node.right.length }),
-                toVscodePosition(node.location.end),
+                nodeEndPos.translate(0, - '\\right'.length - node.right.length),
+                nodeEndPos
             )
         } else {
             return []
         }
-        const suggestions: ILwCompletionItem[] = []
+        const suggestions: vscode.CompletionItem[] = []
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
                 const sortText = sortkey + reverseCaseOfFirstCharacterAndConvertToHex(left)
                 // Workaround for https://github.com/microsoft/vscode/issues/176154
-                const { leditRange, leditString, insertText } = sanitizeReplace(leftBracketRange, left, position)
-                const ledit = vscode.TextEdit.replace(leditRange, leditString)
+                const item = sanitizedReplacingItem(left, document, leftBracketRange, left, position)
                 const redit = vscode.TextEdit.replace(rightBracketRange, right)
-                const item: ILwCompletionItem = {
-                    label: left,
-                    insertText,
-                    sortText,
-                    kind: vscode.CompletionItemKind.Issue,
-                    additionalTextEdits: [ledit, redit]
-                }
+                item.sortText = sortText
+                item.additionalTextEdits?.push(redit)
                 suggestions.push(item)
             }
         }

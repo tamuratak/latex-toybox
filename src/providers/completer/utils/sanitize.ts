@@ -1,18 +1,32 @@
 import * as vscode from 'vscode'
 
 // Workaround for https://github.com/microsoft/vscode/issues/176154
-export function sanitizeReplace(leftRange: vscode.Range, leftString: string, position: vscode.Position) {
-    if (position.character - leftRange.start.character > leftString.length) {
-        return {
-            leditRange: leftRange,
-            leditString: leftString,
-            insertText: ''
-        }
+export function sanitizedReplacingItem(label: string, document: vscode.TextDocument, replaceRange: vscode.Range, newString: string, position: vscode.Position) {
+    const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Issue)
+    if (replaceRange.contains(position)) {
+        item.insertText = newString
+        item.range = replaceRange
+        item.filterText = document.getText(replaceRange)
+        item.additionalTextEdits = []
     } else {
-        return {
-            leditRange: new vscode.Range(leftRange.start, position),
-            leditString: leftString.substring(0, position.character - leftRange.start.character),
-            insertText: leftString.substring(position.character - leftRange.start.character)
-        }
+        const replaceCommand = vscode.TextEdit.replace(replaceRange, newString)
+        item.insertText = ''
+        item.additionalTextEdits = [replaceCommand]
     }
+    return item
+}
+
+export function sanitizedRemovingItem(label: string, document: vscode.TextDocument, removeRange: vscode.Range, position: vscode.Position) {
+    const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Issue)
+    if (removeRange.contains(position)) {
+        item.insertText = ''
+        item.range = removeRange
+        item.filterText = document.getText(removeRange)
+        item.additionalTextEdits = []
+    } else {
+        const removeCommand = vscode.TextEdit.delete(removeRange)
+        item.insertText = ''
+        item.additionalTextEdits = [removeCommand]
+    }
+    return item
 }
