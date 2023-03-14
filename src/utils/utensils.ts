@@ -144,14 +144,3 @@ export function findNodeContactedWithOffset(document: TextDocument, position: Po
     }
     return
 }
-
-export function findNodeContactedWithOffset2(cursorOffset: number, nodeArray: latexParser.Node[]): latexParser.Node | undefined {
-    const { prev, next } = findPrevNextNode(cursorOffset, nodeArray)
-    if (prev && prev.location && prev.location.end.offset === cursorOffset) {
-        return prev
-    }
-    if (next && next.location && next.location.start.offset === cursorOffset) {
-        return next
-    }
-    return undefined
-}

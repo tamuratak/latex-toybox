@@ -80,7 +80,10 @@ export class BracketReplacer implements IContexAwareProvider {
         ]
     )
 
-    test(document: vscode.TextDocument, position: vscode.Position): boolean {
+    test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
+        if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+            return false
+        }
         const result = isPositionAtTerminator(document, position)
         const prevCharRange = new vscode.Range(position.translate(0, -1), position)
         const prevChar = document.getText(prevCharRange)
@@ -126,6 +129,10 @@ export class BracketReplacer implements IContexAwareProvider {
                 nodeEndPos
             )
         } else {
+            return []
+        }
+        const isPosAtBracket = [leftBracketRange.start, leftBracketRange.end, rightBracketRange.start, rightBracketRange.end].some(braPos => braPos.isEqual(position))
+        if (!isPosAtBracket) {
             return []
         }
         const suggestions: vscode.CompletionItem[] = []
