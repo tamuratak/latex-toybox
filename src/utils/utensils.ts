@@ -1,5 +1,5 @@
 import { latexParser } from 'latex-utensils'
-import { Position, Range } from 'vscode'
+import { Position, Range, TextDocument } from 'vscode'
 
 export interface ILuRange {
     readonly start: ILuPos,
@@ -109,4 +109,49 @@ export function findPrevNextNode(cursorOffset: number, nodeArray: latexParser.No
         }
     }
     return { prev, next: undefined }
+}
+
+export function findNodeContactedWithOffset(document: TextDocument, position: Position, ast: latexParser.LatexAst): latexParser.Node | undefined {
+    const loc = toLuPos(position)
+    const findResult = latexParser.findNodeAt(ast.content, loc)
+    const node = findResult?.node
+    if (!node?.location) {
+        return
+    }
+    const nodePos = toVscodePosition(node.location.start)
+    if (nodePos.isEqual(position)) {
+        return node
+    }
+    const cursorOffset = document.offsetAt(position)
+    let nodeArray: latexParser.Node[] | undefined
+    if (latexParser.hasContentArray(node)) {
+        nodeArray = node.content
+    } else {
+        const parentNode = findResult?.parent?.node
+        if (parentNode && latexParser.hasContentArray(parentNode)) {
+            nodeArray = parentNode.content
+        }
+    }
+    if (!nodeArray) {
+        return
+    }
+    const { prev, next } = findPrevNextNode(cursorOffset, nodeArray)
+    if (prev && prev.location && prev.location.end.offset === cursorOffset) {
+        return prev
+    }
+    if (next && next.location && next.location.start.offset === cursorOffset) {
+        return next
+    }
+    return
+}
+
+export function findNodeContactedWithOffset2(cursorOffset: number, nodeArray: latexParser.Node[]): latexParser.Node | undefined {
+    const { prev, next } = findPrevNextNode(cursorOffset, nodeArray)
+    if (prev && prev.location && prev.location.end.offset === cursorOffset) {
+        return prev
+    }
+    if (next && next.location && next.location.start.offset === cursorOffset) {
+        return next
+    }
+    return undefined
 }

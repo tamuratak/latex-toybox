@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { toLuPos, toVscodePosition } from '../../utils/utensils'
+import { findNodeContactedWithOffset, toLuPos, toVscodePosition } from '../../utils/utensils'
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import { sanitizedReplacingItem } from './utils/sanitize'
@@ -80,8 +80,8 @@ export class BracketReplacer implements IContexAwareProvider {
     )
 
     test(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
-        if (/[({[]$/.exec(line)) {
+        const wordRange = document.getWordRangeAtPosition(position, /[\\(){}[\]]$/)
+        if (wordRange) {
             return true
         } else {
             return false
@@ -92,12 +92,12 @@ export class BracketReplacer implements IContexAwareProvider {
         if (!ast) {
             return []
         }
-        const loc = toLuPos(position)
+/*        const loc = toLuPos(position)
         const findResult = latexParser.findNodeAt(ast.content, loc)
         if (!findResult || !findResult.node.location) {
             return []
-        }
-        const node = findResult.node
+        } */
+        const node = this.findBracketPair(document, position, ast)
         let leftBracketRange: vscode.Range
         let rightBracketRange: vscode.Range
         if (latexParser.isMathDelimiters(node)) {
@@ -139,6 +139,20 @@ export class BracketReplacer implements IContexAwareProvider {
         }
 
         return suggestions
+    }
+
+    findBracketPair(document: vscode.TextDocument, position: vscode.Position, ast: latexParser.LatexAst) {
+        let node = findNodeContactedWithOffset(document, position, ast)
+        if (latexParser.isMatchingDelimiters(node) || latexParser.isMathDelimiters(node)) {
+            return node
+        }
+        const loc = toLuPos(position)
+        const findResult = latexParser.findNodeAt(ast.content, loc)
+        node = findResult?.node
+        if (latexParser.isMatchingDelimiters(node) || latexParser.isMathDelimiters(node)) {
+            return node
+        }
+        return
     }
 
 }
