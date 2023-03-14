@@ -4,6 +4,7 @@ import { findNodeContactedWithOffset, toLuPos, toVscodePosition } from '../../ut
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import { sanitizedReplacingItem } from './utils/sanitize'
+import { isPositionAtTerminator } from './utils/position'
 
 
 export class BracketReplacer implements IContexAwareProvider {
@@ -80,8 +81,10 @@ export class BracketReplacer implements IContexAwareProvider {
     )
 
     test(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const wordRange = document.getWordRangeAtPosition(position, /[\\(){}[\]]$/)
-        if (wordRange) {
+        const result = isPositionAtTerminator(document, position)
+        const prevCharRange = new vscode.Range(position.translate(0, -1), position)
+        const prevChar = document.getText(prevCharRange)
+        if (result || prevChar === '{') {
             return true
         } else {
             return false
