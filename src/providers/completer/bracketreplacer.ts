@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { findNodeContactedWithOffset, toLuPos, toVscodePosition } from '../../utils/utensils'
+import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../utils/utensils'
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import { sanitizedReplacingItem } from './utils/sanitize'
@@ -84,10 +84,9 @@ export class BracketReplacer implements IContexAwareProvider {
         if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
             return false
         }
-        const result = isPositionAtTerminator(document, position)
         const prevCharRange = new vscode.Range(position.translate(0, -1), position)
         const prevChar = document.getText(prevCharRange)
-        if (result || prevChar === '{') {
+        if (prevChar === '{' || isPositionAtTerminator(document, position)) {
             return true
         } else {
             return false
@@ -152,7 +151,7 @@ export class BracketReplacer implements IContexAwareProvider {
     }
 
     findBracketPair(document: vscode.TextDocument, position: vscode.Position, ast: latexParser.LatexAst) {
-        let node = findNodeContactedWithOffset(document, position, ast)
+        let node = findNodeContactedWithPosition(document, position, ast)
         if (latexParser.isMatchingDelimiters(node) || latexParser.isMathDelimiters(node)) {
             return node
         }

@@ -111,7 +111,7 @@ export function findPrevNextNode(cursorOffset: number, nodeArray: latexParser.No
     return { prev, next: undefined }
 }
 
-export function findNodeContactedWithOffset(document: TextDocument, position: Position, ast: latexParser.LatexAst): latexParser.Node | undefined {
+export function findNodeContactedWithPosition(document: TextDocument, position: Position, ast: latexParser.LatexAst): latexParser.Node | undefined {
     const loc = toLuPos(position)
     const findResult = latexParser.findNodeAt(ast.content, loc)
     const node = findResult?.node

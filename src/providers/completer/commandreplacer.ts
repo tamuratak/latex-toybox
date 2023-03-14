@@ -23,6 +23,7 @@ export class CommandReplacer implements IContexAwareProvider {
             const items = textCommands.map(cmd => {
                 const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
                 item.insertText = cmd
+                item.filterText = command
                 item.range = commandRange
                 return item
             })
@@ -32,6 +33,7 @@ export class CommandReplacer implements IContexAwareProvider {
             const items = mathCommands.map(cmd => {
                 const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
                 item.insertText = cmd
+                item.filterText = command
                 item.range = commandRange
                 return item
             })
