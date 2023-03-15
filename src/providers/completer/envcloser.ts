@@ -7,11 +7,11 @@ export class EnvCloser implements IContexAwareProvider {
     readonly needsAst = true
 
     test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
-        const line = document.lineAt(position.line).text
-        if (/^\s*$/.test(line)) {
+        const textLine = document.lineAt(position.line)
+        if (textLine.isEmptyOrWhitespace) {
             return true
         }
-        if (/^\s*\\\s*$/.test(line) && context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+        if (/^\s*\\\s*$/.test(textLine.text) && context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
             return true
         }
         return false
