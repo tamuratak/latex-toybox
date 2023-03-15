@@ -87,7 +87,7 @@ export function tokenizer(document: vscode.TextDocument, position: vscode.Positi
  * @param token The name of package.
  */
 export function onAPackage(document: vscode.TextDocument, position: vscode.Position, token: string): boolean {
-    const line = document.lineAt(position.line).text
+    const line = document.lineAt(position).text
     const escapedToken = utils.escapeRegExp(token)
     const regex = new RegExp(`\\\\usepackage(?:\\[[^\\[\\]\\{\\}]*\\])?\\{[\\w,]*${escapedToken}[\\w,]*\\}`)
     if (line.match(regex)) {

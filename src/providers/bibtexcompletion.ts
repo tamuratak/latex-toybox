@@ -152,7 +152,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     }
 
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] | undefined {
-        const currentLine = document.lineAt(position.line).text
+        const currentLine = document.lineAt(position).text
         const prevLine = document.lineAt(position.line - 1).text
         if (currentLine.match(/@[a-zA-Z]*$/)) {
             // Complete an entry name

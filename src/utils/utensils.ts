@@ -1,4 +1,5 @@
-import { Position, Range } from 'vscode'
+import { latexParser } from 'latex-utensils'
+import { Position, Range, TextDocument } from 'vscode'
 
 export interface ILuRange {
     readonly start: ILuPos,
@@ -90,4 +91,56 @@ export function convertPositionToOffset(position: Position, doc: string): number
     const arry = doc.split('\n')
     const sum = arry.slice(0, position.line).map((line) => line.length + 1).reduce((prev, e) => prev + e, 0)
     return sum + position.character
+}
+
+export type PrevNextNodes = {
+    readonly prev: latexParser.Node | undefined,
+    readonly next: latexParser.Node | undefined
+}
+
+export function findPrevNextNode(cursorOffset: number, nodeArray: latexParser.Node[]): PrevNextNodes {
+    let prev: latexParser.Node | undefined
+    for (const node of nodeArray) {
+        const loc = node.location
+        if (loc && cursorOffset <= loc.start.offset) {
+            return { prev, next: node }
+        } else {
+            prev = node
+        }
+    }
+    return { prev, next: undefined }
+}
+
+export function findNodeContactedWithPosition(document: TextDocument, position: Position, ast: latexParser.LatexAst): latexParser.Node | undefined {
+    const loc = toLuPos(position)
+    const findResult = latexParser.findNodeAt(ast.content, loc)
+    const node = findResult?.node
+    if (!node?.location) {
+        return
+    }
+    const nodePos = toVscodePosition(node.location.start)
+    if (nodePos.isEqual(position)) {
+        return node
+    }
+    const cursorOffset = document.offsetAt(position)
+    let nodeArray: latexParser.Node[] | undefined
+    if (latexParser.hasContentArray(node)) {
+        nodeArray = node.content
+    } else {
+        const parentNode = findResult?.parent?.node
+        if (parentNode && latexParser.hasContentArray(parentNode)) {
+            nodeArray = parentNode.content
+        }
+    }
+    if (!nodeArray) {
+        return
+    }
+    const { prev, next } = findPrevNextNode(cursorOffset, nodeArray)
+    if (prev && prev.location && prev.location.end.offset === cursorOffset) {
+        return prev
+    }
+    if (next && next.location && next.location.start.offset === cursorOffset) {
+        return next
+    }
+    return
 }

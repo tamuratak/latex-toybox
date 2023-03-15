@@ -3,7 +3,6 @@ import * as path from 'path'
 
 import type {Extension} from './main'
 import {TeXDoc} from './components/texdoc'
-import {getSurroundingCommandRange} from './utils/utils'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -253,22 +252,6 @@ export class Commander {
         return this.extension.envPair.gotoPair()
     }
 
-    selectEnvName() {
-        this.extension.logger.info('SelectEnvName command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        return this.extension.envPair.envNameAction()
-    }
-
-    closeEnv() {
-        this.extension.logger.info('CloseEnv command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
-            return
-        }
-        return this.extension.envPair.closeEnv()
-    }
-
     actions() {
         this.extension.logger.info('ACTIONS command invoked.')
         return vscode.commands.executeCommand('workbench.view.extension.latex-workshop-activitybar').then(() => vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'))
@@ -329,62 +312,6 @@ export class Commander {
                 }
             }
         })
-    }
-
-    /**
-    * Toggle a keyword. This function works with multi-cursors or multi-selections
-    *
-    * If the selection is empty, a snippet is added.
-    *
-    * If the selection is not empty and matches `\keyword{...}`, it is replaced by
-    * the argument of `keyword`. If the selection does not start with `\keyword`, it is surrounded by `\keyword{...}`.
-    *
-    *  @param keyword the keyword to toggle without backslash eg. textbf or underline
-    */
-    async toggleSelectedKeyword(keyword: string) {
-        const editor = vscode.window.activeTextEditor
-        if (editor === undefined) {
-            return
-        }
-
-        const editActions: {range: vscode.Range, text: string}[] = []
-        const snippetActions: vscode.Position[] = []
-
-        for (const selection of editor.selections) {
-            // If the selection is empty, determine if a snippet should be inserted or the cursor is inside \keyword{...}
-            if (selection.isEmpty) {
-                const surroundingCommandRange = getSurroundingCommandRange(keyword, selection.anchor, editor.document)
-                if (surroundingCommandRange) {
-                    editActions.push({range: surroundingCommandRange.range, text: surroundingCommandRange.arg})
-                } else {
-                    snippetActions.push(selection.anchor)
-                }
-                continue
-            }
-
-            // When the selection is not empty, decide if \keyword must be inserted or removed
-            const text = editor.document.getText(selection)
-            if (text.startsWith(`\\${keyword}{`) || text.startsWith(`${keyword}{`)) {
-                const start = text.indexOf('{') + 1
-                const insideText = text.slice(start).slice(0, -1)
-                editActions.push({range: selection, text: insideText})
-            } else {
-                editActions.push({range: selection, text: `\\${keyword}{${text}}`})
-            }
-        }
-
-        if (editActions.length === 0 && snippetActions.length > 0) {
-            const snippet = new vscode.SnippetString(`\\\\${keyword}{$1}`)
-            await editor.insertSnippet(snippet, snippetActions)
-        } else if (editActions.length > 0 && snippetActions.length === 0) {
-            await editor.edit((editBuilder) => {
-                editActions.forEach(action => {
-                    editBuilder.replace(action.range, action.text)
-                })
-            })
-        } else {
-            this.extension.logger.info('toggleSelectedKeyword: cannot handle mixed edit and snippet actions')
-        }
     }
 
     /**

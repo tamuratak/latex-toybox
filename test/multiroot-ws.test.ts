@@ -12,7 +12,7 @@ import {
 } from './utils/ciutils'
 import { toKey } from '../src/utils/tokey'
 
-function getCompletionItems(extension: vscode.Extension<ReturnType<typeof activate>>, doc: vscode.TextDocument, pos: vscode.Position): vscode.CompletionItem[] | undefined {
+function getCompletionItems(extension: vscode.Extension<ReturnType<typeof activate>>, doc: vscode.TextDocument, pos: vscode.Position) {
     const token = new vscode.CancellationTokenSource().token
     return extension.exports.realExtension?.completer.provideCompletionItems?.(
         doc, pos, token,
@@ -297,7 +297,7 @@ suite('Multi-root workspace test suite', () => {
         const extension = obtainLatexWorkshop()
         await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
-        const itemsA = getCompletionItems(extension, docA, pos)
+        const itemsA = await getCompletionItems(extension, docA, pos)
         const expectedLabelsA = [
             'A fake article',
             'LATEX: A Document Preparation System : User\'s Guide and Reference Manual',
@@ -311,7 +311,7 @@ suite('Multi-root workspace test suite', () => {
         await vscode.window.showTextDocument(docB)
         await findRootFileEnd
         await waitGivenRootFile(docB.fileName)
-        const itemsB = getCompletionItems(extension, docB, pos)
+        const itemsB = await getCompletionItems(extension, docB, pos)
         const expectedLabelsB = [
             'art1',
             'lamport1994latex',

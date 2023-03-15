@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
+import { latexParser } from 'latex-utensils'
 
 import type {Extension} from '../main'
-import type {IProvider} from './completer/interface'
+import type {IContexAwareProvider, IProvider} from './completer/interface'
 import {Citation} from './completer/citation'
 import {DocumentClass} from './completer/documentclass'
 import {Command} from './completer/command'
@@ -17,24 +18,42 @@ import {escapeRegExp} from '../utils/utils'
 import type {ICompleter} from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
+import { BracketReplacer } from './completer/bracketreplacer'
+import { CommandRemover } from './completer/commandremover'
+import { CommandReplacer } from './completer/commandreplacer'
+import { EnvCloser } from './completer/envcloser'
+import { EnvRename } from './completer/envrename'
+import { CommandAdder } from './completer/commandadder'
+
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
 type DataCmdsJsonType = typeof import('../../data/commands.json')
 type DataLatexMathSymbolsJsonType = typeof import('../../data/packages/latex-mathsymbols_cmd.json')
 
+// Note that the order of the following array affects the result of completions.
+// 'command' must be at the last because it matches any commands.
+const CompletionType = ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command'] as const
+type CompletionType = typeof CompletionType[number]
+
 export class Completer implements vscode.CompletionItemProvider, ICompleter {
     private readonly extension: Extension
     readonly citation: Citation
     readonly command: Command
-    readonly documentClass: DocumentClass
-    readonly environment: Environment
+    private readonly documentClass: DocumentClass
+    private readonly environment: Environment
     readonly reference: LabelDefinition
-    readonly package: Package
+    private readonly package: Package
     readonly input: Input
-    readonly import: Import
-    readonly subImport: SubImport
+    private readonly import: Import
+    private readonly subImport: SubImport
     readonly glossary: Glossary
     readonly atSuggestionCompleter: AtSuggestionCompleter
+    private readonly bracketReplacer: BracketReplacer
+    private readonly commandAdder: CommandAdder
+    private readonly commandRemover: CommandRemover
+    private readonly commandReplacer: CommandReplacer
+    private readonly envCloser: EnvCloser
+    private readonly envRename: EnvRename
     readonly #readyPromise = new ExternalPromise<void>()
 
     constructor(extension: Extension) {
@@ -50,6 +69,12 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
         this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
+        this.bracketReplacer = new BracketReplacer()
+        this.commandAdder = new CommandAdder(this.command)
+        this.commandRemover = new CommandRemover()
+        this.commandReplacer = new CommandReplacer()
+        this.envCloser = new EnvCloser()
+        this.envRename = new EnvRename(this.environment)
         const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.error(`Error reading data: ${err}.`))
         void Promise.allSettled([
             loadPromise,
@@ -85,33 +110,58 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         this.command.initialize(maths)
     }
 
-    provideCompletionItems(
+    async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.CompletionItem[] | undefined {
-        const currentLine = document.lineAt(position.line).text
-        if (position.character > 1 && currentLine[position.character - 1] === '\\' && currentLine[position.character - 2] === '\\') {
+    ) {
+        const currentLine = document.lineAt(position).text
+        if (position.character > 1 && currentLine.substring(position.character - 2, position.character) === '\\\\') {
             return
         }
-        const line = document.lineAt(position.line).text.substring(0, position.character)
-        // Note that the order of the following array affects the result.
-        // 'command' must be at the last because it matches any commands.
-        for (const type of ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command']) {
+        const line = currentLine.substring(0, position.character)
+        const items = await this.provideContextAwareItems(document, position, token, context)
+        for (const type of CompletionType) {
             const suggestions = this.completion(type, line, {document, position, token, context})
             if (suggestions.length > 0) {
-                if (type === 'citation') {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
-                    if (configuration.get('intellisense.citation.type') as string === 'browser') {
-                        setTimeout(() => this.citation.browser({document, position, token, context}), 10)
-                        return
-                    }
+                if (items.length > 0 && suggestions.length > 10) {
+                    return items
+                } else {
+                    return [...suggestions, ...items]
                 }
-                return suggestions
             }
         }
-        return
+        return items
+    }
+
+    async provideContextAwareItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        _: vscode.CancellationToken,
+        context: vscode.CompletionContext
+    ) {
+        const providers: IContexAwareProvider[] = [
+            this.bracketReplacer,
+            this.commandAdder,
+            this.commandRemover,
+            this.commandReplacer,
+            this.envCloser,
+            this.envRename
+        ].filter(p => p.test(document, position, context))
+        let items: vscode.CompletionItem[] = []
+        if (providers.length === 0) {
+            return []
+        }
+        let ast: latexParser.LatexAst | undefined
+        const needsAst = providers.find((p) => p.needsAst)
+        if (needsAst) {
+            ast = await this.extension.utensilsParser.parseLatex(document.getText(), {enableMathCharacterLocation: true})
+        }
+        for (const provider of providers) {
+            items = [...items, ...provider.provide(document, position, context, ast)]
+        }
+        return items
     }
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
@@ -158,7 +208,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         }
     }
 
-    private completion(type: string, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}): vscode.CompletionItem[] {
+    private completion(type: CompletionType, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
         switch (type) {
@@ -241,7 +291,7 @@ export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.CompletionItem[] | undefined {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
+        const line = document.lineAt(position).text.substring(0, position.character)
         return this.completion(line, {document, position, token, context})
     }
 

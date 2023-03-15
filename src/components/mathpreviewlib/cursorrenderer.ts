@@ -4,12 +4,7 @@ import { TexMathEnv } from './texmathenvfinder'
 
 import type { UtensilsParserLocator } from '../../interfaces'
 import type { ITextDocumentLike } from './textdocumentlike'
-import { convertPositionToOffset, toLuPos } from '../../utils/utensils'
-
-type PrevNextNodes = {
-    readonly prev: latexParser.Node | undefined,
-    readonly next: latexParser.Node | undefined
-}
+import { convertPositionToOffset, findPrevNextNode, toLuPos } from '../../utils/utensils'
 
 interface IExtension extends UtensilsParserLocator { }
 
@@ -72,7 +67,7 @@ export class CursorRenderer {
         const texString = texMath.texString
         const cursorOffset = convertPositionToOffset(cursorPos, texString)
         if (latexParser.hasContentArray(findResult.node)) {
-            const {prev} = this.findPrevNextNode(cursorOffset, findResult.node.content)
+            const {prev} = findPrevNextNode(cursorOffset, findResult.node.content)
             if (latexParser.isSubscript(prev) || latexParser.isSuperscript(prev)) {
                 const arg = prev.arg
                 if (latexParser.isMathCharacter(arg) && arg.location?.end.offset === cursorOffset) {
@@ -124,19 +119,6 @@ export class CursorRenderer {
         const cursorLuPosInSnippet = toLuPos(cursorPosInSnippet)
         const result = latexParser.findNodeAt(ast.content, cursorLuPosInSnippet)
         return result
-    }
-
-    findPrevNextNode(cursorOffset: number, nodeArray: latexParser.Node[]): PrevNextNodes {
-        let prev: latexParser.Node | undefined
-        for (const node of nodeArray) {
-            const loc = node.location
-            if (loc && cursorOffset <= loc.start.offset) {
-                return { prev, next: node }
-            } else {
-                prev = node
-            }
-        }
-        return { prev, next: undefined }
     }
 
     async renderCursor(
