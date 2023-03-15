@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
-import { findPrevNextNode, toLuPos, toVscodePosition } from '../../utils/utensils'
+import { findNodeContactedWithPosition, toVscodePosition } from '../../utils/utensils'
 import { Command } from './command'
 
 export class CommandAdder implements IContexAwareProvider {
@@ -28,36 +28,12 @@ export class CommandAdder implements IContexAwareProvider {
         if (!ast) {
             return []
         }
-        const pos = toLuPos(position)
-        const findResult = latexParser.findNodeAt(ast.content, pos)
-        if (!findResult || !findResult.node.location) {
+        const node = findNodeContactedWithPosition(document, position, ast)
+        if (!node || !latexParser.isGroup(node)) {
             return []
         }
-        const node = findResult.node
-        const positionOffset = document.offsetAt(position)
-        if (!latexParser.hasContentArray(node)) {
-            return []
-        }
-        const prevNext = findPrevNextNode(positionOffset, node.content)
-        const {prev, next} = prevNext
         const cmdItems = this.command.provide(document.languageId)
-        let insertPos: vscode.Position | undefined
-        if (prev && latexParser.isGroup(prev)) {
-            const prevEnd = toVscodePosition(prev.location.end)
-            const prevStart = toVscodePosition(prev.location.start)
-            if (prevEnd.isEqual(position)) {
-                insertPos = prevStart
-            }
-        }
-        if (next && latexParser.isGroup(next)) {
-            const nextStart = toVscodePosition(next.location.start)
-            if (nextStart.isEqual(position)) {
-                insertPos = nextStart
-            }
-        }
-        if (!insertPos) {
-            return []
-        }
+        const insertPos = toVscodePosition(node.location.start)
         const memo = new Set<string>()
         const items: vscode.CompletionItem[] = []
         for (const cmdItem of cmdItems) {
