@@ -4,7 +4,7 @@ import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import { sanitizedReplacingItem } from './utils/sanitize'
-import { isPositionAtTerminator, getPrevChar } from './utils/position'
+import { getPrevChar } from './utils/position'
 
 
 export class BracketReplacer implements IContexAwareProvider {
@@ -84,15 +84,15 @@ export class BracketReplacer implements IContexAwareProvider {
         if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
             return false
         }
+        const currentChar = document.getText(new vscode.Range(position, position.translate(0, 1)))
+        if (/[\\({[]/.test(currentChar)) {
+            return true
+        }
         const prevChar = getPrevChar(document, position)
-        if (prevChar && /[{[(]/.test(prevChar)) {
+        if (prevChar && /[{}[\]()]/.test(prevChar)) {
             return true
         }
-        if (isPositionAtTerminator(document, position)) {
-            return true
-        } else {
-            return false
-        }
+        return false
     }
 
     provide(document: vscode.TextDocument, position: vscode.Position, _context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined) {
