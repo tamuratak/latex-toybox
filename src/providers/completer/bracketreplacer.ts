@@ -85,7 +85,7 @@ export class BracketReplacer implements IContexAwareProvider {
             return false
         }
         const prevChar = getPrevChar(document, position)
-        if (prevChar === '{') {
+        if (prevChar && /[{[(]/.test(prevChar)) {
             return true
         }
         if (isPositionAtTerminator(document, position)) {
