@@ -84,9 +84,14 @@ export class BracketReplacer implements IContexAwareProvider {
         if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
             return false
         }
-        const prevCharRange = new vscode.Range(position.translate(0, -1), position)
-        const prevChar = document.getText(prevCharRange)
-        if (prevChar === '{' || isPositionAtTerminator(document, position)) {
+        if (position.character > 0) {
+            const prevCharRange = new vscode.Range(position.translate(0, -1), position)
+            const prevChar = document.getText(prevCharRange)
+            if (prevChar === '{') {
+                return true
+            }
+        }
+        if (isPositionAtTerminator(document, position)) {
             return true
         } else {
             return false
@@ -97,11 +102,6 @@ export class BracketReplacer implements IContexAwareProvider {
         if (!ast) {
             return []
         }
-/*        const loc = toLuPos(position)
-        const findResult = latexParser.findNodeAt(ast.content, loc)
-        if (!findResult || !findResult.node.location) {
-            return []
-        } */
         const node = this.findBracketPair(document, position, ast)
         let leftBracketRange: vscode.Range
         let rightBracketRange: vscode.Range

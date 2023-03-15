@@ -6,10 +6,12 @@ export function isPositionAtTerminator(document: vscode.TextDocument, position: 
     if (char === '\\' || char === '{') {
         return true
     }
-    const prevCharRange = new vscode.Range(position.translate(0, -1), position)
-    const prevChar = document.getText(prevCharRange)
-    if (prevChar === '}') {
-        return true
+    if (position.character > 0) {
+        const prevCharRange = new vscode.Range(position.translate(0, -1), position)
+        const prevChar = document.getText(prevCharRange)
+        if (prevChar === '}') {
+            return true
+        }
     }
     return false
 }
