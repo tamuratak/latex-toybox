@@ -33,6 +33,7 @@ export function sanitizedReplacingItemFilterable(label: string, _: vscode.TextDo
     return item
 }
 
+// Workaround for https://github.com/microsoft/vscode/issues/176154
 export function sanitizedRemovingItem(label: string, document: vscode.TextDocument, removeRange: vscode.Range, position: vscode.Position) {
     const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Issue)
     if (removeRange.contains(position)) {
