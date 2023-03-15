@@ -116,7 +116,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ) {
-        const currentLine = document.lineAt(position.line).text
+        const currentLine = document.lineAt(position).text
         if (position.character > 1 && currentLine.substring(position.character - 2, position.character) === '\\\\') {
             return
         }
@@ -291,7 +291,7 @@ export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): vscode.CompletionItem[] | undefined {
-        const line = document.lineAt(position.line).text.substring(0, position.character)
+        const line = document.lineAt(position).text.substring(0, position.character)
         return this.completion(line, {document, position, token, context})
     }
 

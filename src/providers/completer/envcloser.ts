@@ -7,7 +7,7 @@ export class EnvCloser implements IContexAwareProvider {
     readonly needsAst = true
 
     test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
-        const textLine = document.lineAt(position.line)
+        const textLine = document.lineAt(position)
         if (textLine.isEmptyOrWhitespace) {
             return true
         }

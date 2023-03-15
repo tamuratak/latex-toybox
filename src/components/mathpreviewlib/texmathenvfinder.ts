@@ -162,7 +162,7 @@ export class TeXMathEnvFinder {
     }
 
     private findHoverOnInline(document: ITextDocumentLike, position: vscode.Position): TexMathEnv | undefined {
-        const currentLine = document.lineAt(position.line).text
+        const currentLine = document.lineAt(position).text
         const regex = /(?<!\$|\\)\$(?!\$)(?:\\.|[^\\])+?\$|\\\(.+?\\\)/
         let s = currentLine
         let base = 0
