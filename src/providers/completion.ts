@@ -115,10 +115,10 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         context: vscode.CompletionContext
     ) {
         const currentLine = document.lineAt(position.line).text
-        if (position.character > 1 && currentLine[position.character - 1] === '\\' && currentLine[position.character - 2] === '\\') {
+        if (position.character > 1 && currentLine.substring(position.character - 2, position.character) === '\\\\') {
             return
         }
-        const line = document.lineAt(position.line).text.substring(0, position.character)
+        const line = currentLine.substring(0, position.character)
         const items = await this.provideContextAwareItems(document, position, token, context)
         // Note that the order of the following array affects the result.
         // 'command' must be at the last because it matches any commands.
