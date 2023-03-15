@@ -8,11 +8,13 @@ export class EnvCloser implements IContexAwareProvider {
 
     test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
         const line = document.lineAt(position.line).text
-        if (/^\s*$/.test(line) || /^\s*\\\s*$/.test(line) && vscode.CompletionTriggerKind.TriggerCharacter === context.triggerKind) {
+        if (/^\s*$/.test(line)) {
             return true
-        } else {
-            return false
         }
+        if (/^\s*\\\s*$/.test(line) && context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+            return true
+        }
+        return false
     }
 
     provide(_document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined) {
@@ -31,7 +33,7 @@ export class EnvCloser implements IContexAwareProvider {
             const beginEndPos = toVscodePosition(beginEnd.location.end)
             if (beginEnd.name === 'begin' && beginEndPos.isBefore(position)) {
                 const envName = latexParser.stringify(beginEnd.args[0].content)
-                const prefix = vscode.CompletionTriggerKind.TriggerCharacter === context.triggerKind ? '' : '\\'
+                const prefix = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter ? '' : '\\'
                 const item = new vscode.CompletionItem(`${prefix}end{${envName}}`, vscode.CompletionItemKind.Issue)
                 return [item]
             }

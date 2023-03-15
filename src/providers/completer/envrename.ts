@@ -13,7 +13,10 @@ export class EnvRename implements IContexAwareProvider {
         this.environment = environment
     }
 
-    test(document: vscode.TextDocument, position: vscode.Position): boolean {
+    test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
+        if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+            return false
+        }
         const wordRange = document.getWordRangeAtPosition(position, /\\begin\{[^}]*\}/)
         if (wordRange && wordRange.end.isEqual(position)) {
             return true

@@ -5,7 +5,10 @@ import { IContexAwareProvider } from './interface'
 export class CommandReplacer implements IContexAwareProvider {
     readonly needsAst = false
 
-    test(document: vscode.TextDocument, position: vscode.Position): boolean {
+    test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean {
+        if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
+            return false
+        }
         const wordRange = document.getWordRangeAtPosition(position, /\\[a-zA-Z]+/)
         if (wordRange) {
             return true
