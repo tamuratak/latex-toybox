@@ -11,7 +11,7 @@ This project won't be successful without contributions from the community, espec
 
 Thank you so much!
 
-## Contex Aware IntelliSense
+## Context Aware IntelliSense
 
 ### Renaming
 
