@@ -30,6 +30,8 @@ type DataEnvsJsonType = typeof import('../../data/environments.json')
 type DataCmdsJsonType = typeof import('../../data/commands.json')
 type DataLatexMathSymbolsJsonType = typeof import('../../data/packages/latex-mathsymbols_cmd.json')
 
+// Note that the order of the following array affects the result of completions.
+// 'command' must be at the last because it matches any commands.
 const CompletionType = ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command'] as const
 type CompletionType = typeof CompletionType[number]
 
@@ -120,8 +122,6 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         }
         const line = currentLine.substring(0, position.character)
         const items = await this.provideContextAwareItems(document, position, token, context)
-        // Note that the order of the following array affects the result.
-        // 'command' must be at the last because it matches any commands.
         for (const type of CompletionType) {
             const suggestions = this.completion(type, line, {document, position, token, context})
             if (suggestions.length > 0) {
