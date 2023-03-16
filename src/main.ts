@@ -73,7 +73,6 @@ function registerLatexWorkshopCommands(extension: Extension, context: vscode.Ext
         vscode.commands.registerCommand('latex-workshop.texdoc', (pkg: string | undefined) => extension.commander.texdoc(pkg)),
         vscode.commands.registerCommand('latex-workshop.texdocUsepackages', () => extension.commander.texdocUsepackages()),
         vscode.commands.registerCommand('latex-workshop.synctexto', (line: number, filePath: string) => extension.commander.synctexonref(line, filePath)),
-        vscode.commands.registerCommand('latex-workshop.actions', () => extension.commander.actions()),
         vscode.commands.registerCommand('latex-workshop.activate', () => undefined),
         vscode.commands.registerCommand('latex-workshop.citation', () => extension.commander.citation()),
         vscode.commands.registerCommand('latex-workshop.log', () => extension.commander.log()),
