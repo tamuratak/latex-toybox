@@ -1,5 +1,11 @@
 # Change Log
 
+## [24.0.0] - 2023-03-16
+
+### Added
+
+- Context Aware IntelliSense
+
 ## [8.29.0] - 2022-08-25
 
 ### Added
