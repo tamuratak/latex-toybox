@@ -307,11 +307,6 @@
         "category": "LaTeX Workshop"
       },
       {
-        "command": "latex-workshop.actions",
-        "title": "LaTeX actions",
-        "category": "LaTeX Workshop"
-      },
-      {
         "command": "latex-workshop.texdoc",
         "title": "Show package documentation",
         "category": "LaTeX Workshop"

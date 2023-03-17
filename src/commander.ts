@@ -252,11 +252,6 @@ export class Commander {
         return this.extension.envPair.gotoPair()
     }
 
-    actions() {
-        this.extension.logger.info('ACTIONS command invoked.')
-        return vscode.commands.executeCommand('workbench.view.extension.latex-workshop-activitybar').then(() => vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup'))
-    }
-
     /**
      * If the current line starts with \item or \item[], do the same for
      * the new line when hitting enter.
