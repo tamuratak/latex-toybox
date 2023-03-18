@@ -4,7 +4,6 @@ import { findNodeContactedWithPosition, toLuPos } from '../../utils/utensils'
 import { IContexAwareProvider } from './interface'
 import { toVscodePosition } from '../../utils/utensils'
 import { toVscodeRange } from '../../utils/utensils'
-import { sanitizedRemovingItem } from './utils/sanitize'
 import { isPositionAtTerminator } from './utils/position'
 
 
@@ -41,7 +40,11 @@ export class CommandRemover implements IContexAwareProvider {
         const edits: vscode.TextEdit[] = []
         const commandStart = toVscodePosition(commandNode.location.start)
         const removeRange = new vscode.Range(commandStart, commandStart.translate(0, commandNode.name.length + 1))
-        const item = sanitizedRemovingItem('Remove Command', document, removeRange, position)
+        const item = new vscode.CompletionItem('Remove Command', vscode.CompletionItemKind.Issue)
+        item.insertText = ''
+        item.filterText = document.getText(removeRange)
+        const edit = vscode.TextEdit.delete(removeRange)
+        item.additionalTextEdits = [edit]
         commandNode.args.forEach(arg => {
             if (latexParser.isOptionalArg(arg)) {
                 edits.push(vscode.TextEdit.delete(toVscodeRange(arg.location)))
@@ -54,7 +57,7 @@ export class CommandRemover implements IContexAwareProvider {
                 edits.push(endEdit)
             }
         })
-        item.additionalTextEdits?.push(...edits)
+        item.additionalTextEdits.push(...edits)
         return [item]
     }
 
