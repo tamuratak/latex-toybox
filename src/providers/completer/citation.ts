@@ -6,6 +6,7 @@ import type {ILwCompletionItem} from './interface'
 import type {IProvider} from './interface'
 import type {ICitation, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
+import { toVscodePosition } from '../../utils/utensils'
 
 
 export class Fields extends Map<string, string> {
@@ -267,7 +268,7 @@ export class Citation implements IProvider, ICitation {
                     key: entry.internalKey,
                     label: entry.internalKey,
                     file,
-                    position: new vscode.Position(entry.location.start.line - 1, entry.location.start.column - 1),
+                    position: toVscodePosition(entry.location.start),
                     kind: vscode.CompletionItemKind.Reference,
                     fields: this.entryToFields(entry),
                     detail: undefined

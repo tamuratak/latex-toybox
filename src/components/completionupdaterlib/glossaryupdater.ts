@@ -3,6 +3,7 @@ import {latexParser} from 'latex-utensils'
 
 import type {ManagerLocator} from '../../interfaces'
 import {GlossarySuggestion, GlossaryType} from '../../providers/completer/glossary'
+import { toVscodePosition } from '../../utils/utensils'
 
 interface GlossaryEntry {
     label: string | undefined,
@@ -40,7 +41,7 @@ export class GlossaryUpdater {
                     glossaries.push({
                         type,
                         file,
-                        position: new vscode.Position(node.location.start.line - 1, node.location.start.column - 1),
+                        position: toVscodePosition(node.location.start),
                         label: entry.label,
                         detail: entry.description,
                         kind: vscode.CompletionItemKind.Reference

@@ -5,6 +5,7 @@ import {performance} from 'perf_hooks'
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
 import type {LoggerLocator, LwStatusBarItemLocator, UtensilsParserLocator} from '../interfaces'
+import { toVscodeRange } from '../utils/utensils'
 
 interface IExtension extends
     LoggerLocator,
@@ -83,11 +84,7 @@ export class BibtexFormatter {
             if (bibtexParser.isEntry(item) || bibtexParser.isStringEntry(item)) {
                 entries.push(item)
                 // latex-utilities uses 1-based locations whereas VSCode uses 0-based
-                entryLocations.push(new vscode.Range(
-                    item.location.start.line - 1,
-                    item.location.start.column - 1,
-                    item.location.end.line - 1,
-                    item.location.end.column - 1))
+                entryLocations.push(toVscodeRange(item.location))
             }
         })
 
@@ -96,11 +93,7 @@ export class BibtexFormatter {
         const duplicates = new Set<bibtexParser.Entry>()
         if (sort) {
             entries.sort(bibtexUtils.bibtexSort(duplicates)).forEach(entry => {
-                sortedEntryLocations.push((new vscode.Range(
-                    entry.location.start.line - 1,
-                    entry.location.start.column - 1,
-                    entry.location.end.line - 1,
-                    entry.location.end.column - 1)))
+                sortedEntryLocations.push(toVscodeRange(entry.location))
             })
         } else {
             sortedEntryLocations = entryLocations
