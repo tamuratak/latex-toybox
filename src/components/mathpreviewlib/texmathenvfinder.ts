@@ -94,7 +94,7 @@ export class TeXMathEnvFinder {
         const l = utils.stripCommentsAndVerbatim(currentLine)
         let m = l.match(endPat)
         if (m && m.index !== undefined) {
-            return new vscode.Position(startPos1.line, startPos1.character + m.index + m[0].length)
+            return startPos1.translate(0, m.index + m[0].length)
         }
 
         let lineNum = startPos1.line + 1
@@ -138,7 +138,7 @@ export class TeXMathEnvFinder {
     //  startPos
     private findHoverOnEnv(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = new RegExp('\\\\end\\{' + utils.escapeRegExp(envname) + '\\}')
-        const startPos1 = new vscode.Position(startPos.line, startPos.character + envname.length + '\\begin{}'.length)
+        const startPos1 = startPos.translate(0, envname.length + '\\begin{}'.length)
         const endPos = this.findEndPair(document, pattern, startPos1)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
@@ -152,7 +152,7 @@ export class TeXMathEnvFinder {
     //  startPos
     private findHoverOnParen(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = envname === '\\[' ? /\\\]/ : envname === '\\(' ? /\\\)/ : /\$\$/
-        const startPos1 = new vscode.Position(startPos.line, startPos.character + envname.length)
+        const startPos1 = startPos.translate(0, envname.length)
         const endPos = this.findEndPair(document, pattern, startPos1)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
