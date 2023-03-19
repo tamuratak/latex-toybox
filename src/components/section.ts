@@ -92,10 +92,9 @@ export class Section {
             const changeInEndCharacterPosition = getLastLineLength(newText) - getLastLineLength(selectionText)
             if (mode === 'selection') {
                 newSelections.push(
-                    new vscode.Selection(selection.start,
-                        new vscode.Position(selection.end.line,
-                            selection.end.character + changeInEndCharacterPosition
-                        )
+                    new vscode.Selection(
+                        selection.start,
+                        selection.end.translate(0, changeInEndCharacterPosition)
                     )
                 )
             } else if (oldSelection) { // mode === 'cursor'
