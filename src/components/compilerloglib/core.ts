@@ -164,8 +164,9 @@ export class CompilerLogParser {
 
     async showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string) {
         compilerDiagnostics.clear()
+        const newBuildLog = this.tweakLogEntries(buildLog)
         const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
-        for (const item of buildLog) {
+        for (const item of newBuildLog) {
             let startChar = 0
             let endChar = 65535
             // Try to compute a more precise position
@@ -208,4 +209,30 @@ export class CompilerLogParser {
             compilerDiagnostics.set(vscode.Uri.file(file1), diagsCollection[file])
         }
     }
+
+    private tweakLogEntries(logEntries: LogEntry[]): LogEntry[] {
+        const closingErrors = new Set<number>()
+        const newLogEntries: LogEntry[] = []
+        for(let logEntry of logEntries) {
+            if (
+                logEntry.text.includes('Paragraph ended before') ||
+                logEntry.text.includes('Missing $ inserted') ||
+                logEntry.text.includes('Missing \\endgroup inserted') ||
+                logEntry.text.includes('Display math should end with $$')
+            ) {
+                if (closingErrors.has(logEntry.line)) {
+                    continue
+                }
+                closingErrors.add(logEntry.line)
+            }
+            const match = /on input line (\d+) ended by \\end\{document\}/.exec(logEntry.text)
+            if (match && logEntry.file) {
+                logEntry = {...logEntry}
+                logEntry.line = Number(match[1])
+            }
+            newLogEntries.push(logEntry)
+        }
+        return newLogEntries
+    }
+
 }
