@@ -34,9 +34,7 @@ export interface LogEntry {
     readonly file: string,
     text: string,
     line: number,
-    errorPosText?: string,
-    readonly logUri?: vscode.Uri,
-    readonly lineInLogFile?: number
+    errorPosText?: string
 }
 
 interface IExtension extends
@@ -79,7 +77,7 @@ export class CompilerLogParser {
             log = this.trimTexify(log)
         }
         if (log.match(latexPattern) || log.match(latexFatalPattern)) {
-            return this.latexLogParser.parse(log, rootFile, stepLog)
+            return this.latexLogParser.parse(log, rootFile)
         } else if (this.latexmkSkipped(log)) {
             this.isLaTeXmkSkipped = true
         }
@@ -181,17 +179,6 @@ export class CompilerLogParser {
             diag.source = source
             if (diagsCollection[item.file] === undefined) {
                 diagsCollection[item.file] = []
-            }
-            if (item.logUri !== undefined && item.lineInLogFile !== undefined) {
-                diag.relatedInformation = [
-                    new vscode.DiagnosticRelatedInformation(
-                        new vscode.Location(
-                            item.logUri,
-                            new vscode.Range(item.lineInLogFile, 0, item.lineInLogFile, 1000)
-                        ),
-                        'Output Log'
-                    )
-                ]
             }
             diagsCollection[item.file].push(diag)
         }
