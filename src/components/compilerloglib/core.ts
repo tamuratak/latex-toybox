@@ -226,7 +226,7 @@ export class CompilerLogParser {
                 closingErrors.add(logEntry.line)
             }
             const match = /on input line (\d+) ended by \\end\{document\}/.exec(logEntry.text)
-            if (match && logEntry.file) {
+            if (match) {
                 logEntry = {...logEntry}
                 logEntry.line = Number(match[1])
             }
