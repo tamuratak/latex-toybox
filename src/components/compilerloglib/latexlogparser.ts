@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type { LogEntry } from './core'
-import { BuildStepLog } from '../compilerlog'
 import type { CompilerLogLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 
 const latexError = /^(?:(.*):(\d+):|!)(?: (.+) Error:)? (.+?)$/
@@ -52,7 +51,7 @@ export class LatexLogParser {
         this.extension = extension
     }
 
-    parse(log: string, rootFile: string | undefined, stepLog: BuildStepLog) {
+    parse(log: string, rootFile: string | undefined) {
         if (rootFile === undefined) {
             rootFile = this.extension.manager.rootFile
         }
@@ -65,10 +64,8 @@ export class LatexLogParser {
         this.buildLog = []
 
         const state: ParserState = new ParserState(rootFile)
-        let count = 0
         for(const line of lines) {
-            this.parseLine(line, state, this.buildLog, count, stepLog.panelUri)
-            count += 1
+            this.parseLine(line, state, this.buildLog)
         }
 
         // Push the final result
@@ -79,7 +76,7 @@ export class LatexLogParser {
         return this.extension.compilerLog.showCompilerDiagnostics(this.compilerDiagnostics, this.buildLog, 'LaTeX')
     }
 
-   private parseLine(line: string, state: ParserState, buildLog: LogEntry[], lineInLogFile: number, logUri: vscode.Uri) {
+   private parseLine(line: string, state: ParserState, buildLog: LogEntry[]) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         let excludeRegexp: RegExp[]
         try {
@@ -143,13 +140,11 @@ export class LatexLogParser {
                 type: 'typesetting',
                 file: filename,
                 line: parseInt(result[2], 10),
-                text: result[1],
-                logUri,
-                lineInLogFile
+                text: result[1]
             }
             state.searchEmptyLine = false
             state.insideBoxWarn = true
-            this.parseLine(line.substring(result[0].length), state, buildLog, lineInLogFile, logUri)
+            this.parseLine(line.substring(result[0].length), state, buildLog)
             return
         }
         result = line.match(latexBoxOutput)
@@ -161,12 +156,10 @@ export class LatexLogParser {
                 type: 'typesetting',
                 file: filename,
                 line: 1,
-                text: result[1],
-                logUri,
-                lineInLogFile
+                text: result[1]
             }
             state.searchEmptyLine = false
-            this.parseLine(line.substring(result[0].length), state, buildLog, lineInLogFile, logUri)
+            this.parseLine(line.substring(result[0].length), state, buildLog)
             return
         }
         result = line.match(latexWarn)
@@ -178,9 +171,7 @@ export class LatexLogParser {
                 type: 'warning',
                 file: filename,
                 line: parseInt(result[4], 10),
-                text: result[3] + result[5],
-                logUri,
-                lineInLogFile
+                text: result[3] + result[5]
             }
             state.searchEmptyLine = true
             return
@@ -194,12 +185,10 @@ export class LatexLogParser {
                 type: 'warning',
                 file: '',
                 line: 1,
-                text: `No bib entry found for '${result[1]}'`,
-                logUri,
-                lineInLogFile
+                text: `No bib entry found for '${result[1]}'`
             }
             state.searchEmptyLine = false
-            this.parseLine(line.substring(result[0].length), state, buildLog, lineInLogFile, logUri)
+            this.parseLine(line.substring(result[0].length), state, buildLog)
             return
         }
 
@@ -212,9 +201,7 @@ export class LatexLogParser {
                 type: 'error',
                 text: (result[3] && result[3] !== 'LaTeX') ? `${result[3]}: ${result[4]}` : result[4],
                 file: result[1] ? path.resolve(path.dirname(state.rootFile), result[1]) : filename,
-                line: result[2] ? parseInt(result[2], 10) : 1,
-                logUri,
-                lineInLogFile
+                line: result[2] ? parseInt(result[2], 10) : 1
             }
             state.searchEmptyLine = true
             state.insideError = true
