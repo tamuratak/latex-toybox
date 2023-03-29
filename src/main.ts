@@ -111,6 +111,7 @@ let extensionToDispose: Extension | undefined
 // since vscode.Disposable doesn't support async dispose().
 // - https://github.com/microsoft/vscode/issues/114688#issuecomment-768253918
 export function deactivate() {
+    void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', false)
     return extensionToDispose?.dispose()
 }
 
