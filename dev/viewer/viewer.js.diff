@@ -1,6 +1,19 @@
---- ../tmp/pdfjs-3.3/web/viewer.js	2023-01-29 13:23:04.000000000 +0900
-+++ viewer/viewer.js	2023-02-05 13:25:38.000000000 +0900
-@@ -1823,7 +1823,7 @@
+--- ../tmp/pdfjs-3.4/web/viewer.js	2023-02-26 12:51:58.000000000 +0900
++++ viewer/viewer.js	2023-03-06 09:57:32.000000000 +0900
+@@ -43,10 +43,10 @@
+ exports.GenericCom = GenericCom;
+ class GenericPreferences extends _preferences.BasePreferences {
+   async _writeToStorage(prefObj) {
+-    localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
++    // localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
+   }
+   async _readFromStorage(prefObj) {
+-    return JSON.parse(localStorage.getItem("pdfjs.preferences"));
++    return // JSON.parse(localStorage.getItem("pdfjs.preferences"));
+   }
+ }
+ class GenericExternalServices extends _app.DefaultExternalServices {
+@@ -599,7 +599,7 @@
          title = url;
        }
      }
@@ -9,7 +22,7 @@
    },
    setTitle(title = this._title) {
      this._title = title;
-@@ -4896,7 +4896,7 @@
+@@ -4938,7 +4938,7 @@
  };
  exports.FindState = FindState;
  const FIND_TIMEOUT = 250;
@@ -18,7 +31,7 @@
  const MATCH_SCROLL_OFFSET_LEFT = -400;
  const CHARACTERS_TO_NORMALIZE = {
    "\u2010": "-",
-@@ -7429,7 +7429,7 @@
+@@ -7486,7 +7486,7 @@
        this.#dispatchEvent();
        return;
      }
@@ -27,16 +40,16 @@
      if (!this.isInitialEventDispatched) {
        this.#dispatchEvent();
      }
-@@ -8407,7 +8407,7 @@
-     this.downloadManager = options.downloadManager || null;
-     this.findController = options.findController || null;
-     this._scriptingManager = options.scriptingManager || null;
+@@ -8468,7 +8468,7 @@
+     this.#annotationEditorMode = options.annotationEditorMode ?? _pdfjsLib.AnnotationEditorType.NONE;
+     this.imageResourcesPath = options.imageResourcesPath || "";
+     this.enablePrintAutoRotate = options.enablePrintAutoRotate || false;
 -    this.removePageBorders = options.removePageBorders || false;
 +    this.removePageBorders = options.removePageBorders || true;
-     this.textLayerMode = options.textLayerMode ?? _ui_utils.TextLayerMode.ENABLE;
-     this.#annotationMode = options.annotationMode ?? _pdfjsLib.AnnotationMode.ENABLE_FORMS;
-     this.#annotationEditorMode = options.annotationEditorMode ?? _pdfjsLib.AnnotationEditorType.NONE;
-@@ -12291,10 +12291,10 @@
+     this.renderer = options.renderer || _ui_utils.RendererType.CANVAS;
+     this.useOnlyCssZoom = options.useOnlyCssZoom || false;
+     this.isOffscreenCanvasSupported = options.isOffscreenCanvasSupported ?? true;
+@@ -12363,10 +12363,10 @@
    }
    async _writeToStorage() {
      const databaseStr = JSON.stringify(this.database);
@@ -49,20 +62,7 @@
    }
    async set(name, val) {
      await this._initializedPromise;
-@@ -12345,10 +12345,10 @@
- exports.GenericCom = GenericCom;
- class GenericPreferences extends _preferences.BasePreferences {
-   async _writeToStorage(prefObj) {
--    localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
-+    // localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
-   }
-   async _readFromStorage(prefObj) {
--    return JSON.parse(localStorage.getItem("pdfjs.preferences"));
-+    // return JSON.parse(localStorage.getItem("pdfjs.preferences"));
-   }
- }
- class GenericExternalServices extends _app.DefaultExternalServices {
-@@ -13168,7 +13168,7 @@
+@@ -13194,7 +13194,7 @@
    function getL10nData(key, args, fallback) {
      var data = gL10nData[key];
      if (!data) {
@@ -71,7 +71,7 @@
        if (!fallback) {
          return null;
        }
-@@ -13599,6 +13599,9 @@
+@@ -13625,6 +13625,9 @@
  }
  window.addEventListener("keydown", function (event) {
    if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
@@ -81,7 +81,7 @@
      window.print();
      event.preventDefault();
      event.stopImmediatePropagation();
-@@ -13875,7 +13878,7 @@
+@@ -13894,7 +13897,7 @@
    try {
      parent.document.dispatchEvent(event);
    } catch (ex) {
