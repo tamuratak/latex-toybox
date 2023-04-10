@@ -32,7 +32,7 @@ async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer'
             process.exit(1)
         }, process.env.CI ? 600000 : 60000)
         await runTests({
-            version: '1.76.2',
+            version: '1.77.0',
             extensionDevelopmentPath,
             extensionTestsPath,
             launchArgs: [

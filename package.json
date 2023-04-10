@@ -12,7 +12,7 @@
     "url": "https://github.com/James-Yu/LaTeX-Workshop.git"
   },
   "engines": {
-    "vscode": "^1.76.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Programming Languages",
@@ -467,32 +467,12 @@
       {
         "command": "latex-workshop.onEnterKey",
         "key": "enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && acceptSuggestionOnEnter && !suggestWidgetVisible && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && vim.active && vim.mode == 'Insert'"
-      },
-      {
-        "command": "latex-workshop.onEnterKey",
-        "key": "enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && !acceptSuggestionOnEnter && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && vim.active && vim.mode == 'Insert'"
-      },
-      {
-        "command": "latex-workshop.onEnterKey",
-        "key": "enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && acceptSuggestionOnEnter && !suggestWidgetVisible && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !vim.active"
-      },
-      {
-        "command": "latex-workshop.onEnterKey",
-        "key": "enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && !acceptSuggestionOnEnter && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !vim.active"
+        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
       },
       {
         "command": "latex-workshop.onAltEnterKey",
         "key": "alt+enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && acceptSuggestionOnEnter && !suggestWidgetVisible && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
-      },
-      {
-        "command": "latex-workshop.onAltEnterKey",
-        "key": "alt+enter",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && !acceptSuggestionOnEnter && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
+        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
       }
     ],
     "configurationDefaults": {
@@ -1943,7 +1923,7 @@
     "@types/mocha": "10.0.1",
     "@types/node": "16.18.19",
     "@types/tmp": "0.2.3",
-    "@types/vscode": "1.76.0",
+    "@types/vscode": "1.77.0",
     "@types/workerpool": "6.4.0",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.56.0",
