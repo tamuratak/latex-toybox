@@ -393,12 +393,6 @@
         "when": "editorTextFocus && editorLangId == 'latex' && config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
-        "key": "ctrl+l alt+x",
-        "mac": "cmd+l alt+x",
-        "command": "workbench.view.extension.latex-workshop-activitybar",
-        "when": "config.latex-workshop.bind.altKeymap.enabled"
-      },
-      {
         "key": "ctrl+alt+m",
         "mac": "cmd+alt+m",
         "command": "latex-workshop.toggleMathPreviewPanel",
@@ -423,55 +417,13 @@
         "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
-        "key": "ctrl+alt+x",
-        "mac": "cmd+alt+x",
-        "command": "workbench.view.extension.latex-workshop-activitybar",
-        "when": "!config.latex-workshop.bind.altKeymap.enabled"
-      },
-      {
-        "key": "ctrl+l [",
-        "mac": "cmd+l [",
-        "when": "config.latex-workshop.bind.altKeymap.enabled && editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.promote-sectioning"
-      },
-      {
-        "key": "ctrl+l ]",
-        "mac": "cmd+l ]",
-        "when": "config.latex-workshop.bind.altKeymap.enabled && editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.demote-sectioning"
-      },
-      {
-        "key": "ctrl+alt+[",
-        "mac": "cmd+alt+[",
-        "when": "!config.latex-workshop.bind.altKeymap.enabled && editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.promote-sectioning"
-      },
-      {
-        "key": "ctrl+alt+]",
-        "mac": "cmd+alt+]",
-        "when": "!config.latex-workshop.bind.altKeymap.enabled && editorTextFocus && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/",
-        "command": "latex-workshop.demote-sectioning"
-      },
-      {
-        "command": "expandLineSelection",
-        "key": "ctrl+l ctrl+l",
-        "mac": "cmd+l cmd+l",
-        "when": "textInputFocus && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
-      },
-      {
-        "command": "editor.action.toggleTabFocusMode",
-        "key": "ctrl+l ctrl+m",
-        "mac": "cmd+l cmd+m",
-        "when": "textInputFocus && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
-      },
-      {
-        "command": "latex-workshop.onEnterKey",
         "key": "enter",
+        "command": "latex-workshop.onEnterKey",
         "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
       },
       {
-        "command": "latex-workshop.onAltEnterKey",
         "key": "alt+enter",
+        "command": "latex-workshop.onAltEnterKey",
         "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
       }
     ],
