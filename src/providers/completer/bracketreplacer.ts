@@ -3,7 +3,6 @@ import { latexParser } from 'latex-utensils'
 import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../utils/utensils'
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
-import { sanitizedReplacingItem } from './utils/sanitize'
 import { getPrevChar } from './utils/position'
 
 
@@ -135,11 +134,13 @@ export class BracketReplacer implements IContexAwareProvider {
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
                 const sortText = sortkey + reverseCaseOfFirstCharacterAndConvertToHex(left)
-                // Workaround for https://github.com/microsoft/vscode/issues/176154
-                const item = sanitizedReplacingItem(left, document, leftBracketRange, left, position)
+                const item = new vscode.CompletionItem(left, vscode.CompletionItemKind.Issue)
+                item.insertText = ''
+                const ledit = vscode.TextEdit.replace(leftBracketRange, left)
                 const redit = vscode.TextEdit.replace(rightBracketRange, right)
                 item.sortText = sortText
-                item.additionalTextEdits?.push(redit)
+                item.filterText = document.getText(leftBracketRange)
+                item.additionalTextEdits = [ledit, redit]
                 suggestions.push(item)
             }
         }
