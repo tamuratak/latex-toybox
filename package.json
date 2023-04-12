@@ -1878,15 +1878,15 @@
     "@types/vscode": "1.77.0",
     "@types/workerpool": "6.4.0",
     "@types/ws": "8.5.4",
-    "@typescript-eslint/eslint-plugin": "5.56.0",
-    "@typescript-eslint/parser": "5.56.0",
+    "@typescript-eslint/eslint-plugin": "5.58.0",
+    "@typescript-eslint/parser": "5.58.0",
     "@vscode/test-electron": "2.3.0",
     "@vscode/vsce": "2.18.0",
-    "eslint": "8.36.0",
+    "eslint": "8.38.0",
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
     "textmate-bailout": "1.1.0",
-    "typescript": "5.0.2",
+    "typescript": "5.0.4",
     "vscode-extend-language": "0.1.1"
   }
 }
