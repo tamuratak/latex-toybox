@@ -1672,6 +1672,14 @@
 			]
 		},
 		{
+			"match": "(?<!^)\\$\\$.*\n",
+			"name": "dummy.math.block.unclosed.tex"
+		},
+		{
+			"match": "\\$[^\\$]*?\n",
+			"name": "dummy.math.block.unclosed.tex"
+		},
+		{
 			"begin": "\\$\\$",
 			"beginCaptures": {
 				"0": {
