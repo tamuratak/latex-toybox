@@ -1676,7 +1676,7 @@
 			"name": "dummy.math.block.unclosed.tex"
 		},
 		{
-			"match": "\\$[^\\$]*?\n",
+			"match": "\\$[^\\$]*\n",
 			"name": "dummy.math.block.unclosed.tex"
 		},
 		{
