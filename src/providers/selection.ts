@@ -51,7 +51,7 @@ export class SelectionRangeProvider implements vscode.SelectionRangeProvider {
                     column: node.location.end.column - '\\end{}'.length - node.name.length
                 }
             })
-        } else if (latexParser.isGroup(node) || latexParser.isInlienMath(node)) {
+        } else if (latexParser.isGroup(node) || latexParser.isInlineMath(node)) {
             return new LuRange({
                 start: {
                     line: node.location.start.line,
