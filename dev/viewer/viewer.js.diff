@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.5/web/viewer.js	2023-04-02 14:34:08.000000000 +0900
-+++ viewer/viewer.js	2023-04-06 08:05:40.000000000 +0900
+--- ../tmp/pdfjs-3.6/web/viewer.js	2023-05-07 13:07:40.000000000 +0900
++++ viewer/viewer.js	2023-05-10 07:29:48.000000000 +0900
 @@ -43,10 +43,10 @@
  exports.GenericCom = GenericCom;
  class GenericPreferences extends _preferences.BasePreferences {
@@ -13,7 +13,7 @@
    }
  }
  class GenericExternalServices extends _app.DefaultExternalServices {
-@@ -602,7 +602,7 @@
+@@ -601,7 +601,7 @@
          title = url;
        }
      }
@@ -22,7 +22,7 @@
    },
    setTitle(title = this._title) {
      this._title = title;
-@@ -4936,7 +4936,7 @@
+@@ -4934,7 +4934,7 @@
  };
  exports.FindState = FindState;
  const FIND_TIMEOUT = 250;
@@ -31,7 +31,7 @@
  const MATCH_SCROLL_OFFSET_LEFT = -400;
  const CHARACTERS_TO_NORMALIZE = {
    "\u2010": "-",
-@@ -7486,7 +7486,7 @@
+@@ -7519,7 +7519,7 @@
        this.#dispatchEvent();
        return;
      }
@@ -40,16 +40,16 @@
      if (!this.isInitialEventDispatched) {
        this.#dispatchEvent();
      }
-@@ -8468,7 +8468,7 @@
+@@ -8472,7 +8472,7 @@
      this.#annotationEditorMode = options.annotationEditorMode ?? _pdfjsLib.AnnotationEditorType.NONE;
      this.imageResourcesPath = options.imageResourcesPath || "";
      this.enablePrintAutoRotate = options.enablePrintAutoRotate || false;
 -    this.removePageBorders = options.removePageBorders || false;
 +    this.removePageBorders = options.removePageBorders || true;
-     this.renderer = options.renderer || _ui_utils.RendererType.CANVAS;
      this.useOnlyCssZoom = options.useOnlyCssZoom || false;
      this.isOffscreenCanvasSupported = options.isOffscreenCanvasSupported ?? true;
-@@ -12349,10 +12349,10 @@
+     this.maxCanvasPixels = options.maxCanvasPixels;
+@@ -12316,10 +12316,10 @@
    }
    async _writeToStorage() {
      const databaseStr = JSON.stringify(this.database);
@@ -62,7 +62,7 @@
    }
    async set(name, val) {
      await this._initializedPromise;
-@@ -13180,7 +13180,7 @@
+@@ -13147,7 +13147,7 @@
    function getL10nData(key, args, fallback) {
      var data = gL10nData[key];
      if (!data) {
@@ -71,7 +71,7 @@
        if (!fallback) {
          return null;
        }
-@@ -13611,6 +13611,9 @@
+@@ -13583,6 +13583,9 @@
  }
  window.addEventListener("keydown", function (event) {
    if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
@@ -81,7 +81,7 @@
      window.print();
      event.preventDefault();
      event.stopImmediatePropagation();
-@@ -13880,7 +13883,7 @@
+@@ -13855,7 +13858,7 @@
    try {
      parent.document.dispatchEvent(event);
    } catch (ex) {
