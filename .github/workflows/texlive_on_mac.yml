@@ -1,6 +1,6 @@
 name: TeX Live on macOS
 env:
-  cache-version: v12
+  cache-version: v13
 on: [push]
 
 permissions:

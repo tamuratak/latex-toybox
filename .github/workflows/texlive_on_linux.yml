@@ -1,6 +1,6 @@
 name: TeX Live on Linux
 env:
-  cache-version: v11
+  cache-version: v13
 on: [push]
 
 permissions:
