@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.5/web/viewer.html	2023-04-02 14:33:56.000000000 +0900
-+++ viewer/viewer.html	2023-02-08 08:23:52.000000000 +0900
+--- ../tmp/pdfjs-3.6/web/viewer.html	2023-05-07 13:07:26.000000000 +0900
++++ viewer/viewer.html	2023-05-10 07:32:47.000000000 +0900
 @@ -25,18 +25,25 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -87,10 +87,10 @@
 +                </span>
 +                <span id="trimSelectContainer" class="dropdownToolbarButton">
 +                  <select id="trimSelect" title="Trim" tabindex="23" >
-+                    <option title="" value="0.0" selected="selected" >No page trimming</option>
-+                    <option title="" value="0.05" >Trim 5% at margin</option>
-+                    <option title="" value="0.10" >Trim 10% at margin</option>
-+                    <option title="" value="0.15" >Trim 15% at margin</option>
++                    <option title="" value="0.0" selected="selected" >No trim</option>
++                    <option title="" value="0.05" >Trim 5%</option>
++                    <option title="" value="0.10" >Trim 10%</option>
++                    <option title="" value="0.15" >Trim 15%</option>
                    </select>
                  </span>
                </div>
