@@ -3,11 +3,9 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as cp from 'child_process'
 import * as cs from 'cross-spawn'
-import * as os from 'os'
-import * as tmp from 'tmp'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 
-import type {CompilerLogLocator, EventBusLocator, IBuilder, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ViewerLocator} from '../interfaces'
+import type {CompilerLogLocator, EventBusLocator, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
 const maxPrintLine = '10000'
@@ -22,9 +20,8 @@ interface IExtension extends
     LwStatusBarItemLocator,
     ViewerLocator { }
 
-export class Builder implements IBuilder {
+export class Builder {
     private readonly extension: IExtension
-    readonly tmpDir: string
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     private readonly buildMutex = new MutexWithSizedQueue(1)
     private readonly isMiktex: boolean = false
@@ -33,19 +30,6 @@ export class Builder implements IBuilder {
 
     constructor(extension: IExtension) {
         this.extension = extension
-        try {
-            this.tmpDir = tmp.dirSync({unsafeCleanup: true}).name.split(path.sep).join('/')
-        } catch (e) {
-            void vscode.window.showErrorMessage('Error during making tmpdir to build TeX files. Please check the environment variables, TEMP, TMP, and TMPDIR on your system.')
-            console.log(`TEMP, TMP, and TMPDIR: ${JSON.stringify([process.env.TEMP, process.env.TMP, process.env.TMPDIR])}`)
-            // https://github.com/James-Yu/LaTeX-Workshop/issues/2911#issuecomment-944318278
-            if (/['"]/.exec(os.tmpdir())) {
-                const msg = `The path of tmpdir cannot include single quotes and double quotes: ${os.tmpdir()}`
-                void vscode.window.showErrorMessage(msg)
-                console.log(msg)
-            }
-            throw e
-        }
         try {
             const pdflatexVersion = cp.execSync('pdflatex --version')
             if (pdflatexVersion.toString().match(/MiKTeX/)) {
@@ -121,7 +105,7 @@ export class Builder implements IBuilder {
         const wd = workspaceFolder?.uri.fsPath || pwd
 
         if (rootFile !== undefined) {
-            args = args.map(replaceArgumentPlaceholders(rootFile, this.tmpDir))
+            args = args.map(replaceArgumentPlaceholders(rootFile))
         }
         this.extension.logger.logCommand('Build using external command', command, args)
         this.extension.logger.info(`cwd: ${wd}`)
@@ -413,13 +397,13 @@ export class Builder implements IBuilder {
 
         steps.forEach(step => {
             if (step.args) {
-                step.args = step.args.map(replaceArgumentPlaceholders(rootFile, this.tmpDir))
+                step.args = step.args.map(replaceArgumentPlaceholders(rootFile))
             }
             if (step.env) {
                 Object.keys(step.env).forEach( v => {
                     const e = step.env && step.env[v]
                     if (step.env && e) {
-                        step.env[v] = replaceArgumentPlaceholders(rootFile, this.tmpDir)(e)
+                        step.env[v] = replaceArgumentPlaceholders(rootFile)(e)
                     }
                 })
             }

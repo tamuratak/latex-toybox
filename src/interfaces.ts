@@ -71,14 +71,6 @@ export interface ExtensionRootLocator {
     readonly extensionRoot: string
 }
 
-export interface BuilderLocator {
-    readonly builder: IBuilder
-}
-
-export interface IBuilder {
-    readonly tmpDir: string
-}
-
 export interface LoggerLocator {
     readonly logger: ILogger
 }

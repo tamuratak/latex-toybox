@@ -31,7 +31,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, BuilderLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator} from './interfaces'
+import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -206,7 +206,6 @@ interface IExtension extends
     ExtensionContextLocator,
     ExtensionRootLocator,
     EventBusLocator,
-    BuilderLocator,
     CompleterLocator,
     CompletionUpdaterLocator,
     CompletionStoreLocator,

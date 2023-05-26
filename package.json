@@ -655,7 +655,7 @@
               "env": {}
             }
           ],
-          "markdownDescription": "Define LaTeX compiling tools to be used in recipes. Each tool is labeled by its `name`. When invoked, `command` is spawned with arguments defined in `args` and environment variables defined in `env`. Typically no spaces should appear in each argument unless in paths. List of available placeholders: `%DOC%`, `%DOC_W32%, %DOC_EXT%`, `%DOC_EXT_W32%`, `%DOCFILE%`, `%DOCFILE_EXT%`, `%DIR%`, `%DIR_W32%`, `%TMPDIR%` and `%OUTDIR%`, `%OUTDIR_W32%`. Please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#placeholders for a complete list of all placeholders."
+          "markdownDescription": "Define LaTeX compiling tools to be used in recipes. Each tool is labeled by its `name`. When invoked, `command` is spawned with arguments defined in `args` and environment variables defined in `env`. Typically no spaces should appear in each argument unless in paths. List of available placeholders: `%DOC%`, `%DOC_W32%, %DOC_EXT%`, `%DOC_EXT_W32%`, `%DOCFILE%`, `%DOCFILE_EXT%`, `%DIR%`, `%DIR_W32%`, and `%OUTDIR%`, `%OUTDIR_W32%`. Please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#placeholders for a complete list of all placeholders."
         },
         "latex-workshop.latex.magic.args": {
           "scope": "resource",
@@ -1864,7 +1864,6 @@
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.5",
     "pdfjs-dist": "3.6.172",
-    "tmp": "0.2.1",
     "workerpool": "6.4.0",
     "ws": "8.13.0"
   },
@@ -1886,6 +1885,7 @@
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
     "textmate-bailout": "1.1.0",
+    "tmp": "0.2.1",
     "typescript": "5.0.4",
     "vscode-extend-language": "0.1.1"
   }
