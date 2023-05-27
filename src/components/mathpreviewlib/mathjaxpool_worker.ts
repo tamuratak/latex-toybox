@@ -47,7 +47,19 @@ export function typeset(arg: string, opts: { scale: number, color: string }): st
     const css = `svg {font-size: ${100 * opts.scale}%;} * { color: ${opts.color} }`
     let svgHtml = adaptor.innerHTML(node)
     svgHtml = svgHtml.replace(/<defs>/, `<defs><style>${css}</style>`)
+    const minWidth = getMinWidth(svgHtml)
+    if (minWidth !== undefined) {
+        svgHtml = svgHtml.replace('width="100%"', `width="${minWidth}ex"`)
+    }
     return svgHtml
+}
+
+function getMinWidth(svgHtml: string): number | undefined {
+    const match = svgHtml.match(/min-width: ([\d.]+)ex;/)
+    if (match && match[1]) {
+        return Number(match[1])
+    }
+    return
 }
 
 const workers = {loadExtensions, typeset}
