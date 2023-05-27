@@ -38,10 +38,14 @@ export class CursorRenderer {
         return new vscode.Position(line, character)
     }
 
-    isInAmsMathTextCommand(findResult: latexParser.FindResult<latexParser.Node> | undefined): boolean {
+    isInNonMathCommand(findResult: latexParser.FindResult<latexParser.Node> | undefined): boolean {
         let parent = findResult?.parent
         while (parent) {
-            if (latexParser.isAmsMathTextCommand(parent.node)) {
+            const node = parent.node
+            if (
+                latexParser.isAmsMathTextCommand(parent.node) ||
+                latexParser.isCommand(node) && node.name === 'tag'
+            ) {
                 return true
             }
             parent = parent.parent
@@ -56,7 +60,7 @@ export class CursorRenderer {
             return
         }
         const cursorNode = findResult.node
-        if (this.isInAmsMathTextCommand(findResult)) {
+        if (this.isInNonMathCommand(findResult)) {
             return
         }
         if (cursorNode && latexParser.isCommand(cursorNode)) {
