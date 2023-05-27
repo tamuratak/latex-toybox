@@ -1868,7 +1868,6 @@
   },
   "devDependencies": {
     "@types/cross-spawn": "6.0.2",
-    "@types/glob": "8.0.0",
     "@types/micromatch": "4.0.2",
     "@types/mocha": "10.0.1",
     "@types/node": "16.18.19",
@@ -1876,17 +1875,15 @@
     "@types/vscode": "1.78.0",
     "@types/workerpool": "6.4.0",
     "@types/ws": "8.5.4",
-    "@typescript-eslint/eslint-plugin": "5.59.6",
-    "@typescript-eslint/parser": "5.59.6",
+    "@typescript-eslint/eslint-plugin": "5.59.7",
+    "@typescript-eslint/parser": "5.59.7",
     "@vscode/test-electron": "2.3.2",
     "@vscode/vsce": "2.19.0",
-    "eslint": "8.40.0",
+    "eslint": "8.41.0",
     "glob": "10.2.6",
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
-    "textmate-bailout": "1.1.0",
     "tmp": "0.2.1",
-    "typescript": "5.0.4",
-    "vscode-extend-language": "0.1.1"
+    "typescript": "5.0.4"
   }
 }
