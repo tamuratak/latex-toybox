@@ -1858,7 +1858,6 @@
   },
   "dependencies": {
     "cross-spawn": "7.0.3",
-    "glob": "8.0.3",
     "iconv-lite": "0.6.3",
     "latex-utensils": "6.0.0",
     "mathjax-full": "3.2.2",
@@ -1882,6 +1881,7 @@
     "@vscode/test-electron": "2.3.2",
     "@vscode/vsce": "2.19.0",
     "eslint": "8.40.0",
+    "glob": "10.2.6",
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
     "textmate-bailout": "1.1.0",
