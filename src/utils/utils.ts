@@ -112,10 +112,9 @@ export async function resolveFile(dirs: string[], inputFile: string, suffix: str
  * Return a function replacing placeholders of LaTeX recipes.
  *
  * @param rootFile The path of the root file.
- * @param tmpDir The path of a temporary directory.
  * @returns A function replacing placeholders.
  */
-export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (arg: string) => string {
+export function replaceArgumentPlaceholders(rootFile: string): (arg: string) => string {
     return (arg: string) => {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
 
@@ -142,7 +141,6 @@ export function replaceArgumentPlaceholders(rootFile: string, tmpDir: string): (
                     .replace(/%DOCFILE%/g, docfile)
                     .replace(/%DIR%/g, dir)
                     .replace(/%DIR_W32%/g, dirW32)
-                    .replace(/%TMPDIR%/g, tmpDir)
                     .replace(/%WORKSPACE_FOLDER%/g, workspaceDir)
                     .replace(/%RELATIVE_DIR%/, relativeDir)
                     .replace(/%RELATIVE_DOC%/, relativeDoc)

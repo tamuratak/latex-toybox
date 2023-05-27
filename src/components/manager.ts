@@ -208,7 +208,7 @@ export class Manager implements IManager {
 
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(texPath))
         const outDir = configuration.get('latex.outDir') as string
-        const out = utils.replaceArgumentPlaceholders(texPath, this.extension.builder.tmpDir)(outDir)
+        const out = utils.replaceArgumentPlaceholders(texPath)(outDir)
         return path.normalize(out).split(path.sep).join('/')
     }
 
