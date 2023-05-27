@@ -841,12 +841,6 @@
           "default": "onFileChange",
           "markdownDescription": "When the extension shall auto build LaTeX project using the default (first) recipe. \n- `onSave` builds the project upon saving a `tex` file in vscode.\n- `onFileChange` builds the project upon detecting a file change in any of the dependencies, even modified by other applications.\n\n Note that `onSave` is more restrictive than `onFileChange` "
         },
-        "latex-workshop.latex.option.maxPrintLine.enabled": {
-          "scope": "resource",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Add `--max-print-line` option to LaTeX build commands. This flag tells some MikTeX compilers to produce non hard wrapped log messages. Non hard wrapped log messages are required for the _Problem_ Pane to properly display messages."
-        },
         "latex-workshop.view.outline.sections": {
           "scope": "window",
           "type": "array",

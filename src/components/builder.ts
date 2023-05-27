@@ -24,21 +24,11 @@ export class Builder {
     private readonly extension: IExtension
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     private readonly buildMutex = new MutexWithSizedQueue(1)
-    private readonly isMiktex: boolean = false
     private previouslyUsedRecipe: Recipe | undefined
     private previousLanguageId: string | undefined
 
     constructor(extension: IExtension) {
         this.extension = extension
-        try {
-            const pdflatexVersion = cp.execSync('pdflatex --version')
-            if (pdflatexVersion.toString().match(/MiKTeX/)) {
-                this.isMiktex = true
-                this.extension.logger.info('pdflatex is provided by MiKTeX')
-            }
-        } catch (e) {
-            this.extension.logger.error('Cannot run pdflatex to determine if we are using MiKTeX')
-        }
     }
 
     /**
@@ -410,15 +400,6 @@ export class Builder {
             if (configuration.get('latex.option.maxPrintLine.enabled')) {
                 if (!step.args) {
                     step.args = []
-                }
-                const isLuaLatex = step.args.includes('-lualatex') ||
-                                   step.args.includes('-pdflua') ||
-                                   step.args.includes('-pdflualatex') ||
-                                   step.args.includes('--lualatex') ||
-                                   step.args.includes('--pdflua') ||
-                                   step.args.includes('--pdflualatex')
-                if (this.isMiktex && ((step.command === 'latexmk' && !isLuaLatex) || step.command === 'pdflatex')) {
-                    step.args.unshift('--max-print-line=' + maxPrintLine)
                 }
             }
         })
