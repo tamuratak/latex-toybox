@@ -1,10 +1,10 @@
 --- ../tmp/pdfjs-3.6/web/viewer.html	2023-05-07 13:07:26.000000000 +0900
-+++ viewer/viewer.html	2023-05-10 07:32:47.000000000 +0900
++++ viewer/viewer.html	2023-05-29 08:18:13.000000000 +0900
 @@ -25,18 +25,25 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
      <meta name="google" content="notranslate">
-+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; connect-src 'self' ws://127.0.0.1:*; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
++    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
      <title>PDF.js viewer</title>
  
 -<!-- This snippet is used in production (included from viewer.html) -->
