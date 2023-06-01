@@ -13,7 +13,7 @@ export class UtensilsParser implements IUtensilsParser {
     constructor() {
         this.pool = workerpool.pool(
             path.join(__dirname, 'utensilsparserlib', 'utensilsparser_worker.js'),
-            { minWorkers: 1, maxWorkers: 1, workerType: 'process' }
+            { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
         )
         this.proxy = this.pool.proxy<IUtensilsParserWorker>()
     }
