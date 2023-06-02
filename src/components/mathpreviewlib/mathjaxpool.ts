@@ -37,7 +37,7 @@ export class MathJaxPool {
     constructor() {
         this.pool = workerpool.pool(
             path.join(__dirname, 'mathjaxpool_worker.js'),
-            { minWorkers: 1, maxWorkers: 1, workerType: 'process' }
+            { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
         )
         this.proxyPromise = this.pool.proxy<IMathJaxWorker>()
         void this.initializeExtensions()
