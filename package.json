@@ -134,14 +134,6 @@
           ".Snw"
         ],
         "configuration": "./syntax/latex-language-configuration.json"
-      },
-      {
-        "id": "cpp_embedded_latex",
-        "configuration": "./syntax/latex-cpp-embedded-language-configuration.json"
-      },
-      {
-        "id": "markdown_latex_combined",
-        "configuration": "./syntax/markdown-latex-combined-language-configuration.json"
       }
     ],
     "grammars": [
@@ -193,19 +185,6 @@
         "language": "latex-expl3",
         "scopeName": "text.tex.latex.expl3",
         "path": "./syntax/LaTeX-Expl3.tmLanguage.json"
-      },
-      {
-        "language": "markdown_latex_combined",
-        "scopeName": "text.tex.markdown_latex_combined",
-        "path": "./syntax/markdown-latex-combined.tmLanguage.json"
-      },
-      {
-        "language": "cpp_embedded_latex",
-        "scopeName": "source.cpp.embedded.latex",
-        "path": "./syntax/cpp-grammar-bailout.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.assembly.cpp": "asm"
-        }
       },
       {
         "language": "jlweave",
