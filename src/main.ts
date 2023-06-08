@@ -23,7 +23,6 @@ import {HoverProvider} from './providers/hover'
 import {GraphicsPreview} from './components/graphicspreview'
 import {MathPreview} from './components/mathpreview'
 import {MathPreviewPanel} from './components/mathpreviewpanel'
-import {DocSymbolProvider} from './providers/docsymbol'
 import {ProjectSymbolProvider} from './providers/projectsymbol'
 import {StructureTreeView} from './providers/structure'
 import {DefinitionProvider} from './providers/definition'
@@ -135,7 +134,6 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     const latexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave'])
     const weaveSelector = selectDocumentsWithId(['jlweave', 'rsweave'])
     const latexDoctexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave', 'doctex'])
-    const bibtexSelector = selectDocumentsWithId(['bibtex'])
     const bibtexFormatter = new BibtexFormatterProvider(extension)
 
     context.subscriptions.push(
@@ -152,8 +150,6 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     context.subscriptions.push(
         vscode.languages.registerHoverProvider(latexSelector, new HoverProvider(extension)),
         vscode.languages.registerDefinitionProvider(latexSelector, new DefinitionProvider(extension)),
-        vscode.languages.registerDocumentSymbolProvider(latexSelector, new DocSymbolProvider(extension)),
-        vscode.languages.registerDocumentSymbolProvider(bibtexSelector, new DocSymbolProvider(extension)),
         vscode.languages.registerWorkspaceSymbolProvider(new ProjectSymbolProvider(extension))
     )
 
