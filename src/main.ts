@@ -23,7 +23,6 @@ import {HoverProvider} from './providers/hover'
 import {GraphicsPreview} from './components/graphicspreview'
 import {MathPreview} from './components/mathpreview'
 import {MathPreviewPanel} from './components/mathpreviewpanel'
-import {ProjectSymbolProvider} from './providers/projectsymbol'
 import {StructureTreeView} from './providers/structure'
 import {DefinitionProvider} from './providers/definition'
 import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
@@ -149,8 +148,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
 
     context.subscriptions.push(
         vscode.languages.registerHoverProvider(latexSelector, new HoverProvider(extension)),
-        vscode.languages.registerDefinitionProvider(latexSelector, new DefinitionProvider(extension)),
-        vscode.languages.registerWorkspaceSymbolProvider(new ProjectSymbolProvider(extension))
+        vscode.languages.registerDefinitionProvider(latexSelector, new DefinitionProvider(extension))
     )
 
     context.subscriptions.push(
