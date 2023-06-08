@@ -97,15 +97,15 @@ export class StructureTreeView {
         return this.sectionNodeProvider.ds
     }
 
-    private traverseSectionTree(sections: Section[], fileName: string, lineNumber: number): Section | undefined {
+    private findSectionAt(sections: Section[], fileName: string, lineNumber: number): Section | undefined {
         let match: Section | undefined = undefined
         for (const node of sections) {
             if ((node.fileName === fileName &&
-                 node.lineNumber <= lineNumber && node.lastLine >= lineNumber) ||
+                 node.lineNumber <= lineNumber && lineNumber <= node.lastLine) ||
                 (node.fileName !== fileName && node.subfiles.includes(fileName))) {
                 match = node
                 // Look for a more precise surrounding section
-                const res = this.traverseSectionTree(node.children, fileName, lineNumber)
+                const res = this.findSectionAt(node.children, fileName, lineNumber)
                 if (res) {
                     match = res
                 }
@@ -121,7 +121,7 @@ export class StructureTreeView {
         }
         const line = e.selections[0].active.line
         const f = e.textEditor.document.fileName
-        const currentNode = this.traverseSectionTree(this.sectionNodeProvider.ds, f, line)
+        const currentNode = this.findSectionAt(this.sectionNodeProvider.ds, f, line)
         if (currentNode) {
             return this.treeView.reveal(currentNode, {select: true})
         }
