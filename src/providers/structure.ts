@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import { latexParser,bibtexParser } from 'latex-utensils'
+import { latexParser } from 'latex-utensils'
 
 import type { Extension } from '../main'
 import { resolveFile } from '../utils/utils'
@@ -21,7 +21,6 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     // our data source is a set multi-rooted set of trees
     public ds: Section[] = []
     private CachedLaTeXData: Section[] = []
-    private CachedBibTeXData: Section[] = []
 
     // The LaTeX commands to be extracted.
     private LaTeXCommands: {cmds: string[], envs: string[], secs: string[]} = {cmds: [], envs: [], secs: []}
@@ -34,27 +33,13 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         this.onDidChangeTreeData = this._onDidChangeTreeData.event
     }
 
-    private getCachedDataRootFileName(sections: Section[]): string | undefined {
-        if (sections.length >0) {
-            return sections[0].fileName
-        }
-        return undefined
-    }
-
     /**
      * Return the latex or bibtex structure
      *
      * @param force If `false` and some cached data exists for the corresponding file, use it. If `true`, always recompute the structure from disk
      */
     async build(force: boolean): Promise<Section[]> {
-        const document = vscode.window.activeTextEditor?.document
-        if (document?.languageId === 'bibtex') {
-            if (force || this.getCachedDataRootFileName(this.CachedBibTeXData) !== document.fileName) {
-                this.CachedBibTeXData = await this.buildBibTeXModel(document)
-            }
-            this.ds = this.CachedBibTeXData
-        }
-        else if (this.extension.manager.rootFile) {
+        if (this.extension.manager.rootFile) {
             if (force) {
                 this.CachedLaTeXData = await this.buildLaTeXModel()
             }
@@ -516,43 +501,6 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
             children.push({subFile: result.path, line})
         }
         return children
-    }
-
-    async buildBibTeXModel(document: vscode.TextDocument): Promise<Section[]> {
-        const ast = await this.extension.utensilsParser.parseBibtex(document.getText()).catch((e) => {
-            if (bibtexParser.isSyntaxError(e)) {
-                const line = e.location.start.line
-                this.extension.logger.error(`Error parsing BibTeX: line ${line} in ${document.fileName}.`)
-            }
-            return
-        })
-
-        const ds: Section[] = []
-        ast?.content.filter(bibtexParser.isEntry)
-            .forEach(entry => {
-                const bibitem = new Section(
-                    SectionKind.BibItem,
-                    `${entry.entryType}: ${entry.internalKey}`,
-                    vscode.TreeItemCollapsibleState.Collapsed,
-                    0,
-                    entry.location.start.line - 1, // ast line numbers start at 1
-                    entry.location.end.line - 1,
-                    document.fileName)
-                entry.content.forEach(field => {
-                    const fielditem = new Section(
-                        SectionKind.BibField,
-                        `${field.name}: ${field.value.content}`,
-                        vscode.TreeItemCollapsibleState.None,
-                        1,
-                        field.location.start.line -1,
-                        field.location.end.line- 1,
-                        document.fileName)
-                    fielditem.parent = bibitem
-                    bibitem.children.push(fielditem)
-                })
-                ds.push(bibitem)
-            })
-        return ds
     }
 
     getTreeItem(element: Section): vscode.TreeItem {
