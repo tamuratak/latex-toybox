@@ -32,29 +32,29 @@ export class Section extends vscode.TreeItem {
 
 export class StructureTreeView {
     private readonly extension: Extension
-    private readonly _viewer: vscode.TreeView<Section | undefined>
-    private readonly _treeDataProvider: SectionNodeProvider
-    private _followCursor: boolean = true
-
+    private readonly treeView: vscode.TreeView<Section | undefined>
+    private readonly sectionNodeProvider: SectionNodeProvider
+    private followCursor: boolean = true
 
     constructor(extension: Extension) {
         this.extension = extension
-        this._treeDataProvider = new SectionNodeProvider(extension)
-        this._viewer = vscode.window.createTreeView('latex-workshop-structure', { treeDataProvider: this._treeDataProvider, showCollapseAll: true })
+        this.sectionNodeProvider = new SectionNodeProvider(extension)
+        this.treeView = vscode.window.createTreeView('latex-workshop-structure', { treeDataProvider: this.sectionNodeProvider, showCollapseAll: true })
 
         extension.extensionContext.subscriptions.push(
+            this.treeView,
             vscode.commands.registerCommand('latex-workshop.structure-toggle-follow-cursor', () => {
-                this._followCursor = ! this._followCursor
-                this.extension.logger.info(`Follow cursor is set to ${this._followCursor}.`)
+                this.followCursor = ! this.followCursor
+                this.extension.logger.info(`Follow cursor is set to ${this.followCursor}.`)
             }),
             vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
                 if (extension.manager.hasBibtexId(e.languageId)) {
-                    void extension.structureViewer.computeTreeStructure()
+                    void this.computeTreeStructure()
                 }
             }),
             vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
                 if (e && extension.manager.hasBibtexId(e.document.languageId)) {
-                    void extension.structureViewer.refreshView()
+                    void this.refreshView()
                 }
             }),
             vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
@@ -63,7 +63,11 @@ export class StructureTreeView {
                 }
                 return
             }),
-            this._viewer
+            vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+                if (e.affectsConfiguration('latex-workshop.view.outline')) {
+                    void this.computeTreeStructure()
+                }
+            })
         )
 
         this.extension.eventBus.rootFileChanged.event(() => {
@@ -73,25 +77,24 @@ export class StructureTreeView {
         this.extension.eventBus.findRootFileEnd.event(() => {
             void this.refreshView()
         })
-
     }
 
     /**
      * Recompute the whole structure from file and update the view
      */
-    async computeTreeStructure() {
-        await this._treeDataProvider.update(true)
+    private async computeTreeStructure() {
+        await this.sectionNodeProvider.update(true)
     }
 
     /**
      * Refresh the view using cache
      */
-    async refreshView() {
-        await this._treeDataProvider.update(false)
+    private async refreshView() {
+        await this.sectionNodeProvider.update(false)
     }
 
     getTreeData(): Section[] {
-        return this._treeDataProvider.ds
+        return this.sectionNodeProvider.ds
     }
 
     private traverseSectionTree(sections: Section[], fileName: string, lineNumber: number): Section | undefined {
@@ -112,15 +115,15 @@ export class StructureTreeView {
 
     }
 
-    showCursorItem(e: vscode.TextEditorSelectionChangeEvent) {
-        if (!this._followCursor || !this._viewer.visible) {
+    private showCursorItem(e: vscode.TextEditorSelectionChangeEvent) {
+        if (!this.followCursor || !this.treeView.visible) {
             return
         }
         const line = e.selections[0].active.line
         const f = e.textEditor.document.fileName
-        const currentNode = this.traverseSectionTree(this._treeDataProvider.ds, f, line)
+        const currentNode = this.traverseSectionTree(this.sectionNodeProvider.ds, f, line)
         if (currentNode) {
-            return this._viewer.reveal(currentNode, {select: true})
+            return this.treeView.reveal(currentNode, {select: true})
         }
         return
     }
