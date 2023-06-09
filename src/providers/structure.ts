@@ -48,17 +48,17 @@ export class StructureTreeView {
                 this.extension.logger.info(`Follow cursor is set to ${this.followCursor}.`)
             }),
             vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-                if (extension.manager.hasBibtexId(e.languageId)) {
+                if (extension.manager.hasTexId(e.languageId)) {
                     void this.computeTreeStructure()
                 }
             }),
             vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
-                if (e && extension.manager.hasBibtexId(e.document.languageId)) {
+                if (e && extension.manager.hasTexId(e.document.languageId)) {
                     void this.refreshView()
                 }
             }),
             vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-                if (extension.manager.hasTexId(e.textEditor.document.languageId) || e.textEditor.document.languageId === 'bibtex') {
+                if (extension.manager.hasTexId(e.textEditor.document.languageId)) {
                     return this.showCursorItem(e)
                 }
                 return
