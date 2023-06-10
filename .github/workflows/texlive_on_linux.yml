@@ -1,7 +1,11 @@
 name: TeX Live on Linux
 env:
   cache-version: v13
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - v2*
+      - v3*
 
 permissions:
   contents: read
