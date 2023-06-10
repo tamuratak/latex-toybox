@@ -4,8 +4,9 @@ env:
 on:
   push:
     tags-ignore:
-      - v2*
-      - v3*
+      - 'v*.*.*'
+    branches:
+      - '*'
 
 permissions:
   contents: read
