@@ -29,7 +29,7 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator} from './interfaces'
+import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator, LatexAstManagerLocator, BibtexAstManagerLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -37,6 +37,8 @@ import { CompletionUpdater } from './components/completionupdater'
 import { CompletionStore } from './components/completionstore'
 import { LwStatusBarItem } from './components/statusbaritem'
 import { CompilerLog } from './components/compilerlog'
+import { LatexAstManager } from './components/latexastmanager'
+import { BibtexAstManager } from './components/bibtexastmanager'
 
 
 function conflictExtensionCheck() {
@@ -210,6 +212,8 @@ interface IExtension extends
     ReferenceStoreLocator,
     SnippetViewLocator,
     UtensilsParserLocator,
+    LatexAstManagerLocator,
+    BibtexAstManagerLocator,
     ViewerLocator,
     LocatorLocator,
     ServerLocator { }
@@ -229,6 +233,8 @@ export class Extension implements IExtension {
     readonly locator: Locator
     readonly compilerLog: CompilerLog
     readonly utensilsParser: UtensilsParser
+    readonly latexAstManager: LatexAstManager
+    readonly bibtexAstManager: BibtexAstManager
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
     readonly completionStore: CompletionStore
@@ -254,7 +260,7 @@ export class Extension implements IExtension {
         this.eventBus = new EventBus(this)
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
-        this.referenceStore = new ReferenceStore()
+        this.referenceStore = new ReferenceStore(this)
         this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 
@@ -275,6 +281,8 @@ export class Extension implements IExtension {
         this.structureViewer = new StructureTreeView(this)
         this.snippetView = new SnippetView(this)
         this.utensilsParser = new UtensilsParser()
+        this.latexAstManager = new LatexAstManager(this)
+        this.bibtexAstManager = new BibtexAstManager(this)
         this.graphicsPreview = new GraphicsPreview(this)
         this.mathPreview = new MathPreview(this)
         this.bibtexFormatter = new BibtexFormatter(this)

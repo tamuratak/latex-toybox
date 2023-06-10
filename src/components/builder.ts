@@ -57,6 +57,7 @@ export class Builder {
             this.extension.logger.info('LaTeX build process to kill is not found.')
         }
     }
+
     private isWaitingForBuildToFinish(): boolean {
         return this.buildMutex.waiting > 0
     }

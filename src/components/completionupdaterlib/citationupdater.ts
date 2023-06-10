@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {LoggerLocator, ManagerLocator } from '../../interfaces'
 import {CiteSuggestion, Fields} from '../../providers/completer/citation'
 
 interface IExtension extends
     LoggerLocator,
-    ManagerLocator,
-    UtensilsParserLocator { }
+    ManagerLocator { }
 
 export class CitationUpdater {
     private readonly extension: IExtension

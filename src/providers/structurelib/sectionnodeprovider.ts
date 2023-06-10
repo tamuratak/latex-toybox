@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import { latexParser } from 'latex-utensils'
-import { LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../../interfaces'
+import { LatexAstManagerLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import { Section, SectionKind } from '../structure'
 import { resolveFile } from '../../utils/utils'
 import { buildLaTeXHierarchy } from './sectionnodeproviderlib/structure'
@@ -13,7 +13,7 @@ import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
 interface IExtension extends
     LoggerLocator,
     ManagerLocator,
-    UtensilsParserLocator { }
+    LatexAstManagerLocator { }
 
 export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
 
@@ -141,13 +141,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         }
 
         // Use `latex-utensils` to generate the AST.
-        const ast = await this.extension.utensilsParser.parseLatex(content).catch((e) => {
-            if (latexParser.isSyntaxError(e)) {
-                const line = e.location.start.line
-                this.extension.logger.error(`Error parsing LaTeX during structuring: line ${line} in ${file}.`)
-            }
-            return
-        })
+        const ast = await this.extension.latexAstManager.getAst(vscode.Uri.file(file))
         if (!ast) {
             return []
         }

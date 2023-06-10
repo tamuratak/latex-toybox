@@ -40,15 +40,16 @@ export class RenameProvider implements vscode.RenameProvider {
         return labelRange
     }
 
-    provideRenameEdits(
+    async provideRenameEdits(
         document: vscode.TextDocument,
         position: vscode.Position,
         newName: string,
-    ): vscode.ProviderResult<vscode.WorkspaceEdit> {
+    ) {
         const labelRange = this.getLabelRangeAtPos(document, position)
         if (labelRange === undefined) {
             return
         }
+        await this.extension.referenceStore.update()
         const label = document.getText(labelRange)
         const refLocations = this.extension.referenceStore.refCommandLocationMap.get(label) || []
         const defLocations = this.extension.referenceStore.labelCommandLocationMap.get(label) || []

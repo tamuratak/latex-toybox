@@ -10,6 +10,7 @@ import { CiteSuggestion } from './providers/completer/citation'
 import type {ICommand, ILwCompletionItem} from './providers/completer/interface'
 import type {ClientRequest, PdfViewerState} from '../types/latex-workshop-protocol-types'
 import { AwaitableEventEmitter } from './utils/awaitableeventemitter'
+import { BibtexAst, LatexAst } from './utils/utensils'
 
 
 export interface ReferenceStoreLocator {
@@ -144,6 +145,19 @@ export interface IUtensilsParser {
 
 export interface UtensilsParserLocator {
     readonly utensilsParser: IUtensilsParser
+}
+
+export interface IAstManager<Ast> {
+    getDocAst(doc: vscode.TextDocument): Promise<Ast | undefined>,
+    getAst(uri: vscode.Uri): Promise<Ast | undefined>
+}
+
+export interface LatexAstManagerLocator {
+    readonly latexAstManager: IAstManager<LatexAst>
+}
+
+export interface BibtexAstManagerLocator {
+    readonly bibtexAstManager: IAstManager<BibtexAst>
 }
 
 export interface IServer {
