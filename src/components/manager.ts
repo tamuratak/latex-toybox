@@ -146,12 +146,18 @@ export class Manager implements IManager {
 
         setTimeout(async () => {
             const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalLatexDocument(edt.document))
-            if (editor && !process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
-                await vscode.window.showTextDocument(editor.document, editor.viewColumn)
-                return this.findRoot()
+            if (!editor) {
+                return
             }
-            return
-        }, 500)
+            if (!process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
+                const activeDocument = vscode.window.activeTextEditor?.document
+                if (activeDocument && this.isLocalLatexDocument(activeDocument)) {
+                    await this.findRoot()
+                } else {
+                    await vscode.window.showTextDocument(editor.document, editor.viewColumn)
+                }
+            }
+        }, 3000)
 
         this.extension.eventBus.buildFinished.event((rootFile) => {
             return this.parseFlsFile(rootFile)
