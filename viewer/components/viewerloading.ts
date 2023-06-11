@@ -85,7 +85,7 @@ export class ViewerLoading {
         // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
         PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
-        void PDFViewerApplication.open(`${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}`).then(() => {
+        void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
             // reset the document title to the original value to avoid duplication
             document.title = this.lwApp.documentTitle
         })
