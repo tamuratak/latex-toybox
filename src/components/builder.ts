@@ -9,8 +9,22 @@ import type {CompilerLogLocator, EventBusLocator, LoggerLocator, LwStatusBarItem
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 
 const maxPrintLine = '10000'
-const texMagicProgramName = 'TeXMagicProgram'
-const bibMagicProgramName = 'BibMagicProgram'
+
+interface ProcessEnv {
+    [key: string]: string | undefined
+}
+
+export interface StepCommand {
+    name: string,
+    command: string,
+    args?: string[],
+    env?: ProcessEnv
+}
+
+interface Recipe {
+    name: string,
+    tools: (string | StepCommand)[]
+}
 
 interface IExtension extends
     EventBusLocator,
@@ -225,25 +239,14 @@ export class Builder {
         const envVarsPATH = envVars['PATH']
         const envVarsPath = envVars['Path']
         envVars['max_print_line'] = maxPrintLine
-        if (steps[index].name === texMagicProgramName || steps[index].name === bibMagicProgramName) {
-            // All optional arguments are given as a unique string (% !TeX options) if any, so we use {shell: true}
-            let command = steps[index].command
-            const args = steps[index].args
-            if (args) {
-                command += ' ' + args[0]
-            }
-            this.extension.logger.info(`cwd: ${path.dirname(rootFile)}`)
-            this.currentProcess = cs.spawn(command, [], {cwd: path.dirname(rootFile), env: envVars, shell: true})
+        let workingDirectory: string
+        if (steps[index].command === 'latexmk' && rootFile === this.extension.manager.localRootFile && this.extension.manager.rootDir) {
+            workingDirectory = this.extension.manager.rootDir
         } else {
-            let workingDirectory: string
-            if (steps[index].command === 'latexmk' && rootFile === this.extension.manager.localRootFile && this.extension.manager.rootDir) {
-                workingDirectory = this.extension.manager.rootDir
-            } else {
-                workingDirectory = path.dirname(rootFile)
-            }
-            this.extension.logger.info(`cwd: ${workingDirectory}`)
-            this.currentProcess = cs.spawn(steps[index].command, steps[index].args, {cwd: workingDirectory, env: envVars})
+            workingDirectory = path.dirname(rootFile)
         }
+        this.extension.logger.info(`cwd: ${workingDirectory}`)
+        this.currentProcess = cs.spawn(steps[index].command, steps[index].args, {cwd: workingDirectory, env: envVars})
         const pid = this.currentProcess.pid
         this.extension.logger.info(`LaTeX build process spawned. PID: ${pid}.`)
 
@@ -308,79 +311,63 @@ export class Builder {
         let steps: StepCommand[] = []
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
 
-        const [magicTex, magicBib] = this.findProgramMagic(rootFile)
-        if (recipeName === undefined && magicTex && !configuration.get('latex.build.forceRecipeUsage')) {
-            if (! magicTex.args) {
-                magicTex.args = configuration.get('latex.magic.args') as string[]
-                magicTex.name = texMagicProgramName + 'WithArgs'
+        const recipes = configuration.get('latex.recipes') as Recipe[]
+        const defaultRecipeName = configuration.get('latex.recipe.default') as string
+        const tools = configuration.get('latex.tools') as StepCommand[]
+        if (recipes.length < 1) {
+            this.extension.logger.error('No recipes defined.')
+            return undefined
+        }
+        let recipe: Recipe | undefined = undefined
+        if (this.previousLanguageId !== languageId) {
+            this.previouslyUsedRecipe = undefined
+        }
+        if (!recipeName && ! ['first', 'lastUsed'].includes(defaultRecipeName)) {
+            recipeName = defaultRecipeName
+        }
+        if (recipeName) {
+            const candidates = recipes.filter(candidate => candidate.name === recipeName)
+            if (candidates.length < 1) {
+                this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
             }
-            if (magicBib) {
-                if (! magicBib.args) {
-                    magicBib.args = configuration.get('latex.magic.bib.args') as string[]
-                    magicBib.name = bibMagicProgramName + 'WithArgs'
+            recipe = candidates[0]
+        }
+        if (recipe === undefined) {
+            if (defaultRecipeName === 'lastUsed') {
+                recipe = this.previouslyUsedRecipe
+            }
+            if (defaultRecipeName === 'first' || recipe === undefined) {
+                let candidates: Recipe[] = recipes
+                if (languageId === 'rsweave') {
+                    candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
+                } else if (languageId === 'jlweave') {
+                    candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
                 }
-                steps = [magicTex, magicBib, magicTex, magicTex]
-            } else {
-                steps = [magicTex]
-            }
-        } else {
-            const recipes = configuration.get('latex.recipes') as Recipe[]
-            const defaultRecipeName = configuration.get('latex.recipe.default') as string
-            const tools = configuration.get('latex.tools') as StepCommand[]
-            if (recipes.length < 1) {
-                this.extension.logger.error('No recipes defined.')
-                return undefined
-            }
-            let recipe: Recipe | undefined = undefined
-            if (this.previousLanguageId !== languageId) {
-                this.previouslyUsedRecipe = undefined
-            }
-            if (!recipeName && ! ['first', 'lastUsed'].includes(defaultRecipeName)) {
-                recipeName = defaultRecipeName
-            }
-            if (recipeName) {
-                const candidates = recipes.filter(candidate => candidate.name === recipeName)
                 if (candidates.length < 1) {
                     this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
                 }
                 recipe = candidates[0]
             }
-            if (recipe === undefined) {
-                if (defaultRecipeName === 'lastUsed') {
-                    recipe = this.previouslyUsedRecipe
-                }
-                if (defaultRecipeName === 'first' || recipe === undefined) {
-                   let candidates: Recipe[] = recipes
-                   if (languageId === 'rsweave') {
-                        candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
-                   } else if (languageId === 'jlweave') {
-                        candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
-                   }
-                    if (candidates.length < 1) {
-                        this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
-                    }
-                    recipe = candidates[0]
-                }
-            }
-            if (recipe === undefined) {
-                return undefined
-            }
-            this.previouslyUsedRecipe = recipe
-            this.previousLanguageId = languageId
-
-            recipe.tools.forEach(tool => {
-                if (typeof tool === 'string') {
-                    const candidates = tools.filter(candidate => candidate.name === tool)
-                    if (candidates.length < 1) {
-                        this.extension.logger.info(`Skipping undefined tool: ${tool} in ${recipe?.name}`)
-                    } else {
-                        steps.push(candidates[0])
-                    }
-                } else {
-                    steps.push(tool)
-                }
-            })
         }
+        if (recipe === undefined) {
+            return undefined
+        }
+        this.previouslyUsedRecipe = recipe
+        this.previousLanguageId = languageId
+
+        recipe.tools.forEach(tool => {
+            if (typeof tool === 'string') {
+                const candidates = tools.filter(candidate => candidate.name === tool)
+                if (candidates.length < 1) {
+                    this.extension.logger.info(`Skipping undefined tool: ${tool} in ${recipe?.name}`)
+                } else {
+                    steps.push(candidates[0])
+                }
+            } else {
+                steps.push(tool)
+            }
+        })
+
         /**
          * Use JSON.parse and JSON.stringify for a deep copy.
          */
@@ -407,60 +394,4 @@ export class Builder {
         return steps
     }
 
-    private findProgramMagic(rootFile: string): [StepCommand | undefined, StepCommand | undefined] {
-        const regexTex = /^(?:%\s*!\s*T[Ee]X\s(?:TS-)?program\s*=\s*([^\s]*)$)/m
-        const regexBib = /^(?:%\s*!\s*BIB\s(?:TS-)?program\s*=\s*([^\s]*)$)/m
-        const regexTexOptions = /^(?:%\s*!\s*T[Ee]X\s(?:TS-)?options\s*=\s*(.*)$)/m
-        const regexBibOptions = /^(?:%\s*!\s*BIB\s(?:TS-)?options\s*=\s*(.*)$)/m
-        const content = fs.readFileSync(rootFile).toString()
-
-        const tex = content.match(regexTex)
-        const bib = content.match(regexBib)
-        let texCommand: StepCommand | undefined = undefined
-        let bibCommand: StepCommand | undefined = undefined
-
-        if (tex) {
-            texCommand = {
-                name: texMagicProgramName,
-                command: tex[1]
-            }
-            this.extension.logger.info(`Found TeX program by magic comment: ${texCommand.command}`)
-            const res = content.match(regexTexOptions)
-            if (res) {
-                texCommand.args = [res[1]]
-                this.extension.logger.info(`Found TeX options by magic comment: ${texCommand.args}`)
-            }
-        }
-
-        if (bib) {
-            bibCommand = {
-                name: bibMagicProgramName,
-                command: bib[1]
-            }
-            this.extension.logger.info(`Found BIB program by magic comment: ${bibCommand.command}`)
-            const res = content.match(regexBibOptions)
-            if (res) {
-                bibCommand.args = [res[1]]
-                this.extension.logger.info(`Found BIB options by magic comment: ${bibCommand.args}`)
-            }
-        }
-
-        return [texCommand, bibCommand]
-    }
-}
-
-interface ProcessEnv {
-    [key: string]: string | undefined
-}
-
-export interface StepCommand {
-    name: string,
-    command: string,
-    args?: string[],
-    env?: ProcessEnv
-}
-
-interface Recipe {
-    name: string,
-    tools: (string | StepCommand)[]
 }
