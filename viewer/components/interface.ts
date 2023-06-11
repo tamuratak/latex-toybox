@@ -88,7 +88,7 @@ export interface IPDFViewerApplication {
         close: () => void,
         isOpen: boolean
     },
-    open(filePath: string): Promise<void>
+    open(arg: { url: string }): Promise<void>
 }
 
 export interface IPDFViewerApplicationOptions {
