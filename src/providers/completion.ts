@@ -156,7 +156,7 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
         let ast: latexParser.LatexAst | undefined
         const needsAst = providers.find((p) => p.needsAst)
         if (needsAst) {
-            ast = await this.extension.utensilsParser.parseLatex(document.getText(), {enableMathCharacterLocation: true})
+            ast = await this.extension.latexAstManager.getDocAst(document)
         }
         for (const provider of providers) {
             items = [...items, ...provider.provide(document, position, context, ast)]

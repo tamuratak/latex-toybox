@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
-import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
+import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
@@ -112,8 +112,7 @@ interface IExtension extends
     CompleterLocator,
     CompletionStoreLocator,
     LoggerLocator,
-    ManagerLocator,
-    UtensilsParserLocator { }
+    ManagerLocator { }
 
 export class Command implements IProvider, ICommand {
     private readonly extension: IExtension

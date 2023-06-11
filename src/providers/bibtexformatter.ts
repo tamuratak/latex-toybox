@@ -4,13 +4,13 @@ import {performance} from 'perf_hooks'
 
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
-import type {LoggerLocator, LwStatusBarItemLocator, UtensilsParserLocator} from '../interfaces'
+import type {BibtexAstManagerLocator, LoggerLocator, LwStatusBarItemLocator } from '../interfaces'
 import { toVscodeRange } from '../utils/utensils'
 
 interface IExtension extends
+    BibtexAstManagerLocator,
     LoggerLocator,
-    LwStatusBarItemLocator,
-    UtensilsParserLocator { }
+    LwStatusBarItemLocator { }
 
 export class BibtexFormatter {
 
@@ -66,15 +66,8 @@ export class BibtexFormatter {
         const lineOffset = range ? range.start.line : 0
         const columnOffset = range ? range.start.character : 0
 
-        const ast = await this.extension.utensilsParser.parseBibtex(document.getText(range)).catch((error) => {
-            if (error instanceof(Error)) {
-                this.extension.logger.error('Bibtex parser failed.')
-                this.extension.logger.error(error.message)
-                void this.extension.logger.error('Bibtex parser failed with error: ' + error.message)
-            }
-            return undefined
-        })
-        if (! ast) {
+        const ast = await this.extension.bibtexAstManager.getDocAst(document)
+        if (!ast) {
             return []
         }
         // Create an array of entries and of their starting locations

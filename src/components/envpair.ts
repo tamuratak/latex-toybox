@@ -1,11 +1,11 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { UtensilsParserLocator } from '../interfaces'
+import type { LatexAstManagerLocator } from '../interfaces'
 import { toLuPos, toVscodePosition } from '../utils/utensils'
 
 
 interface IExtension extends
-    UtensilsParserLocator { }
+    LatexAstManagerLocator { }
 
 export class EnvPair {
     private readonly extension: IExtension
@@ -30,8 +30,7 @@ export class EnvPair {
         const command = editor.document.getText(commandRange)
         const beginOrEnd = /\\begin/.exec(command) ? 'begin' : 'end'
         const cursorPos = beginOrEnd === 'begin' ? commandRange.end : commandRange.start
-        const content = editor.document.getText()
-        const ast = await this.extension.utensilsParser.parseLatex(content)
+        const ast = await this.extension.latexAstManager.getDocAst(editor.document)
         if (!ast) {
             return
         }

@@ -4,8 +4,7 @@ import {trimMultiLineString} from '../../utils/utils'
 import type {ILwCompletionItem} from './interface'
 
 import type {IProvider} from './interface'
-import type {ICitation, LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
-import { readFilePath } from '../../lib/lwfs/lwfs'
+import type {BibtexAstManagerLocator, ICitation, LoggerLocator, ManagerLocator } from '../../interfaces'
 import { toVscodePosition } from '../../utils/utensils'
 
 
@@ -67,9 +66,9 @@ export interface CiteSuggestion {
 
 
 interface IExtension extends
+    BibtexAstManagerLocator,
     LoggerLocator,
-    ManagerLocator,
-    UtensilsParserLocator { }
+    ManagerLocator { }
 
 export class Citation implements IProvider, ICitation {
     private readonly extension: IExtension
@@ -250,14 +249,10 @@ export class Citation implements IProvider, ICitation {
     async parseBibFile(file: string) {
         this.extension.logger.info(`Parsing .bib entries from ${file}`)
         const newEntry: CiteSuggestion[] = []
-        const bibtex = await readFilePath(file)
-        const ast = await this.extension.utensilsParser.parseBibtex(bibtex).catch((e) => {
-            if (bibtexParser.isSyntaxError(e)) {
-                const line = e.location.start.line
-                this.extension.logger.error(`Error parsing BibTeX: line ${line} in ${file}.`)
-            }
-            throw e
-        })
+        const ast = await this.extension.bibtexAstManager.getAst(vscode.Uri.file(file))
+        if (ast === undefined) {
+            return
+        }
         ast.content
             .filter(bibtexParser.isEntry)
             .forEach((entry: bibtexParser.Entry) => {

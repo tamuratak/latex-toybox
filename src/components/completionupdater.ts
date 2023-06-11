@@ -6,14 +6,14 @@ import {EnvironmentUpdater} from './completionupdaterlib/environmentupdater'
 import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupdater'
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
-import type { CompleterLocator, EventBusLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator, UtensilsParserLocator } from '../interfaces'
+import type { LatexAstManagerLocator, CompleterLocator, EventBusLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator } from '../interfaces'
 
 interface IExtension extends
     EventBusLocator,
     CompleterLocator,
     LoggerLocator,
     ManagerLocator,
-    UtensilsParserLocator { }
+    LatexAstManagerLocator { }
 
 export class CompletionUpdater implements ICompleteionUpdater {
     private readonly extension: IExtension
@@ -44,7 +44,7 @@ export class CompletionUpdater implements ICompleteionUpdater {
         const languageId: string | undefined = vscode.window.activeTextEditor?.document.languageId
         let latexAst: latexParser.AstRoot | latexParser.AstPreamble | undefined = undefined
         if (!languageId || languageId !== 'latex-expl3') {
-            latexAst = await this.extension.utensilsParser.parseLatex(content)
+            latexAst = await this.extension.latexAstManager.getAst(vscode.Uri.file(file))
         }
 
         if (latexAst) {

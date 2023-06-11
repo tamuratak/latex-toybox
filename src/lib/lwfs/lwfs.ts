@@ -57,9 +57,16 @@ export async function readFileAsBuffer(fileUri: vscode.Uri): Promise<Buffer> {
     }
 }
 
-export async function stat(fileUri: vscode.Uri): Promise<fs.Stats | vscode.FileStat> {
+export async function stat(fileUri: vscode.Uri): Promise<vscode.FileStat> {
     if (isLocalUri(fileUri)) {
-        return fs.promises.stat(fileUri.fsPath)
+        const st = await fs.promises.stat(fileUri.fsPath)
+        return {
+            type: st.isFile() ? vscode.FileType.File : st.isDirectory() ? vscode.FileType.Directory : st.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown,
+            ctime: st.ctimeMs,
+            mtime: st.mtimeMs,
+            size: st.size
+        }
+
     } else {
         return vscode.workspace.fs.stat(fileUri)
     }

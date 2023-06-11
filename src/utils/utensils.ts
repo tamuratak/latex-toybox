@@ -1,5 +1,8 @@
-import { latexParser } from 'latex-utensils'
+import { latexParser, bibtexParser } from 'latex-utensils'
 import { Position, Range, TextDocument } from 'vscode'
+
+export type LatexAst = latexParser.LatexAst
+export type BibtexAst = bibtexParser.BibtexAst
 
 export interface ILuRange {
     readonly start: ILuPos,
