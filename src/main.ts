@@ -29,12 +29,11 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, CompletionStoreLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator, LatexAstManagerLocator, BibtexAstManagerLocator} from './interfaces'
+import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator, LatexAstManagerLocator, BibtexAstManagerLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
-import { CompletionStore } from './components/completionstore'
 import { LwStatusBarItem } from './components/statusbaritem'
 import { CompilerLog } from './components/compilerlog'
 import { LatexAstManager } from './components/latexastmanager'
@@ -204,7 +203,6 @@ interface IExtension extends
     EventBusLocator,
     CompleterLocator,
     CompletionUpdaterLocator,
-    CompletionStoreLocator,
     LoggerLocator,
     CompilerLogLocator,
     LwStatusBarItemLocator,
@@ -237,7 +235,6 @@ export class Extension implements IExtension {
     readonly bibtexAstManager: BibtexAstManager
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
-    readonly completionStore: CompletionStore
     readonly linter: Linter
     readonly envPair: EnvPair
     readonly section: Section
@@ -272,7 +269,6 @@ export class Extension implements IExtension {
         this.server = new Server(this)
         this.locator = new Locator(this)
         this.completer = new Completer(this)
-        this.completionStore = new CompletionStore()
         this.duplicateLabels = new DuplicateLabels(this)
         this.linter = new Linter(this)
         this.envPair = new EnvPair(this)
