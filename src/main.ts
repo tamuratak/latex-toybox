@@ -36,8 +36,7 @@ import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
 import { LwStatusBarItem } from './components/statusbaritem'
 import { CompilerLog } from './components/compilerlog'
-import { LatexAstManager } from './components/latexastmanager'
-import { BibtexAstManager } from './components/bibtexastmanager'
+import { BibtexAstManager, LatexAstManager } from './components/astmanager'
 
 
 function conflictExtensionCheck() {
