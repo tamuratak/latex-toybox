@@ -44,14 +44,6 @@ export interface CompleterLocator {
     readonly completer: ICompleter
 }
 
-export interface ICompletionStore {
-    dummy: string
- }
-
-export interface CompletionStoreLocator {
-    readonly completionStore: ICompletionStore
-}
-
 export interface CompletionUpdaterLocator {
     readonly completionUpdater: ICompleteionUpdater
 }

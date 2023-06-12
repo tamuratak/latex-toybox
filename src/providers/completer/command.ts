@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
-import type {CompleterLocator, CompletionStoreLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
+import type {CompleterLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
@@ -110,7 +110,6 @@ interface IExtension extends
     ExtensionRootLocator,
     CompletionUpdaterLocator,
     CompleterLocator,
-    CompletionStoreLocator,
     LoggerLocator,
     ManagerLocator { }
 
