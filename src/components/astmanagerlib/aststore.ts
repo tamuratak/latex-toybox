@@ -3,31 +3,19 @@ import { stat } from '../../lib/lwfs/lwfs'
 import { toKey } from '../../utils/tokey'
 import { Mutex } from '../../lib/await-semaphore'
 
+
 type AstEntry<Ast> = {
     ast: Promise<Ast | undefined>,
     mtime: number
 }
 
-export interface DoParse<Ast> {
-    doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined): Promise<Ast | undefined>
-}
-
 export class AstStore<Ast> {
     // key: toKey(uri)
     private readonly AstMap = new Map<string, AstEntry<Ast>>()
-    private readonly doParse: DoParse<Ast>
     private readonly mutex = new Mutex()
-
-    constructor(doParse: DoParse<Ast>) {
-        this.doParse = doParse
-    }
 
     aquire() {
         return this.mutex.acquire()
-    }
-
-    async getDocAst(document: vscode.TextDocument) {
-        return this.getAst(document.uri, document)
     }
 
     async getAst(argUri: vscode.Uri, document?: vscode.TextDocument) {
@@ -45,20 +33,15 @@ export class AstStore<Ast> {
         return
     }
 
-    async updateDocAst(document: vscode.TextDocument) {
-        return this.updateAst(document.uri, document)
-    }
-
-    async updateAst(argUri: vscode.Uri, document?: vscode.TextDocument) {
+    updateAst(argUri: vscode.Uri, document: vscode.TextDocument | undefined, entry: AstEntry<Ast>) {
         const [uri, uriDocument] = document ? [document.uri, document] : [argUri, this.findUriDocument(argUri)]
         if (!uriDocument?.isDirty) {
-            const mtime = Date.now()
-            const ast = this.doParse.doParse(uri, uriDocument)
             const key = toKey(uri)
-            this.AstMap.set(key, { ast, mtime })
-            return ast
+            this.AstMap.set(key, entry)
+            return true
+        } else {
+            return false
         }
-        return
     }
 
     private findUriDocument(uri: vscode.Uri) {
