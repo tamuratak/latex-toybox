@@ -440,56 +440,62 @@
           },
           "default": [
             {
-              "name": "latexmk 🔃",
+              "name": "pdflatex",
               "tools": [
-                "latexmk"
+                "pdflatex_tool",
+                "bibtex_tool",
+                "pdflatex_tool"
               ]
             },
             {
-              "name": "latexmk (latexmkrc)",
+              "name": "lualatex",
               "tools": [
-                "latexmk_rconly"
+                "lualatex_tool",
+                "bibtex_tool",
+                "lualatex_tool"
               ]
             },
             {
-              "name": "latexmk (lualatex)",
+              "name": "uplatex",
               "tools": [
-                "lualatexmk"
+                "uplatex_tool",
+                "bibtex_tool",
+                "uplatex_tool",
+                "dvipdfmx_tool"
               ]
             },
             {
-              "name": "latexmk (xelatex)",
+              "name": "xelatex",
               "tools": [
-                "xelatexmk"
+                "xelatex_tool",
+                "bibtex_tool",
+                "xelatex_tool"
               ]
             },
             {
-              "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+              "name": "latexmk",
               "tools": [
-                "pdflatex",
-                "bibtex",
-                "pdflatex",
-                "pdflatex"
+                "latexmk_tool"
               ]
             },
             {
               "name": "Compile Rnw files",
               "tools": [
-                "rnw2tex",
-                "latexmk"
+                "rnw2tex_tool",
+                "latexmk_tool"
               ]
             },
             {
               "name": "Compile Jnw files",
               "tools": [
-                "jnw2tex",
-                "latexmk"
+                "jnw2tex_tool",
+                "latexmk_tool"
               ]
             },
             {
               "name": "tectonic",
               "tools": [
-                "tectonic"
+                "tectonic_tool"
               ]
             }
           ],
@@ -498,7 +504,7 @@
         "latex-workshop.latex.recipe.default": {
           "scope": "resource",
           "type": "string",
-          "default": "first",
+          "default": "pdflatex",
           "markdownDescription": "Define which recipe is used by `#latex-workshop.build#`. It also applies to auto build. Recipes are referred to by their names as defined in `#latex-workshop.latex.recipes#`. Note there are two particular values: \n- `first` means to use the first recipe in `#latex-workshop.latex.recipes#`;\n- `lastUsed` means to use the last run recipe."
         },
         "latex-workshop.latex.tools": {
@@ -531,12 +537,71 @@
           },
           "default": [
             {
-              "name": "latexmk",
+              "name": "lualatex_tool",
+              "command": "lualatex",
+              "args": [
+                "-synctex=1",
+                "-file-line-error",
+                "-recorder",
+                "-interaction=nonstopmode",
+                "%DOC%"
+              ]
+            },
+            {
+              "name": "pdflatex_tool",
+              "command": "pdflatex",
+              "args": [
+                "-synctex=1",
+                "-file-line-error",
+                "-recorder",
+                "-interaction=nonstopmode",
+                "%DOC%"
+              ]
+            },
+            {
+              "name": "uplatex_tool",
+              "command": "uplatex",
+              "args": [
+                "-synctex=1",
+                "-file-line-error",
+                "-recorder",
+                "-interaction=nonstopmode",
+                "%DOC%"
+              ]
+            },
+            {
+              "name": "xelatex_tool",
+              "command": "xelatex",
+              "args": [
+                "-synctex=1",
+                "-file-line-error",
+                "-recorder",
+                "-interaction=nonstopmode",
+                "%DOC%"
+              ]
+            },
+            {
+              "name": "bibtex_tool",
+              "command": "bibtex",
+              "args": [
+                "%DOCFILE%"
+              ]
+            },
+            {
+              "name": "dvipdfmx_tool",
+              "command": "dvipdfmx",
+              "args": [
+                "%DOCFILE%.dvi"
+              ]
+            },
+            {
+              "name": "latexmk_tool",
               "command": "latexmk",
               "args": [
                 "-synctex=1",
                 "-interaction=nonstopmode",
                 "-file-line-error",
+                "-recorder",
                 "-pdf",
                 "-outdir=%OUTDIR%",
                 "%DOC%"
@@ -544,52 +609,7 @@
               "env": {}
             },
             {
-              "name": "lualatexmk",
-              "command": "latexmk",
-              "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "-lualatex",
-                "-outdir=%OUTDIR%",
-                "%DOC%"
-              ],
-              "env": {}
-            },
-            {
-              "name": "xelatexmk",
-              "command": "latexmk",
-              "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "-xelatex",
-                "-outdir=%OUTDIR%",
-                "%DOC%"
-              ],
-              "env": {}
-            },
-            {
-              "name": "latexmk_rconly",
-              "command": "latexmk",
-              "args": [
-                "%DOC%"
-              ],
-              "env": {}
-            },
-            {
-              "name": "pdflatex",
-              "command": "pdflatex",
-              "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "%DOC%"
-              ],
-              "env": {}
-            },
-            {
-              "name": "bibtex",
+              "name": "bibtex_tool",
               "command": "bibtex",
               "args": [
                 "%DOCFILE%"
@@ -597,7 +617,7 @@
               "env": {}
             },
             {
-              "name": "rnw2tex",
+              "name": "rnw2tex_tool",
               "command": "Rscript",
               "args": [
                 "-e",
@@ -606,7 +626,7 @@
               "env": {}
             },
             {
-              "name": "jnw2tex",
+              "name": "jnw2tex_tool",
               "command": "julia",
               "args": [
                 "-e",
@@ -615,7 +635,7 @@
               "env": {}
             },
             {
-              "name": "jnw2texmintex",
+              "name": "jnw2texmintex_tool",
               "command": "julia",
               "args": [
                 "-e",
@@ -624,7 +644,7 @@
               "env": {}
             },
             {
-              "name": "tectonic",
+              "name": "tectonic_tool",
               "command": "tectonic",
               "args": [
                 "--synctex",
