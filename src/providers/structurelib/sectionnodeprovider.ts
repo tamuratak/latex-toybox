@@ -74,11 +74,14 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     }
 
     /**
-     * This function parses the AST tree of a LaTeX document to build its
-     * structure. This is a two-step process. In the first step, all AST nodes
-     * are traversed and filtered to build an array of sections that will appear
-     * in the vscode view, but without any hierarchy. Then in the second step,
-     * the hierarchy is constructed based on the config `view.outline.sections`.
+     *
+     * This function is responsible for parsing the Abstract Syntax Tree (AST) of
+     * a LaTeX document to build its structure. The process involves two steps.
+     * In the first step, all AST nodes are traversed and filtered to build an array
+     * of sections that will appear in the Visual Studio Code (VSCode) view,
+     * but without any hierarchy. In the second step, the hierarchy is constructed
+     * based on the configuration specified in `view.outline.sections`. The resulting
+     * structure is used to display the document's outline in the VSCode view.
      *
      * @param file The base file to start building the structure. If left
      * `undefined`, the current `rootFile` is used, i.e., build the structure

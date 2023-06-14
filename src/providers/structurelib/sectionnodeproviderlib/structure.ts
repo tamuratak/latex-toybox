@@ -1,12 +1,13 @@
 import { Section, SectionKind } from '../../structure'
 
 /**
- * This function builds the hierarchy of a flat {@link Section} array
- * according to the input hierarchy data. This is a two-step process. The
- * first step puts all non-section {@link Section}s into their leading
- * section {@link Section}. The section numbers are also optionally added in
- * this step. Then in the second step, the section {@link Section}s are
- * iterated to build the hierarchy.
+ * This function is responsible for building the hierarchy of a flat array
+ * of Section objects based on the input hierarchy data. The process involves
+ * two steps. In the first step, all non-section Section objects are placed
+ * under their leading section. Additionally, section numbers can be
+ * optionally added during this step. In the second step, the section Section
+ * objects are iterated to construct the hierarchy. The resulting sections,
+ * complete with hierarchy information, are returned.
  *
  * @param flatStructure The flat sections whose hierarchy is to be built.
  * @param showHierarchyNumber Whether the section numbers should be computed
