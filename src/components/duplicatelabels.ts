@@ -34,10 +34,7 @@ export class DuplicateLabels {
         const labelsCount = new Map<string, number>()
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
             const cachedRefs = this.extension.manager.getCachedContent(cachedFile)?.element.labelDefinition
-            if (cachedRefs === undefined) {
-                return
-            }
-            cachedRefs.forEach(ref => {
+            cachedRefs?.forEach(ref => {
                 let count = labelsCount.get(ref.label)
                 if (count === undefined) {
                     count = 0

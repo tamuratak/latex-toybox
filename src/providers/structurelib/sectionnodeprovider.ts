@@ -8,6 +8,7 @@ import { buildLaTeXHierarchy } from './sectionnodeproviderlib/structure'
 import { setLastLineOfEachSection } from './sectionnodeproviderlib/utils'
 import { parseRnwChildCommand } from './sectionnodeproviderlib/rnw'
 import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
+import { getDirtyContent } from '../../utils/getdirtycontent'
 
 
 interface IExtension extends
@@ -137,7 +138,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
 
         // `getDirtyContent` is used here. I did not check if this is
         // appropriate.
-        const content = await this.extension.manager.getDirtyContent(file)
+        const {content} = await getDirtyContent(file)
         if (!content) {
             this.extension.logger.error(`Error loading LaTeX during structuring: ${file}.`)
             return []

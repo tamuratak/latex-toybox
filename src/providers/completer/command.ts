@@ -249,12 +249,10 @@ export class Command implements IProvider, ICommand {
             }
             this.extension.manager.getIncludedTeX().forEach(tex => {
                 const pkgs = this.extension.manager.getCachedContent(tex)?.element.package
-                if (pkgs !== undefined) {
-                    pkgs.forEach(pkg => {
-                        suggestions.push(...this.provideCmdInPkg(pkg, cmdDuplicationDetector))
-                        suggestions.push(...this.environment.provideEnvsAsCommandInPkg(pkg, cmdDuplicationDetector))
-                    })
-                }
+                pkgs?.forEach(pkg => {
+                    suggestions.push(...this.provideCmdInPkg(pkg, cmdDuplicationDetector))
+                    suggestions.push(...this.environment.provideEnvsAsCommandInPkg(pkg, cmdDuplicationDetector))
+                })
             })
         }
 
@@ -263,15 +261,13 @@ export class Command implements IProvider, ICommand {
         const commandNameDuplicationDetector = new CommandNameDuplicationDetector(suggestions)
         this.extension.manager.getIncludedTeX().forEach(tex => {
             const cmds = this.extension.manager.getCachedContent(tex)?.element.command
-            if (cmds !== undefined) {
-                cmds.forEach(cmd => {
-                    if (!commandNameDuplicationDetector.has(cmd)) {
-                        cmd.range = range
-                        suggestions.push(cmd)
-                        commandNameDuplicationDetector.add(cmd)
-                    }
-                })
-            }
+            cmds?.forEach(cmd => {
+                if (!commandNameDuplicationDetector.has(cmd)) {
+                    cmd.range = range
+                    suggestions.push(cmd)
+                    commandNameDuplicationDetector.add(cmd)
+                }
+            })
         })
 
         return suggestions

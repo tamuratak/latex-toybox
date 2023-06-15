@@ -75,15 +75,7 @@ export class CommandUpdater {
                         return
                     }
                     const cache = this.extension.manager.getCachedContent(file)
-                    if (cache === undefined) {
-                        return
-                    }
-                    let filePkgs = cache.element.package
-                    if (!filePkgs) {
-                        filePkgs = new Set<string>()
-                        cache.element.package = filePkgs
-                    }
-                    filePkgs.add(pkg)
+                    cache?.element.package.add(pkg)
                 })
             }
         }
@@ -109,15 +101,7 @@ export class CommandUpdater {
                                 pkg = 'class-' + pkg
                             }
                             const cache = this.extension.manager.getCachedContent(file)
-                            if (cache === undefined) {
-                                return
-                            }
-                            let pkgs = cache.element.package
-                            if (!pkgs) {
-                                pkgs = new Set<string>()
-                                cache.element.package = pkgs
-                            }
-                            pkgs.add(pkg)
+                            cache?.element.package.add(pkg)
                         })
                     }
                 })

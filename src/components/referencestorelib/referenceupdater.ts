@@ -117,9 +117,9 @@ export class ReferenceUpdater {
         }
         this.findRefLabelCommand(ast, filePath)
         this.findCiteBibitemCommand(ast, filePath)
-        const children = this.extension.manager.getCachedContent(filePath)?.children ?? []
+        const children = this.extension.manager.getCachedContent(filePath)?.children.cache ?? []
         for (const child of children) {
-            await this.updateForFile(child.file)
+            await this.updateForFile(child)
         }
     }
 

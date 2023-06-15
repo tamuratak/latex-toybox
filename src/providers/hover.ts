@@ -71,10 +71,7 @@ export class HoverProvider implements vscode.HoverProvider {
 
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
             const cachedCmds = this.extension.manager.getCachedContent(cachedFile)?.element.command
-            if (cachedCmds === undefined) {
-                return
-            }
-            cachedCmds.forEach(cmd => {
+            cachedCmds?.forEach(cmd => {
                 const cmdName = cmd.name()
                 if (cmdName.startsWith(tokenWithoutSlash) && (cmdName.length === tokenWithoutSlash.length)) {
                     if (typeof cmd.documentation !== 'string') {

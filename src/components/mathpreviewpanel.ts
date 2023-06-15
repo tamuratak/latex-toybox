@@ -3,6 +3,7 @@ import * as path from 'path'
 import type {TexMathEnv} from './mathpreview'
 import {openWebviewPanel} from '../utils/webview'
 import type {Extension} from '../main'
+import { hasTexId } from '../utils/hastexid'
 
 
 type UpdateEvent = {
@@ -187,7 +188,7 @@ export class MathPreviewPanel {
         }
         const editor = vscode.window.activeTextEditor
         const document = editor?.document
-        if (!editor || !document?.languageId || !this.extension.manager.hasTexId(document.languageId)) {
+        if (!editor || !document?.languageId || !hasTexId(document.languageId)) {
             this.clearCache()
             return
         }

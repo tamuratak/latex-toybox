@@ -1,7 +1,5 @@
 import * as vscode from 'vscode'
-import * as os from 'os'
 import * as path from 'path'
-import * as micromatch from 'micromatch'
 import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
 
@@ -17,11 +15,15 @@ import {FinderUtils} from './managerlib/finderutils'
 import {PathUtils} from './managerlib/pathutils'
 
 import { LabelDefinitionElement } from '../providers/completer/labeldefinition'
-import { existsPath, isLocalUri, isVirtualUri, readFileGracefully, readFilePath, readFilePathGracefully } from '../lib/lwfs/lwfs'
+import { existsPath, isLocalLatexDocument, isVirtualUri, readFileGracefully, readFilePath, statPath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { LwFileWatcher } from './managerlib/lwfilewatcher'
 import { toKey } from '../utils/tokey'
+import { getTeXChildren } from './managerlib/gettexchildren'
+import { findWorkspace, isExcluded } from './managerlib/utils'
+import { getDirtyContent } from '../utils/getdirtycontent'
+import { inferLanguageId, isTexOrWeaveFile } from '../utils/hastexid'
 
 
 export interface CachedContentEntry {
@@ -32,26 +34,29 @@ export interface CachedContentEntry {
      * directory to provide completion suggestions.
      */
     readonly element: {
-        labelDefinition?: LabelDefinitionElement[],
-        glossary?: GlossarySuggestion[],
-        environment?: CmdEnvSuggestion[],
-        bibitem?: CiteSuggestion[],
-        command?: CmdEnvSuggestion[],
-        package?: Set<string>
+        labelDefinition: LabelDefinitionElement[],
+        glossary: GlossarySuggestion[],
+        environment: CmdEnvSuggestion[],
+        bibitem: CiteSuggestion[],
+        command: CmdEnvSuggestion[],
+        package: Set<string>,
+        mtime: number
     },
     /**
      * The sub-files of the LaTeX file. They should be tex or plain files.
+     * The order of the children is not guaranteed.
      */
-    children: {
-        /**
-         * The path of the sub-file
-         */
-        readonly file: string
-    }[],
+    readonly children: {
+        cache: Set<string>,
+        mtime: number
+    },
     /**
-     * The array of the paths of `.bib` files referenced from the LaTeX file.
+     * The paths of `.bib` files referenced from the LaTeX file.
      */
-    bibs: string[]
+    readonly bibs: {
+        cache: Set<string>,
+        mtime: number
+    }
 }
 
 export const enum BuildEvents {
@@ -68,11 +73,12 @@ type RootFileType = {
     readonly uri: vscode.Uri
 }
 
+/**
+ * Responsible for determining the root file, managing the watcher, and parsing .aux and .fls files.
+ */
 export class Manager implements IManager {
-    /**
-     * The content cache for each LaTeX file.
-     */
-    private readonly cachedContent = new Map<string, CachedContentEntry>() // key: filePath
+    // key: filePath
+    private readonly cachedContent = new Map<string, CachedContentEntry>()
 
     private _localRootFile: string | undefined
     private _rootFileLanguageId: string | undefined
@@ -80,15 +86,12 @@ export class Manager implements IManager {
 
     private readonly extension: Extension
     private readonly lwFileWatcher: LwFileWatcher
-    // key is fsPath
+    // key: filePath
     private readonly watchedFiles = new Set<string>()
     private readonly pdfWatcher: PdfWatcher
     private readonly bibWatcher: BibWatcher
     private readonly finderUtils: FinderUtils
     private readonly pathUtils: PathUtils
-    private readonly rsweaveExt: string[] = ['.rnw', '.Rnw', '.rtex', '.Rtex', '.snw', '.Snw']
-    private readonly jlweaveExt: string[] = ['.jnw', '.jtexw']
-    private readonly weaveExt: string[] = []
     #rootFilePromise: ExternalPromise<string | undefined> | undefined
     private readonly findRootMutex = new MutexWithSizedQueue(1)
     private readonly parseFlsMutex = new MutexWithSizedQueue(1)
@@ -98,7 +101,6 @@ export class Manager implements IManager {
     constructor(extension: Extension) {
         this.extension = extension
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        this.weaveExt = this.jlweaveExt.concat(this.rsweaveExt)
 
         const lwFileWatcher = new LwFileWatcher()
         this.lwFileWatcher = lwFileWatcher
@@ -113,20 +115,20 @@ export class Manager implements IManager {
         let prevTime = 0
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidSaveTextDocument((e) => {
-                if (!this.isLocalLatexDocument(e)){
+                if (!isLocalLatexDocument(e)){
                     return
                 }
                 void this.buildOnSave(e.fileName)
             }),
             vscode.window.onDidChangeActiveTextEditor(async (e) => {
                 this.extension.logger.debug(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
-                if (!e || !this.isLocalLatexDocument(e.document)) {
+                if (!e || !isLocalLatexDocument(e.document)) {
                     return
                 }
                 await this.findRoot()
             }),
             vscode.workspace.onDidChangeTextDocument(async (e) => {
-                if (!this.isLocalLatexDocument(e.document)) {
+                if (!isLocalLatexDocument(e.document)) {
                     return
                 }
                 const cache = this.getCachedContent(e.document.fileName)
@@ -148,13 +150,13 @@ export class Manager implements IManager {
         )
 
         setTimeout(async () => {
-            const editor = vscode.window.visibleTextEditors.find(edt => this.isLocalLatexDocument(edt.document))
+            const editor = vscode.window.visibleTextEditors.find(edt => isLocalLatexDocument(edt.document))
             if (!editor) {
                 return
             }
             if (!process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
                 const activeDocument = vscode.window.activeTextEditor?.document
-                if (activeDocument && this.isLocalLatexDocument(activeDocument)) {
+                if (activeDocument && isLocalLatexDocument(activeDocument)) {
                     await this.findRoot()
                 } else {
                     await vscode.window.showTextDocument(editor.document, editor.viewColumn)
@@ -184,7 +186,25 @@ export class Manager implements IManager {
         if (cache) {
             return cache
         } else {
-            const cacheEntry = { element: {}, children: [], bibs: [] }
+            const cacheEntry: CachedContentEntry = {
+                 element: {
+                    bibitem: [],
+                    command: [],
+                    environment: [],
+                    glossary: [],
+                    labelDefinition: [],
+                    package: new Set(),
+                    mtime: 0
+                 },
+                 children: {
+                    cache: new Set(),
+                    mtime: 0
+                 },
+                 bibs: {
+                    cache: new Set(),
+                    mtime: 0
+                 }
+            }
             this.cachedContent.set(filePath, cacheEntry)
             return cacheEntry
         }
@@ -207,14 +227,7 @@ export class Manager implements IManager {
      * @param texPath The path of a LaTeX file.
      */
     getOutDir(texPath?: string) {
-        if (texPath === undefined) {
-            texPath = this.rootFile
-        }
-        // rootFile is also undefined
-        if (texPath === undefined) {
-            return './'
-        }
-
+        texPath = texPath || this.rootFile || './'
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(texPath))
         const outDir = configuration.get('latex.outDir') as string
         const out = utils.replaceArgumentPlaceholders(texPath)(outDir)
@@ -315,21 +328,6 @@ export class Manager implements IManager {
         return undefined
     }
 
-    private inferLanguageId(filename: string): string | undefined {
-        const ext = path.extname(filename).toLocaleLowerCase()
-        if (ext === '.tex') {
-            return 'latex'
-        } else if (this.jlweaveExt.includes(ext)) {
-            return 'jlweave'
-        } else if (this.rsweaveExt.includes(ext)) {
-            return 'rsweave'
-        } else if (ext === '.dtx') {
-            return 'doctex'
-        } else {
-            return undefined
-        }
-    }
-
     /**
      * Returns the path of a PDF file with respect to `texPath`.
      *
@@ -348,54 +346,6 @@ export class Manager implements IManager {
         const pdfFilePath = this.tex2pdf(rootFile)
         const pdfFileUri = vscode.Uri.file(pdfFilePath)
         this.pdfWatcher.ignorePdfFile(pdfFileUri)
-    }
-
-    isLocalLatexDocument(document: vscode.TextDocument) {
-        return isLocalUri(document.uri) && this.hasTexId(document.languageId)
-    }
-
-    /**
-     * Returns `true` if the language of `id` is one of supported languages.
-     *
-     * @param id The language identifier
-     */
-    hasTexId(id: string) {
-        return ['tex', 'latex', 'latex-expl3', 'doctex', 'jlweave', 'rsweave'].includes(id)
-    }
-
-    private isTexOrWeaveFile(fileUri: vscode.Uri) {
-        return ['.tex', ...this.weaveExt].find(suffix => fileUri.path.toLocaleLowerCase().endsWith(suffix))
-    }
-
-    /**
-     * Returns `true` if the language of `id` is bibtex
-     *
-     * @param id The language identifier
-     */
-    hasBibtexId(id: string) {
-        return id === 'bibtex'
-    }
-
-
-    private findWorkspace(): vscode.Uri | undefined {
-        const firstDir = vscode.workspace.workspaceFolders?.[0]
-        // If no workspace is opened.
-        if (!firstDir) {
-            return undefined
-        }
-        // If we don't have an active text editor, we can only make a guess.
-        // Let's guess the first one.
-        if (!vscode.window.activeTextEditor) {
-            return firstDir.uri
-        }
-        // Get the workspace folder which contains the active document.
-        const activeFileUri = vscode.window.activeTextEditor.document.uri
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeFileUri)
-        if (workspaceFolder) {
-            return workspaceFolder.uri
-        }
-        // Guess that the first workspace is the chosen one.
-        return firstDir.uri
     }
 
     /**
@@ -425,10 +375,11 @@ export class Manager implements IManager {
                         this.extension.logger.info(`Root file changed: from ${this.rootFile} to ${rootFile}`)
                         this.extension.logger.info('Start to find all dependencies.')
                         this.rootFile = rootFile
-                        this.rootFileLanguageId = this.inferLanguageId(rootFile)
+                        this.rootFileLanguageId = inferLanguageId(rootFile)
                         this.extension.logger.info(`Root file languageId: ${this.rootFileLanguageId}`)
-                        await this.resetFileWatcherAndComponents()
-                        await this.parseFileAndSubs(this.rootFile, this.rootFile) // Finishing the parsing is required for subsequent refreshes.
+                        this.resetFileWatcherAndComponents()
+                        // Finishing the parsing is required for subsequent refreshes.
+                        await this.parseFileAndSubs(this.rootFile, this.rootFile, new Set())
                         // We need to parse the fls to discover file dependencies when defined by TeX macro
                         // It happens a lot with subfiles, https://tex.stackexchange.com/questions/289450/path-of-figures-in-different-directories-with-subfile-latex
                         await this.parseFlsFile(this.rootFile)
@@ -500,7 +451,7 @@ export class Manager implements IManager {
     }
 
     private async findRootInWorkspace(): Promise<string | undefined> {
-        const currentWorkspaceDirUri = this.findWorkspace()
+        const currentWorkspaceDirUri = findWorkspace()
         this.extension.logger.info(`Current workspaceRootDir: ${currentWorkspaceDirUri ? currentWorkspaceDirUri.toString(true) : ''}`)
 
         if (!currentWorkspaceDirUri) {
@@ -529,7 +480,7 @@ export class Manager implements IManager {
                 content = utils.stripCommentsAndVerbatim(content)
                 if (/\\begin{document}/m.exec(content)) {
                     // Can be a root
-                    const children = await this.getTeXChildren(file.fsPath, file.fsPath)
+                    const children = await getTeXChildren(file.fsPath, file.fsPath)
                     if (vscode.window.activeTextEditor && children.includes(vscode.window.activeTextEditor.document.fileName)) {
                         this.extension.logger.info(`Found root file from parent: ${file.fsPath}`)
                         return file.fsPath
@@ -561,18 +512,18 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        const cache = this.getCachedContent(file)
-        if (!cache) {
+        const cacheEntry = this.getCachedContent(file)
+        if (!cacheEntry) {
             return []
         }
 
         memoChildren.add(file)
-        includedBib.push(...cache.bibs)
-        for (const child of cache.children) {
-            if (memoChildren.has(child.file)) {
+        includedBib.push(...cacheEntry.bibs.cache)
+        for (const child of cacheEntry.children.cache) {
+            if (memoChildren.has(child)) {
                 continue
             }
-            includedBib.push(...this.getIncludedBib(child.file, memoChildren))
+            includedBib.push(...this.getIncludedBib(child, memoChildren))
         }
         // Make sure to return an array with unique entries
         return Array.from(new Set(includedBib))
@@ -593,57 +544,37 @@ export class Manager implements IManager {
         if (file === undefined) {
             return []
         }
-        const cache = this.getCachedContent(file)
-        if (!cache) {
+        const cacheEntry = this.getCachedContent(file)
+        if (!cacheEntry) {
             return []
         }
         includedTeX.push(file)
-        for (const child of cache.children) {
-            if (includedTeX.includes(child.file)) {
+        for (const child of cacheEntry.children.cache) {
+            if (includedTeX.includes(child)) {
                 continue
             }
-            this.getIncludedTeX(child.file, includedTeX)
+            this.getIncludedTeX(child, includedTeX)
         }
         return includedTeX
-    }
-
-    /**
-     * Get the buffer content of a file if it is opened in vscode. Otherwise, read the file from disk
-     */
-    async getDirtyContent(file: string): Promise<string | undefined> {
-        const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
-        const content = doc?.getText() || await readFilePathGracefully(file)
-        if (content === undefined) {
-            this.extension.logger.info(`Cannot read dirty content of unknown: ${file}`)
-            return
-        }
-        return content
-    }
-
-    private isExcluded(file: string): boolean {
-        const globsToIgnore = vscode.workspace.getConfiguration('latex-workshop').get('latex.watch.files.ignore') as string[]
-        const format = (str: string): string => {
-            if (os.platform() === 'win32') {
-                return str.replace(/\\/g, '/')
-            }
-            return str
-        }
-        return micromatch.some(file, globsToIgnore, { format })
     }
 
     /**
      * Searches the subfiles, `\input` siblings, `.bib` files, and related `.fls` file
      * to construct a file dependency data structure related to `file` in `this.cachedContent`.
      *
-     * This function is called when the root file is found or a watched file is changed.
-     *
-     * !! Be careful not to create an infinite loop with parseInputFiles !!
+     * To prevent race conditions, the caller must properly acquire the mutex lock
+     * when making a "root call" that involves passing `new Set()` as an argument.
      *
      * @param file The path of a LaTeX file. It is added to the watcher if not being watched.
      * @param maybeRootFile The file currently considered as the rootFile. If undefined, we use `file`
      */
-    private async parseFileAndSubs(file: string, maybeRootFile: string | undefined) {
-        if (this.isExcluded(file)) {
+    private async parseFileAndSubs(file: string, maybeRootFile: string | undefined, alreadyParsed: Set<string>) {
+        if (alreadyParsed.has(file)) {
+            return
+        } else {
+            alreadyParsed.add(file)
+        }
+        if (isExcluded(file)) {
             this.extension.logger.info(`Ignoring: ${file}`)
             return
         }
@@ -651,56 +582,22 @@ export class Manager implements IManager {
             maybeRootFile = file
         }
         this.extension.logger.info(`Parsing a file and its subfiles: ${file}`)
+
         // Initialize the cache for the file
         this.gracefulCachedContent(file)
+
         if (!this.isWatched(file)) {
             // The file is considered for the first time.
-            // We must add the file to watcher to make sure we avoid infinite loops
-            // in case of circular inclusion
             this.addToFileWatcher(file)
             await this.updateCompleterElement(vscode.Uri.file(file))
         }
-        let content = await this.getDirtyContent(file)
+        let {content} = await getDirtyContent(file)
         if (!content) {
             return
         }
         content = utils.stripCommentsAndVerbatim(content)
-        await this.parseInputFiles(content, file, maybeRootFile)
         await this.findAndParseBibFilesInContent(content, file)
-    }
-
-    /**
-     * Return the list of files (recursively) included in `file`
-     *
-     * @param file The file in which children are recursively computed
-     * @param maybeRootFile The file currently considered as the rootFile
-     *
-     */
-    private async getTeXChildren(file: string, maybeRootFile: string, children = new Set<string>()): Promise<string[]> {
-        let content = await readFilePathGracefully(file) || ''
-        content = utils.stripCommentsAndVerbatim(content)
-
-        const inputFileRegExp = new InputFileRegExp()
-        const newChildren = new Set<string>()
-        while (true) {
-            const result = await inputFileRegExp.exec(content, file, maybeRootFile)
-            if (!result) {
-                break
-            }
-            if (!await existsPath(result.path) || path.relative(result.path, maybeRootFile) === '') {
-                continue
-            }
-            newChildren.add(result.path)
-        }
-
-        for (const childFilePath of newChildren) {
-            if (children.has(childFilePath)) {
-                continue
-            }
-            children.add(childFilePath)
-            await this.getTeXChildren(childFilePath, maybeRootFile, children)
-        }
-        return Array.from(children)
+        await this.parseInputFiles(content, file, maybeRootFile, alreadyParsed)
     }
 
     private async getTeXChildrenFromFls(texFile: string) {
@@ -724,8 +621,20 @@ export class Manager implements IManager {
      * @param currentFile the name of the current file
      * @param maybeRootFile the name of the supposed rootFile
      */
-    private async parseInputFiles(content: string, currentFile: string, maybeRootFile: string) {
-        this.gracefulCachedContent(currentFile).children = []
+    private async parseInputFiles(
+        content: string,
+        currentFile: string,
+        maybeRootFile: string,
+        alreadyParsed: Set<string>
+    ) {
+        const cacheEntry = this.gracefulCachedContent(currentFile)
+        const stat = await statPath(currentFile)
+        if (stat.mtime <= cacheEntry.children.mtime) {
+            return
+        } else {
+            cacheEntry.children.cache.clear()
+            cacheEntry.children.mtime = 0
+        }
         const inputFileRegExp = new InputFileRegExp()
         while (true) {
             const result = await inputFileRegExp.exec(content, currentFile, maybeRootFile)
@@ -737,40 +646,43 @@ export class Manager implements IManager {
                 continue
             }
 
-            this.gracefulCachedContent(currentFile).children.push({
-                file: result.path
-            })
+            cacheEntry.children.cache.add(result.path)
 
-            if (this.isWatched(result.path)) {
-                // This file is already watched. Ignore it to avoid infinite loops
-                // in case of circular inclusion.
-                // Note that parseFileAndSubs calls parseInputFiles in return
-                continue
+            // If this file has already been parsed, ignore it to prevent infinite loops
+            // in case of circular inclusion.
+            if (!alreadyParsed.has(result.path)) {
+                await this.parseFileAndSubs(result.path, maybeRootFile, alreadyParsed)
             }
-            await this.parseFileAndSubs(result.path, maybeRootFile)
         }
+        cacheEntry.children.mtime = stat.mtime
     }
 
     private async findAndParseBibFilesInContent(content: string, currentFile: string) {
-        this.gracefulCachedContent(currentFile).bibs = []
+        const cacheEntry = this.gracefulCachedContent(currentFile)
+        const stat = await statPath(currentFile)
+        if (stat.mtime <= cacheEntry.bibs.mtime) {
+            return
+        } else {
+            cacheEntry.bibs.cache.clear()
+            cacheEntry.bibs.mtime = 0
+        }
         const bibReg = /(?:\\(?:bibliography|addbibresource)(?:\[[^[\]{}]*\])?){(.+?)}|(?:\\putbib)\[(.+?)\]/g
         while (true) {
             const result = bibReg.exec(content)
             if (!result) {
                 break
             }
-            const bibs = (result[1] ? result[1] : result[2]).split(',').map((bib) => {
-                return bib.trim()
-            })
+            const bibs = (result[1] ? result[1] : result[2]).split(',').map(bib => bib.trim())
             for (const bib of bibs) {
                 const bibPath = await this.pathUtils.resolveBibPath(bib, path.dirname(currentFile))
                 if (bibPath === undefined) {
                     continue
                 }
-                this.gracefulCachedContent(currentFile).bibs.push(bibPath)
+                cacheEntry.bibs.cache.add(bibPath)
                 await this.bibWatcher.watchAndParseBibFile(bibPath)
             }
         }
+        cacheEntry.bibs.mtime = stat.mtime
     }
 
     /**
@@ -782,41 +694,34 @@ export class Manager implements IManager {
      * This function is called after a successful build, when looking for the root file,
      * and to compute the cachedContent tree.
      *
-     * @param texFile The path of a LaTeX file.
+     * @param rootFile The path of a LaTeX file.
      */
-    private async parseFlsFile(texFile: string) {
+    private async parseFlsFile(rootFile: string) {
         return this.parseFlsMutex.noopIfOccupied(async () => {
             this.extension.logger.info('Parse fls file.')
-            const flsFile = await this.pathUtils.getFlsFilePath(texFile)
+            const flsFile = await this.pathUtils.getFlsFilePath(rootFile)
             if (flsFile === undefined) {
                 return
             }
-            const rootDir = path.dirname(texFile)
-            const outDir = this.getOutDir(texFile)
+            const rootDir = path.dirname(rootFile)
+            const outDir = this.getOutDir(rootFile)
             const content = await readFilePath(flsFile)
             const ioFiles = this.pathUtils.parseFlsContent(content, rootDir)
 
             for (const inputFile of ioFiles.input) {
                 // Drop files that are also listed as OUTPUT or should be ignored
-                if (ioFiles.output.includes(inputFile) || this.isExcluded(inputFile) || !await existsPath(inputFile)) {
+                if (ioFiles.output.includes(inputFile) || isExcluded(inputFile) || !await existsPath(inputFile)) {
                     continue
                 }
-                if (inputFile === texFile || this.isWatched(inputFile)) {
-                    // Drop the current rootFile often listed as INPUT
-                    // Drop any file that is already watched as it is handled by
-                    // onWatchedFileChange.
+                if (inputFile === rootFile || this.isWatched(inputFile)) {
                     continue
                 }
-                if (this.isTexOrWeaveFile(vscode.Uri.file(inputFile))) {
+                if (isTexOrWeaveFile(vscode.Uri.file(inputFile))) {
                     // Parse tex files as imported subfiles.
-                    this.gracefulCachedContent(texFile).children.push({
-                        file: inputFile
-                    })
-                    await this.parseFileAndSubs(inputFile, texFile)
-                } else if (!this.isWatched(inputFile)) {
-                    // Watch non-tex files.
-                    this.addToFileWatcher(inputFile)
+                    this.gracefulCachedContent(rootFile).children.cache.add(inputFile)
+                    await this.parseFileAndSubs(inputFile, rootFile, new Set())
                 }
+                this.addToFileWatcher(inputFile)
             }
 
             for (const outputFile of ioFiles.output) {
@@ -825,14 +730,15 @@ export class Manager implements IManager {
                     const outputFileContent = await readFilePath(outputFile)
                     await this.parseAuxFile(
                         outputFileContent,
-                        path.dirname(outputFile).replace(outDir, rootDir)
+                        path.dirname(outputFile).replace(outDir, rootDir),
+                        rootFile
                     )
                 }
             }
         })
     }
 
-    private async parseAuxFile(content: string, srcDir: string) {
+    private async parseAuxFile(content: string, srcDir: string, rootFile: string) {
         const regex = /^\\bibdata{(.*)}$/gm
         while (true) {
             const result = regex.exec(content)
@@ -847,9 +753,7 @@ export class Manager implements IManager {
                 if (bibPath === undefined) {
                     continue
                 }
-                if (this.rootFile && !this.gracefulCachedContent(this.rootFile).bibs.includes(bibPath)) {
-                    this.gracefulCachedContent(this.rootFile).bibs.push(bibPath)
-                }
+                this.gracefulCachedContent(rootFile).bibs.cache.add(bibPath)
                 await this.bibWatcher.watchAndParseBibFile(bibPath)
             }
         }
@@ -861,6 +765,9 @@ export class Manager implements IManager {
     }
 
     private addToFileWatcher(file: string) {
+        if (isExcluded(file) || this.isWatched(file)) {
+            return
+        }
         const uri = vscode.Uri.file(file)
         this.lwFileWatcher.add(uri)
         this.watchedFiles.add(toKey(uri))
@@ -882,7 +789,7 @@ export class Manager implements IManager {
 
     private onWatchingNewFile(fileUri: vscode.Uri) {
         this.extension.logger.info(`Added to file watcher: ${fileUri}`)
-        if (this.isTexOrWeaveFile(fileUri)) {
+        if (isTexOrWeaveFile(fileUri)) {
             return this.updateContentEntry(fileUri)
         }
         return
@@ -894,7 +801,7 @@ export class Manager implements IManager {
         }
         this.extension.logger.info(`File watcher - file changed: ${fileUri}`)
         // It is possible for either tex or non-tex files in the watcher.
-        if (this.isTexOrWeaveFile(fileUri)) {
+        if (isTexOrWeaveFile(fileUri)) {
             await this.updateContentEntry(fileUri)
         }
         await this.buildOnFileChanged(fileUri.fsPath)
@@ -948,7 +855,7 @@ export class Manager implements IManager {
     private async updateContentEntry(fileUri: vscode.Uri) {
         return this.updateContentEntryMutex.noopIfOccupied(async () => {
             const filePath = fileUri.fsPath
-            await this.parseFileAndSubs(filePath, this.rootFile)
+            await this.parseFileAndSubs(filePath, this.rootFile, new Set())
             await this.updateCompleterElement(fileUri)
         })
     }
@@ -957,11 +864,11 @@ export class Manager implements IManager {
     private async updateCompleterElement(texFileUri: vscode.Uri) {
         const filePath = texFileUri.fsPath
         return this.updateCompleterMutex.noopIfOccupied(async () => {
-            const content = await this.getDirtyContent(filePath)
+            const {content, doc} = await getDirtyContent(filePath)
             if (!content) {
                 return
             }
-            await this.extension.completionUpdater.updateCompleter(filePath, content)
+            await this.extension.completionUpdater.updateCompleter(filePath, {content, doc})
             this.extension.completer.input.setGraphicsPath(content)
         })
     }

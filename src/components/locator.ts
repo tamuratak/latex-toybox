@@ -8,6 +8,7 @@ import {isSameRealPath} from '../utils/pathnormalize'
 import type {ClientRequest} from '../../types/latex-workshop-protocol-types'
 import type {ExtensionRootLocator, ILocator, LoggerLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { existsPath } from '../lib/lwfs/lwfs'
+import { hasTexId } from '../utils/hastexid'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -122,7 +123,7 @@ export class Locator implements ILocator {
 
         if (args === undefined) {
             filePath = vscode.window.activeTextEditor.document.uri.fsPath
-            if (!this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+            if (!hasTexId(vscode.window.activeTextEditor.document.languageId)) {
                 this.extension.logger.info(`${filePath} is not a valid LaTeX file.`)
                 return
             }

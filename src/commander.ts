@@ -3,6 +3,7 @@ import * as path from 'path'
 
 import type {Extension} from './main'
 import {TeXDoc} from './components/texdoc'
+import { hasTexId } from './utils/hastexid'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -63,7 +64,7 @@ export class Commander {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', workspace)
         const externalBuildCommand = configuration.get('latex.external.build.command') as string
         const externalBuildArgs = configuration.get('latex.external.build.args') as string[]
-        if (rootFile === undefined && this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+        if (rootFile === undefined && hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             rootFile = await this.extension.manager.rootFilePromise
             languageId = this.extension.manager.rootFileLanguageId
         }
@@ -133,7 +134,7 @@ export class Commander {
             this.extension.logger.info('Cannot find active TextEditor.')
             return
         }
-        if (!this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+        if (!hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             this.extension.logger.info('Active document is not a TeX file.')
             return
         }
@@ -185,7 +186,7 @@ export class Commander {
     synctex() {
         try {
             this.extension.logger.info('SYNCTEX command invoked.')
-            if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+            if (!vscode.window.activeTextEditor || !hasTexId(vscode.window.activeTextEditor.document.languageId)) {
                 this.extension.logger.info('Cannot start SyncTeX. The active editor is undefined, or the document is not a TeX document.')
                 return
             }
@@ -207,7 +208,7 @@ export class Commander {
 
     synctexonref(line: number, filePath: string) {
         this.extension.logger.info('SYNCTEX command invoked on a reference.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+        if (!vscode.window.activeTextEditor || !hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             this.extension.logger.info('Cannot start SyncTeX. The active editor is undefined, or the document is not a TeX document.')
             return
         }
@@ -246,7 +247,7 @@ export class Commander {
 
     navigateToEnvPair() {
         this.extension.logger.info('JumpToEnvPair command invoked.')
-        if (!vscode.window.activeTextEditor || !this.extension.manager.hasTexId(vscode.window.activeTextEditor.document.languageId)) {
+        if (!vscode.window.activeTextEditor || !hasTexId(vscode.window.activeTextEditor.document.languageId)) {
             return
         }
         return this.extension.envPair.gotoPair()

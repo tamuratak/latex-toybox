@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 
 import type { Extension } from '../main'
 import { SectionNodeProvider } from './structurelib/sectionnodeprovider'
+import { hasTexId } from '../utils/hastexid'
 
 export enum SectionKind {
     Env = 0,
@@ -48,17 +49,17 @@ export class StructureTreeView {
                 this.extension.logger.info(`Follow cursor is set to ${this.followCursor}.`)
             }),
             vscode.workspace.onDidSaveTextDocument( (e: vscode.TextDocument) => {
-                if (extension.manager.hasTexId(e.languageId)) {
+                if (hasTexId(e.languageId)) {
                     void this.computeTreeStructure()
                 }
             }),
             vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
-                if (e && extension.manager.hasTexId(e.document.languageId)) {
+                if (e && hasTexId(e.document.languageId)) {
                     void this.refreshView()
                 }
             }),
             vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-                if (extension.manager.hasTexId(e.textEditor.document.languageId)) {
+                if (hasTexId(e.textEditor.document.languageId)) {
                     return this.showCursorItem(e)
                 }
                 return

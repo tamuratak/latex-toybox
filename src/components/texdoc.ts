@@ -70,10 +70,7 @@ export class TeXDoc {
         for (const tex of this.extension.manager.getIncludedTeX()) {
             const content = this.extension.manager.getCachedContent(tex)
             const pkgs = content && content.element.package
-            if (!pkgs) {
-                continue
-            }
-            pkgs.forEach(pkg => names.add(pkg))
+            pkgs?.forEach(pkg => names.add(pkg))
         }
         const packagenames = Array.from(new Set(names))
         const items: vscode.QuickPickItem[] = packagenames.map( name => {
