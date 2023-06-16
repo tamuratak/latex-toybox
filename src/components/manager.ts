@@ -26,7 +26,10 @@ import { toKey } from '../utils/tokey'
 
 export interface CachedContentEntry {
     /**
-     * Completion item and other items for the LaTeX file.
+     * Completion items that are extracted from the LaTeX file. It is important to note
+     * that these items should only be updated by the `CompletionUpdater` class.
+     * The `Completer` class aggregates these items and ones from JSON files in the `data/`
+     * directory to provide completion suggestions.
      */
     readonly element: {
         labelDefinition?: LabelDefinitionElement[],

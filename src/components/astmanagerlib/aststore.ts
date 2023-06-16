@@ -14,6 +14,9 @@ export class AstStore<Ast> {
     private readonly AstMap = new Map<string, AstEntry<Ast>>()
     private readonly mutex = new Mutex()
 
+    /**
+     * You must call this method and acquire the lock before calling getAst and updateAst.
+     */
     aquire() {
         return this.mutex.acquire()
     }

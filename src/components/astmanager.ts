@@ -5,6 +5,13 @@ import type { LatexAst, BibtexAst } from '../utils/utensils'
 import { AstStore } from './astmanagerlib/aststore'
 
 
+/**
+ * The getAst and getDocAst methods call the doParse method if the cache is
+ * not found. The methods are locked by a mutex, which prevents
+ * multiple calls to doParse for the same file at the same time. The AST is
+ * cached as a Promise<AST>, and the methods immediately return this promise.
+ * At this point, the promise is not yet resolved.
+ */
 export abstract class AstManagerBase<Ast> implements IAstManager<Ast> {
     private readonly astStore: AstStore<Ast>
 
@@ -25,12 +32,14 @@ export abstract class AstManagerBase<Ast> implements IAstManager<Ast> {
         try {
             const entry = await this.astStore.getAst(uri, document)
             if (entry) {
+                // By returning without await, the execution of parsing is delayed.
                 // eslint-disable-next-line @typescript-eslint/return-await
                 return entry.ast
             } else {
                 const mtime = Date.now()
                 const ast = this.doParse(uri, document)
                 this.astStore.updateAst(uri, document, { ast, mtime })
+                // By returning without await, the execution of parsing is delayed.
                 // eslint-disable-next-line @typescript-eslint/return-await
                 return ast
             }
