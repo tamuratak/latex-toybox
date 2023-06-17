@@ -112,15 +112,22 @@ export class Manager implements IManager {
         this.extension.eventBus.rootFileChanged.event(() => this.logWatchedFiles())
 
         extension.extensionContext.subscriptions.push(
-            vscode.workspace.onDidSaveTextDocument((e) => {
-                if (!isLocalLatexDocument(e)){
+            vscode.workspace.onDidSaveTextDocument((doc) => {
+                if (!isLocalLatexDocument(doc)){
                     return
                 }
-                void this.buildOnSave(e.fileName)
+                void this.buildOnSave(doc.fileName)
             }),
-            vscode.window.onDidChangeActiveTextEditor(async (e) => {
-                this.extension.logger.debug(`onDidChangeActiveTextEditor: ${e?.document.uri.toString()}`)
-                if (!e || !isLocalLatexDocument(e.document)) {
+            vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+                this.extension.logger.debug(`onDidChangeActiveTextEditor: ${editor?.document.uri.toString()}`)
+                if (!editor || !isLocalLatexDocument(editor.document)) {
+                    return
+                }
+                await this.findRoot()
+            }),
+            vscode.workspace.onDidOpenTextDocument(async (doc) => {
+                this.extension.logger.debug(`onDidOpenTextDocument: ${doc.uri.toString()}`)
+                if (process.env['LATEXWORKSHOP_CI'] || !isLocalLatexDocument(doc)) {
                     return
                 }
                 await this.findRoot()
@@ -129,17 +136,24 @@ export class Manager implements IManager {
         )
 
         setTimeout(async () => {
-            const editor = vscode.window.visibleTextEditors.find(edt => isLocalLatexDocument(edt.document))
-            if (!editor) {
+            if (process.env['LATEXWORKSHOP_CI']) {
                 return
             }
-            if (!process.env['LATEXWORKSHOP_CI'] && !this.rootFile) {
+            let interval = 1000
+            while (true) {
+                if (this.rootFile) {
+                    return
+                }
+                const editor = vscode.window.visibleTextEditors.find(edt => isLocalLatexDocument(edt.document))
                 const activeDocument = vscode.window.activeTextEditor?.document
+                this.extension.logger.info(`Initial findRoot calling. activeDocument: ${activeDocument?.uri.toString()}, editor: ${editor?.document.uri.toString()}`)
                 if (activeDocument && isLocalLatexDocument(activeDocument)) {
                     await this.findRoot()
-                } else {
+                } else if (editor) {
                     await vscode.window.showTextDocument(editor.document, editor.viewColumn)
                 }
+                await utils.sleep(interval)
+                interval *= 1.5
             }
         }, 3000)
 
