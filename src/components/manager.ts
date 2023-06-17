@@ -100,7 +100,6 @@ export class Manager implements IManager {
 
     constructor(extension: Extension) {
         this.extension = extension
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
 
         const lwFileWatcher = new LwFileWatcher()
         this.lwFileWatcher = lwFileWatcher
@@ -112,7 +111,6 @@ export class Manager implements IManager {
         this.pathUtils = new PathUtils(extension)
         this.extension.eventBus.rootFileChanged.event(() => this.logWatchedFiles())
 
-        let prevTime = 0
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidSaveTextDocument((e) => {
                 if (!isLocalLatexDocument(e)){
@@ -126,25 +124,6 @@ export class Manager implements IManager {
                     return
                 }
                 await this.findRoot()
-            }),
-            vscode.workspace.onDidChangeTextDocument(async (e) => {
-                if (!isLocalLatexDocument(e.document)) {
-                    return
-                }
-                const cache = this.getCachedContent(e.document.fileName)
-                if (cache === undefined) {
-                    return
-                }
-                if (configuration.get('intellisense.update.aggressive.enabled')) {
-                    const currentTime = Date.now()
-                    const iUpdateDelay = configuration.get('intellisense.update.delay', 1000)
-                    if (currentTime - prevTime < iUpdateDelay) {
-                        return
-                    }
-                    prevTime = currentTime
-                    const fileUri = e.document.uri
-                    await this.updateContentEntry(fileUri)
-                }
             }),
             new vscode.Disposable(() => this.dispose())
         )

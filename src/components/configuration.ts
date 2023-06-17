@@ -24,8 +24,6 @@ export class Configuration {
         'latex-workshop.bind.enter.key',
         'latex-workshop.hover.preview.mathjax.extensions',
         'latex-workshop.intellisense.package.enabled',
-        'latex-workshop.intellisense.update.aggressive.enabled',
-        'latex-workshop.intellisense.update.delay',
         'latex-workshop.latex.autoBuild.run',
         'latex-workshop.latex.outDir',
         'latex-workshop.latex.recipes',

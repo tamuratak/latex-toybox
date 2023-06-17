@@ -36,19 +36,6 @@ export class LaCheck implements ILinter {
         return this.parseLog(stdout)
     }
 
-    async lintFile(document: vscode.TextDocument) {
-        this.extension.logger.info('Linter for active file started.')
-        const filePath = document.fileName
-        const content = document.getText()
-
-        const stdout = await this.lacheckWrapper('active', document, filePath, content)
-        if (stdout === undefined) { // It's possible to have empty string as output
-            return
-        }
-
-        return this.parseLog(stdout, document.fileName)
-    }
-
     private async lacheckWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, content?: string): Promise<string | undefined> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', configScope)
         const command = configuration.get('linting.lacheck.exec.path') as string
