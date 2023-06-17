@@ -4,6 +4,7 @@ import * as path from 'path'
 
 import {replaceWebviewPlaceholders} from '../utils/webview'
 import { ExtensionContextLocator, ExtensionRootLocator, ISnippetView, ManagerLocator } from '../interfaces'
+import { hasTexId } from '../utils/hastexid'
 
 
 type SnippetViewResult = RenderResult | {
@@ -74,12 +75,12 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
     constructor(extension: IExtension) {
         this.extension = extension
         const editor = vscode.window.activeTextEditor
-        if (editor && this.extension.manager.hasTexId(editor.document.languageId)) {
+        if (editor && hasTexId(editor.document.languageId)) {
             this.lastActiveTextEditor = editor
         }
         extension.extensionContext.subscriptions.push(
             vscode.window.onDidChangeActiveTextEditor(textEditor => {
-                if (textEditor && this.extension.manager.hasTexId(textEditor.document.languageId)) {
+                if (textEditor && hasTexId(textEditor.document.languageId)) {
                     this.lastActiveTextEditor = textEditor
                 }
             })

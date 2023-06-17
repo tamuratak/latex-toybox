@@ -172,35 +172,31 @@ export class Environment implements IProvider {
             }
             this.extension.manager.getIncludedTeX().forEach(tex => {
                 const pkgs = this.extension.manager.getCachedContent(tex)?.element.package
-                if (pkgs !== undefined) {
-                    pkgs.forEach(pkg => {
-                        this.getEnvFromPkg(pkg, snippetType).forEach(env => {
-                            if (!envList.includes(env.label)) {
-                                suggestions.push(env)
-                                envList.push(env.label)
-                            }
-                        })
+                pkgs?.forEach(pkg => {
+                    this.getEnvFromPkg(pkg, snippetType).forEach(env => {
+                        if (!envList.includes(env.label)) {
+                            suggestions.push(env)
+                            envList.push(env.label)
+                        }
                     })
-                }
+                })
             })
         }
 
         // Insert environments defined in tex
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
             const cachedEnvs = this.extension.manager.getCachedContent(cachedFile)?.element.environment
-            if (cachedEnvs !== undefined) {
-                cachedEnvs.forEach(env => {
-                    if (! envList.includes(env.label)) {
-                        if (snippetType === EnvSnippetType.ForBegin) {
-                            env.insertText = new vscode.SnippetString(`${env.label}}\n\t$0\n\\end{${env.label}}`)
-                        } else {
-                            env.insertText = env.label
-                        }
-                        suggestions.push(env)
-                        envList.push(env.label)
+            cachedEnvs?.forEach(env => {
+                if (! envList.includes(env.label)) {
+                    if (snippetType === EnvSnippetType.ForBegin) {
+                        env.insertText = new vscode.SnippetString(`${env.label}}\n\t$0\n\\end{${env.label}}`)
+                    } else {
+                        env.insertText = env.label
                     }
-                })
-            }
+                    suggestions.push(env)
+                    envList.push(env.label)
+                }
+            })
         })
 
         return suggestions

@@ -4,6 +4,7 @@ import type {EventBusLocator, ExtensionContextLocator, ExtensionRootLocator, Log
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { ChkTeX } from './linterlib/chktex'
 import { LaCheck } from './linterlib/lacheck'
+import { isLocalLatexDocument } from '../lib/lwfs/lwfs'
 
 export interface ILinter {
     readonly linterDiagnostics: vscode.DiagnosticCollection,
@@ -35,13 +36,13 @@ export class Linter {
 
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidSaveTextDocument((e) => {
-                if (!extension.manager.isLocalLatexDocument(e)){
+                if (!isLocalLatexDocument(e)){
                     return
                 }
                 void this.lintRootFileIfEnabled()
             }),
             vscode.workspace.onDidChangeTextDocument((e) => {
-                if (!extension.manager.isLocalLatexDocument(e.document)) {
+                if (!isLocalLatexDocument(e.document)) {
                     return
                 }
                 void this.lintActiveFileIfEnabledAfterInterval(e.document)

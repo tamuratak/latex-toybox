@@ -193,17 +193,17 @@ export class Citation implements IProvider, ICitation {
         if (!this.extension.manager.getCachedContent(file)) {
             return []
         }
-        const cache = this.extension.manager.getCachedContent(file)
-        if (cache === undefined) {
+        const cacheEntry = this.extension.manager.getCachedContent(file)
+        if (cacheEntry === undefined) {
             return []
         }
-        const bibs = [...cache.bibs]
+        const bibs = [...cacheEntry.bibs.cache]
         visitedTeX.push(file)
-        for (const child of cache.children) {
-            if (visitedTeX.includes(child.file)) {
+        for (const child of cacheEntry.children.cache) {
+            if (visitedTeX.includes(child)) {
                 continue
             }
-            bibs.push(...this.getIncludedBibs(child.file, visitedTeX))
+            bibs.push(...this.getIncludedBibs(child, visitedTeX))
         }
         return Array.from(new Set(bibs))
     }

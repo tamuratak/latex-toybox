@@ -7,6 +7,7 @@ import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupda
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
 import type { LatexAstManagerLocator, CompleterLocator, EventBusLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator } from '../interfaces'
+import { statPath } from '../lib/lwfs/lwfs'
 
 interface IExtension extends
     EventBusLocator,
@@ -39,8 +40,14 @@ export class CompletionUpdater implements ICompleteionUpdater {
     /**
      * Updates all completers upon tex-file changes, or active file content is changed.
      */
-    async updateCompleter(file: string, content: string) {
+    async updateCompleter(file: string, {content, doc}: {content: string, doc: vscode.TextDocument | undefined}) {
+        const isContentOnDisk = !doc?.isDirty
         this.citationUpdater.update(file, content)
+        const stat = await statPath(file)
+        const cache = this.extension.manager.getCachedContent(file)
+        if (cache && stat.mtime <= cache.element.mtime && isContentOnDisk) {
+            return
+        }
         const languageId: string | undefined = vscode.window.activeTextEditor?.document.languageId
         let latexAst: latexParser.AstRoot | latexParser.AstPreamble | undefined = undefined
         if (!languageId || languageId !== 'latex-expl3') {
@@ -63,6 +70,13 @@ export class CompletionUpdater implements ICompleteionUpdater {
             this.glossaryUpdater.update(file, undefined, contentNoComment)
             this.environmentUpdater.update(file, undefined, undefined, contentNoComment)
             this.commandUpdater.update(file, undefined, contentNoComment)
+        }
+        if (cache) {
+            if (isContentOnDisk) {
+                cache.element.mtime = stat.mtime
+            } else {
+                cache.element.mtime = 0
+            }
         }
         await this.extension.eventBus.completionUpdated.fire(file)
     }

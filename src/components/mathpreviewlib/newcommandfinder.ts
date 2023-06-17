@@ -5,6 +5,7 @@ import * as path from 'path'
 
 import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
+import { getDirtyContent } from '../../utils/getdirtycontent'
 
 interface IExtension extends
     LoggerLocator,
@@ -77,7 +78,7 @@ export class NewCommandFinder {
             if (cache === undefined) {
                 continue
             }
-            const content = await this.extension.manager.getDirtyContent(tex)
+            const {content} = await getDirtyContent(tex)
             if (content === undefined) {
                 continue
             }

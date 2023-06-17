@@ -52,10 +52,7 @@ export class Glossary implements IProvider {
 
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
             const cachedGlossaries = this.extension.manager.getCachedContent(cachedFile)?.element.glossary
-            if (cachedGlossaries === undefined) {
-                return
-            }
-            cachedGlossaries.forEach(ref => {
+            cachedGlossaries?.forEach(ref => {
                 if (ref.type === GlossaryType.glossary) {
                     this.glossaries.set(ref.label, ref)
                 } else {

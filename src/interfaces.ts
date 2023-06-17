@@ -53,7 +53,7 @@ export interface ICompleteionUpdater {
         file: string,
         location: vscode.Location
     }>,
-    updateCompleter(file: string, content: string): Promise<void>
+    updateCompleter(file: string, {content, doc}: {content: string, doc: vscode.TextDocument}): Promise<void>
 }
 
 export interface ExtensionContextLocator {
@@ -112,13 +112,9 @@ export interface IManager {
     localRootFile: string | undefined,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined,
-    isLocalLatexDocument(document: vscode.TextDocument): boolean,
-    hasTexId(id: string): boolean,
-    hasBibtexId(id: string): boolean,
     ignorePdfFile(rootFile: string): void,
     getIncludedBib(file?: string): string[],
     getIncludedTeX(file?: string): string[],
-    getDirtyContent(file: string): Promise<string | undefined>,
     getWorkspaceFolderRootDir(): vscode.WorkspaceFolder | undefined,
     tex2pdf(texPath: string, respectOutDir?: boolean): string,
     watchPdfFile(pdfFileUri: vscode.Uri): void

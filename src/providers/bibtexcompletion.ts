@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import {BibtexFormatConfig} from './bibtexformatterlib/bibtexutils'
 import type {ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
+import { hasBibtexId } from '../utils/hastexid'
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
 type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entries.json')
@@ -38,7 +39,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
                 }
         })
         vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
-            if (e && this.extension.manager.hasBibtexId(e.document.languageId)) {
+            if (e && hasBibtexId(e.document.languageId)) {
                 const wsFolder = vscode.workspace.getWorkspaceFolder(e.document.uri)
                 if (wsFolder !== this.scope) {
                     this.scope = wsFolder

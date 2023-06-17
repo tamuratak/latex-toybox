@@ -6,6 +6,7 @@ import { BibLogParser } from './biblogparser'
 import { existsPath } from '../../lib/lwfs/lwfs'
 import { BuildStepLog } from '../compilerlog'
 import type { CompilerLogLocator, CompleterLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
+import { getDirtyContent } from '../../utils/getdirtycontent'
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
@@ -46,7 +47,7 @@ interface IExtension extends
 export class CompilerLogParser {
     private readonly latexLogParser: LatexLogParser
     private readonly bibLogParser: BibLogParser
-    private readonly extension: IExtension
+
     /**
      * Set true when LaTeXmk did nothing because all targets are up-to-date.
      */
@@ -55,7 +56,6 @@ export class CompilerLogParser {
     constructor(extension: IExtension) {
         this.latexLogParser = new LatexLogParser(extension)
         this.bibLogParser = new BibLogParser(extension)
-        this.extension = extension
     }
 
     parse(stepLog: BuildStepLog, rootFile?: string) {
@@ -138,7 +138,7 @@ export class CompilerLogParser {
         if (!item.errorPosText) {
             return undefined
         }
-        const content = await this.extension.manager.getDirtyContent(item.file)
+        const {content} = await getDirtyContent(item.file)
         if (!content) {
             return undefined
         }

@@ -1,9 +1,14 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs'
+import { hasTexId } from '../../utils/hastexid'
 
 
 export function isLocalUri(uri: vscode.Uri): boolean {
     return uri.scheme === 'file'
+}
+
+export function isLocalLatexDocument(document: vscode.TextDocument) {
+    return isLocalUri(document.uri) && hasTexId(document.languageId)
 }
 
 export function isVirtualUri(uri: vscode.Uri): boolean {
@@ -72,7 +77,7 @@ export async function stat(fileUri: vscode.Uri): Promise<vscode.FileStat> {
     }
 }
 
-export async function statPath(filePath: string): Promise<fs.Stats | vscode.FileStat> {
+export async function statPath(filePath: string): Promise<vscode.FileStat> {
     return stat(vscode.Uri.file(filePath))
 }
 
