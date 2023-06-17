@@ -8,8 +8,7 @@ import { isLocalLatexDocument } from '../lib/lwfs/lwfs'
 
 export interface ILinter {
     readonly linterDiagnostics: vscode.DiagnosticCollection,
-    lintRootFile(): Promise<void>,
-    lintFile(document: vscode.TextDocument): Promise<void>
+    lintRootFile(): Promise<void>
 }
 
 interface IExtension extends
@@ -21,10 +20,8 @@ interface IExtension extends
 
 export class Linter {
     private readonly lintMutex = new MutexWithSizedQueue(1)
-    private readonly lintActiveFileMutex = new MutexWithSizedQueue(1)
     readonly lacheck: ILinter
     readonly chktex: ILinter
-    private prevTime: number = 0
 
     constructor(private readonly extension: IExtension) {
         this.chktex = new ChkTeX(this.extension)
@@ -40,12 +37,6 @@ export class Linter {
                     return
                 }
                 void this.lintRootFileIfEnabled()
-            }),
-            vscode.workspace.onDidChangeTextDocument((e) => {
-                if (!isLocalLatexDocument(e.document)) {
-                    return
-                }
-                void this.lintActiveFileIfEnabledAfterInterval(e.document)
             })
         )
     }
@@ -82,25 +73,6 @@ export class Linter {
                 linters.map(linter => linter.lintRootFile())
             )
         })
-    }
-
-    async lintActiveFileIfEnabledAfterInterval(document: vscode.TextDocument) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
-        const linters = this.getLinters(document)
-        this.clear(document)
-        if (linters.length > 0 && (configuration.get('linting.run') as string) === 'onType') {
-            const interval = configuration.get('linting.delay') as number
-            const now = Date.now()
-            if (now - this.prevTime < interval) {
-                return
-            }
-            this.prevTime = now
-            await this.lintActiveFileMutex.noopIfOccupied(async () => {
-                await Promise.allSettled(
-                    linters.map(linter => linter.lintFile(document))
-                )
-            })
-        }
     }
 
 }

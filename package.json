@@ -1090,27 +1090,13 @@
           "scope": "resource",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Enable linting LaTeX with `chktex`. Check `#latex-workshop.linting.run#` to control when `chktex` is executed if this config is set to `true."
+          "markdownDescription": "Enable linting LaTeX with `chktex`."
         },
         "latex-workshop.linting.lacheck.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Enable linting LaTeX with `lacheck`. Check `#latex-workshop.linting.run#` to control when `lacheck` is executed if this config is set to `true."
-        },
-        "latex-workshop.linting.run": {
-          "scope": "resource",
-          "type": "string",
-          "enum": [
-            "onSave",
-            "onType"
-          ],
-          "enumDescriptions": [
-            "Lint the whole LaTeX project upon saving",
-            "Lint the active document when input is stopped"
-          ],
-          "default": "onSave",
-          "markdownDescription": "When LaTeX should be linted.\n- `onSave`: the whole LaTeX project will be linted upon saving.\n- `onType`: the active document will be linted when input is stopped for a period of time defined in `#latex-workshop.linting.delay#`. It also implies `onSave`."
+          "markdownDescription": "Enable linting LaTeX with `lacheck`."
         },
         "latex-workshop.linting.chktex.exec.path": {
           "scope": "window",
@@ -1161,19 +1147,7 @@
           "scope": "window",
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Enable checking for duplicated labels. A new check is triggered every time the intellisense data is updated, see `#latex-workshop.intellisense.update.aggressive.enabled#`."
-        },
-        "latex-workshop.intellisense.update.aggressive.enabled": {
-          "scope": "window",
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Defines whether the extension aggressively parses the changed content after stopped typing. Disable this config will let the extension only update intellisense after saving changed files."
-        },
-        "latex-workshop.intellisense.update.delay": {
-          "scope": "window",
-          "type": "number",
-          "default": 1000,
-          "markdownDescription": "Defines the delay in milliseconds for the extension to update current active file content for intellisense after stopped typing. This config works only when `intellisense.update.aggressive.enabled` is enabled. Lower this value to let the extension know newly defined commands/references/environments more quickly, at the cost of more frequent content parsing: more computational burden."
+          "markdownDescription": "Enable checking for duplicated labels. A new check is triggered every time the intellisense data is updated."
         },
         "latex-workshop.intellisense.citation.label": {
           "scope": "resource",

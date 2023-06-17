@@ -39,21 +39,6 @@ export class ChkTeX implements ILinter {
         return this.parseLog(stdout, undefined, tabSize)
     }
 
-    async lintFile(document: vscode.TextDocument) {
-        this.extension.logger.info('Linter for active file started.')
-        const filePath = document.fileName
-        const content = document.getText()
-        const requiredArgs = ['-I0', '-f%f:%l:%c:%d:%k:%n:%m\n']
-        const stdout = await this.chktexWrapper('active', document, filePath, requiredArgs, content)
-        if (stdout === undefined) { // It's possible to have empty string as output
-            return
-        }
-        // provide the original path to the active file as the second argument, so
-        // we report this second path in the diagnostics instead of the temporary one.
-        const tabSize = await this.getChktexrcTabSize(document.fileName)
-        return this.parseLog(stdout, filePath, tabSize)
-    }
-
     private async chktexWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, requiredArgs: string[], content?: string): Promise<string | undefined> {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', configScope)
         const command = configuration.get('linting.chktex.exec.path') as string
