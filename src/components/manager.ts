@@ -718,22 +718,20 @@ export class Manager implements IManager {
     }
 
     private async parseAuxFile(content: string, srcDir: string, rootFile: string) {
+        const cacheEntry = this.gracefulCachedContent(rootFile)
         const regex = /^\\bibdata{(.*)}$/gm
         while (true) {
             const result = regex.exec(content)
             if (!result) {
                 return
             }
-            const bibs = (result[1] ? result[1] : result[2]).split(',').map((bib) => {
-                return bib.trim()
-            })
+            const bibs = (result[1] ? result[1] : result[2]).split(',').map(bib => bib.trim())
             for (const bib of bibs) {
                 const bibPath = await this.pathUtils.resolveBibPath(bib, srcDir)
-                if (bibPath === undefined) {
-                    continue
+                if (bibPath !== undefined) {
+                    cacheEntry.bibs.cache.add(bibPath)
+                    await this.bibWatcher.watchAndParseBibFile(bibPath)
                 }
-                this.gracefulCachedContent(rootFile).bibs.cache.add(bibPath)
-                await this.bibWatcher.watchAndParseBibFile(bibPath)
             }
         }
     }
