@@ -52,7 +52,17 @@ export class Commander {
         this._texdoc = new TeXDoc(extension)
     }
 
-    async build(skipSelection: boolean = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {
+    /**
+     * Builds the LaTeX document.
+     *
+     * @param skipQuickPick Indicates whether to skip the quick pick dialog for choosing the root file
+     *                      when the subfiles package is used.
+     * @param rootFile The rootFile to build.
+     * @param languageId The languageId of the rootFile.
+     * @param recipe This refers to the name of the recipe that will be executed for the build process.
+     * @returns
+     */
+    async build(skipQuickPick: boolean = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {
         this.extension.logger.info('BUILD command invoked.')
         if (!vscode.window.activeTextEditor) {
             this.extension.logger.info('Cannot start to build because the active editor is undefined.')
@@ -78,10 +88,10 @@ export class Commander {
             return
         }
         let pickedRootFile: string | undefined = rootFile
-        if (!skipSelection && this.extension.manager.localRootFile) {
-            // We are using the subfile package
+        if (!skipQuickPick && this.extension.manager.localRootFile) {
+            // We are using the subfiles package
             pickedRootFile = await quickPickRootFile(rootFile, this.extension.manager.localRootFile)
-            if (! pickedRootFile) {
+            if (!pickedRootFile) {
                 return
             }
         }

@@ -1,10 +1,9 @@
 import * as vscode from 'vscode'
 import * as cs from 'cross-spawn'
-import type {LoggerLocator, ManagerLocator, LwStatusBarItemLocator} from '../interfaces'
+import type {LoggerLocator, ManagerLocator } from '../interfaces'
 
 interface IExtension extends
     LoggerLocator,
-    LwStatusBarItemLocator,
     ManagerLocator { }
 
 export class TeXDoc {
