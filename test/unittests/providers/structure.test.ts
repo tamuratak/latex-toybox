@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
+
 import * as vscode from 'vscode'
 import * as path from 'path'
 import {getFixtureDir, runUnitTestWithFixture, waitLatexWorkshopActivated} from '../../utils/ciutils'
@@ -19,7 +21,7 @@ suite('unit test suite', () => {
     runUnitTestWithFixture('fixture020_structure', 'test structure', async () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension
+        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -47,7 +49,7 @@ suite('unit test suite', () => {
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const config = vscode.workspace.getConfiguration()
         await config.update('latex-workshop.view.outline.numbers.enabled', false)
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension
+        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -64,7 +66,7 @@ suite('unit test suite', () => {
             'altsection',
             'subsubsection'
         ])
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension
+        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -78,7 +80,7 @@ suite('unit test suite', () => {
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const config = vscode.workspace.getConfiguration()
         await config.update('latex-workshop.view.outline.floats.enabled', false)
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension
+        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -91,7 +93,7 @@ suite('unit test suite', () => {
 
     teardown(async () => {
         await resetConfig()
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension
+        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
         extension.manager.rootFile = undefined
     })
 })

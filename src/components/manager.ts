@@ -256,7 +256,7 @@ export class Manager implements IManager {
         }
     }
 
-    set rootFile(root: string | undefined) {
+    private set rootFile(root: string | undefined) {
         if (root) {
             this._rootFile = { type: 'filePath', filePath: root }
         } else {
@@ -264,6 +264,11 @@ export class Manager implements IManager {
         }
     }
 
+    /**
+     * Returns a promise that resolves to the rootFile. This method is not needed in most cases,
+     * as we can simply use the `rootFile` property. Call this method if we need to wait for
+     * the completion of the findRoot method.
+     */
     get rootFilePromise(): Promise<string | undefined> {
         if (this.#rootFilePromise) {
             return this.#rootFilePromise.promise
@@ -285,7 +290,7 @@ export class Manager implements IManager {
         }
     }
 
-    set rootFileUri(root: vscode.Uri | undefined) {
+    private set rootFileUri(root: vscode.Uri | undefined) {
         let rootFile: RootFileType | undefined
         if (root) {
             if (root.scheme === 'file') {
@@ -305,10 +310,6 @@ export class Manager implements IManager {
         return this._localRootFile
     }
 
-    /**
-     * One of LaTeX subfiles which is the active document.
-     * This is set when the `subfiles` package is being used.
-     */
     private set localRootFile(localRoot: string | undefined) {
         this._localRootFile = localRoot
     }
@@ -317,7 +318,7 @@ export class Manager implements IManager {
         return this._rootFileLanguageId
     }
 
-    set rootFileLanguageId(id: string | undefined) {
+    private set rootFileLanguageId(id: string | undefined) {
         this._rootFileLanguageId = id
     }
 
@@ -350,8 +351,12 @@ export class Manager implements IManager {
     }
 
     /**
-     * Finds the root file with respect to the current workspace and returns it.
-     * The found root is also set to `rootFile`.
+     * Finds the root file relative to the active document and workspace,
+     * and sets it as the value of `rootFile`.
+     *
+     * This method has the side effect of changing the value of rootFile. To prevent rootFile
+     * from being changed at an undesirable time, this method is defined as private.
+     *
      */
     private async findRoot() {
         return this.findRootMutex.noopIfOccupied(async () => {
@@ -441,14 +446,14 @@ export class Manager implements IManager {
         }
         const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
         if (/\\begin{document}/m.exec(content)) {
-            const mainFileOfSubFile = await this.finderUtils.findMainFileFromDocumentClassSubFiles(content)
-            const file = vscode.window.activeTextEditor.document.fileName
-            if (mainFileOfSubFile) {
-               this.localRootFile = file
-               return mainFileOfSubFile
+            const activeDocFilePath = vscode.window.activeTextEditor.document.fileName
+            const mainFileOfActiveDoc = await this.finderUtils.findMainFileFromDocumentClassSubFiles(content)
+            if (mainFileOfActiveDoc) {
+               this.localRootFile = activeDocFilePath
+               return mainFileOfActiveDoc
             } else {
-                this.extension.logger.info(`Found root file from active editor: ${file}`)
-                return file
+                this.extension.logger.info(`Found root file from active editor: ${activeDocFilePath}`)
+                return activeDocFilePath
             }
         }
         return undefined

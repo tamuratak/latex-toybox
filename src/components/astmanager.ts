@@ -10,7 +10,7 @@ import { AstStore } from './astmanagerlib/aststore'
  * not found. The methods are locked by a mutex, which prevents
  * multiple calls to doParse for the same file at the same time. The AST is
  * cached as a Promise<AST>, and the methods immediately return this promise.
- * At this point, the promise is not yet resolved.
+ * At this point, the execution of parsing is delayed.
  */
 export abstract class AstManagerBase<Ast> implements IAstManager<Ast> {
     private readonly astStore: AstStore<Ast>
