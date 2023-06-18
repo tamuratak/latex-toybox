@@ -8,6 +8,10 @@ export type EventName = 'buildfinished' | 'pdfviewerpagesloaded' | 'pdfviewersta
 interface IExtension extends
     LoggerLocator { }
 
+/**
+ * Since neither Node.js's EventEmitter nor VS Code's EventEmitter are being used,
+ * there is no need to dispose of them during deactivation.
+ */
 export class EventBus implements IEventBus {
     /**
      * This event is triggered when the build process is complete,
