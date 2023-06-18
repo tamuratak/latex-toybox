@@ -726,13 +726,13 @@
           "scope": "resource",
           "type": "boolean",
           "default": true,
-          "markdownDescription": "When the `subfile` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfile}` can be LaTeXing. When `true`, the extension uses the subfile as the rootFile for the `autobuild`, `clean` and `synctex` commands."
+          "markdownDescription": "When the `subfiles` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfiles}` can be LaTeXing. When `true`, the extension uses the subfile as the rootFile for the `autobuild`, `clean` and `synctex` commands."
         },
         "latex-workshop.latex.rootFile.doNotPrompt": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "When the `subfile` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfile}` can be LaTeXing. When `false`, the `build` and `view` commands  ask the user's choice first. When `true`, the subfile is used when `#latex-workshop.latex.rootFile.useSubFile#` is also `true`, otherwise the rootFile is used."
+          "markdownDescription": "When the `subfiles` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfiles}` can be LaTeXing. When `false`, the `build` and `view` commands  ask the user's choice first. When `true`, the subfile is used when `#latex-workshop.latex.rootFile.useSubFile#` is also `true`, otherwise the rootFile is used."
         },
         "latex-workshop.latex.watch.files.ignore": {
           "scope": "window",

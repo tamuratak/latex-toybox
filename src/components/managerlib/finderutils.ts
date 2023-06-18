@@ -2,12 +2,11 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as utils from '../../utils/utils'
 
-import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import type { LoggerLocator } from '../../interfaces'
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
 
 interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
+    LoggerLocator { }
 
 export class FinderUtils {
     private readonly extension: IExtension
@@ -61,7 +60,12 @@ export class FinderUtils {
         return undefined
     }
 
-    async findSubFiles(content: string) {
+    /**
+     * Find the mainfile by searching for \documentclass[mainfile]{subfiles} in the content, and return its full path.
+     * @param content The content of the subfile.
+     * @returns The full path of main file, or undefined if not found.
+     */
+    async findMainFileFromDocumentClassSubFiles(content: string) {
         if (!vscode.window.activeTextEditor) {
             return undefined
         }
