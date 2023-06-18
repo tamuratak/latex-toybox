@@ -9,6 +9,11 @@ interface IExtension extends
     LoggerLocator { }
 
 export class EventBus implements IEventBus {
+    /**
+     * This event is triggered when the build process is complete,
+     * and it includes the name of the root file that was used for the build.
+     * If the `subfiles` package is used, it can be one of the subfiles.
+     */
     readonly buildFinished = new AwaitableEventEmitter<string, 'buildfinished'>('buildfinished')
     readonly pdfViewerStatusChanged = new AwaitableEventEmitter<PdfViewerState, 'pdfviewerstatuschanged'>('pdfviewerstatuschanged')
     readonly pdfViewerPagesLoaded = new AwaitableEventEmitter<vscode.Uri, 'pdfviewerpagesloaded'>('pdfviewerpagesloaded')

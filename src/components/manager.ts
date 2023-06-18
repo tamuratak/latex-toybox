@@ -299,6 +299,7 @@ export class Manager implements IManager {
 
     /**
      * One of LaTeX subfiles which is the active document.
+     * This is set when the `subfiles` package is being used.
      */
     get localRootFile() {
         return this._localRootFile
@@ -306,6 +307,7 @@ export class Manager implements IManager {
 
     /**
      * One of LaTeX subfiles which is the active document.
+     * This is set when the `subfiles` package is being used.
      */
     private set localRootFile(localRoot: string | undefined) {
         this._localRootFile = localRoot
@@ -617,8 +619,6 @@ export class Manager implements IManager {
      * Parse the content of the currentFile and call parseFileAndSubs for every included file.
      * This function is called by parseFileAndSubs.
      *
-     * !! Be careful not to create an infinite loop with parseFileAndSubs !!
-     *
      * @param content the content of currentFile
      * @param currentFile the name of the current file
      * @param maybeRootFile the name of the supposed rootFile
@@ -696,7 +696,8 @@ export class Manager implements IManager {
      * This function is called after a successful build, when looking for the root file,
      * and to compute the cachedContent tree.
      *
-     * @param rootFile The path of a LaTeX file.
+     * @param rootFile This represents the path of a LaTeX root file that is used in a build process.
+     *                 If the `subfiles` package is used, it can be one of the subfiles.
      */
     private async parseFlsFile(rootFile: string) {
         return this.parseFlsMutex.noopIfOccupied(async () => {
