@@ -109,7 +109,7 @@ export interface IManager {
     readonly rootFile: string | undefined,
     readonly rootFileUri: vscode.Uri | undefined,
     readonly cachedFilePaths: IterableIterator<string>,
-    localRootFile: string | undefined,
+    readonly localRootFile: string | undefined,
     getOutDir(texPath?: string): string,
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined,
     ignorePdfFile(rootFile: string): void,

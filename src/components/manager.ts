@@ -297,11 +297,17 @@ export class Manager implements IManager {
         this._rootFile = rootFile
     }
 
+    /**
+     * One of LaTeX subfiles which is the active document.
+     */
     get localRootFile() {
         return this._localRootFile
     }
 
-    set localRootFile(localRoot: string | undefined) {
+    /**
+     * One of LaTeX subfiles which is the active document.
+     */
+    private set localRootFile(localRoot: string | undefined) {
         this._localRootFile = localRoot
     }
 
@@ -418,6 +424,11 @@ export class Manager implements IManager {
         return undefined
     }
 
+    /**
+     * This method finds the rootFile from the active document. If the subfiles package is being used,
+     * it sets the localRootFile to the active document. Therefore, it must be called before the other
+     * findRoot methods.
+     */
     private async findRootFromActive() {
         if (!vscode.window.activeTextEditor) {
             return undefined
@@ -426,15 +437,13 @@ export class Manager implements IManager {
             this.extension.logger.info(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
-        const regex = /\\begin{document}/m
         const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
-        const result = content.match(regex)
-        if (result) {
-            const rootSubFile = await this.finderUtils.findSubFiles(content)
+        if (/\\begin{document}/m.exec(content)) {
+            const mainFileOfSubFile = await this.finderUtils.findMainFileFromDocumentClassSubFiles(content)
             const file = vscode.window.activeTextEditor.document.fileName
-            if (rootSubFile) {
+            if (mainFileOfSubFile) {
                this.localRootFile = file
-               return rootSubFile
+               return mainFileOfSubFile
             } else {
                 this.extension.logger.info(`Found root file from active editor: ${file}`)
                 return file
@@ -816,6 +825,13 @@ export class Manager implements IManager {
         this.pdfWatcher.watchPdfFile(pdfFileUri)
     }
 
+    /**
+     * This function triggers a rebuild of the LaTeX document, determining whether the target is the project's root file or an active subfile.
+     *
+     * @param file The file path of the file that is changed.
+     * @param bibChanged Indicates whether the change is caused by a change in bib file.
+     * @returns
+     */
     private autoBuild(file: string, bibChanged: boolean ) {
         this.extension.logger.info(`Auto build started detecting the change of a file: ${file}`)
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
