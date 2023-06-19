@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import type {EventBusLocator, ExtensionContextLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../interfaces'
+import type {EventBusLocator, ExtensionContextLocator, LoggerLocator, ManagerLocator} from '../interfaces'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { ChkTeX } from './linterlib/chktex'
 import { LaCheck } from './linterlib/lacheck'
@@ -13,7 +13,6 @@ export interface ILinter {
 
 interface IExtension extends
     ExtensionContextLocator,
-    ExtensionRootLocator,
     EventBusLocator,
     LoggerLocator,
     ManagerLocator { }

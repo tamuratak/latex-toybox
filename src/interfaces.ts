@@ -9,7 +9,7 @@ import { ReferenceStore } from './components/referencestore'
 import { CiteSuggestion } from './providers/completer/citation'
 import type {ICommand, ILwCompletionItem} from './providers/completer/interface'
 import type {ClientRequest, PdfViewerState} from '../types/latex-workshop-protocol-types'
-import { AwaitableEventEmitter } from './utils/awaitableeventemitter'
+import { AwaitableEventEmitter } from './components/eventbuslib/awaitableeventemitter'
 import { BibtexAst, LatexAst } from './utils/utensils'
 
 

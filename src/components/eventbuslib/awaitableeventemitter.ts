@@ -1,5 +1,9 @@
 import * as vscode from 'vscode'
 
+
+/**
+ * A simple EventEmitter implementation using Set.
+ */
 export class AwaitableEventEmitter<T, Name extends string> {
     private readonly cbSet: Set<(arg: T) => unknown> = new Set()
 
@@ -12,8 +16,10 @@ export class AwaitableEventEmitter<T, Name extends string> {
 
     /**
      * We can wait all the callbacks done by awaiting the returned promise.
+     * This method can be executed synchronously if callbacks are synchronous.
      *
-     * **Notice** When misused, it would easily lead to deadlock.
+     * **Notice** When misused, awaiting the returned promise would easily lead to deadlock.
+     *
      */
     fire(arg: T): Promise<unknown> {
         return Promise.allSettled(

@@ -1,7 +1,7 @@
 import type * as vscode from 'vscode'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
 import type { IEventBus, LoggerLocator } from '../interfaces'
-import { AwaitableEventEmitter } from '../utils/awaitableeventemitter'
+import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter'
 
 export type EventName = 'buildfinished' | 'pdfviewerpagesloaded' | 'pdfviewerstatuschanged' | 'rootfilechanged' | 'findrootfileend' | 'completionupdated'
 
@@ -9,8 +9,14 @@ interface IExtension extends
     LoggerLocator { }
 
 /**
+ * EventBus is a component that provides an API for registering callbacks
+ * for events and firing events. It acts as a communication channel or message bus
+ * within an application, allowing different components or modules to interact
+ * with each other through events.
+ *
  * Since neither Node.js's EventEmitter nor VS Code's EventEmitter are being used,
  * there is no need to dispose of them during deactivation.
+ *
  */
 export class EventBus implements IEventBus {
     /**
