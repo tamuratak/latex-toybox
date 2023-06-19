@@ -1648,8 +1648,8 @@
         "latex-workshop.mathpreviewpanel.cursor.enabled": {
           "scope": "window",
           "type": "boolean",
-          "default": false,
-          "markdownDescription": "[Experimental] Render a cursor on the math preview panel. **This feature is experimental. If you report an issue to us on this feature, we will not fix it. We will not accept any pull requests.**"
+          "default": true,
+          "markdownDescription": "Render a cursor on the math preview panel."
         },
         "latex-workshop.mathpreviewpanel.editorGroup": {
           "scope": "window",

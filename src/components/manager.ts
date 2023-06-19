@@ -26,6 +26,13 @@ import { getDirtyContent } from '../utils/getdirtycontent'
 import { inferLanguageId, isTexOrWeaveFile } from '../utils/hastexid'
 
 
+/**
+ * Cache entry for the results of parsing a LaTeX file.
+ *
+ * For the children and bibs of the rootFile, we cache not only the parsing results,
+ * but also the results of parsing .fls and .aux files. In this case,
+ * we need to ignore the mtime of each property since it is not valid for .fls and .aux files.
+ */
 export interface CachedContentEntry {
     /**
      * Completion items that are extracted from the LaTeX file. It is important to note

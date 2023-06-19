@@ -3,7 +3,7 @@ import { readFilePathGracefully } from '../lib/lwfs/lwfs'
 
 
 /**
- * Get the buffer content of a file if it is opened in vscode. Otherwise, read the file from disk
+ * If the file is currently open in VS Code, get its buffer content. Otherwise, read the file from disk.
  */
 export async function getDirtyContent(file: string) {
     const doc = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file)
