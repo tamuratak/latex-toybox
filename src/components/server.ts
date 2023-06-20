@@ -5,19 +5,22 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-import type {Extension} from '../main'
 import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
 import { readFileAsBuffer } from '../lib/lwfs/lwfs'
-import type { IServer } from '../interfaces'
 import { ExternalPromise } from '../utils/externalpromise'
+import type { Logger } from './logger'
+import type { Viewer } from './viewer'
 
 class WsServer extends ws.Server {
-    private readonly extension: Extension
     private readonly validOrigin: string
 
-    constructor(server: http.Server, extension: Extension, validOrigin: string) {
+    constructor(
+        server: http.Server,
+        private readonly extension: {
+            logger: Logger
+        },
+        validOrigin: string) {
         super({server})
-        this.extension = extension
         this.validOrigin = validOrigin
     }
 
@@ -39,15 +42,18 @@ class WsServer extends ws.Server {
 
 }
 
-export class Server implements IServer {
-    private readonly extension: Extension
+export class Server {
     private readonly httpServer: http.Server
     private address?: AddressInfo
     private validOriginUri: vscode.Uri | undefined
     readonly #serverStarted = new ExternalPromise<void>()
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly extensionRoot: string,
+        readonly logger: Logger,
+        readonly viewer: Viewer
+    }) {
         this.httpServer = http.createServer((request, response) => this.handler(request, response))
         this.initializeHttpServer()
 

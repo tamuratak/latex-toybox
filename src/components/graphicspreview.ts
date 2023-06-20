@@ -1,21 +1,20 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import { existsPath } from '../lib/lwfs/lwfs'
-import { CompleterLocator, LoggerLocator, ManagerLocator, SnippetViewLocator } from '../interfaces'
+import type { Completer } from '../providers/completion'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
+import type { SnippetView } from './snippetview'
 
-
-interface IExtension extends
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator,
-    SnippetViewLocator { }
 
 export class GraphicsPreview {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly snippetView: SnippetView
+    }) { }
 
     async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover | undefined> {
         const pat = /\\includegraphics\s*(?:\[(.*?)\])?\s*\{(.*?)\}/

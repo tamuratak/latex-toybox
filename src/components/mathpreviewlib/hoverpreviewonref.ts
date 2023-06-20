@@ -4,17 +4,20 @@ import type {MathJaxPool} from './mathjaxpool'
 import type {LabelDefinitionEntry} from '../../providers/completer/labeldefinition'
 import type {TexMathEnv} from './texmathenvfinder'
 import type {MathPreviewUtils} from './mathpreviewutils'
-import type {LoggerLocator} from '../../interfaces'
+import type { Logger } from '../logger'
 
-interface IExtension extends LoggerLocator { }
 
 export class HoverPreviewOnRefProvider {
-    private readonly extension: IExtension
     private readonly mj: MathJaxPool
     private readonly mputils: MathPreviewUtils
 
-    constructor(extension: IExtension, mj: MathJaxPool, mputils: MathPreviewUtils) {
-        this.extension = extension
+    constructor(
+        private readonly extension: {
+            readonly logger: Logger
+        },
+        mj: MathJaxPool,
+        mputils: MathPreviewUtils
+    ) {
         this.mj = mj
         this.mputils = mputils
     }

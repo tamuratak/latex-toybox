@@ -3,10 +3,13 @@ import * as vscode from 'vscode'
 import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
-import type {CompleterLocator, CompletionUpdaterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
+import type { CompletionUpdater } from '../../components/completionupdater'
+import type { Completer } from '../completion'
+import type { Logger } from '../../components/logger'
+import type { Manager } from '../../components/manager'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
@@ -106,25 +109,23 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
     }
 }
 
-interface IExtension extends
-    ExtensionRootLocator,
-    CompletionUpdaterLocator,
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator { }
-
 export class Command implements IProvider, ICommand {
-    private readonly extension: IExtension
-    private readonly environment: Environment
 
     private readonly defaultCmds: CmdEnvSuggestion[] = []
     private readonly defaultSymbols: CmdEnvSuggestion[] = []
     private readonly packageCmds = new Map<string, CmdEnvSuggestion[]>()
     readonly #readyPromise = new ExternalPromise<void>()
 
-    constructor(extension: IExtension, environment: Environment) {
-        this.extension = extension
-        this.environment = environment
+    constructor(
+        private readonly extension: {
+            readonly extensionRoot: string,
+            readonly completer: Completer,
+            readonly completionUpdater: CompletionUpdater,
+            readonly logger: Logger,
+            readonly manager: Manager
+        },
+        private readonly environment: Environment
+    ) {
         void this.load().then(() => this.#readyPromise.resolve())
     }
 

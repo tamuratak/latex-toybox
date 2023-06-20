@@ -2,8 +2,10 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import type {IProvider} from './interface'
-import type { CompletionUpdaterLocator, EventBusLocator, ManagerLocator } from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
+import type { EventBus } from '../../components/eventbus'
+import type { CompletionUpdater } from '../../components/completionupdater'
+import type { Manager } from '../../components/manager'
 
 export interface LabelDefinitionElement {
     readonly range: vscode.Range,
@@ -25,17 +27,15 @@ export interface LabelDefinitionEntry extends LabelDefinitionStored {
     } | undefined
 }
 
-interface IExtension extends
-    EventBusLocator,
-    CompletionUpdaterLocator,
-    ManagerLocator { }
-
 export class LabelDefinition implements IProvider {
-    private readonly extension: IExtension
     private readonly labelDefinitions = new Map<string, LabelDefinitionStored>()
     private readonly prevIndexMap = new Map<string, {refNumber: string, pageNumber: string}>()
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly eventBus: EventBus,
+        readonly completionUpdater: CompletionUpdater,
+        readonly manager: Manager
+    }) {
         this.extension = extension
         this.extension.eventBus.completionUpdated.event(() => {
             this.updateAll()

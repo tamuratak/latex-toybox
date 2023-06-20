@@ -1,16 +1,13 @@
 import * as vscode from 'vscode'
-import type { ExtensionContextLocator, LoggerLocator } from '../interfaces'
+import { Logger } from './logger'
 
-
-interface IExtension extends
-    ExtensionContextLocator,
-    LoggerLocator { }
 
 export class Configuration {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly logger: Logger
+    }) {
         this.logConfiguration()
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidChangeConfiguration((ev) => {

@@ -1,11 +1,12 @@
 import type * as vscode from 'vscode'
 
-import type {Extension} from '../../main'
+import type { Commander } from '../../commander'
 
 export class PdfViewerHookProvider implements vscode.CustomReadonlyEditorProvider {
-    private readonly extension: Extension
 
-    constructor(extension: Extension) {
+    constructor(private readonly extension: {
+        readonly commander: Commander
+    }) {
         this.extension = extension
     }
 

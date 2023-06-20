@@ -1,17 +1,14 @@
 import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 import {CmdEnvSuggestion} from '../../providers/completer/command'
-import type {ManagerLocator} from '../../interfaces'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    ManagerLocator { }
 
 export class EnvironmentUpdater {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly manager: Manager
+    }) { }
 
     /**
      * Updates the Manager cache for environments used in `file` with `nodes`.

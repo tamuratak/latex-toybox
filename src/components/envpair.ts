@@ -1,18 +1,14 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { LatexAstManagerLocator } from '../interfaces'
 import { toLuPos, toVscodePosition } from '../utils/utensils'
+import type { LatexAstManager } from './astmanager'
 
-
-interface IExtension extends
-    LatexAstManagerLocator { }
 
 export class EnvPair {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly latexAstManager: LatexAstManager
+    }) { }
 
     /**
      * On a 'begin' or 'end' keyword, moves the cursor to the corresponding 'end/begin'

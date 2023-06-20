@@ -1,12 +1,10 @@
 import type * as vscode from 'vscode'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
-import type { IEventBus, LoggerLocator } from '../interfaces'
 import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter'
+import type { Logger } from './logger'
 
 export type EventName = 'buildfinished' | 'pdfviewerpagesloaded' | 'pdfviewerstatuschanged' | 'rootfilechanged' | 'findrootfileend' | 'completionupdated'
 
-interface IExtension extends
-    LoggerLocator { }
 
 /**
  * EventBus is a component that provides an API for registering callbacks
@@ -18,7 +16,7 @@ interface IExtension extends
  * there is no need to dispose of them during deactivation.
  *
  */
-export class EventBus implements IEventBus {
+export class EventBus {
     /**
      * This event is triggered when the build process is complete,
      * and it includes the name of the root file that was used for the build.
@@ -31,7 +29,9 @@ export class EventBus implements IEventBus {
     readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
     readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
 
-    constructor(extension: IExtension) {
+    constructor(extension: {
+        readonly logger: Logger
+    }) {
         this.allEmitters.forEach((emitter) => {
             emitter.event((arg) => {
                 extension.logger.debug(`Event ${emitter.eventName} triggered. Payload: ${JSON.stringify(arg)}`)

@@ -1,14 +1,6 @@
 import type * as vscode from 'vscode'
 import { ReferenceUpdater } from './referencestorelib/referenceupdater'
-import type { LatexAstManagerLocator, CompleterLocator, EventBusLocator, ExtensionContextLocator, ManagerLocator, ReferenceStoreLocator } from '../interfaces'
 
-interface IExtension extends
-    ExtensionContextLocator,
-    EventBusLocator,
-    CompleterLocator,
-    ManagerLocator,
-    LatexAstManagerLocator,
-    ReferenceStoreLocator { }
 
 export class ReferenceStore {
     readonly refCommandLocationMap: Map<string, vscode.Location[]> = new Map()
@@ -17,7 +9,7 @@ export class ReferenceStore {
     readonly bibitemCommandLocationMap: Map<string, vscode.Location[]> = new Map()
     private readonly referenceUpdater: ReferenceUpdater
 
-    constructor(extension: IExtension) {
+    constructor(extension: ConstructorParameters<typeof ReferenceUpdater>[0]) {
         this.referenceUpdater = new ReferenceUpdater(extension)
     }
 

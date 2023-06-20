@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import type {TexMathEnv} from './mathpreview'
+import type {MathPreview, TexMathEnv} from './mathpreview'
 import {openWebviewPanel} from '../utils/webview'
-import type {Extension} from '../main'
 import { hasTexId } from '../utils/hastexid'
+import type { Logger } from './logger'
 
 
 type UpdateEvent = {
@@ -17,11 +17,12 @@ function resourcesFolder(extensionRoot: string) {
 }
 
 export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer {
-    private readonly extension: Extension
 
-    constructor(extension: Extension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly extensionRoot: string,
+        readonly logger: Logger,
+        readonly mathPreviewPanel: MathPreviewPanel
+    }) { }
 
     deserializeWebviewPanel(panel: vscode.WebviewPanel) {
         this.extension.mathPreviewPanel.initializePanel(panel)
@@ -39,7 +40,6 @@ export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer
 }
 
 export class MathPreviewPanel {
-    private readonly extension: Extension
     private panel?: vscode.WebviewPanel
     private prevDocumentUri?: string
     private prevCursorPosition?: vscode.Position
@@ -47,8 +47,13 @@ export class MathPreviewPanel {
     readonly mathPreviewPanelSerializer: MathPreviewPanelSerializer
     private needCursor: boolean
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly extensionRoot: string,
+        readonly logger: Logger,
+        readonly mathPreview: MathPreview,
+        readonly mathPreviewPanel: MathPreviewPanel
+    }) {
         this.mathPreviewPanelSerializer = new MathPreviewPanelSerializer(extension)
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         this.needCursor = configuration.get('mathpreviewpanel.cursor.enabled', false)

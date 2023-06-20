@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import { latexParser } from 'latex-utensils'
-import { LatexAstManagerLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
 import { Section, SectionKind } from '../structure'
 import { resolveFile } from '../../utils/utils'
 import { buildLaTeXHierarchy } from './sectionnodeproviderlib/structure'
@@ -9,12 +8,10 @@ import { setLastLineOfEachSection } from './sectionnodeproviderlib/utils'
 import { parseRnwChildCommand } from './sectionnodeproviderlib/rnw'
 import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
 import { getDirtyContent } from '../../utils/getdirtycontent'
+import type { Logger } from '../../components/logger'
+import type { Manager } from '../../components/manager'
+import type { LatexAstManager } from '../../components/astmanager'
 
-
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator,
-    LatexAstManagerLocator { }
 
 export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
 
@@ -33,7 +30,11 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     // commands.
     private readonly LaTeXSectionDepths: {[cmd: string]: number} = {}
 
-    constructor(private readonly extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly latexAstManager: LatexAstManager
+    }) {
         this.onDidChangeTreeData = this._onDidChangeTreeData.event
     }
 

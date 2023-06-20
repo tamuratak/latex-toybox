@@ -4,9 +4,11 @@ import { convertFilenameEncoding } from '../../utils/convertfilename'
 import { LatexLogParser } from './latexlogparser'
 import { BibLogParser } from './biblogparser'
 import { existsPath } from '../../lib/lwfs/lwfs'
-import { BuildStepLog } from '../compilerlog'
-import type { CompilerLogLocator, CompleterLocator, LoggerLocator, ManagerLocator } from '../../interfaces'
+import { BuildStepLog, CompilerLog } from '../compilerlog'
 import { getDirtyContent } from '../../utils/getdirtycontent'
+import type { Completer } from '../../providers/completion'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
@@ -38,12 +40,6 @@ export interface LogEntry {
     errorPosText?: string
 }
 
-interface IExtension extends
-    CompilerLogLocator,
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator { }
-
 export class CompilerLogParser {
     private readonly latexLogParser: LatexLogParser
     private readonly bibLogParser: BibLogParser
@@ -53,7 +49,12 @@ export class CompilerLogParser {
      */
     isLaTeXmkSkipped: boolean = false
 
-    constructor(extension: IExtension) {
+    constructor(extension: {
+        readonly compilerLog: CompilerLog,
+        readonly completer: Completer,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         this.latexLogParser = new LatexLogParser(extension)
         this.bibLogParser = new BibLogParser(extension)
     }

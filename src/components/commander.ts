@@ -1,15 +1,14 @@
 import * as vscode from 'vscode'
-import type { ExtensionContextLocator, ManagerLocator } from '../interfaces'
+import type { Manager } from './manager'
 
-
-interface IExtension extends
-    ExtensionContextLocator,
-    ManagerLocator { }
 
 export class LaTeXCommanderTreeView {
     private readonly latexCommanderProvider: LaTeXCommanderProvider
 
-    constructor(extension: IExtension) {
+    constructor(extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly manager: Manager
+    }) {
         this.latexCommanderProvider = new LaTeXCommanderProvider(extension)
         extension.extensionContext.subscriptions.push(
             vscode.window.createTreeView(
@@ -28,12 +27,14 @@ export class LaTeXCommanderTreeView {
 }
 
 class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
-    private readonly extension: IExtension
     private readonly treeDataEventEmitter: vscode.EventEmitter<LaTeXCommand | undefined> = new vscode.EventEmitter<LaTeXCommand | undefined>()
     readonly onDidChangeTreeData: vscode.Event<LaTeXCommand | undefined>
     private commands: LaTeXCommand[] = []
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly manager: Manager
+    }) {
         this.extension = extension
         this.onDidChangeTreeData = this.treeDataEventEmitter.event
         extension.extensionContext.subscriptions.push(

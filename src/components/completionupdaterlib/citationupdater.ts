@@ -1,17 +1,15 @@
 import * as vscode from 'vscode'
-import type {LoggerLocator, ManagerLocator } from '../../interfaces'
 import {CiteSuggestion, Fields} from '../../providers/completer/citation'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
 
 export class CitationUpdater {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) { }
 
     /**
      * Updates the Manager cache for bibitems defined in `file`.

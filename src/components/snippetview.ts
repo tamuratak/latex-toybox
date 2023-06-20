@@ -3,8 +3,8 @@ import {readFileSync} from 'fs'
 import * as path from 'path'
 
 import {replaceWebviewPlaceholders} from '../utils/webview'
-import { ExtensionContextLocator, ExtensionRootLocator, ISnippetView, ManagerLocator } from '../interfaces'
 import { hasTexId } from '../utils/hastexid'
+import { Manager } from './manager'
 
 
 type SnippetViewResult = RenderResult | {
@@ -18,15 +18,10 @@ type RenderResult = {
     data: string | undefined
 }
 
-interface IExtension extends
-    ExtensionContextLocator,
-    ExtensionRootLocator,
-    ManagerLocator { }
-
-export class SnippetView implements ISnippetView {
+export class SnippetView {
     readonly snippetViewProvider: SnippetViewProvider
 
-    constructor(extension: IExtension) {
+    constructor(extension: ConstructorParameters<typeof SnippetViewProvider>[0]) {
         this.snippetViewProvider = new SnippetViewProvider(extension)
     }
 
@@ -67,13 +62,15 @@ export class SnippetView implements ISnippetView {
 
 
 class SnippetViewProvider implements vscode.WebviewViewProvider {
-    private readonly extension: IExtension
     private view: vscode.WebviewView | undefined
     private lastActiveTextEditor: vscode.TextEditor | undefined
     private readonly cbSet = new Set<(e: SnippetViewResult) => void>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly extensionRoot: string,
+        readonly manager: Manager
+    }) {
         const editor = vscode.window.activeTextEditor
         if (editor && hasTexId(editor.document.languageId)) {
             this.lastActiveTextEditor = editor

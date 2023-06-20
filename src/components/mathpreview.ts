@@ -11,18 +11,14 @@ import {NewCommandFinder} from './mathpreviewlib/newcommandfinder'
 import {TexMathEnv, TeXMathEnvFinder} from './mathpreviewlib/texmathenvfinder'
 import {HoverPreviewOnRefProvider} from './mathpreviewlib/hoverpreviewonref'
 import {MathPreviewUtils} from './mathpreviewlib/mathpreviewutils'
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../interfaces'
+import { Logger } from './logger'
+import { Manager } from './manager'
+import { UtensilsParser } from './utensilsparser'
 
 export type {TexMathEnv} from './mathpreviewlib/texmathenvfinder'
 
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator,
-    UtensilsParserLocator { }
-
 export class MathPreview {
-    private readonly extension: IExtension
     private color: string = '#000000'
     private readonly mj: MathJaxPool
     private readonly cursorRenderer: CursorRenderer
@@ -31,8 +27,11 @@ export class MathPreview {
     private readonly hoverPreviewOnRefProvider: HoverPreviewOnRefProvider
     private readonly mputils: MathPreviewUtils
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly utensilsParser: UtensilsParser
+    }) {
         this.mj = new MathJaxPool()
         vscode.workspace.onDidChangeConfiguration(() => this.getColor())
         this.cursorRenderer = new CursorRenderer(extension)

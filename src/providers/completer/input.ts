@@ -5,21 +5,19 @@ import * as micromatch from 'micromatch'
 
 import type {IProvider} from './interface'
 import {stripCommentsAndVerbatim} from '../../utils/utils'
-import type {LoggerLocator, ManagerLocator} from '../../interfaces'
+import type { Manager } from '../../components/manager'
+import type { Logger } from '../../components/logger'
+
 
 const ignoreFiles = ['**/.vscode', '**/.vscodeignore', '**/.gitignore']
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
-
 abstract class AbstractInput implements IProvider {
-    protected readonly extension: IExtension
     graphicsPath: string[] = []
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(protected readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) { }
 
     /**
      * Compute the base directory for file completion
@@ -146,7 +144,7 @@ abstract class AbstractInput implements IProvider {
 
 export class Input extends AbstractInput {
 
-    constructor(extension: IExtension) {
+    constructor(extension: ConstructorParameters<typeof AbstractInput>[0]) {
         super(extension)
     }
 
@@ -190,7 +188,7 @@ export class Input extends AbstractInput {
 
 export class Import extends AbstractInput {
 
-    constructor(extension: IExtension) {
+    constructor(extension: ConstructorParameters<typeof AbstractInput>[0]) {
         super(extension)
     }
 
@@ -210,7 +208,7 @@ export class Import extends AbstractInput {
 
 export class SubImport extends AbstractInput {
 
-    constructor(extension: IExtension) {
+    constructor(extension: ConstructorParameters<typeof AbstractInput>[0]) {
         super(extension)
     }
 

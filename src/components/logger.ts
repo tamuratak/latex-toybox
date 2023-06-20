@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
-import type {ILogger} from '../interfaces'
+import { ILogger } from '../interfaces'
+
 
 export class Logger implements ILogger {
     private readonly logPanel: vscode.LogOutputChannel

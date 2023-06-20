@@ -5,19 +5,20 @@ import * as os from 'os'
 import type { ILinter } from '../linter'
 import { LinterUtil } from './linterutil'
 import { convertFilenameEncoding } from '../../utils/convertfilename'
-import type {LoggerLocator, ManagerLocator} from '../../interfaces'
 import { existsPath, readFilePath } from '../../lib/lwfs/lwfs'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
 
 export class ChkTeX implements ILinter {
     readonly #linterName = 'ChkTeX'
     readonly linterDiagnostics: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection(this.#linterName)
     readonly #linterUtil: LinterUtil
 
-    constructor(private readonly extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         this.#linterUtil = new LinterUtil(extension)
     }
 

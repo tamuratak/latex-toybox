@@ -5,8 +5,8 @@ import * as zlib from 'zlib'
 import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../../lib/synctexjs/synctexjs'
 import {iconvLiteSupportedEncodings} from '../../utils/convertfilename'
 import {isSameRealPath} from '../../utils/pathnormalize'
-import type {LoggerLocator} from '../../interfaces'
 import { existsPath, readFileAsBuffer } from '../../lib/lwfs/lwfs'
+import type { ILogger } from '../../interfaces'
 
 
 class Rectangle {
@@ -71,14 +71,11 @@ class Rectangle {
     }
 }
 
-interface IExtension extends LoggerLocator { }
-
 export class SyncTexJs {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly logger: ILogger
+    }) { }
 
     async parseSyncTexForPdf(pdfFile: string) {
         const filename = path.basename(pdfFile, path.extname(pdfFile))

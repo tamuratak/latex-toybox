@@ -1,23 +1,23 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { LatexAstManagerLocator, EventBusLocator, ExtensionContextLocator, ManagerLocator, ReferenceStoreLocator } from '../../interfaces'
 import { MutexWithSizedQueue } from '../../utils/mutexwithsizedqueue'
 import { toVscodeRange } from '../../utils/utensils'
+import type { EventBus } from '../eventbus'
+import type { Manager } from '../manager'
+import type { LatexAstManager } from '../astmanager'
+import type { ReferenceStore } from '../referencestore'
 
-
-interface IExtension extends
-    ExtensionContextLocator,
-    EventBusLocator,
-    ManagerLocator,
-    LatexAstManagerLocator,
-    ReferenceStoreLocator { }
 
 export class ReferenceUpdater {
-    private readonly extension: IExtension
     private readonly mutex = new MutexWithSizedQueue(1)
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly eventBus: EventBus,
+        readonly manager: Manager,
+        readonly latexAstManager: LatexAstManager,
+        readonly referenceStore: ReferenceStore
+    }) {
         extension.extensionContext.subscriptions.push(
             this.extension.eventBus.rootFileChanged.event(() => {
                 void this.update()

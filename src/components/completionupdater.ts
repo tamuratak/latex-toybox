@@ -6,26 +6,28 @@ import {EnvironmentUpdater} from './completionupdaterlib/environmentupdater'
 import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupdater'
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
-import type { LatexAstManagerLocator, CompleterLocator, EventBusLocator, ICompleteionUpdater, LoggerLocator, ManagerLocator } from '../interfaces'
 import { statPath } from '../lib/lwfs/lwfs'
+import type { EventBus } from './eventbus'
+import type { Completer } from '../providers/completion'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
+import type { LatexAstManager } from './astmanager'
 
-interface IExtension extends
-    EventBusLocator,
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator,
-    LatexAstManagerLocator { }
 
-export class CompletionUpdater implements ICompleteionUpdater {
-    private readonly extension: IExtension
+export class CompletionUpdater {
     private readonly citationUpdater: CitationUpdater
     private readonly commandUpdater: CommandUpdater
     private readonly environmentUpdater: EnvironmentUpdater
     private readonly referenceUpdater: LabelDefinitionUpdater
     private readonly glossaryUpdater: GlossaryUpdater
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly eventBus: EventBus,
+        readonly completer: Completer,
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly latexAstManager: LatexAstManager
+    }) {
         this.environmentUpdater = new EnvironmentUpdater(extension)
         this.citationUpdater = new CitationUpdater(extension)
         this.commandUpdater = new CommandUpdater(extension)

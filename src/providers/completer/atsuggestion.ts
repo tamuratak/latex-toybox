@@ -2,9 +2,9 @@ import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
 import {escapeRegExp} from '../../utils/utils'
-import type {ExtensionRootLocator} from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
+
 
 export interface AtSuggestionItemEntry {
     readonly prefix: string,
@@ -14,17 +14,18 @@ export interface AtSuggestionItemEntry {
 
 type DataAtSuggestionJsonType = typeof import('../../../data/at-suggestions.json')
 
-interface IExtension extends
-    ExtensionRootLocator { }
-
 export class AtSuggestion implements IProvider {
-    private readonly extension: IExtension
     private readonly triggerCharacter: string
     private readonly escapedTriggerCharacter: string
     private readonly suggestions: vscode.CompletionItem[] = []
     readonly #readyPromise = new ExternalPromise<void>()
 
-    constructor(extension: IExtension, triggerCharacter: string) {
+    constructor(
+        private readonly extension: {
+            readonly extensionRoot: string
+        },
+        triggerCharacter: string
+    ) {
         this.extension = extension
         this.triggerCharacter = triggerCharacter
         this.escapedTriggerCharacter = escapeRegExp(this.triggerCharacter)

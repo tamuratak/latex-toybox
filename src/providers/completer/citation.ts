@@ -4,8 +4,10 @@ import {trimMultiLineString} from '../../utils/utils'
 import type {ILwCompletionItem} from './interface'
 
 import type {IProvider} from './interface'
-import type {BibtexAstManagerLocator, ICitation, LoggerLocator, ManagerLocator } from '../../interfaces'
 import { toVscodePosition } from '../../utils/utensils'
+import type { BibtexAstManager } from '../../components/astmanager'
+import type { Logger } from '../../components/logger'
+import type { Manager } from '../../components/manager'
 
 
 export class Fields extends Map<string, string> {
@@ -64,19 +66,14 @@ export interface CiteSuggestion {
     readonly position: vscode.Position
 }
 
-
-interface IExtension extends
-    BibtexAstManagerLocator,
-    LoggerLocator,
-    ManagerLocator { }
-
-export class Citation implements IProvider, ICitation {
-    private readonly extension: IExtension
+export class Citation implements IProvider {
     private readonly bibEntries = new Map<string, CiteSuggestion[]>() // key: filePath
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly bibtexAstManager: BibtexAstManager,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) { }
 
     provideFrom(_result: RegExpMatchArray, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         return this.provide(args)

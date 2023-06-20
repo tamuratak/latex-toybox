@@ -1,14 +1,12 @@
 import * as vscode from 'vscode'
-import type { ExtensionContextLocator, ILwStatusBarItem } from '../interfaces'
 
 
-interface IExtension extends
-    ExtensionContextLocator { }
-
-export class LwStatusBarItem implements ILwStatusBarItem {
+export class LwStatusBarItem {
     private readonly status: vscode.StatusBarItem
 
-    constructor(extension: IExtension) {
+    constructor(extension: {
+        readonly extensionContext: vscode.ExtensionContext
+    }) {
         this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10000)
         this.status.command = 'latex-workshop.log'
         this.status.show()

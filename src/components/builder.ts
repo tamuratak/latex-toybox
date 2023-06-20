@@ -5,8 +5,13 @@ import * as cp from 'child_process'
 import * as cs from 'cross-spawn'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 
-import type {CompilerLogLocator, EventBusLocator, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ViewerLocator} from '../interfaces'
 import { MaxWaitingLimitError, MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
+import type { EventBus } from './eventbus'
+import type { Logger } from './logger'
+import type { CompilerLog } from './compilerlog'
+import type { Manager } from './manager'
+import type { LwStatusBarItem } from './statusbaritem'
+import type { Viewer } from './viewer'
 
 const maxPrintLine = '10000'
 
@@ -26,24 +31,20 @@ interface Recipe {
     tools: (string | StepCommand)[]
 }
 
-interface IExtension extends
-    EventBusLocator,
-    LoggerLocator,
-    CompilerLogLocator,
-    ManagerLocator,
-    LwStatusBarItemLocator,
-    ViewerLocator { }
-
 export class Builder {
-    private readonly extension: IExtension
     private currentProcess: cp.ChildProcessWithoutNullStreams | undefined
     private readonly buildMutex = new MutexWithSizedQueue(1)
     private previouslyUsedRecipe: Recipe | undefined
     private previousLanguageId: string | undefined
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        eventBus: EventBus,
+        logger: Logger,
+        compilerLog: CompilerLog,
+        manager: Manager,
+        statusbaritem: LwStatusBarItem,
+        viewer: Viewer
+    }) { }
 
     /**
      * Kill the current building process.

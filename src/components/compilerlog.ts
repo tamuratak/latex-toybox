@@ -1,7 +1,9 @@
 import * as vscode from 'vscode'
-import type { CompilerLogLocator, CompleterLocator, ExtensionContextLocator, ICompilerLog, LoggerLocator, ManagerLocator } from '../interfaces'
 import type { StepCommand } from './builder'
 import { CompilerLogParser, LogEntry } from './compilerloglib/core'
+import type { Completer } from '../providers/completion'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
 
 export class BuildStepLog {
     private buffer: string = ''
@@ -52,18 +54,18 @@ export class BuildStepLog {
 
 }
 
-interface IExtension extends
-    ExtensionContextLocator,
-    CompilerLogLocator,
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator { }
 
-export class CompilerLog implements ICompilerLog {
+export class CompilerLog {
     private readonly compilerLogParser: CompilerLogParser
     private stepLogs: BuildStepLog[] = []
 
-    constructor(extension: IExtension) {
+    constructor(extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly compilerLog: CompilerLog,
+        readonly completer: Completer,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         this.compilerLogParser = new CompilerLogParser(extension)
         extension.extensionContext.subscriptions.push(
             new vscode.Disposable(() => this.dispose())

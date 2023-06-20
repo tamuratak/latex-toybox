@@ -7,23 +7,26 @@ import type {PdfViewerManagerService} from './pdfviewermanager'
 import { getNonce } from '../../utils/getnonce'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
-import type { EventBusLocator, ExtensionRootLocator, LoggerLocator, ServerLocator } from '../../interfaces'
+import { EventBus } from '../eventbus'
+import { Logger } from '../logger'
+import { Server } from '../server'
 
-
-interface IExtension extends
-    ExtensionRootLocator,
-    EventBusLocator,
-    LoggerLocator,
-    ServerLocator { }
 
 export class PdfViewerPanel {
-    private readonly extension: IExtension
     readonly webviewPanel: vscode.WebviewPanel
     readonly pdfFileUri: vscode.Uri
     #state: PdfViewerState | undefined
 
-    constructor(extension: IExtension, pdfFileUri: vscode.Uri, panel: vscode.WebviewPanel) {
-        this.extension = extension
+    constructor(
+        private readonly extension: {
+            readonly extensionRoot: string,
+            readonly eventBus: EventBus,
+            readonly logger: Logger,
+            readonly server: Server
+        },
+        pdfFileUri: vscode.Uri,
+        panel: vscode.WebviewPanel
+    ) {
         this.pdfFileUri = pdfFileUri
         this.webviewPanel = panel
         panel.webview.onDidReceiveMessage((msg: PanelRequest) => {
@@ -51,11 +54,19 @@ export class PdfViewerPanel {
 }
 
 export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
-    private readonly extension: IExtension
     private readonly panelService: PdfViewerPanelService
     private readonly managerService: PdfViewerManagerService
 
-    constructor(extension: IExtension, panelService: PdfViewerPanelService, service: PdfViewerManagerService) {
+    constructor(
+        private readonly extension: {
+            readonly extensionRoot: string,
+            readonly eventBus: EventBus,
+            readonly logger: Logger,
+            readonly server: Server
+        },
+        panelService: PdfViewerPanelService,
+        service: PdfViewerManagerService
+    ) {
         this.extension = extension
         this.panelService = panelService
         this.managerService = service
@@ -97,12 +108,9 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
 }
 
 export class PdfViewerPanelService {
-    private readonly extension: IExtension
     private alreadyOpened = false
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: ConstructorParameters<typeof PdfViewerPanel>[0]) { }
 
     private async tweakForCodespaces(url: vscode.Uri) {
         if (this.alreadyOpened) {

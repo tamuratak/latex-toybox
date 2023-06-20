@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import type { IAstManager, UtensilsParserLocator } from '../interfaces'
 import { readFile } from '../lib/lwfs/lwfs'
 import type { LatexAst, BibtexAst } from '../utils/utensils'
 import { AstStore } from './astmanagerlib/aststore'
+import type { UtensilsParser } from './utensilsparser'
 
 
 /**
@@ -12,7 +12,7 @@ import { AstStore } from './astmanagerlib/aststore'
  * cached as a Promise<AST>, and the methods immediately return this promise.
  * At this point, the execution of parsing is delayed.
  */
-export abstract class AstManagerBase<Ast> implements IAstManager<Ast> {
+export abstract class AstManagerBase<Ast> {
     private readonly astStore: AstStore<Ast>
 
     constructor() {
@@ -52,15 +52,13 @@ export abstract class AstManagerBase<Ast> implements IAstManager<Ast> {
 
 }
 
-interface IExtension extends
-    UtensilsParserLocator { }
 
 export class LatexAstManager extends AstManagerBase<LatexAst> {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly utensilsParser: UtensilsParser
+    }) {
         super()
-        this.extension = extension
     }
 
     async doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined) {
@@ -72,11 +70,11 @@ export class LatexAstManager extends AstManagerBase<LatexAst> {
 }
 
 export class BibtexAstManager extends AstManagerBase<BibtexAst> {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly utensilsParser: UtensilsParser
+    }) {
         super()
-        this.extension = extension
     }
 
     async doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined) {

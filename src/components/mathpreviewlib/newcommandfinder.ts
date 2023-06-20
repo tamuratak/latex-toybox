@@ -3,21 +3,20 @@ import {latexParser} from 'latex-utensils'
 import {stripCommentsAndVerbatim, isNewCommand, NewCommand} from '../../utils/utils'
 import * as path from 'path'
 
-import type {LoggerLocator, ManagerLocator, UtensilsParserLocator} from '../../interfaces'
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
 import { getDirtyContent } from '../../utils/getdirtycontent'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
+import type { UtensilsParser } from '../utensilsparser'
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator,
-    UtensilsParserLocator { }
 
 export class NewCommandFinder {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly utensilsParser: UtensilsParser
+    }) { }
 
     private postProcessNewCommands(commands: string): string {
         return commands.replace(/\\providecommand/g, '\\newcommand')

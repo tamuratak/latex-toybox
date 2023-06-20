@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 
 import type {IProvider, ILwCompletionItem} from './interface'
-import type {ManagerLocator} from '../../interfaces'
+import type { Manager } from '../../components/manager'
+
 
 export enum GlossaryType {
     glossary,
@@ -14,18 +15,14 @@ export interface GlossarySuggestion extends ILwCompletionItem {
     position: vscode.Position
 }
 
-interface IExtension extends
-    ManagerLocator { }
-
 export class Glossary implements IProvider {
-    private readonly extension: IExtension
     // use object for deduplication
     private readonly glossaries = new Map<string, GlossarySuggestion>()
     private readonly acronyms = new Map<string, GlossarySuggestion>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        manager: Manager
+    }) { }
 
     provideFrom(result: RegExpMatchArray) {
         return this.provide(result)
