@@ -1,15 +1,6 @@
-# Visual Studio Code LaTeX Workshop Extension
+# LaTeX Toybox
 
-LaTeX Workshop is an extension for [Visual Studio Code](https://code.visualstudio.com/), aiming to provide core features for LaTeX typesetting with Visual Studio Code.
-
-This project won't be successful without contributions from the community, especially from the current and past key contributors:
-
-- Jerome Lelong [`@jlelong`](https://github.com/jlelong)
-- Takashi Tamura [`@tamuratak`](https://github.com/tamuratak)
-- Tecosaur [`@tecosaur`](https://github.com/tecosaur)
-- James Booth [`@jabooth`](https://github.com/jabooth)
-
-Thank you so much!
+This is a fork of [LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop) created to provide novel and experimental features. I started this endeavor to joyfully implement creative ideas. I hope that through this initiative, the LaTeX ecosystem will become even more enriched.
 
 ## Context Aware IntelliSense
 
@@ -32,6 +23,16 @@ https://user-images.githubusercontent.com/10665499/225462508-0f7d70e6-8ffe-4457-
 ### Adding Command
 
 https://user-images.githubusercontent.com/10665499/225464584-1b9c5479-ce6a-4a56-a205-0b09a9c2cfc7.mov
+
+## Removed features
+
+I removed some features that LaTeX Workshop has in order to save maintenance time and to focus on implementing new features.
+
+- Cleaning auxiliary files
+- Magic comment support
+- Creating temporary directory to build
+- Formatting LaTeX documents
+- Counting words
 
 ## License
 
