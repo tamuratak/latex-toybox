@@ -6,9 +6,11 @@ import {replaceArgumentPlaceholders} from '../utils/utils'
 import {isSameRealPath} from '../utils/pathnormalize'
 
 import type {ClientRequest} from '../../types/latex-workshop-protocol-types'
-import type { ILocator, LoggerLocator, ManagerLocator, ViewerLocator } from '../interfaces'
 import { existsPath } from '../lib/lwfs/lwfs'
 import { hasTexId } from '../utils/hastexid'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
+import type { Viewer } from './viewer'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -22,16 +24,14 @@ export type SyncTeXRecordBackward = {
     column: number
 }
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator,
-    ViewerLocator { }
-
-export class Locator implements ILocator {
-    private readonly extension: IExtension
+export class Locator {
     private readonly synctexjs: SyncTexJs
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly viewer: Viewer
+    }) {
         this.extension = extension
         this.synctexjs = new SyncTexJs(extension)
     }

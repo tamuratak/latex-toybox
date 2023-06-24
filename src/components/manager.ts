@@ -3,11 +3,9 @@ import * as path from 'path'
 import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
 
-import type {Extension} from '../main'
 import type {CmdEnvSuggestion} from '../providers/completer/command'
 import type {CiteSuggestion} from '../providers/completer/citation'
 import type {GlossarySuggestion} from '../providers/completer/glossary'
-import type {IManager} from '../interfaces'
 
 import {PdfWatcher} from './managerlib/pdfwatcher'
 import {BibWatcher} from './managerlib/bibwatcher'
@@ -24,6 +22,13 @@ import { getTeXChildren } from './managerlib/gettexchildren'
 import { findWorkspace, isExcluded } from './managerlib/utils'
 import { getDirtyContent } from '../utils/getdirtycontent'
 import { inferLanguageId, isTexOrWeaveFile } from '../utils/hastexid'
+import type { Logger } from './logger'
+import type { Viewer } from './viewer'
+import type { Completer } from '../providers/completion'
+import type { EventBus } from './eventbus'
+import type { Commander } from '../commander'
+import type { DuplicateLabels } from './duplicatelabels'
+import type { CompletionUpdater } from './completionupdater'
 
 
 /**
@@ -83,7 +88,7 @@ type RootFileType = {
 /**
  * Responsible for determining the root file, managing the watcher, and parsing .aux and .fls files.
  */
-export class Manager implements IManager {
+export class Manager {
     // key: filePath
     private readonly cachedContent = new Map<string, CachedContentEntry>()
 
@@ -91,7 +96,6 @@ export class Manager implements IManager {
     private _rootFileLanguageId: string | undefined
     private _rootFile: RootFileType | undefined
 
-    private readonly extension: Extension
     private readonly lwFileWatcher: LwFileWatcher
     // key: filePath
     private readonly watchedFiles = new Set<string>()
@@ -105,8 +109,17 @@ export class Manager implements IManager {
     private readonly updateCompleterMutex = new MutexWithSizedQueue(1)
     private readonly updateContentEntryMutex = new MutexWithSizedQueue(1)
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly eventBus: EventBus,
+        readonly commander: Commander,
+        readonly completer: Completer,
+        readonly completionUpdater: CompletionUpdater,
+        readonly duplicateLabels: DuplicateLabels,
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly viewer: Viewer
+    }) {
 
         const lwFileWatcher = new LwFileWatcher()
         this.lwFileWatcher = lwFileWatcher

@@ -1,18 +1,22 @@
 import * as vscode from 'vscode'
 
-import type {Extension} from '../../main'
 import { toKey } from '../../utils/tokey'
-import { LwFileWatcher } from './lwfilewatcher'
+import type { LwFileWatcher } from './lwfilewatcher'
+import type { Completer } from '../../providers/completion'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
 
 export class BibWatcher {
-    private readonly extension: Extension
     private readonly watchedBibs = new Set<string>()
-    private readonly lwFileWatcher: LwFileWatcher
 
-    constructor(extension: Extension, watcher: LwFileWatcher) {
-        this.extension = extension
-        this.lwFileWatcher = watcher
-        this.initiateBibwatcher(watcher)
+    constructor(
+        private readonly extension: {
+            readonly completer: Completer,
+            readonly logger: Logger,
+            readonly manager: Manager
+        },
+        private readonly lwFileWatcher: LwFileWatcher) {
+        this.initiateBibwatcher(lwFileWatcher)
     }
 
     initiateBibwatcher(watcher: LwFileWatcher) {

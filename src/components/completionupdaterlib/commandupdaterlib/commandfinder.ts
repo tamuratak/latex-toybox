@@ -1,21 +1,18 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import type { CompleterLocator, ManagerLocator } from '../../../interfaces'
 import { CmdEnvSuggestion } from '../../../providers/completer/command'
 import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completer/commandlib/commandlib'
+import { Completer } from '../../../providers/completion'
+import { Manager } from '../../manager'
 
-
-interface IExtension extends
-    CompleterLocator,
-    ManagerLocator { }
 
 export class CommandFinder {
-    private readonly extension: IExtension
     definedCmds = new Map<string, {file: string, location: vscode.Location}>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly manager: Manager
+    }) { }
 
     getCmdFromNodeArray(file: string, nodes: latexParser.Node[], commandNameDuplicationDetector: CommandNameDuplicationDetector): CmdEnvSuggestion[] {
         let cmds: CmdEnvSuggestion[] = []

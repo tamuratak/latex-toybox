@@ -2,20 +2,18 @@ import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
 import { TexMathEnv } from './texmathenvfinder'
 
-import type { UtensilsParserLocator } from '../../interfaces'
 import type { ITextDocumentLike } from './textdocumentlike'
 import { convertPositionToOffset, findPrevNextNode, toLuPos } from '../../utils/utensils'
+import type { UtensilsParser } from '../utensilsparser'
 
-interface IExtension extends UtensilsParserLocator { }
 
 export class CursorRenderer {
-    private readonly extension: IExtension
     private currentTeXString: string | undefined
     private currentAst: latexParser.LatexAst | undefined
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly utensilsParser: UtensilsParser
+    }) { }
 
     // Test whether cursor is in tex command strings
     // like \begin{...} \end{...} \xxxx{ \[ \] \( \) or \\

@@ -4,22 +4,22 @@ import {performance} from 'perf_hooks'
 
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
-import type {BibtexAstManagerLocator, LoggerLocator, LwStatusBarItemLocator } from '../interfaces'
 import { toVscodeRange } from '../utils/utensils'
+import { BibtexAstManager } from '../components/astmanager'
+import { Logger } from '../components/logger'
+import { LwStatusBarItem } from '../components/statusbaritem'
 
-interface IExtension extends
-    BibtexAstManagerLocator,
-    LoggerLocator,
-    LwStatusBarItemLocator { }
 
 export class BibtexFormatter {
 
-    private readonly extension: IExtension
     readonly duplicatesDiagnostics: vscode.DiagnosticCollection
     diags: vscode.Diagnostic[]
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly bibtexAstManager: BibtexAstManager,
+        readonly logger: Logger,
+        readonly statusbaritem: LwStatusBarItem
+    }) {
         this.duplicatesDiagnostics = vscode.languages.createDiagnosticCollection('BibTeX')
         this.diags = []
     }
@@ -145,10 +145,8 @@ export class BibtexFormatter {
 
 export class BibtexFormatterProvider implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
     private readonly formatter: BibtexFormatter
-    extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: ConstructorParameters<typeof BibtexFormatter>[0]) {
         this.formatter = new BibtexFormatter(extension)
     }
 

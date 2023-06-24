@@ -1,16 +1,14 @@
 import * as vscode from 'vscode'
-import type { CompleterLocator, ReferenceStoreLocator } from '../interfaces'
+import type { Completer } from './completion'
+import type { ReferenceStore } from '../components/referencestore'
 
-interface IExtension extends
-    CompleterLocator,
-    ReferenceStoreLocator { }
 
 export class ReferenceProvider implements vscode.ReferenceProvider {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly referenceStore: ReferenceStore
+    }) { }
 
     private get labelCommandLocationMap() {
         return this.extension.referenceStore.labelCommandLocationMap

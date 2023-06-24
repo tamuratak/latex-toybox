@@ -3,19 +3,17 @@ import * as path from 'path'
 import * as cs from 'cross-spawn'
 import * as utils from '../../utils/utils'
 
-import type {LoggerLocator, ManagerLocator} from '../../interfaces'
 import { existsPath } from '../../lib/lwfs/lwfs'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
 
 export class PathUtils {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) { }
 
     private get rootDir() {
         return this.extension.manager.rootDir

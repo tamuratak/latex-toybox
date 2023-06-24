@@ -29,7 +29,6 @@ import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
 import {SelectionRangeProvider} from './providers/selection'
 import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
-import type {ExtensionRootLocator, LoggerLocator, ManagerLocator, UtensilsParserLocator, CompleterLocator, ViewerLocator, CompletionUpdaterLocator, EventBusLocator, ReferenceStoreLocator, ExtensionContextLocator, LwStatusBarItemLocator, CompilerLogLocator, SnippetViewLocator, ServerLocator, LocatorLocator, LatexAstManagerLocator, BibtexAstManagerLocator} from './interfaces'
 import { ReferenceStore } from './components/referencestore'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
@@ -55,7 +54,13 @@ function selectDocumentsWithId(ids: string[]): vscode.DocumentSelector {
    return selector
 }
 
-function registerLatexWorkshopCommands(extension: Extension, context: vscode.ExtensionContext) {
+function registerLatexWorkshopCommands(
+    extension: {
+        readonly bibtexFormatter: BibtexFormatter,
+        readonly commander: Commander
+    },
+    context: vscode.ExtensionContext
+) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('latex-workshop.saveWithoutBuilding', () => extension.commander.saveWithoutBuilding()),
@@ -178,8 +183,8 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     }
 
     context.subscriptions.push(
-        vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider(extension)),
-        vscode.languages.registerFoldingRangeProvider(weaveSelector, new WeaveFoldingProvider(extension))
+        vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider()),
+        vscode.languages.registerFoldingRangeProvider(weaveSelector, new WeaveFoldingProvider())
     )
 
     const selectionLatex = configuration.get('selection.smart.latex.enabled', true)
@@ -196,26 +201,7 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     )
 }
 
-interface IExtension extends
-    ExtensionContextLocator,
-    ExtensionRootLocator,
-    EventBusLocator,
-    CompleterLocator,
-    CompletionUpdaterLocator,
-    LoggerLocator,
-    CompilerLogLocator,
-    LwStatusBarItemLocator,
-    ManagerLocator,
-    ReferenceStoreLocator,
-    SnippetViewLocator,
-    UtensilsParserLocator,
-    LatexAstManagerLocator,
-    BibtexAstManagerLocator,
-    ViewerLocator,
-    LocatorLocator,
-    ServerLocator { }
-
-export class Extension implements IExtension {
+class Extension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger

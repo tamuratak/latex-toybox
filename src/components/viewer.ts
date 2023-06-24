@@ -3,7 +3,7 @@ import type ws from 'ws'
 import * as path from 'path'
 import * as cs from 'cross-spawn'
 
-import type {SyncTeXRecordForward} from './locator'
+import type {Locator, SyncTeXRecordForward} from './locator'
 import {openWebviewPanel} from '../utils/webview'
 import {getCurrentThemeLightness} from '../utils/theme'
 
@@ -12,30 +12,31 @@ import type {ClientRequest, PdfViewerParams, PdfViewerState} from '../../types/l
 import {Client} from './viewerlib/client'
 import {PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService} from './viewerlib/pdfviewerpanel'
 import {PdfViewerManagerService} from './viewerlib/pdfviewermanager'
-import type {EventBusLocator, ExtensionContextLocator, ExtensionRootLocator, IViewer, LocatorLocator, LoggerLocator, LwStatusBarItemLocator, ManagerLocator, ServerLocator} from '../interfaces'
 import * as lwfs from '../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../utils/encodepdffilepath'
+import type { EventBus } from './eventbus'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
+import type { Server } from './server'
+import type { LwStatusBarItem } from './statusbaritem'
 export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
 
 
-interface IExtension extends
-    ExtensionRootLocator,
-    ExtensionContextLocator,
-    EventBusLocator,
-    LocatorLocator,
-    LoggerLocator,
-    ManagerLocator,
-    ServerLocator,
-    LwStatusBarItemLocator { }
-
-export class Viewer implements IViewer {
-    private readonly extension: IExtension
+export class Viewer {
     readonly pdfViewerPanelSerializer: PdfViewerPanelSerializer
     private readonly panelService: PdfViewerPanelService
     private readonly managerService: PdfViewerManagerService
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly extensionRoot: string,
+        readonly eventBus: EventBus,
+        readonly locator: Locator,
+        readonly logger: Logger,
+        readonly manager: Manager,
+        readonly server: Server,
+        readonly statusbaritem: LwStatusBarItem
+    }) {
         this.panelService = new PdfViewerPanelService(extension)
         this.managerService = new PdfViewerManagerService(extension)
         this.pdfViewerPanelSerializer = new PdfViewerPanelSerializer(extension, this.panelService, this.managerService)

@@ -1,8 +1,10 @@
 import * as vscode from 'vscode'
 
-import type { Extension } from '../main'
 import { SectionNodeProvider } from './structurelib/sectionnodeprovider'
 import { hasTexId } from '../utils/hastexid'
+import { Logger } from '../components/logger'
+import { EventBus } from '../components/eventbus'
+
 
 export enum SectionKind {
     Env = 0,
@@ -32,13 +34,15 @@ export class Section extends vscode.TreeItem {
 }
 
 export class StructureTreeView {
-    private readonly extension: Extension
     private readonly treeView: vscode.TreeView<Section | undefined>
     private readonly sectionNodeProvider: SectionNodeProvider
     private followCursor: boolean = true
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly eventBus: EventBus,
+        readonly logger: Logger
+    } & ConstructorParameters<typeof SectionNodeProvider>[0]) {
         this.sectionNodeProvider = new SectionNodeProvider(extension)
         this.treeView = vscode.window.createTreeView('latex-workshop-structure', { treeDataProvider: this.sectionNodeProvider, showCollapseAll: true })
 

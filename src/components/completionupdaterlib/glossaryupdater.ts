@@ -1,24 +1,20 @@
 import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 
-import type {ManagerLocator} from '../../interfaces'
 import {GlossarySuggestion, GlossaryType} from '../../providers/completer/glossary'
 import { toVscodePosition } from '../../utils/utensils'
+import { Manager } from '../manager'
 
 interface GlossaryEntry {
     label: string | undefined,
     description: string | undefined
 }
 
-interface IExtension extends
-    ManagerLocator { }
-
 export class GlossaryUpdater {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly manager: Manager
+    }) { }
 
     private getGlossaryFromNodeArray(nodes: latexParser.Node[], file: string): GlossarySuggestion[] {
         const glossaries: GlossarySuggestion[] = []

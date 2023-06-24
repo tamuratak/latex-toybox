@@ -2,21 +2,18 @@ import * as vscode from 'vscode'
 import type ws from 'ws'
 
 import { toKey } from '../../utils/tokey'
-import type { ManagerLocator } from '../../interfaces'
 import type {Client} from './client'
 import type {PdfViewerPanel} from './pdfviewerpanel'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    ManagerLocator { }
 
 export class PdfViewerManagerService {
-    private readonly extension: IExtension
     private readonly webviewPanelMap = new Map<string, Set<PdfViewerPanel>>()
     readonly clientMap = new Map<string, Set<Client>>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly manager: Manager
+    }) { }
 
     dispose() {
         this.webviewPanelMap.forEach(panelSet => {

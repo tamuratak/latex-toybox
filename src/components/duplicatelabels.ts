@@ -1,19 +1,21 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type { CompletionUpdaterLocator, EventBusLocator, LoggerLocator, ManagerLocator } from '../interfaces'
+import type { EventBus } from './eventbus'
+import type { CompletionUpdater } from './completionupdater'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
 
-interface IExtension extends
-    EventBusLocator,
-    CompletionUpdaterLocator,
-    LoggerLocator,
-    ManagerLocator { }
 
 export class DuplicateLabels {
-    private readonly extension: IExtension
     private readonly duplicatedLabelsDiagnostics = vscode.languages.createDiagnosticCollection('Duplicate Labels')
 
-    constructor(extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly eventBus: EventBus,
+        readonly completionUpdater: CompletionUpdater,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         this.extension = extension
         this.extension.eventBus.completionUpdated.event((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-workshop')

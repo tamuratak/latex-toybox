@@ -1,9 +1,16 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type {Extension} from './main'
 import {TeXDoc} from './components/texdoc'
 import { hasTexId } from './utils/hastexid'
+import type { Builder } from './components/builder'
+import type { Viewer } from './components/viewer'
+import type { Locator } from './components/locator'
+import type { Completer } from './providers/completion'
+import type { CompilerLog } from './components/compilerlog'
+import type { Section } from './components/section'
+import type { MathPreviewPanel } from './components/mathpreviewpanel'
+import type { EnvPair } from './components/envpair'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -44,10 +51,18 @@ async function quickPickRootFile(rootFile: string, localRootFile: string): Promi
 }
 
 export class Commander {
-    private readonly extension: Extension
     private readonly _texdoc: TeXDoc
 
-    constructor(extension: Extension) {
+    constructor(private readonly extension: {
+        readonly builder: Builder,
+        readonly completer: Completer,
+        readonly compilerLog: CompilerLog,
+        readonly envPair: EnvPair,
+        readonly locator: Locator,
+        readonly mathPreviewPanel: MathPreviewPanel,
+        readonly section: Section,
+        readonly viewer: Viewer
+    } & ConstructorParameters<typeof TeXDoc>[0]) {
         this.extension = extension
         this._texdoc = new TeXDoc(extension)
     }

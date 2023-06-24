@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
-import type {ExtensionRootLocator} from '../../interfaces'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
+
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')
 
@@ -13,16 +13,13 @@ type PackageItemEntry = {
     readonly documentation: string
 }
 
-interface IExtension extends
-    ExtensionRootLocator { }
-
 export class Package implements IProvider {
-    private readonly extension: IExtension
     private readonly suggestions: vscode.CompletionItem[] = []
     readonly #readyPromise = new ExternalPromise<void>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionRoot: string
+    }) {
         void this.load().then(() => this.#readyPromise.resolve())
     }
 

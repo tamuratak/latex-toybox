@@ -1,19 +1,18 @@
 import {latexParser} from 'latex-utensils'
 
-import type {CompleterLocator, ManagerLocator} from '../../interfaces'
 import { CommandNameDuplicationDetector } from '../../providers/completer/commandlib/commandlib'
 import { CommandFinder } from './commandupdaterlib/commandfinder'
+import type { Completer } from '../../providers/completion'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    CompleterLocator,
-    ManagerLocator { }
 
 export class CommandUpdater {
-    private readonly extension: IExtension
     readonly commandFinder: CommandFinder
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly manager: Manager
+    }) {
         this.commandFinder = new CommandFinder(extension)
     }
 

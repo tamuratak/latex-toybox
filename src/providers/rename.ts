@@ -1,13 +1,12 @@
 import * as vscode from 'vscode'
-import type { Extension } from '../main'
+import type { ReferenceStore } from '../components/referencestore'
 
 
 export class RenameProvider implements vscode.RenameProvider {
-    private readonly extension: Extension
 
-    constructor(extension: Extension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly referenceStore: ReferenceStore
+    }) { }
 
     private getLabelRangeAtPos(document: vscode.TextDocument, position: vscode.Position) {
         const regex = /\\(label|eqref|ref|autoref)\{([^}]*)\}/

@@ -1,17 +1,15 @@
 import * as vscode from 'vscode'
 import * as cs from 'cross-spawn'
-import type {LoggerLocator, ManagerLocator } from '../interfaces'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
 
-interface IExtension extends
-    LoggerLocator,
-    ManagerLocator { }
 
 export class TeXDoc {
-    private readonly extension: IExtension
 
-    constructor(e: IExtension) {
-        this.extension = e
-    }
+    constructor(private readonly extension: {
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) { }
 
     private runTexdoc(pkg: string) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')

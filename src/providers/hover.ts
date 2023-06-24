@@ -1,13 +1,19 @@
 import * as vscode from 'vscode'
-import type {Extension} from '../main'
 import {tokenizer, onAPackage} from '../utils/tokenizer'
+import type { Completer } from './completion'
+import type { GraphicsPreview } from '../components/graphicspreview'
+import type { MathPreview } from '../components/mathpreview'
+import type { Manager } from '../components/manager'
+
 
 export class HoverProvider implements vscode.HoverProvider {
-    private readonly extension: Extension
 
-    constructor(extension: Extension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly graphicsPreview: GraphicsPreview,
+        readonly manager: Manager,
+        readonly mathPreview: MathPreview
+    }) { }
 
     public async provideHover(document: vscode.TextDocument, position: vscode.Position, ctoken: vscode.CancellationToken): Promise<vscode.Hover | undefined> {
         this.extension.mathPreview.getColor()

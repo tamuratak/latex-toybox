@@ -3,10 +3,12 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
-import type {CompleterLocator, ExtensionRootLocator, LoggerLocator, ManagerLocator} from '../../interfaces'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
+import type { Logger } from '../../components/logger'
+import type { Manager } from '../../components/manager'
+import type { Completer } from '../completion'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -24,14 +26,7 @@ function isEnvItemEntry(obj: any): obj is EnvItemEntry {
 
 export enum EnvSnippetType { AsName, AsCommand, ForBegin, }
 
-interface IExtension extends
-    ExtensionRootLocator,
-    CompleterLocator,
-    LoggerLocator,
-    ManagerLocator { }
-
 export class Environment implements IProvider {
-    private readonly extension: IExtension
     private defaultEnvsAsName: CmdEnvSuggestion[] = []
     private defaultEnvsAsCommand: CmdEnvSuggestion[] = []
     private defaultEnvsForBegin: CmdEnvSuggestion[] = []
@@ -40,8 +35,12 @@ export class Environment implements IProvider {
     private readonly packageEnvsForBegin= new Map<string, CmdEnvSuggestion[]>()
     readonly #readyPromise = new ExternalPromise<void>()
 
-    constructor(extension: IExtension) {
-        this.extension = extension
+    constructor(private readonly extension: {
+        readonly extensionRoot: string,
+        readonly completer: Completer,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         void this.load().then(() => this.#readyPromise.resolve())
     }
 

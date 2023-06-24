@@ -1,17 +1,18 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type {Extension} from '../main'
 import {tokenizer} from '../utils/tokenizer'
 import * as utils from '../utils/utils'
 import { existsPath, isVirtualUri } from '../lib/lwfs/lwfs'
+import type { Manager } from '../components/manager'
+import type { Completer } from './completion'
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
-    private readonly extension: Extension
 
-    constructor(extension: Extension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly completer: Completer,
+        readonly manager: Manager
+    }) { }
 
     private onAFilename(document: vscode.TextDocument, position: vscode.Position, token: string) {
         const line = document.lineAt(position).text

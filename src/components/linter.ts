@@ -1,28 +1,29 @@
 import * as vscode from 'vscode'
 
-import type {EventBusLocator, ExtensionContextLocator, LoggerLocator, ManagerLocator} from '../interfaces'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { ChkTeX } from './linterlib/chktex'
 import { LaCheck } from './linterlib/lacheck'
 import { isLocalLatexDocument } from '../lib/lwfs/lwfs'
+import type { EventBus } from './eventbus'
+import type { Logger } from './logger'
+import type { Manager } from './manager'
 
 export interface ILinter {
     readonly linterDiagnostics: vscode.DiagnosticCollection,
     lintRootFile(): Promise<void>
 }
 
-interface IExtension extends
-    ExtensionContextLocator,
-    EventBusLocator,
-    LoggerLocator,
-    ManagerLocator { }
-
 export class Linter {
     private readonly lintMutex = new MutexWithSizedQueue(1)
     readonly lacheck: ILinter
     readonly chktex: ILinter
 
-    constructor(private readonly extension: IExtension) {
+    constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly eventBus: EventBus,
+        readonly logger: Logger,
+        readonly manager: Manager
+    }) {
         this.chktex = new ChkTeX(this.extension)
         this.lacheck = new LaCheck(this.extension)
 

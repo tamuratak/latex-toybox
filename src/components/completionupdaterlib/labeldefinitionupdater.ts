@@ -2,20 +2,17 @@ import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 import {stripEnvironments, isNewCommand} from '../../utils/utils'
 
-import type {ManagerLocator} from '../../interfaces'
 import { LabelDefinitionElement } from '../../providers/completer/labeldefinition'
 import { toVscodeRange } from '../../utils/utensils'
+import type { Manager } from '../manager'
 
-interface IExtension extends
-    ManagerLocator { }
 
 export class LabelDefinitionUpdater {
-    private readonly extension: IExtension
     private readonly envsToSkip = ['tikzpicture']
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly manager: Manager
+    }) { }
 
     /**
      * Updates the Manager cache for references defined in `file` with `nodes`.

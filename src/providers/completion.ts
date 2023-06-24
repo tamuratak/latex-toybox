@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 
-import type {Extension} from '../main'
 import type {IContexAwareProvider, IProvider} from './completer/interface'
 import {Citation} from './completer/citation'
 import {DocumentClass} from './completer/documentclass'
@@ -15,7 +14,6 @@ import {Package} from './completer/package'
 import {Input, Import, SubImport} from './completer/input'
 import {Glossary} from './completer/glossary'
 import {escapeRegExp} from '../utils/utils'
-import type {ICompleter} from '../interfaces'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 import { BracketReplacer } from './completer/bracketreplacer'
@@ -24,6 +22,9 @@ import { CommandReplacer } from './completer/commandreplacer'
 import { EnvCloser } from './completer/envcloser'
 import { EnvRename } from './completer/envrename'
 import { CommandAdder } from './completer/commandadder'
+import type { LatexAstManager } from '../components/astmanager'
+import type { GraphicsPreview } from '../components/graphicspreview'
+import type { MathPreview } from '../components/mathpreview'
 
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
@@ -35,8 +36,7 @@ type DataLatexMathSymbolsJsonType = typeof import('../../data/packages/latex-mat
 const CompletionType = ['citation', 'reference', 'environment', 'package', 'documentclass', 'input', 'subimport', 'import', 'includeonly', 'glossary', 'command'] as const
 type CompletionType = typeof CompletionType[number]
 
-export class Completer implements vscode.CompletionItemProvider, ICompleter {
-    private readonly extension: Extension
+export class Completer implements vscode.CompletionItemProvider {
     readonly citation: Citation
     readonly command: Command
     private readonly documentClass: DocumentClass
@@ -56,8 +56,17 @@ export class Completer implements vscode.CompletionItemProvider, ICompleter {
     private readonly envRename: EnvRename
     readonly #readyPromise = new ExternalPromise<void>()
 
-    constructor(extension: Extension) {
-        this.extension = extension
+    constructor(
+        private readonly extension: {
+            readonly latexAstManager: LatexAstManager,
+            readonly graphicsPreview: GraphicsPreview,
+            readonly mathPreview: MathPreview
+        } & ConstructorParameters<typeof Citation>[0] &
+            ConstructorParameters<typeof Environment>[0] &
+            ConstructorParameters<typeof Command>[0] &
+            ConstructorParameters<typeof DocumentClass>[0] &
+            ConstructorParameters<typeof LabelDefinition>[0]
+    ) {
         this.citation = new Citation(extension)
         this.environment = new Environment(extension) // Must be created before command
         this.command = new Command(extension, this.environment)
@@ -274,7 +283,9 @@ export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
     private readonly atSuggestion: AtSuggestion
     private readonly triggerCharacter: string
 
-    constructor(extension: Extension) {
+    constructor(extension: {
+        readonly extensionRoot: string
+    }) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         const triggerCharacter = configuration.get('intellisense.atSuggestion.trigger.latex') as string
         this.atSuggestion = new AtSuggestion(extension, triggerCharacter)

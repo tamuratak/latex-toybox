@@ -2,18 +2,15 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as utils from '../../utils/utils'
 
-import type { LoggerLocator } from '../../interfaces'
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
+import type { Logger } from '../logger'
 
-interface IExtension extends
-    LoggerLocator { }
 
 export class FinderUtils {
-    private readonly extension: IExtension
 
-    constructor(extension: IExtension) {
-        this.extension = extension
-    }
+    constructor(private readonly extension: {
+        readonly logger: Logger
+    }) { }
 
     async findRootFromMagic(): Promise<string | undefined> {
         if (!vscode.window.activeTextEditor) {
