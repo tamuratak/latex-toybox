@@ -7,6 +7,7 @@ import type {IProvider} from './interface'
 import {stripCommentsAndVerbatim} from '../../utils/utils'
 import type { Manager } from '../../components/manager'
 import type { Logger } from '../../components/logger'
+import { statPath } from '../../lib/lwfs/lwfs'
 
 
 const ignoreFiles = ['**/.vscode', '**/.vscodeignore', '**/.gitignore']
@@ -90,7 +91,7 @@ abstract class AbstractInput implements IProvider {
      *      payload[0]: The already typed path
      *      payload[1]: The path from which completion is triggered, may be empty
      */
-    private provide(document: vscode.TextDocument, position: vscode.Position, command: string, payload: string[]): vscode.CompletionItem[] {
+    private async provide(document: vscode.TextDocument, position: vscode.Position, command: string, payload: string[]) {
         const currentFile = document.fileName
         const typedFolder = payload[0]
         const importFromDir = payload[1]
@@ -100,7 +101,7 @@ abstract class AbstractInput implements IProvider {
         const provideDirOnly: boolean = this.provideDirOnly(importFromDir)
 
         const suggestions: vscode.CompletionItem[] = []
-        baseDir.forEach(dir => {
+        for (let dir of baseDir) {
             if (typedFolder !== '') {
                 let currentFolder = typedFolder
                 if (! typedFolder.endsWith('/')) {
@@ -109,17 +110,17 @@ abstract class AbstractInput implements IProvider {
                 dir = path.resolve(dir, currentFolder)
             }
             try {
-                let files = fs.readdirSync(dir)
+                let files = await fs.promises.readdir(dir)
                 files = this.filterIgnoredFiles(document, files, dir)
 
-                files.forEach(file => {
+                for (let file of files) {
                     const filePath = path.resolve(dir, file)
                     if (dir === '/') {
                         // Keep the leading '/' to have an absolute path
                         file = '/' + file
                     }
-
-                    if (fs.lstatSync(filePath).isDirectory()) {
+                    const fileType = await statPath(filePath)
+                    if (fileType.type === vscode.FileType.Directory) {
                         const item = new vscode.CompletionItem(`${file}/`, vscode.CompletionItemKind.Folder)
                         item.range = range
                         item.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
@@ -135,9 +136,9 @@ abstract class AbstractInput implements IProvider {
                         item.detail = dir
                         suggestions.push(item)
                     }
-                })
+                }
             } catch (error) {}
-        })
+        }
         return suggestions
     }
 }

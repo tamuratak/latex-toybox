@@ -132,7 +132,7 @@ export class Completer implements vscode.CompletionItemProvider {
         const line = currentLine.substring(0, position.character)
         const items = await this.provideContextAwareItems(document, position, token, context)
         for (const type of CompletionType) {
-            const suggestions = this.completion(type, line, {document, position, token, context})
+            const suggestions = await this.completion(type, line, {document, position, token, context})
             if (suggestions.length > 0) {
                 if (items.length > 0 && suggestions.length > 10) {
                     return items
@@ -217,7 +217,7 @@ export class Completer implements vscode.CompletionItemProvider {
         }
     }
 
-    private completion(type: CompletionType, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
+    private async completion(type: CompletionType, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
         switch (type) {
@@ -273,7 +273,7 @@ export class Completer implements vscode.CompletionItemProvider {
         const result = line.match(reg)
         let suggestions: vscode.CompletionItem[] = []
         if (result) {
-            suggestions = provider.provideFrom(result, args)
+            suggestions = await provider.provideFrom(result, args)
         }
         return suggestions
     }

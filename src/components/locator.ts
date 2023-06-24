@@ -290,7 +290,7 @@ export class Locator {
         // We compare the return of symlink with the files list in the texFileTree and try to pickup the correct one.
         for (const ed of this.extension.manager.cachedFilePaths) {
             try {
-                if (isSameRealPath(record.input, ed)) {
+                if (await isSameRealPath(record.input, ed)) {
                     record.input = ed
                     break
                 }
