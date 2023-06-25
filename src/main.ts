@@ -33,12 +33,15 @@ import { StructureTreeView } from './components/structure'
 
 
 function conflictExtensionCheck() {
-    function check(extensionID: string, name: string, suggestion: string) {
+    const extensionsToCheck: [string, string, string][] = [
+        ['tomoki1207.pdf', 'vscode-pdf', 'Please consider disabling either extension.'],
+        ['james-yu.latex-workshop', 'LaTeX Workshop', 'Please consider disabling either extension.'],
+    ]
+    for (const [extensionID, name, suggestion] of extensionsToCheck) {
         if (vscode.extensions.getExtension(extensionID) !== undefined) {
             void vscode.window.showWarningMessage(`LaTeX Toybox is incompatible with extension "${name}". ${suggestion}`)
         }
     }
-    check('tomoki1207.pdf', 'vscode-pdf', 'Please consider disabling either extension.')
 }
 
 function registerLatexToyboxCommands(
