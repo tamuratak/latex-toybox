@@ -7,6 +7,7 @@ import {LabelDefinitionUpdater} from './completionupdaterlib/labeldefinitionupda
 import {GlossaryUpdater} from './completionupdaterlib/glossaryupdater'
 import { CitationUpdater } from './completionupdaterlib/citationupdater'
 import { statPath } from '../lib/lwfs/lwfs'
+import { isCacheLatest } from '../utils/utils'
 import type { EventBus } from './eventbus'
 import type { Completer } from '../providers/completion'
 import type { Logger } from './logger'
@@ -47,7 +48,7 @@ export class CompletionUpdater {
         this.citationUpdater.update(file, content)
         const stat = await statPath(file)
         const cache = this.extension.manager.getCachedContent(file)
-        if (cache && stat.mtime <= cache.element.mtime && isContentOnDisk) {
+        if (cache && isCacheLatest(cache.element, stat) && isContentOnDisk) {
             return
         }
         const languageId: string | undefined = vscode.window.activeTextEditor?.document.languageId

@@ -48,7 +48,7 @@ export abstract class AstManagerBase<Ast> {
         }
     }
 
-    abstract doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined): Promise<Ast | undefined>
+    protected abstract doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined): Promise<Ast | undefined>
 
 }
 
@@ -61,7 +61,7 @@ export class LatexAstManager extends AstManagerBase<LatexAst> {
         super()
     }
 
-    async doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined) {
+   protected async doParse(uri: vscode.Uri, uriDocument: vscode.TextDocument | undefined) {
         const content = uriDocument ? uriDocument.getText() : await readFile(uri)
         const ast = await this.extension.utensilsParser.parseLatex(content, {enableMathCharacterLocation: true})
         return ast

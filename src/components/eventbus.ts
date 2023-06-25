@@ -3,8 +3,14 @@ import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/ind
 import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter'
 import type { Logger } from './logger'
 
-export type EventName = 'buildfinished' | 'pdfviewerpagesloaded' | 'pdfviewerstatuschanged' | 'rootfilechanged' | 'findrootfileend' | 'completionupdated'
-
+export type EventName =
+    'auxupdated' |
+    'buildfinished' |
+    'completionupdated' |
+    'findrootfileend' |
+    'pdfviewerpagesloaded' |
+    'pdfviewerstatuschanged' |
+    'rootfilechanged'
 
 /**
  * EventBus is a component that provides an API for registering callbacks
@@ -22,12 +28,13 @@ export class EventBus {
      * and it includes the name of the root file that was used for the build.
      * If the `subfiles` package is used, it can be one of the subfiles.
      */
+    readonly auxUpdated = new AwaitableEventEmitter<string, 'auxupdated'>('auxupdated')
     readonly buildFinished = new AwaitableEventEmitter<string, 'buildfinished'>('buildfinished')
+    readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
+    readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
     readonly pdfViewerStatusChanged = new AwaitableEventEmitter<PdfViewerState, 'pdfviewerstatuschanged'>('pdfviewerstatuschanged')
     readonly pdfViewerPagesLoaded = new AwaitableEventEmitter<vscode.Uri, 'pdfviewerpagesloaded'>('pdfviewerpagesloaded')
     readonly rootFileChanged = new AwaitableEventEmitter<string, 'rootfilechanged'>('rootfilechanged')
-    readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
-    readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
 
     constructor(extension: {
         readonly logger: Logger

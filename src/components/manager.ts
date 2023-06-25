@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import * as utils from '../utils/utils'
 import {InputFileRegExp} from '../utils/inputfilepath'
+import { isCacheLatest } from '../utils/utils'
 
 import type {CmdEnvSuggestion} from '../providers/completer/command'
 import type {CiteSuggestion} from '../providers/completer/citation'
@@ -656,7 +657,7 @@ export class Manager {
     ) {
         const cacheEntry = this.gracefulCachedContent(currentFile)
         const stat = await statPath(currentFile)
-        if (stat.mtime <= cacheEntry.children.mtime) {
+        if (isCacheLatest(cacheEntry.children, stat)) {
             return
         } else {
             cacheEntry.children.cache.clear()
@@ -687,7 +688,7 @@ export class Manager {
     private async findAndParseBibFilesInContent(content: string, currentFile: string) {
         const cacheEntry = this.gracefulCachedContent(currentFile)
         const stat = await statPath(currentFile)
-        if (stat.mtime <= cacheEntry.bibs.mtime) {
+        if (isCacheLatest(cacheEntry.bibs, stat)) {
             return
         } else {
             cacheEntry.bibs.cache.clear()

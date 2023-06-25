@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
 
 import type {IProvider} from './interface'
-import { readFilePath } from '../../lib/lwfs/lwfs'
 import type { EventBus } from '../../components/eventbus'
 import type { CompletionUpdater } from '../../components/completionupdater'
 import type { Manager } from '../../components/manager'
+import type { AuxManager } from '../../components/auxmanager'
+
 
 export interface LabelDefinitionElement {
     readonly range: vscode.Range,
@@ -29,19 +29,15 @@ export interface LabelDefinitionEntry extends LabelDefinitionStored {
 
 export class LabelDefinition implements IProvider {
     private readonly labelDefinitions = new Map<string, LabelDefinitionStored>()
-    private readonly prevIndexMap = new Map<string, {refNumber: string, pageNumber: string}>()
 
     constructor(private readonly extension: {
+        readonly auxManager: AuxManager,
         readonly eventBus: EventBus,
         readonly completionUpdater: CompletionUpdater,
         readonly manager: Manager
     }) {
-        this.extension = extension
-        this.extension.eventBus.completionUpdated.event(() => {
+        extension.eventBus.completionUpdated.event(() => {
             this.updateAll()
-        })
-        this.extension.eventBus.buildFinished.event((rootFile) => {
-            return void this.setNumbersFromAuxFile(rootFile)
         })
     }
 
@@ -70,10 +66,15 @@ export class LabelDefinition implements IProvider {
 
     getLabelDef(token: string): LabelDefinitionEntry | undefined {
         const ret = this.labelDefinitions.get(token)
-        if (ret) {
-            return {...ret, prevIndex: this.prevIndexMap.get(token)}
+        const rootFile = this.extension.manager.rootFile
+        if (!ret || !rootFile) {
+            return
         }
-        return
+        const auxFileStore = this.extension.auxManager.getAuxStore(rootFile)
+        if (!auxFileStore) {
+            return
+        }
+        return {...ret, prevIndex: auxFileStore.labelsMap.get(token)}
     }
 
     private updateAll() {
@@ -91,30 +92,6 @@ export class LabelDefinition implements IProvider {
                 })
             })
         })
-    }
-
-    private async setNumbersFromAuxFile(rootFile: string) {
-        const outDir = this.extension.manager.getOutDir(rootFile)
-        const rootDir = path.dirname(rootFile)
-        const auxFile = path.resolve(rootDir, path.join(outDir, path.basename(rootFile, '.tex') + '.aux'))
-        this.prevIndexMap.clear()
-        const newLabelReg = /^\\newlabel\{(.*?)\}\{\{(.*?)\}\{(.*?)\}/gm
-        try {
-            const auxContent = await readFilePath(auxFile)
-            while (true) {
-                const result = newLabelReg.exec(auxContent)
-                if (result === null) {
-                    break
-                }
-                if ( result[1].endsWith('@cref') && this.prevIndexMap.has(result[1].replace('@cref', '')) ) {
-                    // Drop extra \newlabel entries added by cleveref
-                    continue
-                }
-                this.prevIndexMap.set(result[1], {refNumber: result[2], pageNumber: result[3]})
-            }
-        } catch {
-            // Ignore error
-        }
     }
 
 }
