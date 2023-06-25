@@ -2,6 +2,12 @@
 
 This is a fork of [LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop) created to provide novel and experimental features. I started this endeavor to joyfully implement creative ideas. I hope that through this initiative, the LaTeX ecosystem will become even more enriched.
 
+
+## Realtime Math Preview Panel with Cursor
+
+https://github.com/tamuratak/latex-toybox/assets/10665499/3e08abc8-547e-4000-b301-6ff2a85c5ae8
+
+
 ## Context Aware IntelliSense
 
 ### Renaming
