@@ -5,7 +5,7 @@ This is a fork of [LaTeX Workshop](https://github.com/James-Yu/LaTeX-Workshop) c
 
 ## Realtime Math Preview Panel with Cursor
 
-https://github.com/tamuratak/latex-toybox/assets/10665499/3e08abc8-547e-4000-b301-6ff2a85c5ae8
+https://github.com/tamuratak/latex-toybox/assets/10665499/afbf6693-619f-49b7-96e3-0363c27f3477
 
 
 ## Context Aware IntelliSense
