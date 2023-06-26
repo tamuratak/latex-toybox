@@ -10,9 +10,9 @@ export enum GlossaryType {
 }
 
 export interface GlossarySuggestion extends ILwCompletionItem {
-    type: GlossaryType,
-    file: string,
-    position: vscode.Position
+    readonly type: GlossaryType,
+    readonly file: string,
+    readonly position: vscode.Position
 }
 
 export class Glossary implements IProvider {

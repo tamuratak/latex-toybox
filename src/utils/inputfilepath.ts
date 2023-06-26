@@ -9,11 +9,11 @@ enum MatchType {
 }
 
 interface MatchPath {
-    type: MatchType,
-    path: string,
-    directory: string,
-    matchedString: string,
-    index: number
+    readonly type: MatchType,
+    readonly path: string,
+    readonly directory: string,
+    readonly matchedString: string,
+    readonly index: number
 }
 
 export class InputFileRegExp {
