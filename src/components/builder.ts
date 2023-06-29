@@ -1,6 +1,5 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs'
 import * as cp from 'child_process'
 import * as cs from 'cross-spawn'
 import {replaceArgumentPlaceholders} from '../utils/utils'
@@ -12,6 +11,7 @@ import type { CompilerLog } from './compilerlog'
 import type { Manager } from './manager'
 import type { LwStatusBarItem } from './statusbaritem'
 import type { Viewer } from './viewer'
+import { statPath } from '../lib/lwfs/lwfs'
 
 const maxPrintLine = '10000'
 
@@ -188,24 +188,27 @@ export class Builder {
         this.extension.logger.info(`Build root file ${rootFile}`)
         try {
             // Create sub directories of output directory
-            // This was supposed to create the outputDir as latexmk does not
-            // take care of it (neither does any of latex command). If the
-            //output directory does not exist, the latex commands simply fail.
             const rootDir = path.dirname(rootFile)
             let outDir = this.extension.manager.getOutDir(rootFile)
             if (!path.isAbsolute(outDir)) {
                 outDir = path.resolve(rootDir, outDir)
             }
             this.extension.logger.info(`outDir: ${outDir}`)
-            this.extension.manager.getIncludedTeX(rootFile).forEach(file => {
+            for (const file of this.extension.manager.getIncludedTeX(rootFile)) {
                 const relativePath = path.dirname(file.replace(rootDir, '.'))
                 const fullOutDir = path.resolve(outDir, relativePath)
-                // To avoid issues when fullOutDir is the root dir
-                // Using fs.mkdir() on the root directory even with recursion will result in an error
-                if (! (fs.existsSync(fullOutDir) && fs.statSync(fullOutDir).isDirectory())) {
-                    fs.mkdirSync(fullOutDir, { recursive: true })
+                const fullOutDirType = await statPath(fullOutDir).catch(() => undefined)
+                if (!fullOutDirType) {
+                    // We create the directory only in the workspace.
+                    await vscode.workspace.fs.createDirectory(vscode.Uri.file(fullOutDir))
+                } else {
+                    if (fullOutDirType.type !== vscode.FileType.Directory) {
+                        const msg = `outDir is not directory: ${fullOutDir}`
+                        this.extension.logger.error(msg)
+                        throw new Error(msg)
+                    }
                 }
-            })
+            }
             this.buildInitiator(rootFile, languageId, recipeName, releaseBuildMutex)
         } catch (e) {
             this.extension.logger.error('Unexpected Error: please see the console log of the Developer Tools of VS Code.')

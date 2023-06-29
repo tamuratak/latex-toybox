@@ -116,10 +116,10 @@ export class SyncTexJs {
         throw new SyncTexJsError(`parseSyncTexForPdf failed with: ${pdfFile}`)
     }
 
-    private findInputFilePathForward(filePath: string, pdfSyncObject: PdfSyncObject): string | undefined {
+    private async findInputFilePathForward(filePath: string, pdfSyncObject: PdfSyncObject): Promise<string | undefined> {
         for (const inputFilePath in pdfSyncObject.blockNumberLine) {
             try {
-                if (isSameRealPath(inputFilePath, filePath)) {
+                if (await isSameRealPath(inputFilePath, filePath)) {
                     return inputFilePath
                 }
             } catch { }
@@ -129,7 +129,7 @@ export class SyncTexJs {
                 let convertedInputFilePath = ''
                 try {
                     convertedInputFilePath = iconv.decode(Buffer.from(inputFilePath, 'binary'), enc)
-                    if (isSameRealPath(convertedInputFilePath, filePath)) {
+                    if (await isSameRealPath(convertedInputFilePath, filePath)) {
                         return inputFilePath
                     }
                 } catch { }
@@ -141,7 +141,7 @@ export class SyncTexJs {
     async syncTexJsForward(line: number, filePath: string, pdfFile: string) {
         this.extension.logger.info(`[SyncTexJs] Execute syncTexJsForward: ${JSON.stringify({pdfFile, filePath, line})}`)
         const pdfSyncObject = await this.parseSyncTexForPdf(pdfFile)
-        const inputFilePath = this.findInputFilePathForward(filePath, pdfSyncObject)
+        const inputFilePath = await this.findInputFilePathForward(filePath, pdfSyncObject)
         if (inputFilePath === undefined) {
             const inputFiles = Object.keys(pdfSyncObject.blockNumberLine)
             const inputFilesStr = JSON.stringify(inputFiles, null, ' ')

@@ -11,7 +11,7 @@ export interface IProvider {
     provideFrom(
         result: RegExpMatchArray,
         args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}
-    ): vscode.CompletionItem[]
+    ): vscode.CompletionItem[] | Promise<vscode.CompletionItem[]>
 }
 
 export interface ILwCompletionItem extends vscode.CompletionItem {
