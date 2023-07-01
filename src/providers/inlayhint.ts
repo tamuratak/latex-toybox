@@ -26,7 +26,7 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
     }
 
     async provideInlayHints(document: TextDocument, range: Range, _token: CancellationToken) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
         const enabled = configuration.get('inlayHints.enabled', true)
         if (!enabled) {
             return []

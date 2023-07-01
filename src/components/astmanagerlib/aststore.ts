@@ -5,9 +5,9 @@ import { Mutex } from '../../lib/await-semaphore'
 import { isCacheLatest } from '../../utils/utils'
 
 
-type AstEntry<Ast> = {
-    ast: Promise<Ast | undefined>,
-    mtime: number
+interface AstEntry<Ast> {
+    readonly ast: Promise<Ast | undefined>,
+    readonly mtime: number
 }
 
 export class AstStore<Ast> {

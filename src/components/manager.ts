@@ -137,7 +137,7 @@ export class Manager {
                 if (!isLocalLatexDocument(doc)){
                     return
                 }
-                void this.buildOnSave(doc.fileName)
+                void this.buildOnSave(doc.uri)
             }),
             vscode.window.onDidChangeActiveTextEditor(async (editor) => {
                 this.extension.logger.debug(`onDidChangeActiveTextEditor: ${editor?.document.uri.toString()}`)
@@ -831,7 +831,7 @@ export class Manager {
         if (isTexOrWeaveFile(fileUri)) {
             await this.updateContentEntry(fileUri)
         }
-        await this.buildOnFileChanged(fileUri.fsPath)
+        await this.buildOnFileChanged(fileUri)
     }
 
     private onWatchedFileDeleted(fileUri: vscode.Uri) {
@@ -855,13 +855,13 @@ export class Manager {
     /**
      * This function triggers a rebuild of the LaTeX document, determining whether the target is the project's root file or an active subfile.
      *
-     * @param file The file path of the file that is changed.
+     * @param fileUri The file path of the file that is changed.
      * @param bibChanged Indicates whether the change is caused by a change in bib file.
      * @returns
      */
-    private autoBuild(file: string, bibChanged: boolean ) {
-        this.extension.logger.info(`Auto build started detecting the change of a file: ${file}`)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
+    private autoBuild(fileUri: vscode.Uri, bibChanged: boolean ) {
+        this.extension.logger.info(`Auto build started detecting the change of a file: ${fileUri}`)
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
         if (!bibChanged && this.localRootFile && configuration.get('latex.rootFile.useSubFile')) {
             return this.extension.commander.build(true, this.localRootFile, this.rootFileLanguageId)
         } else {
@@ -869,21 +869,21 @@ export class Manager {
         }
     }
 
-    buildOnFileChanged(file: string, bibChanged: boolean = false) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
+    buildOnFileChanged(fileUri: vscode.Uri, bibChanged: boolean = false) {
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onFileChange) {
             return
         }
-        return this.autoBuild(file, bibChanged)
+        return this.autoBuild(fileUri, bibChanged)
     }
 
-    private buildOnSave(file: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
+    private buildOnSave(fileUri: vscode.Uri) {
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
             return
         }
-        this.extension.logger.info(`Auto build started on saving file: ${file}`)
-        return this.autoBuild(file, false)
+        this.extension.logger.info(`Auto build started on saving file: ${fileUri}`)
+        return this.autoBuild(fileUri, false)
     }
 
     private async updateContentEntry(fileUri: vscode.Uri) {

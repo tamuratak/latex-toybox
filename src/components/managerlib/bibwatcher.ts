@@ -31,7 +31,7 @@ export class BibWatcher {
         }
         this.extension.logger.info(`Bib file watcher - file changed: ${bibFileUri}`)
         await this.extension.completer.citation.parseBibFile(bibFileUri.fsPath)
-        await this.extension.manager.buildOnFileChanged(bibFileUri.fsPath, true)
+        await this.extension.manager.buildOnFileChanged(bibFileUri, true)
     }
 
     private onWatchedBibDeleted(bibFileUri: vscode.Uri) {
