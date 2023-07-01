@@ -36,6 +36,8 @@ import { CompletionUpdater } from './components/completionupdater'
 import { LwStatusBarItem } from './components/statusbaritem'
 import { CompilerLog } from './components/compilerlog'
 import { BibtexAstManager, LatexAstManager } from './components/astmanager'
+import { AuxManager } from './components/auxmanager'
+import { LtInlayHintsProvider } from './providers/inlayhint'
 
 
 function conflictExtensionCheck() {
@@ -193,6 +195,10 @@ function registerProviders(extension: Extension, context: vscode.ExtensionContex
     }
 
     context.subscriptions.push(
+        vscode.languages.registerInlayHintsProvider({language: 'latex'}, new LtInlayHintsProvider(extension))
+    )
+
+    context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
             'latex-workshop-snippet-view',
             extension.snippetView.snippetViewProvider,
@@ -232,6 +238,7 @@ class Extension {
     readonly mathPreviewPanel: MathPreviewPanel
     readonly duplicateLabels: DuplicateLabels
     readonly referenceStore: ReferenceStore
+    readonly auxManager: AuxManager
 
     constructor(context: vscode.ExtensionContext) {
         this.extensionContext = context
@@ -243,6 +250,7 @@ class Extension {
         this.addLogFundamentals()
         this.configuration = new Configuration(this)
         this.referenceStore = new ReferenceStore(this)
+        this.auxManager = new AuxManager(this)
         this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 

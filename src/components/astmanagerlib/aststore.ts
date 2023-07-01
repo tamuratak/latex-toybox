@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { stat } from '../../lib/lwfs/lwfs'
 import { toKey } from '../../utils/tokey'
 import { Mutex } from '../../lib/await-semaphore'
+import { isCacheLatest } from '../../utils/utils'
 
 
 type AstEntry<Ast> = {
@@ -27,7 +28,7 @@ export class AstStore<Ast> {
         const key = toKey(uri)
         const entry = this.AstMap.get(key)
         if (entry) {
-            if (entry.mtime >= source.mtime && !uriDocument?.isDirty) {
+            if (isCacheLatest(entry, source) && !uriDocument?.isDirty) {
                 return entry
             } else {
                 this.AstMap.delete(key)

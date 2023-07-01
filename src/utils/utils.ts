@@ -181,3 +181,7 @@ export function isNewEnvironment(node: latexParser.Node | undefined): node is Ne
     }
     return false
 }
+
+export function isCacheLatest(cache: { readonly mtime: number }, stat: vscode.FileStat): boolean {
+    return cache.mtime >= stat.mtime
+}

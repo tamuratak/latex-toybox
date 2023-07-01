@@ -1682,6 +1682,12 @@
           "type": "number",
           "default": 20000,
           "markdownDescription": "Delay to wait for GitHub Codespaces Authentication of port forwarding to be resolved, in milliseconds."
+        },
+        "latex-workshop.inlayHints.enabled": {
+          "scope": "window",
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable inlay hints for LaTeX documents."
         }
       }
     },
