@@ -14,7 +14,7 @@ export class Logger implements ILogger {
         this.logPanel.info(message)
     }
 
-    logCommand(message: string, command: string, args: string[] = []) {
+    logCommand(message: string, command: string, args: readonly string[] = []) {
         this.info(message + ': ' + command)
         this.info(message + ' args: ' + JSON.stringify(args))
     }

@@ -9,6 +9,12 @@ import type { Logger } from '../logger'
 import type { Manager } from '../manager'
 
 
+interface LaCheckLogEntry {
+    readonly file: string,
+    readonly line: number,
+    readonly text: string
+}
+
 export class LaCheck implements ILinter {
     readonly #linterName = 'LaCheck'
     readonly linterDiagnostics: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection(this.#linterName)
@@ -127,10 +133,4 @@ export class LaCheck implements ILinter {
             }
         }
     }
-}
-
-interface LaCheckLogEntry {
-    readonly file: string,
-    readonly line: number,
-    readonly text: string
 }

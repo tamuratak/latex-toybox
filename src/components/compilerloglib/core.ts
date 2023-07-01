@@ -10,6 +10,7 @@ import type { Completer } from '../../providers/completion'
 import type { Logger } from '../logger'
 import type { Manager } from '../manager'
 
+
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
 // https://github.com/James-Yu/LaTeX-Workshop/issues/2893#issuecomment-936312853
 const latexPattern = /^Output\swritten\son\s(.*)\s\(.*\)\.$/gm

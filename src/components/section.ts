@@ -3,8 +3,8 @@ import { stripCommentsAndVerbatim } from '../utils/utils'
 import type { Logger } from './logger'
 
 interface MatchSection {
-    level: string,
-    pos: vscode.Position
+    readonly level: string,
+    readonly pos: vscode.Position
 }
 
 export class Section {

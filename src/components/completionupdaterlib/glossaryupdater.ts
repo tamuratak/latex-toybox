@@ -6,8 +6,8 @@ import { toVscodePosition } from '../../utils/utensils'
 import { Manager } from '../manager'
 
 interface GlossaryEntry {
-    label: string | undefined,
-    description: string | undefined
+    readonly label: string | undefined,
+    readonly description: string | undefined
 }
 
 export class GlossaryUpdater {

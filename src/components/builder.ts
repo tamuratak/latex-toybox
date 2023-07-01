@@ -20,15 +20,15 @@ interface ProcessEnv {
 }
 
 export interface StepCommand {
-    name: string,
-    command: string,
-    args?: string[],
-    env?: ProcessEnv
+    readonly name: string,
+    readonly command: string,
+    readonly args?: readonly string[],
+    readonly env?: ProcessEnv
 }
 
 interface Recipe {
-    name: string,
-    tools: (string | StepCommand)[]
+    readonly name: string,
+    readonly tools: readonly string[]
 }
 
 export class Builder {
@@ -312,12 +312,12 @@ export class Builder {
     }
 
     private createSteps(rootFile: string, languageId: string, recipeName: string | undefined): StepCommand[] | undefined {
-        let steps: StepCommand[] = []
+        const steps: StepCommand[] = []
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
 
         const recipes = configuration.get('latex.recipes') as Recipe[]
-        const defaultRecipeName = configuration.get('latex.recipe.default') as string
-        const tools = configuration.get('latex.tools') as StepCommand[]
+        const defaultRecipeName: string = configuration.get('latex.recipe.default', 'first')
+        const toolDefs = configuration.get('latex.tools') as StepCommand[]
         if (recipes.length < 1) {
             this.extension.logger.error('No recipes defined.')
             return undefined
@@ -326,76 +326,65 @@ export class Builder {
         if (this.previousLanguageId !== languageId) {
             this.previouslyUsedRecipe = undefined
         }
-        if (!recipeName && ! ['first', 'lastUsed'].includes(defaultRecipeName)) {
+        if (!recipeName && !['first', 'lastUsed'].includes(defaultRecipeName)) {
             recipeName = defaultRecipeName
         }
         if (recipeName) {
-            const candidates = recipes.filter(candidate => candidate.name === recipeName)
+            const candidate = recipes.find(recipeDef => recipeDef.name === recipeName)
+            if (candidate) {
+                recipe = candidate
+            } else {
+                this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
+            }
+        } else if (defaultRecipeName === 'lastUsed') {
+            recipe = this.previouslyUsedRecipe
+        } else if (defaultRecipeName === 'first') {
+            let candidates: Recipe[] = recipes
+            if (languageId === 'rsweave') {
+                candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
+            } else if (languageId === 'jlweave') {
+                candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
+            }
             if (candidates.length < 1) {
                 this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
             }
             recipe = candidates[0]
         }
         if (recipe === undefined) {
-            if (defaultRecipeName === 'lastUsed') {
-                recipe = this.previouslyUsedRecipe
-            }
-            if (defaultRecipeName === 'first' || recipe === undefined) {
-                let candidates: Recipe[] = recipes
-                if (languageId === 'rsweave') {
-                    candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
-                } else if (languageId === 'jlweave') {
-                    candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
-                }
-                if (candidates.length < 1) {
-                    this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
-                }
-                recipe = candidates[0]
-            }
-        }
-        if (recipe === undefined) {
-            return undefined
+            return
         }
         this.previouslyUsedRecipe = recipe
         this.previousLanguageId = languageId
 
-        recipe.tools.forEach(tool => {
-            if (typeof tool === 'string') {
-                const candidates = tools.filter(candidate => candidate.name === tool)
-                if (candidates.length < 1) {
-                    this.extension.logger.info(`Skipping undefined tool: ${tool} in ${recipe?.name}`)
-                } else {
-                    steps.push(candidates[0])
-                }
+        for (const toolName of recipe.tools) {
+            const candidate = toolDefs.find(toolDef => toolDef.name === toolName)
+            if (candidate) {
+                steps.push(candidate)
             } else {
-                steps.push(tool)
+                this.extension.logger.info(`Skipping undefined tool: ${toolName} in ${recipe.name}`)
             }
-        })
+        }
 
-        /**
-         * Use JSON.parse and JSON.stringify for a deep copy.
-         */
-        steps = JSON.parse(JSON.stringify(steps)) as StepCommand[]
-
-        steps.forEach(step => {
-            if (step.args) {
-                step.args = step.args.map(replaceArgumentPlaceholders(rootFile))
-            }
+        const newSteps = steps.map(step => {
+            const newStepArgs = step.args?.map(replaceArgumentPlaceholders(rootFile))
+            const newStepEnv: ProcessEnv = {}
             if (step.env) {
-                Object.keys(step.env).forEach( v => {
-                    const e = step.env && step.env[v]
-                    if (step.env && e) {
-                        step.env[v] = replaceArgumentPlaceholders(rootFile)(e)
+                Object.entries(step.env).forEach(([k, v]) => {
+                    if (v) {
+                        newStepEnv[k] = replaceArgumentPlaceholders(rootFile)(v)
                     }
                 })
             }
-            if (configuration.get('latex.option.maxPrintLine.enabled')) {
-                if (!step.args) {
-                    step.args = []
-                }
+            const newStep: StepCommand = {
+                name: step.name,
+                command: step.command,
+                args: newStepArgs,
+                env: newStepEnv,
             }
+            return newStep
         })
-        return steps
+
+        return newSteps
     }
 
 }

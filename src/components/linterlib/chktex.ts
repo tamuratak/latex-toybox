@@ -10,6 +10,22 @@ import type { Logger } from '../logger'
 import type { Manager } from '../manager'
 
 
+interface ChkTeXLogEntry {
+    readonly file: string,
+    readonly line: number,
+    readonly column: number,
+    readonly length: number,
+    readonly type: string,
+    readonly code: number,
+    readonly text: string
+}
+
+const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
+    'typesetting': vscode.DiagnosticSeverity.Information,
+    'warning': vscode.DiagnosticSeverity.Warning,
+    'error': vscode.DiagnosticSeverity.Error,
+}
+
 export class ChkTeX implements ILinter {
     readonly #linterName = 'ChkTeX'
     readonly linterDiagnostics: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection(this.#linterName)
@@ -307,20 +323,4 @@ export class ChkTeX implements ILinter {
         return entry
     }
 
-}
-
-interface ChkTeXLogEntry {
-    readonly file: string,
-    readonly line: number,
-    readonly column: number,
-    readonly length: number,
-    readonly type: string,
-    readonly code: number,
-    readonly text: string
-}
-
-const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
-    'typesetting': vscode.DiagnosticSeverity.Information,
-    'warning': vscode.DiagnosticSeverity.Warning,
-    'error': vscode.DiagnosticSeverity.Error,
 }
