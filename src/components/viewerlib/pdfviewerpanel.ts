@@ -140,7 +140,7 @@ export class PdfViewerPanelService {
 
     private getKeyboardEventConfig(): boolean {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const setting: 'auto' | 'force' | 'never' = configuration.get('viewer.pdf.internal.keyboardEvent', 'auto')
+        const setting: 'auto' | 'force' | 'never' = configuration.get('view.pdf.keyboardEvent', 'auto')
         if (setting === 'auto') {
             return true
         } else if (setting === 'force') {

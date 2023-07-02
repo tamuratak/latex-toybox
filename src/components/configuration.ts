@@ -25,7 +25,7 @@ export class Configuration {
         'latex-workshop.latex.outDir',
         'latex-workshop.latex.recipes',
         'latex-workshop.latex.tools',
-        'latex-workshop.viewer.pdf.internal.keyboardEvent'
+        'latex-workshop.view.pdf.keyboardEvent'
     ]
 
     private logConfiguration() {
