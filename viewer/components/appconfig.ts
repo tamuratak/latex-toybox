@@ -58,9 +58,9 @@ export class AppConfig {
 
     applyNonStatefulParams(params: PdfViewerParams) {
         if (params.hand) {
-            PDFViewerApplication.pdfCursorTools.handTool.activate()
+            PDFViewerApplication.pdfCursorTools._handTool.activate()
         } else {
-            PDFViewerApplication.pdfCursorTools.handTool.deactivate()
+            PDFViewerApplication.pdfCursorTools._handTool.deactivate()
         }
         if (params.invertMode.enabled) {
             const { brightness, grayscale, hueRotate, invert, sepia } = params.invertMode
