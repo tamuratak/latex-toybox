@@ -23,12 +23,12 @@ export type EventName =
  *
  */
 export class EventBus {
+    readonly auxUpdated = new AwaitableEventEmitter<string, 'auxupdated'>('auxupdated')
     /**
      * This event is triggered when the build process is complete,
      * and it includes the name of the root file that was used for the build.
      * If the `subfiles` package is used, it can be one of the subfiles.
      */
-    readonly auxUpdated = new AwaitableEventEmitter<string, 'auxupdated'>('auxupdated')
     readonly buildFinished = new AwaitableEventEmitter<string, 'buildfinished'>('buildfinished')
     readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
     readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
