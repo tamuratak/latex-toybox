@@ -40,6 +40,16 @@ I removed some features that LaTeX Workshop has in order to save maintenance tim
 - Formatting LaTeX documents
 - Counting words
 
+## Feature requests
+
+In order to fully focus on bringing my own ideas to fruition, I regret to inform you that I am unable to accept any feature requests at this time. My utmost priority lies in diligently implementing and refining the concepts that I have envisioned. I appreciate your understanding and support as I strive to create a unique and innovative experience.
+
+## Contributing
+
+In order to ensure the maintainability of the codebase and uphold a high standard of quality, I have made the decision not to accept any pull requests. Integrating random pull requests can introduce complexities that may hinder the overall stability and coherence of the project.
+
+However, I highly encourage you to fork this repository and create your own extension. By doing so, you can freely explore and implement your ideas, contributing to the enhancement of the LaTeX ecosystem. I genuinely appreciate your enthusiasm and passion for making a positive impact in the community, and I look forward to witnessing the unique and valuable contributions you can bring through your personalized extension.
+
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
