@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.7/web/viewer.js	2023-05-29 13:53:28.000000000 +0900
-+++ viewer/viewer.js	2023-06-02 09:53:03.000000000 +0900
+--- ../tmp/pdfjs-3.8/web/viewer.js	2023-07-02 15:02:36.000000000 +0900
++++ viewer/viewer.js	2023-07-03 08:28:13.000000000 +0900
 @@ -43,10 +43,10 @@
  exports.GenericCom = GenericCom;
  class GenericPreferences extends _preferences.BasePreferences {
@@ -13,7 +13,7 @@
    }
  }
  class GenericExternalServices extends _app.DefaultExternalServices {
-@@ -609,7 +609,7 @@
+@@ -686,7 +686,7 @@
          title = url;
        }
      }
@@ -22,7 +22,7 @@
    },
    setTitle(title = this._title) {
      this._title = title;
-@@ -4930,7 +4930,7 @@
+@@ -4904,7 +4904,7 @@
  };
  exports.FindState = FindState;
  const FIND_TIMEOUT = 250;
@@ -31,7 +31,7 @@
  const MATCH_SCROLL_OFFSET_LEFT = -400;
  const CHARACTERS_TO_NORMALIZE = {
    "\u2010": "-",
-@@ -7522,7 +7522,7 @@
+@@ -7483,7 +7483,7 @@
        this.#dispatchEvent();
        return;
      }
@@ -40,7 +40,7 @@
      if (!this.isInitialEventDispatched) {
        this.#dispatchEvent();
      }
-@@ -8426,7 +8426,7 @@
+@@ -8381,7 +8381,7 @@
      this.#annotationEditorMode = options.annotationEditorMode ?? _pdfjsLib.AnnotationEditorType.NONE;
      this.imageResourcesPath = options.imageResourcesPath || "";
      this.enablePrintAutoRotate = options.enablePrintAutoRotate || false;
@@ -49,7 +49,7 @@
      this.useOnlyCssZoom = options.useOnlyCssZoom || false;
      this.isOffscreenCanvasSupported = options.isOffscreenCanvasSupported ?? true;
      this.maxCanvasPixels = options.maxCanvasPixels;
-@@ -12257,10 +12257,10 @@
+@@ -12204,10 +12204,10 @@
    }
    async _writeToStorage() {
      const databaseStr = JSON.stringify(this.database);
@@ -62,7 +62,7 @@
    }
    async set(name, val) {
      await this._initializedPromise;
-@@ -13088,7 +13088,7 @@
+@@ -13055,7 +13055,7 @@
    function getL10nData(key, args, fallback) {
      var data = gL10nData[key];
      if (!data) {
@@ -71,7 +71,7 @@
        if (!fallback) {
          return null;
        }
-@@ -13524,6 +13524,9 @@
+@@ -13491,6 +13491,9 @@
  }
  window.addEventListener("keydown", function (event) {
    if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
@@ -81,7 +81,7 @@
      window.print();
      event.preventDefault();
      event.stopImmediatePropagation();
-@@ -13793,7 +13796,7 @@
+@@ -13760,7 +13763,7 @@
    try {
      parent.document.dispatchEvent(event);
    } catch (ex) {

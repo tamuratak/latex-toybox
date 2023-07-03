@@ -76,7 +76,7 @@ export interface IPDFViewerApplication {
         spreadMode: number
     },
     pdfCursorTools: {
-        handTool: {
+        _handTool: {
             activate(): void,
             deactivate(): void
         }
