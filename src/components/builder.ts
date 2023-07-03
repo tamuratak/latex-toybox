@@ -162,8 +162,9 @@ export class Builder {
     private buildInitiator(rootFile: string, languageId: string, recipeName: string | undefined = undefined, releaseBuildMutex: () => void) {
         const steps = this.createSteps(rootFile, languageId, recipeName)
         if (steps === undefined) {
-            this.extension.logger.error('Invalid toolchain.')
-            return
+            const message = `Cannot create steps: ${rootFile}, ${languageId}, ${recipeName}`
+            this.extension.logger.error(message)
+            throw new Error(message)
         }
         this.buildStep(rootFile, steps, 0, recipeName || 'Build', releaseBuildMutex) // use 'Build' as default name
     }
@@ -315,12 +316,12 @@ export class Builder {
         const steps: StepCommand[] = []
         const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
 
-        const recipes = configuration.get('latex.recipes') as Recipe[]
+        const recipes = configuration.get('latex.recipes', []) as Recipe[]
         const defaultRecipeName: string = configuration.get('latex.recipe.default', 'first')
-        const toolDefs = configuration.get('latex.tools') as StepCommand[]
+        const toolDefs = configuration.get('latex.tools', []) as StepCommand[]
         if (recipes.length < 1) {
             this.extension.logger.error('No recipes defined.')
-            return undefined
+            return
         }
         let recipe: Recipe | undefined = undefined
         if (this.previousLanguageId !== languageId) {
@@ -330,27 +331,20 @@ export class Builder {
             recipeName = defaultRecipeName
         }
         if (recipeName) {
-            const candidate = recipes.find(recipeDef => recipeDef.name === recipeName)
-            if (candidate) {
-                recipe = candidate
-            } else {
-                this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
-            }
-        } else if (defaultRecipeName === 'lastUsed') {
+            recipe = recipes.find(recipeDef => recipeDef.name === recipeName)
+        } else if (defaultRecipeName === 'lastUsed' && this.previouslyUsedRecipe) {
             recipe = this.previouslyUsedRecipe
-        } else if (defaultRecipeName === 'first') {
+        } else if (defaultRecipeName === 'first' || defaultRecipeName === 'lastUsed' && !this.previouslyUsedRecipe) {
             let candidates: Recipe[] = recipes
             if (languageId === 'rsweave') {
                 candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
             } else if (languageId === 'jlweave') {
                 candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
             }
-            if (candidates.length < 1) {
-                this.extension.logger.error(`Failed to resolve build recipe: ${recipeName}`)
-            }
             recipe = candidates[0]
         }
         if (recipe === undefined) {
+            this.extension.logger.error(`Failed to resolve build recipe: ${[recipeName, defaultRecipeName]}`)
             return
         }
         this.previouslyUsedRecipe = recipe
