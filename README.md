@@ -32,7 +32,7 @@ https://user-images.githubusercontent.com/10665499/225464584-1b9c5479-ce6a-4a56-
 
 ## Removed features
 
-I removed some features that LaTeX Workshop has in order to save maintenance time and to focus on implementing new features.
+To streamline maintenance and enhance security measures, I removed some features from LaTeX Workshop:
 
 - Cleaning auxiliary files
 - Magic comment support
