@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { toKey } from '../../utils/tokey'
-import { LwFileWatcher } from './lwfilewatcher'
+import type { LwFileWatcher } from './lwfilewatcher'
 import type { Logger } from '../logger'
 import type { Viewer } from '../viewer'
 

@@ -1,9 +1,11 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
+import { toKey } from '../../utils/tokey'
 
 
 export class LwFileWatcher {
-    private readonly otherFileWatcher = new Map<string, vscode.FileSystemWatcher>()
+    // key: dirPath
+    private readonly externalFileWatcherMap = new Map<string, vscode.FileSystemWatcher>()
     private readonly workspaceFileWatcher = vscode.workspace.createFileSystemWatcher('**/*')
     private readonly onDidCreateCbs = new Set<(uri: vscode.Uri) => unknown>()
     private readonly onDidChangeCbs = new Set<(uri: vscode.Uri) => unknown>()
@@ -21,20 +23,28 @@ export class LwFileWatcher {
 
     dispose() {
         this.workspaceFileWatcher.dispose()
-        this.otherFileWatcher.forEach(watcher => void watcher.dispose())
+        this.externalFileWatcherMap.forEach(watcher => void watcher.dispose())
     }
 
+    /**
+     * Creates a external file watcher for the directory of the given file
+     * if the file is not included in any of the workspaces.
+     * This allows you to watch for changes in files outside of the current workspace.
+     */
     add(fileUri: vscode.Uri) {
+        // Files that are already included in any of the workspaces are already
+        // being watched by the workspaceFileWatcher. So, we don't need to
+        // create a new watcher for them.
         if (vscode.workspace.getWorkspaceFolder(fileUri)) {
             return
         }
         const dirname = path.posix.dirname(fileUri.path)
         const dirUri = fileUri.with({ path: dirname })
-        const key = dirUri.toString(true)
-        const isWatched = this.otherFileWatcher.has(key)
+        const key = toKey(dirUri)
+        const isWatched = this.externalFileWatcherMap.has(key)
         if (!isWatched) {
             const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(dirUri, '*'))
-            this.otherFileWatcher.set(key, watcher)
+            this.externalFileWatcherMap.set(key, watcher)
             this.initiateWatcher(watcher)
         }
     }
