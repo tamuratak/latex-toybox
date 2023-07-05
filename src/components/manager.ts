@@ -18,7 +18,6 @@ import { existsPath, isLocalLatexDocument, isVirtualUri, readFileGracefully, rea
 import { ExternalPromise } from '../utils/externalpromise'
 import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
 import { LwFileWatcher } from './managerlib/lwfilewatcher'
-import { toKey } from '../utils/tokey'
 import { getTeXChildren } from './managerlib/gettexchildren'
 import { findWorkspace, isExcluded } from './managerlib/utils'
 import { getDirtyContent } from '../utils/getdirtycontent'
@@ -30,6 +29,7 @@ import type { EventBus } from './eventbus'
 import type { Commander } from '../commander'
 import type { DuplicateLabels } from './duplicatelabels'
 import type { CompletionUpdater } from './completionupdater'
+import { ManagerWatcher } from './managerlib/managerwatcher'
 
 
 /**
@@ -87,7 +87,7 @@ type RootFileType = {
 }
 
 /**
- * Responsible for determining the root file, managing the watcher, and parsing .aux and .fls files.
+ * Responsible for determining the root file, managing watchers, and parsing .aux and .fls files.
  */
 export class Manager {
     // key: filePath
@@ -97,11 +97,10 @@ export class Manager {
     private _rootFileLanguageId: string | undefined
     private _rootFile: RootFileType | undefined
 
-    private readonly lwFileWatcher: LwFileWatcher
-    // key: filePath
-    private readonly watchedFiles = new Set<string>()
+    private readonly managerWatcher: ManagerWatcher
     private readonly pdfWatcher: PdfWatcher
     private readonly bibWatcher: BibWatcher
+
     private readonly finderUtils: FinderUtils
     private readonly pathUtils: PathUtils
     #rootFilePromise: ExternalPromise<string | undefined> | undefined
@@ -122,11 +121,18 @@ export class Manager {
         readonly viewer: Viewer
     }) {
 
+        // Each watcher uses the same LwFileWatcher object, but they have slightly different APIs
+        // and are separated into different classes due to their subtle differences in usage.
+        // It is important to note that the ManagerWatcher and BibWatcher are reset every time
+        // the rootFile changes, and files to watch are newly constructed from the tree of cachedContent.
         const lwFileWatcher = new LwFileWatcher()
-        this.lwFileWatcher = lwFileWatcher
-        this.registerListeners(lwFileWatcher)
+        this.managerWatcher = new ManagerWatcher(extension, lwFileWatcher)
+        this.managerWatcher.onDidCreate((uri) => this.onWatchingNewFile(uri))
+        this.managerWatcher.onDidChange((uri) => this.onWatchedFileChanged(uri))
+        this.managerWatcher.onDidDelete((uri) => this.onWatchedFileDeleted(uri))
         this.pdfWatcher = new PdfWatcher(extension, lwFileWatcher)
         this.bibWatcher = new BibWatcher(extension, lwFileWatcher)
+        this.bibWatcher.onDidChange((uri) => this.buildOnFileChanged(uri, true))
 
         this.finderUtils = new FinderUtils(extension)
         this.pathUtils = new PathUtils(extension)
@@ -153,7 +159,7 @@ export class Manager {
                 }
                 await this.findRoot()
             }),
-            new vscode.Disposable(() => this.dispose())
+            lwFileWatcher
         )
 
         setTimeout(async () => {
@@ -182,10 +188,6 @@ export class Manager {
             return this.parseFlsFile(rootFile)
         })
 
-    }
-
-    private dispose() {
-        this.lwFileWatcher.dispose()
     }
 
     getCachedContent(filePath: string): Readonly<CachedContentEntry> | undefined {
@@ -229,7 +231,7 @@ export class Manager {
     }
 
     getFilesWatched() {
-        return Array.from(this.watchedFiles)
+        return Array.from(this.managerWatcher.getWatchedFiles())
     }
 
     /**
@@ -365,12 +367,6 @@ export class Manager {
         return path.resolve(path.dirname(texPath), outDir, path.basename(`${texPath.substring(0, texPath.lastIndexOf('.'))}.pdf`))
     }
 
-    ignorePdfFile(rootFile: string) {
-        const pdfFilePath = this.tex2pdf(rootFile)
-        const pdfFileUri = vscode.Uri.file(pdfFilePath)
-        this.pdfWatcher.ignorePdfFile(pdfFileUri)
-    }
-
     /**
      * Finds the root file relative to the active document and workspace,
      * and sets it as the value of `rootFile`.
@@ -430,7 +426,7 @@ export class Manager {
     private logWatchedFiles(delay = 2000) {
         return setTimeout(
             () => {
-                this.extension.logger.debug(`Manager.filesWatched: ${JSON.stringify(Array.from(this.watchedFiles))}`)
+                this.managerWatcher.logWatchedFiles()
                 this.bibWatcher.logWatchedFiles()
                 this.pdfWatcher.logWatchedFiles()
             },
@@ -788,7 +784,7 @@ export class Manager {
 
     private isWatched(file: string | vscode.Uri) {
         const uri = file instanceof vscode.Uri ? file : vscode.Uri.file(file)
-        return this.watchedFiles.has(toKey(uri))
+        return this.managerWatcher.isWatched(uri)
     }
 
     private addToFileWatcher(file: string) {
@@ -796,38 +792,26 @@ export class Manager {
             return
         }
         const uri = vscode.Uri.file(file)
-        this.lwFileWatcher.add(uri)
-        this.watchedFiles.add(toKey(uri))
-    }
-
-    private registerListeners(fileWatcher: LwFileWatcher) {
-        fileWatcher.onDidCreate((uri) => this.onWatchingNewFile(uri))
-        fileWatcher.onDidChange((uri) => this.onWatchedFileChanged(uri))
-        fileWatcher.onDidDelete((uri) => this.onWatchedFileDeleted(uri))
+        this.managerWatcher.add(uri)
     }
 
     private resetFileWatcherAndComponents() {
         this.extension.logger.info('Clear watched files.')
-        this.watchedFiles.clear()
+        this.managerWatcher.clear()
+        this.bibWatcher.clear()
         // We also clean the completions from the old project
         this.extension.completer.input.reset()
         this.extension.duplicateLabels.reset()
     }
 
-    private onWatchingNewFile(fileUri: vscode.Uri) {
+    private async onWatchingNewFile(fileUri: vscode.Uri) {
         this.extension.logger.info(`Added to file watcher: ${fileUri}`)
         if (isTexOrWeaveFile(fileUri)) {
-            return this.updateContentEntry(fileUri)
+            await this.updateContentEntry(fileUri)
         }
-        return
     }
 
     private async onWatchedFileChanged(fileUri: vscode.Uri) {
-        if (!this.isWatched(fileUri)) {
-            return
-        }
-        this.extension.logger.info(`File watcher - file changed: ${fileUri}`)
-        // It is possible for either tex or non-tex files in the watcher.
         if (isTexOrWeaveFile(fileUri)) {
             await this.updateContentEntry(fileUri)
         }
@@ -835,12 +819,7 @@ export class Manager {
     }
 
     private onWatchedFileDeleted(fileUri: vscode.Uri) {
-        if (!this.isWatched(fileUri)) {
-            return
-        }
-        this.watchedFiles.delete(toKey(fileUri))
         this.cachedContent.delete(fileUri.fsPath)
-        this.extension.logger.info(`File watcher - file deleted: ${fileUri}`)
         if (fileUri.fsPath === this.rootFile) {
             this.extension.logger.info(`Root file deleted: ${fileUri}`)
             this.extension.logger.info('Start searching a new root file.')
@@ -850,6 +829,12 @@ export class Manager {
 
     watchPdfFile(pdfFileUri: vscode.Uri) {
         this.pdfWatcher.watchPdfFile(pdfFileUri)
+    }
+
+    ignorePdfFile(rootFile: string) {
+        const pdfFilePath = this.tex2pdf(rootFile)
+        const pdfFileUri = vscode.Uri.file(pdfFilePath)
+        this.pdfWatcher.ignorePdfFile(pdfFileUri)
     }
 
     /**
@@ -869,7 +854,7 @@ export class Manager {
         }
     }
 
-    buildOnFileChanged(fileUri: vscode.Uri, bibChanged: boolean = false) {
+    private buildOnFileChanged(fileUri: vscode.Uri, bibChanged: boolean = false) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onFileChange) {
             return

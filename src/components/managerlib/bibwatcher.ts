@@ -4,34 +4,39 @@ import { toKey } from '../../utils/tokey'
 import type { LwFileWatcher } from './lwfilewatcher'
 import type { Completer } from '../../providers/completion'
 import type { Logger } from '../logger'
-import type { Manager } from '../manager'
+
 
 export class BibWatcher {
     private readonly watchedBibs = new Set<string>()
+    private readonly onDidChangeCbs = new Set<(uri: vscode.Uri) => unknown>()
 
     constructor(
         private readonly extension: {
             readonly completer: Completer,
-            readonly logger: Logger,
-            readonly manager: Manager
+            readonly logger: Logger
         },
-        private readonly lwFileWatcher: LwFileWatcher) {
+        private readonly lwFileWatcher: LwFileWatcher
+    ) {
         this.initiateBibwatcher(lwFileWatcher)
+        this.onDidChange((uri) => this.extension.completer.citation.parseBibFile(uri.fsPath))
     }
 
-    initiateBibwatcher(watcher: LwFileWatcher) {
+    clear() {
+        this.watchedBibs.clear()
+    }
+
+    private initiateBibwatcher(watcher: LwFileWatcher) {
         watcher.onDidChange((uri) => this.onWatchedBibChanged(uri))
         watcher.onDidDelete((uri) => this.onWatchedBibDeleted(uri))
     }
 
-    private async onWatchedBibChanged(bibFileUri: vscode.Uri) {
+    private onWatchedBibChanged(bibFileUri: vscode.Uri) {
         const key = toKey(bibFileUri)
         if (!this.watchedBibs.has(key)) {
             return
         }
         this.extension.logger.info(`Bib file watcher - file changed: ${bibFileUri}`)
-        await this.extension.completer.citation.parseBibFile(bibFileUri.fsPath)
-        await this.extension.manager.buildOnFileChanged(bibFileUri, true)
+        this.onDidChangeCbs.forEach(cb => cb(bibFileUri))
     }
 
     private onWatchedBibDeleted(bibFileUri: vscode.Uri) {
@@ -53,6 +58,11 @@ export class BibWatcher {
             this.watchedBibs.add(key)
             await this.extension.completer.citation.parseBibFile(bibFilePath)
         }
+    }
+
+    onDidChange(cb: (uri: vscode.Uri) => unknown): vscode.Disposable {
+        this.onDidChangeCbs.add(cb)
+        return new vscode.Disposable(() => this.onDidChangeCbs.delete(cb))
     }
 
     logWatchedFiles() {
