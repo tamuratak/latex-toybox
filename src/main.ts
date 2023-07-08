@@ -6,7 +6,7 @@ import {LaTeXCommanderTreeView} from './components/commander'
 import {Logger} from './components/logger'
 import {Manager} from './components/manager'
 import {Builder} from './components/builder'
-import {Viewer, PdfViewerHookProvider} from './components/viewer'
+import {Viewer} from './components/viewer'
 import {Server} from './components/server'
 import {Locator} from './components/locator'
 import {Linter} from './components/linter'
@@ -17,27 +17,20 @@ import {Configuration} from './components/configuration'
 import {EventBus} from './components/eventbus'
 
 import {Completer} from './providers/completion'
-import {BibtexCompleter} from './providers/bibtexcompletion'
 import {DuplicateLabels} from './components/duplicatelabels'
-import {HoverProvider} from './providers/hover'
 import {GraphicsPreview} from './components/graphicspreview'
 import {MathPreview} from './components/mathpreview'
 import {MathPreviewPanel} from './components/mathpreviewpanel'
 import {StructureTreeView} from './providers/structure'
-import {DefinitionProvider} from './providers/definition'
-import {FoldingProvider, WeaveFoldingProvider} from './providers/folding'
-import {SelectionRangeProvider} from './providers/selection'
-import { BibtexFormatter, BibtexFormatterProvider } from './providers/bibtexformatter'
+import { BibtexFormatter } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
 import { ReferenceStore } from './components/referencestore'
-import { ReferenceProvider } from './providers/reference'
-import { RenameProvider } from './providers/rename'
 import { CompletionUpdater } from './components/completionupdater'
 import { LwStatusBarItem } from './components/statusbaritem'
 import { CompilerLog } from './components/compilerlog'
 import { BibtexAstManager, LatexAstManager } from './components/astmanager'
 import { AuxManager } from './components/auxmanager'
-import { LtInlayHintsProvider } from './providers/inlayhint'
+import { ProvidersManager } from './providersmanager'
 
 
 function conflictExtensionCheck() {
@@ -47,13 +40,6 @@ function conflictExtensionCheck() {
         }
     }
     check('tomoki1207.pdf', 'vscode-pdf', 'Please consider disabling either extension.')
-}
-
-function selectDocumentsWithId(ids: string[]): vscode.DocumentSelector {
-   const selector = ids.map( (id) => {
-       return { scheme: 'file', language: id }
-   })
-   return selector
 }
 
 function registerLatexWorkshopCommands(
@@ -126,88 +112,14 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', true)
 
     registerLatexWorkshopCommands(extension, context)
-    registerProviders(extension, context)
-
+    new ProvidersManager(extension)
 
     conflictExtensionCheck()
 
     return generateLatexWorkshopApi(extension)
 }
 
-function registerProviders(extension: Extension, context: vscode.ExtensionContext) {
-    const configuration = vscode.workspace.getConfiguration('latex-workshop')
-
-    const latexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave'])
-    const weaveSelector = selectDocumentsWithId(['jlweave', 'rsweave'])
-    const latexDoctexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave', 'doctex'])
-    const bibtexFormatter = new BibtexFormatterProvider(extension)
-
-    context.subscriptions.push(
-        vscode.languages.registerDocumentFormattingEditProvider({ scheme: 'file', language: 'bibtex'}, bibtexFormatter),
-        vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: 'file', language: 'bibtex'}, bibtexFormatter)
-    )
-
-    context.subscriptions.push(
-        vscode.window.registerWebviewPanelSerializer('latex-workshop-pdf', extension.viewer.pdfViewerPanelSerializer),
-        vscode.window.registerCustomEditorProvider('latex-workshop-pdf-hook', new PdfViewerHookProvider(extension), {supportsMultipleEditorsPerDocument: true}),
-        vscode.window.registerWebviewPanelSerializer('latex-workshop-mathpreview', extension.mathPreviewPanel.mathPreviewPanelSerializer)
-    )
-
-    context.subscriptions.push(
-        vscode.languages.registerHoverProvider(latexSelector, new HoverProvider(extension)),
-        vscode.languages.registerDefinitionProvider(latexSelector, new DefinitionProvider(extension))
-    )
-
-    context.subscriptions.push(
-        vscode.languages.registerReferenceProvider(latexSelector, new ReferenceProvider(extension)),
-        vscode.languages.registerRenameProvider(latexSelector, new RenameProvider(extension)),
-    )
-
-    const userTriggersLatex = configuration.get('intellisense.triggers.latex') as string[]
-    const latexTriggers = ['\\', ','].concat(userTriggersLatex)
-    extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
-
-    context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'tex'}, extension.completer, '\\', '{'),
-        vscode.languages.registerCompletionItemProvider(latexDoctexSelector, extension.completer, ...latexTriggers),
-        vscode.languages.registerCompletionItemProvider({ scheme: 'file', language: 'bibtex'}, new BibtexCompleter(extension), '@')
-    )
-
-    const atSuggestionLatexTrigger = configuration.get('intellisense.atSuggestion.trigger.latex') as string
-    if (atSuggestionLatexTrigger !== '') {
-        context.subscriptions.push(
-            vscode.languages.registerCompletionItemProvider(
-                latexDoctexSelector,
-                extension.completer.atSuggestionCompleter,
-                atSuggestionLatexTrigger
-            )
-        )
-    }
-
-    context.subscriptions.push(
-        vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider()),
-        vscode.languages.registerFoldingRangeProvider(weaveSelector, new WeaveFoldingProvider())
-    )
-
-    const selectionLatex = configuration.get('selection.smart.latex.enabled', true)
-    if (selectionLatex) {
-        context.subscriptions.push(vscode.languages.registerSelectionRangeProvider({language: 'latex'}, new SelectionRangeProvider(extension)))
-    }
-
-    context.subscriptions.push(
-        vscode.languages.registerInlayHintsProvider({language: 'latex'}, new LtInlayHintsProvider(extension))
-    )
-
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            'latex-workshop-snippet-view',
-            extension.snippetView.snippetViewProvider,
-            {webviewOptions: {retainContextWhenHidden: true}}
-        )
-    )
-}
-
-class Extension {
+export class Extension {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
