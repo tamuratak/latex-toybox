@@ -2,8 +2,8 @@ import * as vscode from 'vscode'
 
 import { SectionNodeProvider } from './structurelib/sectionnodeprovider'
 import { hasTexId } from '../utils/hastexid'
-import { Logger } from '../components/logger'
-import { EventBus } from '../components/eventbus'
+import { Logger } from './logger'
+import { EventBus } from './eventbus'
 
 
 export enum SectionKind {

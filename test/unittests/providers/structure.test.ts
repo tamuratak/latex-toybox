@@ -5,7 +5,7 @@ import * as path from 'path'
 import {getFixtureDir, runUnitTestWithFixture, waitLatexWorkshopActivated} from '../../utils/ciutils'
 import assert from 'assert'
 
-import { SectionNodeProvider } from '../../../src/providers/structurelib/sectionnodeprovider'
+import { SectionNodeProvider } from '../../../src/components/structurelib/sectionnodeprovider'
 
 async function resetConfig() {
     const config = vscode.workspace.getConfiguration()

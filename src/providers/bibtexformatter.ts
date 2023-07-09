@@ -16,12 +16,18 @@ export class BibtexFormatter {
     diags: vscode.Diagnostic[]
 
     constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
         readonly bibtexAstManager: BibtexAstManager,
         readonly logger: Logger,
         readonly statusbaritem: LwStatusBarItem
     }) {
         this.duplicatesDiagnostics = vscode.languages.createDiagnosticCollection('BibTeX')
         this.diags = []
+        extension.extensionContext.subscriptions.push(
+            vscode.commands.registerCommand('latex-workshop.bibsort', () => this.bibtexFormat(true, false)),
+            vscode.commands.registerCommand('latex-workshop.bibalign', () => this.bibtexFormat(false, true)),
+            vscode.commands.registerCommand('latex-workshop.bibalignsort', () => this.bibtexFormat(true, true))
+        )
     }
 
     async bibtexFormat(sort: boolean, align: boolean) {

@@ -8,9 +8,9 @@ import { setLastLineOfEachSection } from './sectionnodeproviderlib/utils'
 import { parseRnwChildCommand } from './sectionnodeproviderlib/rnw'
 import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
 import { getDirtyContent } from '../../utils/getdirtycontent'
-import type { Logger } from '../../components/logger'
-import type { Manager } from '../../components/manager'
-import type { LatexAstManager } from '../../components/astmanager'
+import type { Logger } from '../logger'
+import type { Manager } from '../manager'
+import type { LatexAstManager } from '../astmanager'
 
 
 export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {

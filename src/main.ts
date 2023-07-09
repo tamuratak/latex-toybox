@@ -21,8 +21,6 @@ import {DuplicateLabels} from './components/duplicatelabels'
 import {GraphicsPreview} from './components/graphicspreview'
 import {MathPreview} from './components/mathpreview'
 import {MathPreviewPanel} from './components/mathpreviewpanel'
-import {StructureTreeView} from './providers/structure'
-import { BibtexFormatter } from './providers/bibtexformatter'
 import {SnippetView} from './components/snippetview'
 import { ReferenceStore } from './components/referencestore'
 import { CompletionUpdater } from './components/completionupdater'
@@ -31,6 +29,7 @@ import { CompilerLog } from './components/compilerlog'
 import { BibtexAstManager, LatexAstManager } from './components/astmanager'
 import { AuxManager } from './components/auxmanager'
 import { ProvidersManager } from './providersmanager'
+import { StructureTreeView } from './components/structure'
 
 
 function conflictExtensionCheck() {
@@ -44,13 +43,12 @@ function conflictExtensionCheck() {
 
 function registerLatexWorkshopCommands(
     extension: {
-        readonly bibtexFormatter: BibtexFormatter,
+        readonly extensionContext: vscode.ExtensionContext,
         readonly commander: Commander
-    },
-    context: vscode.ExtensionContext
+    }
 ) {
 
-    context.subscriptions.push(
+    extension.extensionContext.subscriptions.push(
         vscode.commands.registerCommand('latex-workshop.saveWithoutBuilding', () => extension.commander.saveWithoutBuilding()),
         vscode.commands.registerCommand('latex-workshop.build', () => extension.commander.build()),
         vscode.commands.registerCommand('latex-workshop.recipes', (recipe: string | undefined) => extension.commander.recipes(recipe)),
@@ -78,10 +76,6 @@ function registerLatexWorkshopCommands(
         vscode.commands.registerCommand('latex-workshop.demote-sectioning', () => extension.commander.shiftSectioningLevel('demote')),
         vscode.commands.registerCommand('latex-workshop.select-section', () => extension.commander.selectSection()),
 
-        vscode.commands.registerCommand('latex-workshop.bibsort', () => extension.bibtexFormatter.bibtexFormat(true, false)),
-        vscode.commands.registerCommand('latex-workshop.bibalign', () => extension.bibtexFormatter.bibtexFormat(false, true)),
-        vscode.commands.registerCommand('latex-workshop.bibalignsort', () => extension.bibtexFormatter.bibtexFormat(true, true)),
-
         vscode.commands.registerCommand('latex-workshop.openMathPreviewPanel', () => extension.commander.openMathPreviewPanel()),
         vscode.commands.registerCommand('latex-workshop.closeMathPreviewPanel', () => extension.commander.closeMathPreviewPanel()),
         vscode.commands.registerCommand('latex-workshop.toggleMathPreviewPanel', () => extension.commander.toggleMathPreviewPanel())
@@ -89,9 +83,9 @@ function registerLatexWorkshopCommands(
 
 }
 
-function generateLatexWorkshopApi(extension: Extension) {
+function generateLatexWorkshopApi(extension: Extension, structureViewer: StructureTreeView) {
     return {
-        realExtension:  process.env['LATEXWORKSHOP_CI'] ? extension : undefined
+        realExtension:  process.env['LATEXWORKSHOP_CI'] ? {...extension, structureViewer} : undefined
     }
 }
 
@@ -111,12 +105,13 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
     extensionToDispose = extension
     void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', true)
 
-    registerLatexWorkshopCommands(extension, context)
+    registerLatexWorkshopCommands(extension)
+    const structureViewer = new StructureTreeView(extension)
     new ProvidersManager(extension)
 
     conflictExtensionCheck()
 
-    return generateLatexWorkshopApi(extension)
+    return generateLatexWorkshopApi(extension, structureViewer)
 }
 
 export class Extension {
@@ -142,11 +137,9 @@ export class Extension {
     readonly envPair: EnvPair
     readonly section: Section
     readonly latexCommanderTreeView: LaTeXCommanderTreeView
-    readonly structureViewer: StructureTreeView
     readonly snippetView: SnippetView
     readonly graphicsPreview: GraphicsPreview
     readonly mathPreview: MathPreview
-    readonly bibtexFormatter: BibtexFormatter
     readonly mathPreviewPanel: MathPreviewPanel
     readonly duplicateLabels: DuplicateLabels
     readonly referenceStore: ReferenceStore
@@ -179,14 +172,12 @@ export class Extension {
         this.envPair = new EnvPair(this)
         this.section = new Section(this)
         this.latexCommanderTreeView = new LaTeXCommanderTreeView(this)
-        this.structureViewer = new StructureTreeView(this)
         this.snippetView = new SnippetView(this)
         this.utensilsParser = new UtensilsParser()
         this.latexAstManager = new LatexAstManager(this)
         this.bibtexAstManager = new BibtexAstManager(this)
         this.graphicsPreview = new GraphicsPreview(this)
         this.mathPreview = new MathPreview(this)
-        this.bibtexFormatter = new BibtexFormatter(this)
         this.mathPreviewPanel = new MathPreviewPanel(this)
         this.logger.info('LaTeX Workshop initialized.')
     }
