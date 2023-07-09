@@ -339,7 +339,7 @@ export class Viewer {
                 }
             },
             keybindings: {
-                synctex: configuration.get('view.pdf.internal.synctex.keybinding') as 'ctrl-click' | 'double-click'
+                synctex: configuration.get('view.pdf.synctex.keybinding', 'ctrl-click')
             }
         }
         return pack

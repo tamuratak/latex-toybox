@@ -869,6 +869,12 @@
           "default": 1000,
           "markdownDescription": "Defines the delay in milliseconds to wait for a tab opening. Please increase the value if you encounter a focus issue after opening a tab."
         },
+        "latex-workshop.view.pdf.reload.delay": {
+          "scope": "resource",
+          "type": "number",
+          "default": 250,
+          "markdownDescription": "Delay before reloading a PDF file after last change, in milliseconds."
+        },
         "latex-workshop.view.pdf.ref.viewer": {
           "type": "string",
           "default": "auto",
@@ -879,13 +885,13 @@
           ],
           "markdownDescription": "PDF viewer used for [View on PDF] link on \\ref."
         },
-        "latex-workshop.viewer.pdf.internal.port": {
+        "latex-workshop.view.pdf.port": {
           "scope": "window",
           "type": "number",
-          "default": "0",
+          "default": 0,
           "markdownDescription": "Define the port to listen on for communicating with the internal viewer. The default value \"0\" means the port is chosen randomly by the application."
         },
-        "latex-workshop.view.pdf.internal.synctex.keybinding": {
+        "latex-workshop.view.pdf.synctex.keybinding": {
           "scope": "window",
           "type": "string",
           "default": "ctrl-click",
@@ -895,7 +901,7 @@
           ],
           "markdownDescription": "Which keybinding to use for the internal viewer for reverse synctex. `ctrl`/`cmd` + click (default) or double click. You must reload VSCode or the PDF viewer to make any change in this configuration effective."
         },
-        "latex-workshop.viewer.pdf.internal.keyboardEvent": {
+        "latex-workshop.view.pdf.keyboardEvent": {
           "scope": "window",
           "type": "string",
           "default": "auto",
@@ -906,42 +912,7 @@
           ],
           "markdownDescription": "Rebroadcasting KeyboardEvent on the internal viewers. If keyboard shortcuts on the internal viewer do not work well, change this setting."
         },
-        "latex-workshop.view.pdf.external.viewer.command": {
-          "scope": "window",
-          "type": "string",
-          "default": "",
-          "markdownDescription": "The command to execute when using external viewer. This function is not officially supported."
-        },
-        "latex-workshop.view.pdf.external.viewer.args": {
-          "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "%PDF%"
-          ],
-          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.viewer.command#` when using external viewer. This function is not officially supported. %PDF% is the placeholder for the absolute path to the generated PDF file."
-        },
-        "latex-workshop.view.pdf.external.synctex.command": {
-          "scope": "window",
-          "type": "string",
-          "default": "",
-          "markdownDescription": "The command to execute when forward synctex to external viewer. This function is not officially supported."
-        },
-        "latex-workshop.view.pdf.external.synctex.args": {
-          "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "%LINE%",
-            "%PDF%",
-            "%TEX%"
-          ],
-          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.synctex.args#` when forward synctex to external viewer. %LINE% is the line number, %PDF% is the placeholder for the absolute path to the generated PDF file, and %TEX% is the source LaTeX file path with `.tex` extension from which syncTeX is fired."
-        },
+
         "latex-workshop.view.pdf.zoom": {
           "scope": "window",
           "type": "string",
@@ -1067,6 +1038,42 @@
           "type": "string",
           "default": "#ffffff",
           "markdownDescription": "The background color of the viewer when the OS appearance is dark. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
+        },
+        "latex-workshop.view.pdf.external.viewer.command": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "markdownDescription": "The command to execute when using external viewer. This function is not officially supported."
+        },
+        "latex-workshop.view.pdf.external.viewer.args": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "%PDF%"
+          ],
+          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.viewer.command#` when using external viewer. This function is not officially supported. %PDF% is the placeholder for the absolute path to the generated PDF file."
+        },
+        "latex-workshop.view.pdf.external.synctex.command": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "markdownDescription": "The command to execute when forward synctex to external viewer. This function is not officially supported."
+        },
+        "latex-workshop.view.pdf.external.synctex.args": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "%LINE%",
+            "%PDF%",
+            "%TEX%"
+          ],
+          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.synctex.args#` when forward synctex to external viewer. %LINE% is the line number, %PDF% is the placeholder for the absolute path to the generated PDF file, and %TEX% is the source LaTeX file path with `.tex` extension from which syncTeX is fired."
         },
         "latex-workshop.synctex.path": {
           "scope": "window",

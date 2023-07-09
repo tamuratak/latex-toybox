@@ -3,6 +3,7 @@ import { toKey } from '../../utils/tokey'
 import type { LwFileWatcher } from './lwfilewatcher'
 import type { Logger } from '../logger'
 import type { Viewer } from '../viewer'
+import { sleep } from '../../utils/utils'
 
 
 export class PdfWatcher {
@@ -26,7 +27,7 @@ export class PdfWatcher {
         pdfWatcher.onDidDelete((uri) => this.onPdfDeleted(uri))
     }
 
-    private onPdfChanged(pdfFileUri: vscode.Uri) {
+    private async onPdfChanged(pdfFileUri: vscode.Uri) {
         const pdfKey = toKey(pdfFileUri)
         if (!this.watchedPdfs.has(pdfKey)) {
             return
@@ -34,6 +35,9 @@ export class PdfWatcher {
         if (this.isIgnored(pdfFileUri)) {
             return
         }
+        const configuration = vscode.workspace.getConfiguration('latex-workshop', pdfFileUri)
+        const delay = configuration.get('view.pdf.reload.delay', 250)
+        await sleep(delay)
         this.extension.logger.info(`PDF file watcher - file changed: ${pdfFileUri}`)
         this.extension.viewer.refreshExistingViewer(undefined, pdfFileUri)
     }
