@@ -9,6 +9,7 @@ export class FileDecorationProvider implements vscode.FileDecorationProvider {
     readonly onDidChangeFileDecorations?: vscode.Event<vscode.Uri | undefined>
 
     constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
         readonly eventBus: EventBus,
         readonly manager: Manager
     }) {
@@ -22,6 +23,9 @@ export class FileDecorationProvider implements vscode.FileDecorationProvider {
         this.extension.eventBus.rootFileChanged.event((filePath) => {
             this.eventEmitter.fire(vscode.Uri.file(filePath))
         })
+        extension.extensionContext.subscriptions.push(
+            this.eventEmitter
+        )
     }
 
     public provideFileDecoration(uri: vscode.Uri) {
