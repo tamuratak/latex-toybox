@@ -1,6 +1,6 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import type { CancellationToken, Event, InlayHintsProvider, Range, TextDocument } from 'vscode'
+import type { Event, InlayHintsProvider, Range, TextDocument } from 'vscode'
 import { EventEmitter, InlayHint } from 'vscode'
 import { toVscodePosition, toVscodeRange } from '../utils/utensils'
 import type { AuxManager } from '../components/auxmanager'
@@ -14,6 +14,7 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
     readonly onDidChangeInlayHints: Event<void>
 
     constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
         readonly auxManager: AuxManager,
         readonly eventBus: EventBus,
         readonly latexAstManager: LatexAstManager,
@@ -23,9 +24,12 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
         extension.eventBus.auxUpdated.event(() => {
             this.eventEmitter.fire()
         })
+        extension.extensionContext.subscriptions.push(
+            this.eventEmitter
+        )
     }
 
-    async provideInlayHints(document: TextDocument, range: Range, _token: CancellationToken) {
+    async provideInlayHints(document: TextDocument, range: Range) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
         const enabled = configuration.get('inlayHints.enabled', true)
         if (!enabled) {

@@ -31,11 +31,15 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     private readonly LaTeXSectionDepths: {[cmd: string]: number} = {}
 
     constructor(private readonly extension: {
+        readonly extensionContext: vscode.ExtensionContext,
         readonly logger: Logger,
         readonly manager: Manager,
         readonly latexAstManager: LatexAstManager
     }) {
         this.onDidChangeTreeData = this._onDidChangeTreeData.event
+        extension.extensionContext.subscriptions.push(
+            this._onDidChangeTreeData
+        )
     }
 
     /**
