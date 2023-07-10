@@ -5,9 +5,9 @@ import {performance} from 'perf_hooks'
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
 import { toVscodeRange } from '../utils/utensils'
-import { BibtexAstManager } from '../components/astmanager'
-import { Logger } from '../components/logger'
-import { LwStatusBarItem } from '../components/statusbaritem'
+import type { BibtexAstManager } from '../components/astmanager'
+import type { Logger } from '../components/logger'
+import type { LwStatusBarItem } from '../components/statusbaritem'
 
 
 export class BibtexFormatter {
@@ -156,13 +156,13 @@ export class BibtexFormatterProvider implements vscode.DocumentFormattingEditPro
         this.formatter = new BibtexFormatter(extension)
     }
 
-    public provideDocumentFormattingEdits(document: vscode.TextDocument, _options: vscode.FormattingOptions, _token: vscode.CancellationToken): vscode.ProviderResult<vscode.TextEdit[]> {
+    public provideDocumentFormattingEdits(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
         const sort = vscode.workspace.getConfiguration('latex-workshop', document).get('bibtex-format.sort.enabled') as boolean
         this.extension.logger.info('Start bibtex formatting on behalf of VSCode\'s formatter.')
         return this.formatter.formatDocument(document, sort, true)
     }
 
-    public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range, _options: vscode.FormattingOptions, _token: vscode.CancellationToken): vscode.ProviderResult<vscode.TextEdit[]> {
+    public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range): Promise<vscode.TextEdit[]> {
         const sort = vscode.workspace.getConfiguration('latex-workshop', document).get('bibtex-format.sort.enabled') as boolean
         this.extension.logger.info('Start bibtex selection formatting on behalf of VSCode\'s formatter.')
         return this.formatter.formatDocument(document, sort, true, range)

@@ -1,6 +1,6 @@
 # Overview
 
-[Providers](https://code.visualstudio.com/api/language-extensions/programmatic-language-features#language-features-listing) are defined under `providers/` and are registered in `main.ts`. All other components of the extension are defined under `components/`. These components are properties of the `Extension` class, which is defined in `main.ts` and can be accessed when needed. The `Extension` class is a type of [service locator](https://martinfowler.com/articles/injection.html#UsingAServiceLocator), which is a design pattern that helps manage dependencies in an application.
+[Providers](https://code.visualstudio.com/api/language-extensions/programmatic-language-features#language-features-listing) are defined under `providers/` and are registered in `providrsmanager.ts`. All other components of the extension are defined under `components/`. These components are properties of the `Extension` class, which is defined in `main.ts` and can be accessed when needed. The `Extension` class is a type of [service locator](https://martinfowler.com/articles/injection.html#UsingAServiceLocator), which is a design pattern that helps manage dependencies in an application.
 
 ## Root file
 
