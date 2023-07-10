@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import type { Manager } from '../components/manager'
 import type { EventBus } from '../components/eventbus'
-import { toKey } from '../utils/tokey'
 
 
 export class FileDecorationProvider implements vscode.FileDecorationProvider {
@@ -30,28 +29,17 @@ export class FileDecorationProvider implements vscode.FileDecorationProvider {
 
     public provideFileDecoration(uri: vscode.Uri) {
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
-        const decoration = configuration.get('decoration.rootFile', '')
-        if (decoration === '') {
-            return
-        }
-        const rootFileUri = this.extension.manager.rootFileUri
-        if (!rootFileUri) {
-            return
-        }
-        const rootFileKey = toKey(rootFileUri)
-        const uirKey = toKey(uri)
-        if (rootFileKey === uirKey) {
+        const decoration: string = configuration.get('decoration.rootFile', '')
+        const rootFile = this.extension.manager.rootFile
+        if (uri.fsPath === rootFile && decoration !== '') {
             return {
                 badge: decoration,
                 tooltip: 'Current LaTeX Root File',
             }
         }
         const subFileRoot = this.extension.manager.localRootFile
-        if (!subFileRoot) {
-            return
-        }
-        const subdecoration = configuration.get('decoration.rootSubFile', '')
-        if (uri.fsPath === subFileRoot) {
+        const subdecoration: string = configuration.get('decoration.rootSubFile', '')
+        if (uri.fsPath === subFileRoot && subdecoration !== '') {
             return {
                 badge: subdecoration,
                 tooltip: 'Current LaTeX Root SubFile',
