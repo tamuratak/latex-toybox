@@ -1,6 +1,5 @@
 import * as vscode from 'vscode'
 import {bibtexParser} from 'latex-utensils'
-import {performance} from 'perf_hooks'
 
 import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
 import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
@@ -40,7 +39,7 @@ export class BibtexFormatter {
             return
         }
         const doc = vscode.window.activeTextEditor.document
-        const t0 = performance.now() // Measure performance
+        const t0 = Date.now()
         this.duplicatesDiagnostics.clear()
         this.extension.logger.info('Start bibtex formatting on user request.')
         const edits = await this.formatDocument(doc, sort, align)
@@ -55,7 +54,7 @@ export class BibtexFormatter {
         void vscode.workspace.applyEdit(edit).then(success => {
             if (success) {
                 this.duplicatesDiagnostics.set(doc.uri, this.diags)
-                const t1 = performance.now()
+                const t1 = Date.now()
                 this.extension.logger.info(`BibTeX action successful. Took ${t1 - t0} ms.`)
             } else {
                 void this.extension.logger.error('Something went wrong while processing the bibliography.')
