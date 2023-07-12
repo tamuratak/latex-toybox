@@ -27,7 +27,9 @@ export class CommandReplacer implements IContexAwareProvider {
                 const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
                 item.insertText = cmd
                 item.filterText = command
-                item.range = commandRange
+                if (commandRange) {
+                    item.range = commandRange
+                }
                 return item
             })
             return items
@@ -37,7 +39,9 @@ export class CommandReplacer implements IContexAwareProvider {
                 const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
                 item.insertText = cmd
                 item.filterText = command
-                item.range = commandRange
+                if (commandRange) {
+                    item.range = commandRange
+                }
                 return item
             })
             return items

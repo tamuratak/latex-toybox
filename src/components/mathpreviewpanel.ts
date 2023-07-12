@@ -40,10 +40,10 @@ export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer
 }
 
 export class MathPreviewPanel {
-    private panel?: vscode.WebviewPanel
-    private prevDocumentUri?: string
-    private prevCursorPosition?: vscode.Position
-    private prevNewCommands?: string
+    private panel: vscode.WebviewPanel | undefined
+    private prevDocumentUri: string | undefined
+    private prevCursorPosition: vscode.Position | undefined
+    private prevNewCommands: string | undefined
     readonly mathPreviewPanelSerializer: MathPreviewPanelSerializer
     private needCursor: boolean
 

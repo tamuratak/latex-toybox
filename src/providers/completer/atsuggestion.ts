@@ -96,7 +96,11 @@ export class AtSuggestion implements IProvider {
         if (startPos >= 0) {
             range = new vscode.Range(position.line, startPos, position.line, position.character)
         }
-        this.suggestions.forEach(suggestion => {suggestion.range = range})
+        this.suggestions.forEach(suggestion => {
+            if (range) {
+                suggestion.range = range
+            }
+        })
         return this.suggestions
     }
 }
