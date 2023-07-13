@@ -52,12 +52,12 @@ export function splitSignatureString(signature: string): CmdSignature {
 }
 
 export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwCompletionItem {
-    readonly command: vscode.Command | undefined
-    readonly detail: string | undefined
-    readonly documentation: string | undefined
-    readonly filterText: string | undefined
-    insertText?: string | vscode.SnippetString | undefined
-    readonly sortText: string | undefined
+    readonly command?: vscode.Command
+    readonly detail?: string
+    readonly documentation?: string
+    readonly filterText?: string
+    insertText?: string | vscode.SnippetString
+    readonly sortText?: string
     readonly label: string
     readonly package: string
     readonly signature: CmdSignature
@@ -68,24 +68,36 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
         signature: CmdSignature,
         kind: vscode.CompletionItemKind,
         args: {
-            command?: vscode.Command,
-            documentation?: string,
-            detail?: string,
-            filterText?: string,
-            insertText?: string | vscode.SnippetString,
-            sortText?: string
+            command?: vscode.Command | undefined,
+            documentation?: string | undefined,
+            detail?: string | undefined,
+            filterText?: string | undefined,
+            insertText?: string | vscode.SnippetString | undefined,
+            sortText?: string | undefined
         }
     ) {
         super(label, kind)
         this.label = label
         this.package = pkg
         this.signature = signature
-        this.command = args.command
-        this.documentation = args.documentation
-        this.detail = args.detail
-        this.filterText = args.filterText
-        this.insertText = args.insertText
-        this.sortText = args.sortText
+        if (args.command) {
+            this.command = args.command
+        }
+        if (args.documentation) {
+            this.documentation = args.documentation
+        }
+        if (args.detail) {
+            this.detail = args.detail
+        }
+        if (args.filterText) {
+            this.filterText = args.filterText
+        }
+        if (args.insertText) {
+            this.insertText = args.insertText
+        }
+        if (args.sortText) {
+            this.sortText = args.sortText
+        }
     }
 
     /**
@@ -226,7 +238,9 @@ export class Command implements IProvider, ICommand {
             if (!useOptionalArgsEntries && cmd.hasOptionalArgs()) {
                 return
             }
-            cmd.range = range
+            if (range) {
+                cmd.range = range
+            }
             suggestions.push(cmd)
             cmdDuplicationDetector.add(cmd)
         })
@@ -264,7 +278,9 @@ export class Command implements IProvider, ICommand {
             const cmds = this.extension.manager.getCachedContent(tex)?.element.command
             cmds?.forEach(cmd => {
                 if (!commandNameDuplicationDetector.has(cmd)) {
-                    cmd.range = range
+                    if (range) {
+                        cmd.range = range
+                    }
                     suggestions.push(cmd)
                     commandNameDuplicationDetector.add(cmd)
                 }

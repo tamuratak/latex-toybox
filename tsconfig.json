@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
+        "exactOptionalPropertyTypes": true,
         "forceConsistentCasingInFileNames": true,
         "lib": [
             "es2021"

@@ -60,7 +60,7 @@ export interface CiteSuggestion {
     readonly key: string,
     readonly label: string,
     readonly kind: vscode.CompletionItemKind,
-    readonly detail: string | undefined,
+    readonly detail?: string,
     readonly fields: Fields,
     readonly file: string,
     readonly position: vscode.Position
@@ -113,7 +113,9 @@ export class Citation implements IProvider {
             }
             item.filterText = citeSugg.key + ' ' + citeSugg.fields.join(fields, false)
             item.insertText = citeSugg.key
-            item.range = range
+            if (range) {
+                item.range = range
+            }
             // We need two spaces to ensure md newline
             item.documentation = new vscode.MarkdownString( '\n' + citeSugg.fields.join(fields, true, '  \n') + '\n\n')
             return item
@@ -262,8 +264,7 @@ export class Citation implements IProvider {
                     file,
                     position: toVscodePosition(entry.location.start),
                     kind: vscode.CompletionItemKind.Reference,
-                    fields: this.entryToFields(entry),
-                    detail: undefined
+                    fields: this.entryToFields(entry)
                 }
                 newEntry.push(item)
             })

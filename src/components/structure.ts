@@ -27,9 +27,12 @@ export class Section extends vscode.TreeItem {
         public readonly lineNumber: number,
         public lastLine: number,
         public readonly fileName: string,
-        public readonly command?: vscode.Command
+        command?: vscode.Command
     ) {
         super(label, collapsibleState)
+        if (command) {
+            this.command = command
+        }
     }
 }
 

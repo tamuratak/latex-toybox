@@ -22,7 +22,7 @@ interface ProcessEnv {
 export interface StepCommand {
     readonly name: string,
     readonly command: string,
-    readonly args?: readonly string[],
+    readonly args: readonly string[] | undefined,
     readonly env?: ProcessEnv
 }
 

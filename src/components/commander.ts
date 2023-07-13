@@ -125,8 +125,12 @@ class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
 
     getTreeItem(element: LaTeXCommand): vscode.TreeItem {
         const treeItem: vscode.TreeItem = new vscode.TreeItem(element.label, element.collapsibleState)
-        treeItem.command = element.command
-        treeItem.iconPath = element.codicon && new vscode.ThemeIcon(element.codicon)
+        if (element.command) {
+            treeItem.command = element.command
+        }
+        if (element.codicon) {
+            treeItem.iconPath = new vscode.ThemeIcon(element.codicon)
+        }
         return treeItem
     }
 

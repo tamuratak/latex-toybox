@@ -122,7 +122,9 @@ abstract class AbstractInput implements IProvider {
                     const fileType = await statPath(filePath)
                     if (fileType.type === vscode.FileType.Directory) {
                         const item = new vscode.CompletionItem(`${file}/`, vscode.CompletionItemKind.Folder)
-                        item.range = range
+                        if (range) {
+                            item.range = range
+                        }
                         item.command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
                         item.detail = dir
                         suggestions.push(item)
@@ -132,7 +134,9 @@ abstract class AbstractInput implements IProvider {
                         if (preview && ['includegraphics', 'includesvg'].includes(command)) {
                             item.documentation = filePath
                         }
-                        item.range = range
+                        if (range) {
+                            item.range = range
+                        }
                         item.detail = dir
                         suggestions.push(item)
                     }
