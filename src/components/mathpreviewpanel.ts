@@ -44,17 +44,14 @@ export class MathPreviewPanel {
     private prevDocumentUri: string | undefined
     private prevCursorPosition: vscode.Position | undefined
     private prevNewCommands: string | undefined
-    readonly mathPreviewPanelSerializer: MathPreviewPanelSerializer
     private needCursor: boolean
 
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,
         readonly extensionRoot: string,
         readonly logger: Logger,
-        readonly mathPreview: MathPreview,
-        readonly mathPreviewPanel: MathPreviewPanel
+        readonly mathPreview: MathPreview
     }) {
-        this.mathPreviewPanelSerializer = new MathPreviewPanelSerializer(extension)
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         this.needCursor = configuration.get('mathpreviewpanel.cursor.enabled', false)
         extension.extensionContext.subscriptions.push(
