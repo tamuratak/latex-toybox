@@ -50,7 +50,7 @@ export class MathPreview {
     }
 
     async provideHoverOnTex(document: vscode.TextDocument, tex: TexMathEnv, newCommand: string): Promise<vscode.Hover> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
         let newTexString = await this.cursorRenderer.renderCursor(document, tex, this.color) || tex.texString
         newTexString = this.mputils.mathjaxify(newTexString, tex.envname)
@@ -74,9 +74,9 @@ export class MathPreview {
         token: string,
         ctoken: vscode.CancellationToken
     ): Promise<vscode.Hover> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const line = labelDef.position.line
-        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
+        const link = vscode.Uri.parse('command:latex-toybox.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         try {
@@ -108,7 +108,7 @@ export class MathPreview {
 
     async generateSVG(tex: Pick<TexMathEnv, 'texString' | 'envname'>, newCommandsArg?: string) {
         const newCommands: string = newCommandsArg ?? await this.newCommandFinder.findProjectNewCommand()
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
         const newTexString = this.mputils.mathjaxify(tex.texString, tex.envname)
         const xml = await this.mj.typeset(newCommands + this.mputils.stripTeX(newTexString), {scale, color: this.color})

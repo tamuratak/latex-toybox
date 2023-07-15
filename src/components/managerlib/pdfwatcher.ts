@@ -35,7 +35,7 @@ export class PdfWatcher {
         if (this.isIgnored(pdfFileUri)) {
             return
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', pdfFileUri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', pdfFileUri)
         const delay = configuration.get('view.pdf.reload.delay', 250)
         await sleep(delay)
         this.extension.logger.info(`PDF file watcher - file changed: ${pdfFileUri}`)

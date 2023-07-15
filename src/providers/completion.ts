@@ -169,7 +169,7 @@ export class Completer implements vscode.CompletionItemProvider {
     }
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         if (item.kind === vscode.CompletionItemKind.Reference) {
             if (typeof item.label !== 'string') {
                 return item
@@ -281,7 +281,7 @@ export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
     constructor(extension: {
         readonly extensionRoot: string
     }) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const triggerCharacter = configuration.get('intellisense.atSuggestion.trigger.latex') as string
         this.atSuggestion = new AtSuggestion(extension, triggerCharacter)
         this.triggerCharacter = triggerCharacter

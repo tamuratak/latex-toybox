@@ -52,12 +52,12 @@ export class MathPreviewPanel {
         readonly logger: Logger,
         readonly mathPreview: MathPreview
     }) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         this.needCursor = configuration.get('mathpreviewpanel.cursor.enabled', false)
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidChangeConfiguration((e) => {
-                if (e.affectsConfiguration('latex-workshop.mathpreviewpanel.cursor.enabled')) {
-                    const conf = vscode.workspace.getConfiguration('latex-workshop')
+                if (e.affectsConfiguration('latex-toybox.mathpreviewpanel.cursor.enabled')) {
+                    const conf = vscode.workspace.getConfiguration('latex-toybox')
                     this.needCursor = conf.get('mathpreviewpanel.cursor.enabled', false)
                 }
             }),
@@ -79,7 +79,7 @@ export class MathPreviewPanel {
         }
         this.mathPreview.getColor()
         const panel = vscode.window.createWebviewPanel(
-            'latex-workshop-mathpreview',
+            'latex-toybox-mathpreview',
             'Math Preview',
             { viewColumn: vscode.ViewColumn.Active, preserveFocus: true },
             {
@@ -90,7 +90,7 @@ export class MathPreviewPanel {
         )
         this.initializePanel(panel)
         panel.webview.html = this.getHtml(panel.webview)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const editorGroup = configuration.get('mathpreviewpanel.editorGroup') as string
         if (activeDocument) {
             await openWebviewPanel(panel, editorGroup, activeDocument)

@@ -43,7 +43,7 @@ export class Linter {
 
     private getLinters(scope?: vscode.ConfigurationScope): ILinter[] {
         scope ||= this.extension.manager.getWorkspaceFolderRootDir()
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', scope)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', scope)
         const linters: ILinter[] = []
         if (configuration.get('linting.chktex.enabled')) {
             linters.push(this.chktex)
@@ -56,7 +56,7 @@ export class Linter {
 
     private clear(scope?: vscode.ConfigurationScope) {
         scope ||= this.extension.manager.getWorkspaceFolderRootDir()
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', scope)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', scope)
         if (!configuration.get('linting.chktex.enabled')) {
             this.chktex.linterDiagnostics.clear()
         }

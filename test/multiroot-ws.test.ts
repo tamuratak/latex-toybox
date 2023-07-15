@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import * as path from 'path'
 import * as fs from 'fs'
-import {obtainLatexWorkshop, sleep} from './utils/ciutils'
+import {obtainLatexToybox, sleep} from './utils/ciutils'
 import {activate} from '../src/main'
 import * as vscode from 'vscode'
 import {
@@ -60,7 +60,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -76,7 +76,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -91,7 +91,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -106,7 +106,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -160,7 +160,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -177,7 +177,7 @@ suite('Multi-root workspace test suite', () => {
         const docA = await vscode.workspace.openTextDocument(texFilePathA)
         await vscode.window.showTextDocument(docA)
         await findRootFileEnd
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         await waitGivenRootFile(docA.fileName)
         const docB = await vscode.workspace.openTextDocument(texFilePathB)
         await vscode.window.showTextDocument(docB)
@@ -207,7 +207,7 @@ suite('Multi-root workspace test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -223,11 +223,11 @@ suite('Multi-root workspace test suite', () => {
         await findRootFileEnd
         await sleep(1000)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await vscode.commands.executeCommand('latex-workshop.recipes', 'latexmk A')
+            await vscode.commands.executeCommand('latex-toybox.recipes', 'latexmk A')
         })
         fs.unlinkSync(pdfFilePath)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -246,7 +246,7 @@ suite('Multi-root workspace test suite', () => {
         await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await vscode.commands.executeCommand('latex-workshop.recipes', 'latexmk A')
+            await vscode.commands.executeCommand('latex-toybox.recipes', 'latexmk A')
         })
         fs.unlinkSync(pdfFilePath)
 
@@ -259,7 +259,7 @@ suite('Multi-root workspace test suite', () => {
         await vscode.window.showTextDocument(docA)
         await waitGivenRootFile(docA.fileName)
         await assertPdfIsGenerated(pdfFilePath, async () => {
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
     })
 
@@ -279,7 +279,7 @@ suite('Multi-root workspace test suite', () => {
 
         // Open A.tex and trigger citation completion
         await vscode.window.showTextDocument(docA)
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         await findRootFileEnd
         await waitGivenRootFile(docA.fileName)
         const itemsA = await getCompletionItems(extension, docA, pos)

@@ -81,7 +81,7 @@ export class Citation implements IProvider {
 
     private provide(args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}): ILwCompletionItem[] {
         // Compile the suggestion array to vscode completion array
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', args.document.uri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', args.document.uri)
         const label = configuration.get('intellisense.citation.label') as string
         const fields = this.readCitationFormat(configuration)
         let range: vscode.Range | undefined = undefined
@@ -124,7 +124,7 @@ export class Citation implements IProvider {
     }
 
     async browser(args?: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', args?.document.uri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', args?.document.uri)
         const label = configuration.get('intellisense.citation.label') as string
         const fields = this.readCitationFormat(configuration, label)
         const bibs = this.getIncludedBibs(this.extension.manager.rootFile)
@@ -171,7 +171,7 @@ export class Citation implements IProvider {
         }
         const result: ILwCompletionItem = {...entry}
         if (entry.detail === undefined) {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', configurationScope)
+            const configuration = vscode.workspace.getConfiguration('latex-toybox', configurationScope)
             const fields = this.readCitationFormat(configuration)
             // We need two spaces to ensure md newline
             result.documentation = new vscode.MarkdownString( '\n' + entry.fields.join(fields, true, '  \n') + '\n\n')

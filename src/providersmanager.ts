@@ -67,10 +67,10 @@ export class ProvidersManager {
                     return true
                 }
                 isAffected(e: vscode.ConfigurationChangeEvent): boolean {
-                    return e.affectsConfiguration('latex-workshop.intellisense.triggers.latex')
+                    return e.affectsConfiguration('latex-toybox.intellisense.triggers.latex')
                 }
                 register(): vscode.Disposable {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     const userTriggersLatex = configuration.get('intellisense.triggers.latex', ['{'])
                     const latexTriggers = ['\\', ','].concat(userTriggersLatex)
                     extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
@@ -79,14 +79,14 @@ export class ProvidersManager {
             },
             new class extends SingleProviderManager {
                 isEnabled(): boolean {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     return configuration.get<string>('intellisense.atSuggestion.trigger.latex', '@') !== ''
                 }
                 isAffected(e: vscode.ConfigurationChangeEvent): boolean {
-                    return e.affectsConfiguration('latex-workshop.intellisense.atSuggestion.trigger.latex')
+                    return e.affectsConfiguration('latex-toybox.intellisense.atSuggestion.trigger.latex')
                 }
                 register(): vscode.Disposable {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     const atSuggestionLatexTrigger = configuration.get('intellisense.atSuggestion.trigger.latex', '@')
                     return vscode.languages.registerCompletionItemProvider(
                         latexDoctexSelector,
@@ -97,11 +97,11 @@ export class ProvidersManager {
             },
             new class extends SingleProviderManager {
                 isEnabled(): boolean {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     return configuration.get('selection.smart.latex.enabled', true)
                 }
                 isAffected(e: vscode.ConfigurationChangeEvent): boolean {
-                    return e.affectsConfiguration('latex-workshop.selection.smart.latex.enabled')
+                    return e.affectsConfiguration('latex-toybox.selection.smart.latex.enabled')
                 }
                 register(): vscode.Disposable {
                     return vscode.languages.registerSelectionRangeProvider({language: 'latex'}, selectionRangeProvider)
@@ -109,11 +109,11 @@ export class ProvidersManager {
             },
             new class extends SingleProviderManager {
                 isEnabled(): boolean {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     return configuration.get('inlayHints.enabled', true)
                 }
                 isAffected(e: vscode.ConfigurationChangeEvent): boolean {
-                    return e.affectsConfiguration('latex-workshop.inlayHints.enabled')
+                    return e.affectsConfiguration('latex-toybox.inlayHints.enabled')
                 }
                 register(): vscode.Disposable {
                     return vscode.languages.registerInlayHintsProvider({language: 'latex'}, ltInlayHintsProvider)
@@ -121,13 +121,13 @@ export class ProvidersManager {
             },
             new class extends SingleProviderManager {
                 isEnabled(): boolean {
-                    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                    const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     const decoration = configuration.get('decoration.rootFile', '')
                     const subdecoration = configuration.get('decoration.rootSubFile', '')
                     return decoration !== '' || subdecoration !== ''
                 }
                 isAffected(e: vscode.ConfigurationChangeEvent): boolean {
-                    return e.affectsConfiguration('latex-workshop.decoration')
+                    return e.affectsConfiguration('latex-toybox.decoration')
                 }
                 register(): vscode.Disposable {
                     return vscode.window.registerFileDecorationProvider(fileDecorationProvider)
@@ -147,9 +147,9 @@ export class ProvidersManager {
         )
 
         context.subscriptions.push(
-            vscode.window.registerWebviewPanelSerializer('latex-workshop-pdf', extension.viewer.pdfViewerPanelSerializer),
-            vscode.window.registerCustomEditorProvider('latex-workshop-pdf-hook', new PdfViewerHookProvider(extension), {supportsMultipleEditorsPerDocument: true}),
-            vscode.window.registerWebviewPanelSerializer('latex-workshop-mathpreview', new MathPreviewPanelSerializer(extension))
+            vscode.window.registerWebviewPanelSerializer('latex-toybox-pdf', extension.viewer.pdfViewerPanelSerializer),
+            vscode.window.registerCustomEditorProvider('latex-toybox-pdf-hook', new PdfViewerHookProvider(extension), {supportsMultipleEditorsPerDocument: true}),
+            vscode.window.registerWebviewPanelSerializer('latex-toybox-mathpreview', new MathPreviewPanelSerializer(extension))
         )
 
         context.subscriptions.push(
@@ -174,7 +174,7 @@ export class ProvidersManager {
 
         context.subscriptions.push(
             vscode.window.registerWebviewViewProvider(
-                'latex-workshop-snippet-view',
+                'latex-toybox-snippet-view',
                 extension.snippetView.snippetViewProvider,
                 {webviewOptions: {retainContextWhenHidden: true}}
             )

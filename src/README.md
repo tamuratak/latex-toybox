@@ -30,8 +30,8 @@ To avoid blocking the main loop of the extension host process, we execute some h
 
 See:
 
-- https://github.com/tamuratak/LaTeX-Workshop/blob/main/src/components/utensilsparser.ts
-- https://github.com/tamuratak/LaTeX-Workshop/blob/main/src/components/mathpreviewlib/mathjaxpool.ts
+- https://github.com/tamuratak/latex-toybox/blob/main/src/components/utensilsparser.ts
+- https://github.com/tamuratak/latex-toybox/blob/main/src/components/mathpreviewlib/mathjaxpool.ts
 
 
 ## Architecture
@@ -56,17 +56,17 @@ flowchart LR
   end
   ParserPool --> ParserWorkers["parser workers\n syntax_worker.ts"]
   MathJaxPool --> MathJaxWorkers["MathJax workers\n mathjaxpool_worker.ts "]
-  click PDFViewer "https://github.com/James-Yu/LaTeX-Workshop/blob/master/viewer/latexworkshop.ts"
-  click PDFViewerB "https://github.com/James-Yu/LaTeX-Workshop/blob/master/viewer/latexworkshop.ts"
-  click SnippetView "https://github.com/James-Yu/LaTeX-Workshop/blob/master/resources/snippetview/snippetview.js"
-  click PDFRenderer "https://github.com/James-Yu/LaTeX-Workshop/blob/master/resources/snippetview/pdfrenderer.js"
-  click MathPreview "https://github.com/James-Yu/LaTeX-Workshop/blob/master/resources/mathpreviewpanel/mathpreview.js"
-  click LW "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/main.ts"
-  click Server "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/components/server.ts"
-  click ParserPool "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/components/parser/syntax.ts"
-  click MathJaxPool "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/providers/preview/mathjaxpool.ts"
-  click ParserWorkers "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/components/parser/syntax_worker.ts"
-  click MathJaxWorkers "https://github.com/James-Yu/LaTeX-Workshop/blob/master/src/providers/preview/mathjaxpool_worker.ts"
+  click PDFViewer "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latexworkshop.ts"
+  click PDFViewerB "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latexworkshop.ts"
+  click SnippetView "https://github.com/Tamuratak/latex-toybox/blob/master/resources/snippetview/snippetview.js"
+  click PDFRenderer "https://github.com/Tamuratak/latex-toybox/blob/master/resources/snippetview/pdfrenderer.js"
+  click MathPreview "https://github.com/Tamuratak/latex-toybox/blob/master/resources/mathpreviewpanel/mathpreview.js"
+  click LW "https://github.com/Tamuratak/latex-toybox/blob/master/src/main.ts"
+  click Server "https://github.com/Tamuratak/latex-toybox/blob/master/src/components/server.ts"
+  click ParserPool "https://github.com/Tamuratak/latex-toybox/blob/master/src/components/parser/syntax.ts"
+  click MathJaxPool "https://github.com/Tamuratak/latex-toybox/blob/master/src/providers/preview/mathjaxpool.ts"
+  click ParserWorkers "https://github.com/Tamuratak/latex-toybox/blob/master/src/components/parser/syntax_worker.ts"
+  click MathJaxWorkers "https://github.com/Tamuratak/latex-toybox/blob/master/src/providers/preview/mathjaxpool_worker.ts"
 ```
 
 ## flowchart

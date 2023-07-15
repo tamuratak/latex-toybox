@@ -49,7 +49,7 @@ export class BibtexFormatConfig {
     }
 
     loadConfiguration(scope: vscode.ConfigurationScope | undefined) {
-        const config = vscode.workspace.getConfiguration('latex-workshop', scope)
+        const config = vscode.workspace.getConfiguration('latex-toybox', scope)
         const leftright = config.get('bibtex-format.surround') === 'Curly braces' ? [ '{', '}' ] : [ '"', '"']
         let tabs: string | undefined = getBibtexFormatTab(config.get('bibtex-format.tab') as string)
         if (tabs === undefined) {

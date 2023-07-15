@@ -1,4 +1,4 @@
 {
-    "latex-workshop.latex.outDir": "%DIR%/out",
-    "latex-workshop.latex.rootFile.doNotPrompt": true
+    "latex-toybox.latex.outDir": "%DIR%/out",
+    "latex-toybox.latex.rootFile.doNotPrompt": true
 }

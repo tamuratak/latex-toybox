@@ -1,4 +1,4 @@
 {
-    "latex-workshop.view.pdf.viewer": "tab",
-    "latex-workshop.synctex.afterBuild.enabled": true
+    "latex-toybox.view.pdf.viewer": "tab",
+    "latex-toybox.synctex.afterBuild.enabled": true
 }

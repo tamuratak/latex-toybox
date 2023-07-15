@@ -5,7 +5,7 @@ import {SyncTexJs} from './locatorlib/synctex'
 import {replaceArgumentPlaceholders} from '../utils/utils'
 import {isSameRealPath} from '../utils/pathnormalize'
 
-import type {ClientRequest} from '../../types/latex-workshop-protocol-types'
+import type {ClientRequest} from '../../types/latex-toybox-protocol-types'
 import { existsPath } from '../lib/lwfs/lwfs'
 import { hasTexId } from '../utils/hastexid'
 import type { Logger } from './logger'
@@ -138,7 +138,7 @@ export class Locator {
             line = args.line
             filePath = args.filePath
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const rootFile = this.extension.manager.rootFile
         if (rootFile === undefined) {
             this.extension.logger.info('Cannot find root file.')
@@ -175,7 +175,7 @@ export class Locator {
     }
 
     private invokeSyncTeXCommandForward(line: number, col: number, filePath: string, pdfFile: string): Thenable<SyncTeXRecordForward> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const args = ['view', '-i', `${line}:${col + 1}:${filePath}`, '-o', pdfFile]
         this.extension.logger.info(`Execute synctex with args ${JSON.stringify(args)}`)
 
@@ -213,7 +213,7 @@ export class Locator {
     }
 
     syncTeXOnRef(args: {line: number, filePath: string}) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const viewer = configuration.get('view.pdf.ref.viewer') as 'auto' | 'tabOrBrowser' | 'external'
         args.line += 1
         if (viewer) {
@@ -224,7 +224,7 @@ export class Locator {
     }
 
     private invokeSyncTeXCommandBackward(page: number, x: number, y: number, pdfPath: string): Thenable<SyncTeXRecordBackward> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
 
         const args = ['edit', '-o', `${page}:${x}:${y}:${pdfPath}`]
         this.extension.logger.info(`Executing synctex with args ${JSON.stringify(args)}`)
@@ -270,7 +270,7 @@ export class Locator {
      * @param pdfPath The path of a PDF file as the input of backward SyncTeX.
      */
     async locate(data: Extract<ClientRequest, {type: 'reverse_synctex'}>, pdfPath: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useSyncTexJs = configuration.get('synctex.synctexjs.enabled') as boolean
         let record: SyncTeXRecordBackward
 
@@ -461,7 +461,7 @@ export class Locator {
             return
         }
         const texFile = vscode.window.activeTextEditor.document.uri.fsPath
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const command = configuration.get('view.pdf.external.synctex.command') as string
         let args = configuration.get('view.pdf.external.synctex.args') as string[]
         if (command === '') {

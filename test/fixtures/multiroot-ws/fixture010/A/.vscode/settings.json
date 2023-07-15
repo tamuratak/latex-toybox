@@ -1,4 +1,4 @@
 {
-	"latex-workshop.latex.rootFile.useSubFile": true,
-	"latex-workshop.latex.autoBuild.run": "onSave"
+	"latex-toybox.latex.rootFile.useSubFile": true,
+	"latex-toybox.latex.autoBuild.run": "onSave"
 }

@@ -29,10 +29,10 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         this.bibtexFormatConfig = new BibtexFormatConfig(extension, this.scope)
         this.initialize()
         vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-            if (e.affectsConfiguration('latex-workshop.bibtex-format', this.scope) ||
-                e.affectsConfiguration('latex-workshop.bibtex-entries', this.scope) ||
-                e.affectsConfiguration('latex-workshop.bibtex-fields', this.scope) ||
-                e.affectsConfiguration('latex-workshop.intellisense', this.scope)) {
+            if (e.affectsConfiguration('latex-toybox.bibtex-format', this.scope) ||
+                e.affectsConfiguration('latex-toybox.bibtex-entries', this.scope) ||
+                e.affectsConfiguration('latex-toybox.bibtex-fields', this.scope) ||
+                e.affectsConfiguration('latex-toybox.intellisense', this.scope)) {
                     this.bibtexFormatConfig.loadConfiguration(this.scope)
                     this.initialize()
                 }
@@ -50,7 +50,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     }
 
     private initialize() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', this.scope)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', this.scope)
         const citationBackend = configuration.get('intellisense.citation.backend')
         let entriesFile: string = ''
         let optEntriesFile: string = ''

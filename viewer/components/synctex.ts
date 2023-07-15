@@ -1,13 +1,13 @@
-import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.js'
+import type {ILatexToyboxPdfViewer, IPDFViewerApplication} from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
 
 export class SyncTex {
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
     reverseSynctexKeybinding: string = 'ctrl-click'
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         // Since DOM of each page is recreated when a PDF document is reloaded,
         // we must register listeners every time.

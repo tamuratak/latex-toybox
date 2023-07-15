@@ -1,6 +1,6 @@
 {
-	"latex-workshop.latex.recipe.default": "latexmk A",
-	"latex-workshop.latex.recipes": [
+	"latex-toybox.latex.recipe.default": "latexmk A",
+	"latex-toybox.latex.recipes": [
 		{
 			"name": "fake",
 			"tools": [
@@ -14,7 +14,7 @@
 			]
 		}
 		],
-	"latex-workshop.latex.tools": [
+	"latex-toybox.latex.tools": [
 		{
 			"name": "latexmk",
 			"command": "latexmk",

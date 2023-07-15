@@ -28,7 +28,7 @@ export class FileDecorationProvider implements vscode.FileDecorationProvider {
     }
 
     public provideFileDecoration(uri: vscode.Uri) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const decoration: string = configuration.get('decoration.rootFile', '')
         const rootFile = this.extension.manager.rootFile
         if (uri.fsPath === rootFile && decoration !== '') {

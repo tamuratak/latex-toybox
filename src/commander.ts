@@ -14,7 +14,7 @@ import type { EnvPair } from './components/envpair'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
-    const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
+    const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(rootFile))
     const doNotPrompt = configuration.get('latex.rootFile.doNotPrompt') as boolean
     if (doNotPrompt) {
         if (configuration.get('latex.rootFile.useSubFile')) {
@@ -86,7 +86,7 @@ export class Commander {
         this.extension.logger.info(`The document of the active editor: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
         this.extension.logger.info(`The languageId of the document: ${vscode.window.activeTextEditor.document.languageId}`)
         const workspace = rootFile ? vscode.Uri.file(rootFile) : vscode.window.activeTextEditor.document.uri
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', workspace)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', workspace)
         const externalBuildCommand = configuration.get('latex.external.build.command') as string
         const externalBuildArgs = configuration.get('latex.external.build.args') as string[]
         if (rootFile === undefined && hasTexId(vscode.window.activeTextEditor.document.languageId)) {
@@ -130,7 +130,7 @@ export class Commander {
 
     recipes(recipe?: string) {
         this.extension.logger.info('RECIPES command invoked.')
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', this.extension.manager.getWorkspaceFolderRootDir())
         const recipes = configuration.get('latex.recipes') as {name: string}[]
         if (!recipes) {
             return
@@ -175,7 +175,7 @@ export class Commander {
         if (!pickedRootFile) {
             return
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const tabEditorGroup = configuration.get('view.pdf.tab.editorGroup') as string
         const viewer = typeof mode === 'string' ? mode : configuration.get<'tab' | 'browser' | 'external'>('view.pdf.viewer', 'tab')
         if (viewer === 'browser') {
@@ -213,7 +213,7 @@ export class Commander {
                 this.extension.logger.info('Cannot start SyncTeX. The active editor is undefined, or the document is not a TeX document.')
                 return
             }
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
+            const configuration = vscode.workspace.getConfiguration('latex-toybox', this.extension.manager.getWorkspaceFolderRootDir())
             let pdfFile: string | undefined = undefined
             if (this.extension.manager.localRootFile && configuration.get('latex.rootFile.useSubFile')) {
                 pdfFile = this.extension.manager.tex2pdf(this.extension.manager.localRootFile)
@@ -287,7 +287,7 @@ export class Commander {
         if (!editor) {
             return
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         if (!configuration.get('bind.enter.key')) {
             return vscode.commands.executeCommand('type', { source: 'keyboard', text: '\n' })
         }

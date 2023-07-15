@@ -8,7 +8,7 @@ export class LwStatusBarItem {
         readonly extensionContext: vscode.ExtensionContext
     }) {
         this.status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -10000)
-        this.status.command = 'latex-workshop.log'
+        this.status.command = 'latex-toybox.log'
         this.status.show()
         this.displayStatus('success')
         extension.extensionContext.subscriptions.push(
@@ -31,9 +31,9 @@ export class LwStatusBarItem {
             this.status.backgroundColor = undefined
         }
         if (type === 'build') {
-            this.status.command = 'latex-workshop.compilerlog'
+            this.status.command = 'latex-toybox.compilerlog'
         } else if (type === 'other') {
-            this.status.command = 'latex-workshop.log'
+            this.status.command = 'latex-toybox.log'
         }
     }
 

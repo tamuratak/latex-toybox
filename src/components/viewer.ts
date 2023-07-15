@@ -7,7 +7,7 @@ import type {Locator, SyncTeXRecordForward} from './locator'
 import {openWebviewPanel} from '../utils/webview'
 import {getCurrentThemeLightness} from '../utils/theme'
 
-import type {ClientRequest, PdfViewerParams, PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
+import type {ClientRequest, PdfViewerParams, PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
 
 import {Client} from './viewerlib/client'
 import {PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService} from './viewerlib/pdfviewerpanel'
@@ -47,7 +47,7 @@ export class Viewer {
             if (rootFile === undefined) {
                 return
             }
-            const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
+            const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(rootFile))
             // If the PDF viewer is internal, we call SyncTeX in src/components/viewer.ts.
             if (configuration.get('view.pdf.viewer') === 'external' && configuration.get('synctex.afterBuild.enabled')) {
                 const pdfFile = this.extension.manager.tex2pdf(rootFile)
@@ -208,7 +208,7 @@ export class Viewer {
      */
     openExternal(sourceFile: string) {
         const pdfFile = this.extension.manager.tex2pdf(sourceFile)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         let command = configuration.get('view.pdf.external.viewer.command') as string
         let args = configuration.get('view.pdf.external.viewer.args') as string[]
         if (!command) {
@@ -287,7 +287,7 @@ export class Viewer {
             case 'loaded': {
                 const uri = vscode.Uri.parse(data.pdfFileUri, true)
                 void this.extension.eventBus.pdfViewerPagesLoaded.fire(uri)
-                const configuration = vscode.workspace.getConfiguration('latex-workshop')
+                const configuration = vscode.workspace.getConfiguration('latex-toybox')
                 if (configuration.get('synctex.afterBuild.enabled') as boolean) {
                     this.extension.logger.info('SyncTex after build invoked.')
 
@@ -316,7 +316,7 @@ export class Viewer {
     }
 
     viewerParams(): PdfViewerParams {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const invertType = configuration.get('view.pdf.invertMode.enabled') as string
         const invertEnabled = (invertType === 'auto' && (getCurrentThemeLightness() === 'dark')) ||
         invertType === 'always' ||

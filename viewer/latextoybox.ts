@@ -5,8 +5,8 @@ import * as utils from './utils/utils.js'
 import { isEmbedded } from './utils/utils.js'
 import {ViewerHistory} from './components/viewerhistory.js'
 
-import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './components/interface.js'
-import type {ClientRequest, PdfViewerState, PanelRequest} from '../types/latex-workshop-protocol-types/index'
+import type {ILatexToyboxPdfViewer, IPDFViewerApplication} from './components/interface.js'
+import type {ClientRequest, PdfViewerState, PanelRequest} from '../types/latex-toybox-protocol-types/index'
 import { AppConfig } from './components/appconfig.js'
 import { Keybinding } from './components/keybinding.js'
 import { ViewerLoading } from './components/viewerloading.js'
@@ -18,7 +18,7 @@ import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
 declare const PDFViewerApplication: IPDFViewerApplication
 
 
-class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
+class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
     readonly documentTitle: string = ''
     readonly encodedPdfFilePath: string
     readonly pdfFileUri: string
@@ -42,7 +42,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
         this.lwEventBus = new LwEventBus()
 
         // When the promise is resolved, the initialization
-        // of LateXWorkshopPdfViewer and PDF.js is completed.
+        // of LateXToyboxPdfViewer and PDF.js is completed.
         this.pdfViewerStarted = new Promise((resolve) => {
             this.lwEventBus.onDidStartPdfViewer(() => resolve())
         })
@@ -160,7 +160,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
 // @ts-expect-error
 await import('/build/pdf.js')
 
-const extension = new LateXWorkshopPdfViewer()
+const extension = new LateXToyboxPdfViewer()
 await extension.waitSetupAppOptionsReady()
 
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.

@@ -44,7 +44,7 @@ export class LaCheck implements ILinter {
     }
 
     private async lacheckWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, content?: string): Promise<string | undefined> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', configScope)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', configScope)
         const command = configuration.get('linting.lacheck.exec.path') as string
 
         let stdout: string
@@ -116,7 +116,7 @@ export class LaCheck implements ILinter {
             }
             diagsCollection[item.file].push(diag)
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
         for (const file in diagsCollection) {
             let file1 = file

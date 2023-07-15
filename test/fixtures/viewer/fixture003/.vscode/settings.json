@@ -1,5 +1,5 @@
 {
-    "latex-workshop.latex.rootFile.doNotPrompt": true,
-    "latex-workshop.latex.rootFile.useSubFile": false,
-    "latex-workshop.view.pdf.viewer": "tab"
+    "latex-toybox.latex.rootFile.doNotPrompt": true,
+    "latex-toybox.latex.rootFile.useSubFile": false,
+    "latex-toybox.view.pdf.viewer": "tab"
 }

@@ -30,7 +30,7 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
     }
 
     async provideInlayHints(document: TextDocument, range: Range) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', document)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', document)
         const enabled = configuration.get('inlayHints.enabled', true)
         if (!enabled) {
             return []

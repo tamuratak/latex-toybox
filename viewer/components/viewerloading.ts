@@ -1,15 +1,15 @@
-import type { PdfViewerState } from '../../types/latex-workshop-protocol-types/index'
+import type { PdfViewerState } from '../../types/latex-toybox-protocol-types/index'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
-import type { ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
 
 
 export class ViewerLoading {
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
     }
 

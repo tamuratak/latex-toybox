@@ -129,7 +129,7 @@ export class CursorRenderer {
         thisColor: string,
         cursorPos?: vscode.Position
     ): Promise<string | undefined> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const cursorEnabled = configuration.get('hover.preview.cursor.enabled') as boolean
         if (!cursorEnabled) {
             return

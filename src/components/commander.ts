@@ -12,7 +12,7 @@ export class LaTeXCommanderTreeView {
         this.latexCommanderProvider = new LaTeXCommanderProvider(extension)
         extension.extensionContext.subscriptions.push(
             vscode.window.createTreeView(
-                'latex-workshop-commands',
+                'latex-toybox-commands',
                 {
                     treeDataProvider: this.latexCommanderProvider,
                     showCollapseAll: true
@@ -39,7 +39,7 @@ class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
         this.onDidChangeTreeData = this.treeDataEventEmitter.event
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {
-                if (ev.affectsConfiguration('latex-workshop.latex.recipes', this.extension.manager.getWorkspaceFolderRootDir())) {
+                if (ev.affectsConfiguration('latex-toybox.latex.recipes', this.extension.manager.getWorkspaceFolderRootDir())) {
                     this.update()
                 }
             }),
@@ -64,60 +64,60 @@ class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
 
     private buildCommandTree(): LaTeXCommand[] {
         const commands: LaTeXCommand[] = []
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', this.extension.manager.getWorkspaceFolderRootDir())
 
-        const buildCommand = new LaTeXCommand('Build LaTeX project', {command: 'latex-workshop.build'}, 'debug-start')
+        const buildCommand = new LaTeXCommand('Build LaTeX project', {command: 'latex-toybox.build'}, 'debug-start')
         const recipes = configuration.get('latex.recipes', []) as {name: string}[]
-        const recipeCommands = recipes.map(recipe => new LaTeXCommand(`Recipe: ${recipe.name}`, {command: 'latex-workshop.recipes', arguments: [recipe.name]}, 'debug-start'))
+        const recipeCommands = recipes.map(recipe => new LaTeXCommand(`Recipe: ${recipe.name}`, {command: 'latex-toybox.recipes', arguments: [recipe.name]}, 'debug-start'))
         let node: LaTeXCommand
         node = this.buildNode(buildCommand, [
-            new LaTeXCommand('Terminate current compilation', {command: 'latex-workshop.kill'}, 'debug-stop'),
+            new LaTeXCommand('Terminate current compilation', {command: 'latex-toybox.kill'}, 'debug-stop'),
             ...recipeCommands
         ])
         commands.push(node)
 
-        const viewCommand = new LaTeXCommand('View LaTeX PDF', {command: 'latex-workshop.view'}, 'open-preview')
+        const viewCommand = new LaTeXCommand('View LaTeX PDF', {command: 'latex-toybox.view'}, 'open-preview')
         node = this.buildNode(viewCommand, [
-            new LaTeXCommand('View in VSCode tab', {command: 'latex-workshop.view', arguments: ['tab']}, 'open-preview'),
-            new LaTeXCommand('View in web browser', {command: 'latex-workshop.view', arguments: ['browser']}, 'browser'),
-            new LaTeXCommand('View in external viewer', {command: 'latex-workshop.view', arguments: ['external']}, 'preview'),
-            new LaTeXCommand('Refresh all viewers', {command: 'latex-workshop.refresh-viewer'}, 'refresh')
+            new LaTeXCommand('View in VSCode tab', {command: 'latex-toybox.view', arguments: ['tab']}, 'open-preview'),
+            new LaTeXCommand('View in web browser', {command: 'latex-toybox.view', arguments: ['browser']}, 'browser'),
+            new LaTeXCommand('View in external viewer', {command: 'latex-toybox.view', arguments: ['external']}, 'preview'),
+            new LaTeXCommand('Refresh all viewers', {command: 'latex-toybox.refresh-viewer'}, 'refresh')
         ])
         commands.push(node)
 
-        const logCommand = new LaTeXCommand('View Log messages', {command: 'latex-workshop.log'}, 'output')
-        const compilerLog = new LaTeXCommand('View LaTeX compiler log', {command: 'latex-workshop.compilerlog'}, 'output')
-        const latexWorkshopLog = new LaTeXCommand('View LaTeX Workshop extension log', {command: 'latex-workshop.log'}, 'output')
+        const logCommand = new LaTeXCommand('View Log messages', {command: 'latex-toybox.log'}, 'output')
+        const compilerLog = new LaTeXCommand('View LaTeX compiler log', {command: 'latex-toybox.compilerlog'}, 'output')
+        const latexToyboxLog = new LaTeXCommand('View LaTeX Toybox extension log', {command: 'latex-toybox.log'}, 'output')
         node = this.buildNode(logCommand, [
-            latexWorkshopLog,
+            latexToyboxLog,
             compilerLog
         ])
         commands.push(node)
 
         const navCommand = new LaTeXCommand('Navigate, select, and edit', undefined, 'edit')
         node= this.buildNode(navCommand, [
-            new LaTeXCommand('SyncTeX from cursor', {command: 'latex-workshop.synctex'}, 'go-to-file'),
-            new LaTeXCommand('Navigate to matching begin/end', {command: 'latex-workshop.navigate-envpair'}),
-            new LaTeXCommand('Select current environment content', {command: 'latex-workshop.select-envcontent'}),
-            new LaTeXCommand('Select current environment name', {command: 'latex-workshop.select-envname'}),
-            new LaTeXCommand('Close current environment', {command: 'latex-workshop.close-env'}),
-            new LaTeXCommand('Surround with begin{}...\\end{}', {command: 'latex-workshop.wrap-env'}),
+            new LaTeXCommand('SyncTeX from cursor', {command: 'latex-toybox.synctex'}, 'go-to-file'),
+            new LaTeXCommand('Navigate to matching begin/end', {command: 'latex-toybox.navigate-envpair'}),
+            new LaTeXCommand('Select current environment content', {command: 'latex-toybox.select-envcontent'}),
+            new LaTeXCommand('Select current environment name', {command: 'latex-toybox.select-envname'}),
+            new LaTeXCommand('Close current environment', {command: 'latex-toybox.close-env'}),
+            new LaTeXCommand('Surround with begin{}...\\end{}', {command: 'latex-toybox.wrap-env'}),
         ])
         commands.push(node)
 
         const miscCommand = new LaTeXCommand('Miscellaneous', undefined, 'menu')
         node = this.buildNode(miscCommand, [
-            new LaTeXCommand('Open citation browser', {command: 'latex-workshop.citation'}),
-            new LaTeXCommand('Count words in LaTeX project', {command: 'latex-workshop.wordcount'}),
-            new LaTeXCommand('Reveal output folder in OS', {command: 'latex-workshop.revealOutputDir'}, 'folder-opened')
+            new LaTeXCommand('Open citation browser', {command: 'latex-toybox.citation'}),
+            new LaTeXCommand('Count words in LaTeX project', {command: 'latex-toybox.wordcount'}),
+            new LaTeXCommand('Reveal output folder in OS', {command: 'latex-toybox.revealOutputDir'}, 'folder-opened')
         ])
         commands.push(node)
 
         const bibtexCommand = new LaTeXCommand('BibTeX actions', undefined, 'references')
         node = this.buildNode(bibtexCommand, [
-            new LaTeXCommand('Align bibliography', {command: 'latex-workshop.bibalign'}),
-            new LaTeXCommand('Sort bibliography', {command: 'latex-workshop.bibsort'}, 'sort-precedence'),
-            new LaTeXCommand('Align and sort bibliography', {command: 'latex-workshop.bibalignsort'})
+            new LaTeXCommand('Align bibliography', {command: 'latex-toybox.bibalign'}),
+            new LaTeXCommand('Sort bibliography', {command: 'latex-toybox.bibsort'}, 'sort-precedence'),
+            new LaTeXCommand('Align and sort bibliography', {command: 'latex-toybox.bibalignsort'})
         ])
         commands.push(node)
         return commands

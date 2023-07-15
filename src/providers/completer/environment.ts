@@ -151,7 +151,7 @@ export class Environment implements IProvider {
         const envList: string[] = this.getDefaultEnvs(snippetType).map(env => env.label)
 
         // Insert package environments
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         if (configuration.get('intellisense.package.enabled')) {
             const extraPackages = this.extension.completer.command.getExtraPkgs(args.document.languageId)
             if (extraPackages) {
@@ -202,7 +202,7 @@ export class Environment implements IProvider {
      */
     provideEnvsAsCommandInPkg(pkg: string, cmdDuplicationDetector: CommandSignatureDuplicationDetector): CmdEnvSuggestion[] {
         const suggestions: CmdEnvSuggestion[] = []
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
 
         if (! configuration.get('intellisense.package.env.enabled')) {
@@ -259,7 +259,7 @@ export class Environment implements IProvider {
             } else {
                 kind = vscode.CompletionItemKind.Module
             }
-            const configuration = vscode.workspace.getConfiguration('latex-workshop')
+            const configuration = vscode.workspace.getConfiguration('latex-toybox')
             const useTabStops = configuration.get('intellisense.useTabStops.enabled')
             const prefix = (type === EnvSnippetType.ForBegin) ? '' : 'begin{'
             let snippet: string = item.snippet ? item.snippet : ''

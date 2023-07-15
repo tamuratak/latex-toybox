@@ -9,7 +9,7 @@ export function isTriggerSuggestNeeded(name: string): boolean {
 }
 
 export async function resolveCmdEnvFile(name: string, dataDir: string) {
-    const dirs = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.package.dirs') as string[]
+    const dirs = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.package.dirs') as string[]
     dirs.push(dataDir)
     for (const dir of dirs) {
         const f = `${dir}/${name}`

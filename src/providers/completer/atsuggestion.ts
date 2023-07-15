@@ -32,7 +32,7 @@ export class AtSuggestion implements IProvider {
         this.readyPromise = new Promise((resolve) => this.initialize().then(() => resolve()))
 
         vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-            if (e.affectsConfiguration('latex-workshop.intellisense.atSuggestionJSON.replace')) {
+            if (e.affectsConfiguration('latex-toybox.intellisense.atSuggestionJSON.replace')) {
                 void this.initialize()
             }
         })
@@ -42,7 +42,7 @@ export class AtSuggestion implements IProvider {
         const content = await readFilePath(`${this.extension.extensionRoot}/data/at-suggestions.json`)
         const suggestions: {[key: string]: AtSuggestionItemEntry} = JSON.parse(content) as DataAtSuggestionJsonType
 
-        const suggestionReplacements = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.atSuggestionJSON.replace') as {[key: string]: string}
+        const suggestionReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.atSuggestionJSON.replace') as {[key: string]: string}
         this.suggestions.length = 0
         Object.keys(suggestionReplacements).forEach(prefix => {
             const body = suggestionReplacements[prefix]

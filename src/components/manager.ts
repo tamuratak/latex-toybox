@@ -154,7 +154,7 @@ export class Manager {
             }),
             vscode.workspace.onDidOpenTextDocument(async (doc) => {
                 this.extension.logger.debug(`onDidOpenTextDocument: ${doc.uri.toString()}`)
-                if (process.env['LATEXWORKSHOP_CI'] || !isLocalLatexDocument(doc)) {
+                if (process.env['LATEXTOYBOX_CI'] || !isLocalLatexDocument(doc)) {
                     return
                 }
                 await this.findRoot()
@@ -163,7 +163,7 @@ export class Manager {
         )
 
         setTimeout(async () => {
-            if (process.env['LATEXWORKSHOP_CI']) {
+            if (process.env['LATEXTOYBOX_CI']) {
                 return
             }
             let interval = 1000
@@ -247,7 +247,7 @@ export class Manager {
      */
     getOutDir(texPath?: string) {
         texPath = texPath || this.rootFile || './'
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(texPath))
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(texPath))
         const outDir = configuration.get('latex.outDir') as string
         const out = utils.replaceArgumentPlaceholders(texPath)(outDir)
         return path.normalize(out).split(path.sep).join('/')
@@ -487,7 +487,7 @@ export class Manager {
             return undefined
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', currentWorkspaceDirUri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', currentWorkspaceDirUri)
         const rootFilesIncludePatterns = configuration.get('latex.search.rootFiles.include') as string[]
         const rootFilesIncludeGlob = '{' + rootFilesIncludePatterns.join(',') + '}'
         const rootFilesExcludePatterns = configuration.get('latex.search.rootFiles.exclude') as string[]
@@ -849,7 +849,7 @@ export class Manager {
      */
     private autoBuild(fileUri: vscode.Uri, bibChanged: boolean ) {
         this.extension.logger.info(`Auto build started detecting the change of a file: ${fileUri}`)
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
         if (!bibChanged && this.localRootFile && configuration.get('latex.rootFile.useSubFile')) {
             return this.extension.commander.build(true, this.localRootFile, this.rootFileLanguageId)
         } else {
@@ -858,7 +858,7 @@ export class Manager {
     }
 
     private buildOnFileChanged(fileUri: vscode.Uri, bibChanged: boolean = false) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onFileChange) {
             return
         }
@@ -866,7 +866,7 @@ export class Manager {
     }
 
     private buildOnSave(fileUri: vscode.Uri) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', fileUri)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
             return
         }

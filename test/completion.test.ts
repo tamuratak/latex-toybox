@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
 
 import {
     getFixtureDir,
-    obtainLatexWorkshop,
+    obtainLatexToybox,
     runTestWithFixture,
     sleep
 } from './utils/ciutils'
@@ -53,7 +53,7 @@ suite('Completion test suite', () => {
         await vscode.window.showTextDocument(doc)
         await findRootFileEnd
         await sleep(1000)
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
         const items = await extension.exports.realExtension.completer.provideCompletionItems?.(
@@ -73,7 +73,7 @@ suite('Completion test suite', () => {
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
         await vscode.window.showTextDocument(doc)
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         await findRootFileEnd
         await sleep(1000)
         const pos = new vscode.Position(3,1)
@@ -99,7 +99,7 @@ suite('Completion test suite', () => {
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
         await vscode.window.showTextDocument(doc)
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         await findRootFileEnd
         await sleep(1000)
         const pos = new vscode.Position(3,1)
@@ -126,7 +126,7 @@ suite('Completion test suite', () => {
         const texFilePath = vscode.Uri.file(path.join(fixtureDir, texFileName))
         const doc = await vscode.workspace.openTextDocument(texFilePath)
         await vscode.window.showTextDocument(doc)
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         await findRootFileEnd
         const pos = new vscode.Position(6,5)
         const token = new vscode.CancellationTokenSource().token

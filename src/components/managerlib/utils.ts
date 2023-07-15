@@ -25,7 +25,7 @@ export function findWorkspace(): vscode.Uri | undefined {
 }
 
 export function isExcluded(file: string): boolean {
-    const globsToIgnore = vscode.workspace.getConfiguration('latex-workshop').get('latex.watch.files.ignore') as string[]
+    const globsToIgnore = vscode.workspace.getConfiguration('latex-toybox').get('latex.watch.files.ignore') as string[]
     const format = (str: string): string => {
         if (os.platform() === 'win32') {
             return str.replace(/\\/g, '/')

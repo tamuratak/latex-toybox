@@ -70,7 +70,7 @@ export class PathUtils {
     }
 
     private kpsewhichBibPath(bib: string): string | undefined {
-        const kpsewhich = vscode.workspace.getConfiguration('latex-workshop').get('kpsewhich.path') as string
+        const kpsewhich = vscode.workspace.getConfiguration('latex-toybox').get('kpsewhich.path') as string
         this.extension.logger.info(`Calling ${kpsewhich} to resolve file: ${bib}`)
         try {
             const kpsewhichReturn = cs.sync(kpsewhich, ['-format=.bib', bib])
@@ -90,7 +90,7 @@ export class PathUtils {
     }
 
     async resolveBibPath(bib: string, baseDir: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const bibDirs = configuration.get('latex.bibDirs') as string[]
         let searchDirs: string[]
         if (this.rootDir) {

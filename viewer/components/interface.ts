@@ -1,4 +1,4 @@
-import type {ClientRequest, PanelRequest, PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
+import type {ClientRequest, PanelRequest, PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
 import type {SyncTex} from './synctex.js'
 import type {ViewerHistory} from './viewerhistory.js'
 import type { ViewerLoading } from './viewerloading.js'
@@ -8,7 +8,7 @@ export interface IDisposable {
     dispose(): unknown
 }
 
-export interface ILatexWorkshopPdfViewer {
+export interface ILatexToyboxPdfViewer {
     readonly documentTitle: string,
     readonly encodedPdfFilePath: string,
     readonly pdfFileUri: string,

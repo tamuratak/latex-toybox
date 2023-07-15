@@ -1,13 +1,13 @@
-import type {ClientRequest, ServerResponse} from '../../types/latex-workshop-protocol-types/index'
+import type {ClientRequest, ServerResponse} from '../../types/latex-toybox-protocol-types/index'
 import { isEmbedded } from '../utils/utils.js'
-import type { ILatexWorkshopPdfViewer } from './interface.js'
+import type { ILatexToyboxPdfViewer } from './interface.js'
 
 
 export class ExtensionConnection {
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
     private connectionPort = new ConnectionPort()
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         this.setupConnectionPort()
     }
@@ -42,17 +42,17 @@ export class ExtensionConnection {
 
         void this.connectionPort.onDidClose(() => {
             document.title = `[Disconnected] ${this.lwApp.documentTitle}`
-            console.log('Closed: WebScocket to LaTeX Workshop.')
+            console.log('Closed: WebScocket to LaTeX Toybox.')
 
             // Since WebSockets are disconnected when PC resumes from sleep,
             // we have to reconnect. https://github.com/James-Yu/LaTeX-Workshop/pull/1812
             setTimeout(() => {
-                console.log('Try to reconnect to LaTeX Workshop.')
+                console.log('Try to reconnect to LaTeX Toybox.')
                 this.connectionPort = new ConnectionPort()
                 void this.connectionPort.onDidOpen(() => {
                     document.title = this.lwApp.documentTitle
                     this.setupConnectionPort()
-                    console.log('Reconnected: WebScocket to LaTeX Workshop.')
+                    console.log('Reconnected: WebScocket to LaTeX Toybox.')
                 })
             }, 3000)
         })

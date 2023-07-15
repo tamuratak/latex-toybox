@@ -34,7 +34,7 @@ export class TeXMathEnvFinder {
         labelDef: LabelDefinitionEntry,
         token: string,
     ): Promise<TexMathEnv | undefined> {
-        const limit = vscode.workspace.getConfiguration('latex-workshop').get('hover.preview.maxLines') as number
+        const limit = vscode.workspace.getConfiguration('latex-toybox').get('hover.preview.maxLines') as number
         const docOfRef = await TextDocumentLike.load(labelDef.file)
         const envBeginPatMathMode = /\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
         const l = docOfRef.lineAt(labelDef.position.line).text
@@ -58,7 +58,7 @@ export class TeXMathEnvFinder {
     }
 
     findMathEnvIncludingPosition(document: ITextDocumentLike, position: vscode.Position): TexMathEnv | undefined {
-        const limit = vscode.workspace.getConfiguration('latex-workshop').get('hover.preview.maxLines') as number
+        const limit = vscode.workspace.getConfiguration('latex-toybox').get('hover.preview.maxLines') as number
         const envNamePatMathMode = /(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)/
         const envBeginPatMathMode = /\\\[|\\\(|\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
         let texMath = this.findHoverOnTex(document, position)

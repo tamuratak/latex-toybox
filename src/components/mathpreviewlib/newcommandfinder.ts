@@ -52,7 +52,7 @@ export class NewCommandFinder {
     }
 
     async findProjectNewCommand(ctoken?: vscode.CancellationToken): Promise<string> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const newCommandFile = configuration.get('hover.preview.newcommand.newcommandFile') as string
         let commandsInConfigFile = ''
         if (newCommandFile !== '') {

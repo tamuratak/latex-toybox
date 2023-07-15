@@ -45,7 +45,7 @@ abstract class AbstractInput implements IProvider {
      * @param baseDir The base directory to resolve paths from
      */
     private filterIgnoredFiles(document: vscode.TextDocument, files: string[], baseDir: string): string[] {
-        const excludeGlob = (Object.keys(vscode.workspace.getConfiguration('files', null).get('exclude') || {})).concat(vscode.workspace.getConfiguration('latex-workshop', document.uri).get('intellisense.file.exclude') || [] ).concat(ignoreFiles)
+        const excludeGlob = (Object.keys(vscode.workspace.getConfiguration('files', null).get('exclude') || {})).concat(vscode.workspace.getConfiguration('latex-toybox', document.uri).get('intellisense.file.exclude') || [] ).concat(ignoreFiles)
         return files.filter(file => {
             const filePath = path.resolve(baseDir, file)
             return !micromatch.isMatch(filePath, excludeGlob, {basename: true})
@@ -130,7 +130,7 @@ abstract class AbstractInput implements IProvider {
                         suggestions.push(item)
                     } else if (! provideDirOnly) {
                         const item = new vscode.CompletionItem(file, vscode.CompletionItemKind.File)
-                        const preview = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.includegraphics.preview.enabled') as boolean
+                        const preview = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.includegraphics.preview.enabled') as boolean
                         if (preview && ['includegraphics', 'includesvg'].includes(command)) {
                             item.documentation = filePath
                         }
@@ -168,7 +168,7 @@ export class Input extends AbstractInput {
         if (['includegraphics', 'includesvg'].includes(command) && this.graphicsPath.length > 0) {
             baseDir = this.graphicsPath.map(dir => path.join(rootDir, dir))
         } else {
-            const baseConfig = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(currentFile)).get('intellisense.file.base')
+            const baseConfig = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(currentFile)).get('intellisense.file.base')
             const baseDirCurrentFile = path.dirname(currentFile)
             switch (baseConfig) {
                 case 'root relative':

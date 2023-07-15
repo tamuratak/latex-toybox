@@ -32,7 +32,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -49,7 +49,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -68,7 +68,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -88,7 +88,7 @@ suite('PDF Viewer test suite', () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
             await execCommandThenPick(
-                () => executeVscodeCommand('latex-workshop.build'),
+                () => executeVscodeCommand('latex-toybox.build'),
                 () => vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
             )
         })
@@ -113,7 +113,7 @@ suite('PDF Viewer test suite', () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
             await execCommandThenPick(
-                () => executeVscodeCommand('latex-workshop.build'),
+                () => executeVscodeCommand('latex-toybox.build'),
                 async () => {
                     await vscode.commands.executeCommand('workbench.action.quickOpenSelectNext')
                     await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem')
@@ -145,7 +145,7 @@ suite('PDF Viewer test suite', () => {
             const doc = await vscode.workspace.openTextDocument(texFilePath)
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const results = getViewerStatus(pdfFilePath)
@@ -162,7 +162,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
@@ -174,7 +174,7 @@ suite('PDF Viewer test suite', () => {
         const editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
         await editor.insertSnippet(new vscode.SnippetString(' $0'), new vscode.Position(5, 0))
         const promise = promisify('pdfviewerstatuschanged')
-        await vscode.commands.executeCommand('latex-workshop.synctex')
+        await vscode.commands.executeCommand('latex-toybox.synctex')
         await promise
         const secondResults = getViewerStatus(pdfFilePath)
         for (const result of secondResults) {
@@ -192,7 +192,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
         })
         await viewPdf()
         const firstResults = getViewerStatus(pdfFilePath)
@@ -206,7 +206,7 @@ suite('PDF Viewer test suite', () => {
         await assertPdfIsGenerated(pdfFilePath, async () => {
             await vscode.window.showTextDocument(doc, vscode.ViewColumn.One)
             await findRootFileEnd
-            await executeVscodeCommand('latex-workshop.build')
+            await executeVscodeCommand('latex-toybox.build')
 
         })
         await promise

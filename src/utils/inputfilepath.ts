@@ -87,7 +87,7 @@ export class InputFileRegExp {
      * @param rootFile
      */
     private parseInputFilePath(match: MatchPath, currentFile: string, rootFile: string) {
-        const texDirs = vscode.workspace.getConfiguration('latex-workshop').get('latex.texDirs') as string[]
+        const texDirs = vscode.workspace.getConfiguration('latex-toybox').get('latex.texDirs') as string[]
         /* match of this.childReg */
         if (match.type === MatchType.Child) {
             return resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path)
