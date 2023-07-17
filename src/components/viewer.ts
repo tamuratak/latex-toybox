@@ -19,6 +19,7 @@ import type { Logger } from './logger'
 import type { Manager } from './manager'
 import type { Server } from './server'
 import type { LwStatusBarItem } from './statusbaritem'
+import { ExternalPromise } from '../utils/externalpromise'
 export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
 
 
@@ -205,7 +206,7 @@ export class Viewer {
      *
      * @param sourceFile The path of a LaTeX file.
      */
-    openExternal(sourceFile: string): void {
+    openExternal(sourceFile: string) {
         const pdfFile = this.extension.manager.tex2pdf(sourceFile)
         const configuration = vscode.workspace.getConfiguration('latex-workshop')
         let command = configuration.get('view.pdf.external.viewer.command') as string
@@ -234,6 +235,7 @@ export class Viewer {
         this.extension.logger.info(`Open external viewer for ${pdfFile}`)
         this.extension.logger.logCommand('Execute the external PDF viewer command', command, args)
         const proc = cs.spawn(command, args, {cwd: path.dirname(sourceFile), detached: true})
+        const resultPromise = new ExternalPromise<void>()
         let stdout = ''
         proc.stdout.on('data', newStdout => {
             stdout += newStdout
@@ -246,8 +248,15 @@ export class Viewer {
             void this.extension.logger.info(`The external PDF viewer stdout: ${stdout}`)
             void this.extension.logger.info(`The external PDF viewer stderr: ${stderr}`)
         }
-        proc.on('error', cb)
-        proc.on('exit', cb)
+        proc.on('error', (ev) => {
+            cb()
+            resultPromise.reject(ev)
+        })
+        proc.on('exit', () => {
+            cb()
+            resultPromise.resolve()
+        })
+        return resultPromise.promise
     }
 
     /**

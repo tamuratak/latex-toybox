@@ -7,6 +7,7 @@ import {sleep} from '../../src/utils/utils'
 import {activate} from '../../src/main'
 import type {EventName} from '../../src/components/eventbus'
 import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
+import { ExternalPromise } from '../../src/utils/externalpromise'
 
 export {sleep}
 
@@ -158,30 +159,29 @@ export async function waitUntil<T>(
     assert.fail('Timeout Error at waitUntil')
 }
 
-export function promisify(event: EventName): Promise<void> {
+export async function promisify(event: EventName): Promise<void> {
     addLogMessage(`promisify (${event}): Start`)
     const extension = obtainLatexWorkshop()
-    const promise = new Promise<void>((resolve, reject) => {
-        const disposable = extension.exports.realExtension.eventBus.on(event, () => {
-            resolve()
-            disposable?.dispose()
-        })
-        setTimeout(
-            () => {
-                const rootFile = extension.exports.realExtension?.manager.rootFile
-                if (event === 'findrootfileend' && rootFile) {
-                    addLogMessage(`promisify  (${event}): Timeout error, but already rootFile found`)
-                    resolve()
-                } else {
-                    const message = `promisify (${event}): Timeout error`
-                    addLogMessage(message)
-                    reject(new Error(message))
-                }
-            },
-            process.env.CI ? 30000 : 10000
-        )
+    const resultPromise = new ExternalPromise<void>()
+    const disposable = extension.exports.realExtension.eventBus.on(event, () => {
+        resultPromise.resolve()
+        disposable?.dispose()
     })
-    return promise
+    setTimeout(
+        () => {
+            const rootFile = extension.exports.realExtension?.manager.rootFile
+            if (event === 'findrootfileend' && rootFile) {
+                addLogMessage(`promisify  (${event}): Timeout error, but already rootFile found`)
+                resultPromise.resolve()
+            } else {
+                const message = `promisify (${event}): Timeout error`
+                addLogMessage(message)
+                resultPromise.reject(new Error(message))
+            }
+        },
+        process.env.CI ? 30000 : 10000
+    )
+    return resultPromise.promise
 }
 
 export function obtainLatexWorkshop() {

@@ -15,7 +15,6 @@ import {Input, Import, SubImport} from './completer/input'
 import {Glossary} from './completer/glossary'
 import {escapeRegExp} from '../utils/utils'
 import { readFilePath } from '../lib/lwfs/lwfs'
-import { ExternalPromise } from '../utils/externalpromise'
 import { BracketReplacer } from './completer/bracketreplacer'
 import { CommandRemover } from './completer/commandremover'
 import { CommandReplacer } from './completer/commandreplacer'
@@ -54,7 +53,7 @@ export class Completer implements vscode.CompletionItemProvider {
     private readonly commandReplacer: CommandReplacer
     private readonly envCloser: EnvCloser
     private readonly envRename: EnvRename
-    readonly #readyPromise = new ExternalPromise<void>()
+    readonly readyPromise: Promise<void>
 
     constructor(
         private readonly extension: {
@@ -85,17 +84,13 @@ export class Completer implements vscode.CompletionItemProvider {
         this.envCloser = new EnvCloser()
         this.envRename = new EnvRename(this.environment)
         const loadPromise = this.loadDefaultItems().catch((err) => this.extension.logger.error(`Error reading data: ${err}.`))
-        void Promise.allSettled([
+        this.readyPromise = new Promise((resolve) => Promise.allSettled([
             loadPromise,
             this.command.readyPromise,
             this.environment.readyPromise,
             this.package.readyPromise,
             this.atSuggestionCompleter.readyPromise
-        ]).then(() => this.#readyPromise.resolve())
-    }
-
-    get readyPromise() {
-        return this.#readyPromise.promise
+        ]).then(() => resolve()))
     }
 
     private async loadDefaultItems() {

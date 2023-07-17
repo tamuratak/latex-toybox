@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as cs from 'cross-spawn'
 import type { Logger } from './logger'
 import type { Manager } from './manager'
+import { ExternalPromise } from '../utils/externalpromise'
 
 
 export class TeXDoc {
@@ -29,8 +30,11 @@ export class TeXDoc {
             stderr += newStderr
         })
 
+        const resultPromise = new ExternalPromise<void>()
+
         proc.on('error', err => {
             this.extension.logger.error(`Cannot run texdoc: ${err.message}, ${stderr}`)
+            resultPromise.reject(err)
         })
 
         proc.on('exit', exitCode => {
@@ -46,20 +50,23 @@ export class TeXDoc {
             }
             this.extension.logger.info(`texdoc stdout: ${stdout}`)
             this.extension.logger.info(`texdoc stderr: ${stderr}`)
+            resultPromise.resolve()
         })
+
+        return resultPromise.promise
     }
 
     texdoc(pkg?: string) {
         if (pkg) {
-            this.runTexdoc(pkg)
-            return
+            return this.runTexdoc(pkg)
         }
         void vscode.window.showInputBox({value: '', prompt: 'Package name'}).then(selectedPkg => {
             if (!selectedPkg) {
                 return
             }
-            this.runTexdoc(selectedPkg)
+            return this.runTexdoc(selectedPkg)
         })
+        return
     }
 
     texdocUsepackages() {
@@ -77,7 +84,7 @@ export class TeXDoc {
             if (!selectedPkg) {
                 return
             }
-            this.runTexdoc(selectedPkg.label)
+            return this.runTexdoc(selectedPkg.label)
         })
     }
 }

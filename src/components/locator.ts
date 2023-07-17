@@ -11,6 +11,7 @@ import { hasTexId } from '../utils/hastexid'
 import type { Logger } from './logger'
 import type { Manager } from './manager'
 import type { Viewer } from './viewer'
+import { ExternalPromise } from '../utils/externalpromise'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -168,11 +169,8 @@ export class Locator {
                 }
             }
         } else {
-            void this.invokeSyncTeXCommandForward(line, character, filePath, pdfFile).then( (record) => {
-                if (pdfFile) {
-                    this.extension.viewer.syncTeX(pdfFile, record)
-                }
-            })
+            const record = await this.invokeSyncTeXCommandForward(line, character, filePath, pdfFile)
+            this.extension.viewer.syncTeX(pdfFile, record)
         }
     }
 
@@ -196,19 +194,22 @@ export class Locator {
             stderr += newStderr
         })
 
+        const resultPromise = new ExternalPromise<SyncTeXRecordForward>()
+
         proc.on('error', err => {
             this.extension.logger.info(`Cannot synctex: ${err.message}, ${stderr}`)
+            resultPromise.reject(err)
         })
 
-        return new Promise( (resolve) => {
-            proc.on('exit', exitCode => {
-                if (exitCode !== 0) {
-                    this.extension.logger.info(`Cannot synctex, code: ${exitCode}, ${stderr}`)
-                } else {
-                    resolve(this.parseSyncTeXForward(stdout))
-                }
-            })
+        proc.on('exit', exitCode => {
+            if (exitCode !== 0) {
+                this.extension.logger.info(`Cannot synctex, code: ${exitCode}, ${stderr}`)
+            } else {
+                resultPromise.resolve(this.parseSyncTeXForward(stdout))
+            }
         })
+
+        return resultPromise.promise
     }
 
     syncTeXOnRef(args: {line: number, filePath: string}) {
@@ -243,20 +244,23 @@ export class Locator {
             stderr += newStderr
         })
 
+        const resultPromise = new ExternalPromise<SyncTeXRecordBackward>
+
         proc.on('error', err => {
             this.extension.logger.info(`Cannot reverse synctex: ${err.message}, ${stderr}`)
+            resultPromise.reject(err)
         })
 
-        return new Promise( (resolve) => {
-            proc.on('exit', exitCode => {
-                if (exitCode !== 0) {
-                    this.extension.logger.info(`Cannot reverse synctex, code: ${exitCode}, ${stderr}`)
-                } else {
-                    const record = this.parseSyncTeXBackward(stdout)
-                    resolve(record)
-                }
-            })
+        proc.on('exit', exitCode => {
+            if (exitCode !== 0) {
+                this.extension.logger.info(`Cannot reverse synctex, code: ${exitCode}, ${stderr}`)
+            } else {
+                const record = this.parseSyncTeXBackward(stdout)
+                resultPromise.resolve(record)
+            }
         })
+
+        return resultPromise.promise
     }
 
     /**
