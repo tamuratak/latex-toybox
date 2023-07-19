@@ -95,8 +95,7 @@ export class Commander {
         }
         if (externalBuildCommand) {
             const pwd = path.dirname(rootFile ? rootFile : vscode.window.activeTextEditor.document.fileName)
-            await this.extension.builder.buildWithExternalCommand(externalBuildCommand, externalBuildArgs, pwd, rootFile)
-            return
+            return this.extension.builder.buildWithExternalCommand(externalBuildCommand, externalBuildArgs, pwd, rootFile)
         }
         if (rootFile === undefined || languageId === undefined) {
             this.extension.logger.error('Cannot find LaTeX root file. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file')
@@ -111,7 +110,7 @@ export class Commander {
             }
         }
         this.extension.logger.info(`Building root file: ${pickedRootFile}`)
-        await this.extension.builder.build(pickedRootFile, languageId, recipe)
+        return this.extension.builder.build(pickedRootFile, languageId, recipe)
     }
 
     async revealOutputDir() {
