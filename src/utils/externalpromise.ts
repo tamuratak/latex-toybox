@@ -9,9 +9,11 @@ function promiseTriplet<T>() {
 }
 
 /**
- * A Promise that can be resolved from outside.
- * A typical use case is a promise that resolves when a component has finished initializing.
- * This allows us to use await to wait for the component to finish initializing.
+ * A Promise that can be resolved from outside. A common scenario involves
+ * using a promise where the resolve and reject functions are called
+ * in separate callbacks.
+ *
+ * See https://github.com/tc39/proposal-promise-with-resolvers#synopsis
  */
 export class ExternalPromise<T> {
     private readonly promiseTriplet = promiseTriplet<T>()

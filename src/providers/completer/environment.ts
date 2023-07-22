@@ -4,7 +4,6 @@ import type {IProvider} from './interface'
 import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
 import * as lwfs from '../../lib/lwfs/lwfs'
-import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
@@ -33,7 +32,7 @@ export class Environment implements IProvider {
     private readonly packageEnvsAsName = new Map<string, CmdEnvSuggestion[]>()
     private readonly packageEnvsAsCommand = new Map<string, CmdEnvSuggestion[]>()
     private readonly packageEnvsForBegin= new Map<string, CmdEnvSuggestion[]>()
-    readonly #readyPromise = new ExternalPromise<void>()
+    readonly readyPromise: Promise<void>
 
     constructor(private readonly extension: {
         readonly extensionRoot: string,
@@ -41,11 +40,7 @@ export class Environment implements IProvider {
         readonly logger: Logger,
         readonly manager: Manager
     }) {
-        void this.load().then(() => this.#readyPromise.resolve())
-    }
-
-    get readyPromise() {
-        return this.#readyPromise.promise
+        this.readyPromise = new Promise((resolve) => this.load().then(() => resolve()))
     }
 
     private async load() {

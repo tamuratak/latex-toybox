@@ -184,8 +184,7 @@ export class Commander {
         } else if (viewer === 'tab') {
             return this.extension.viewer.openTab(pickedRootFile, true, tabEditorGroup)
         } else if (viewer === 'external') {
-            this.extension.viewer.openExternal(pickedRootFile)
-            return
+            return this.extension.viewer.openExternal(pickedRootFile)
         }
         return
     }
@@ -348,7 +347,7 @@ export class Commander {
     }
 
     texdoc(pkg?: string) {
-        this._texdoc.texdoc(pkg)
+        return this._texdoc.texdoc(pkg)
     }
 
     texdocUsepackages() {

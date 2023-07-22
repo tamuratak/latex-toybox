@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
 import { readFilePath } from '../../lib/lwfs/lwfs'
-import { ExternalPromise } from '../../utils/externalpromise'
 
 
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')
@@ -15,16 +14,12 @@ type ClassItemEntry = {
 
 export class DocumentClass implements IProvider {
     private readonly suggestions: vscode.CompletionItem[] = []
-    readonly #readyPromise = new ExternalPromise<void>()
+    readonly readyPromise: Promise<void>
 
     constructor(private readonly extension: {
         readonly extensionRoot: string
     }) {
-        void this.load().then(() => this.#readyPromise.resolve())
-    }
-
-    get readyPromise() {
-        return this.#readyPromise.promise
+        this.readyPromise = new Promise((resolve) => this.load().then(() => resolve()))
     }
 
     private async load() {

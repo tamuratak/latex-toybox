@@ -12,6 +12,7 @@ import type { Manager } from './manager'
 import type { LwStatusBarItem } from './statusbaritem'
 import type { Viewer } from './viewer'
 import { statPath } from '../lib/lwfs/lwfs'
+import { ExternalPromise } from '../utils/externalpromise'
 
 const maxPrintLine = '10000'
 
@@ -128,11 +129,14 @@ export class Builder {
             stepLog.appendError(newStderr.toString())
         })
 
+        const resultPromise = new ExternalPromise<void>()
+
         this.currentProcess.on('error', err => {
             this.extension.logger.error(`Build fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}. Does the executable exist?`)
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
             this.currentProcess = undefined
             releaseBuildMutex()
+            resultPromise.reject(err)
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
@@ -140,6 +144,9 @@ export class Builder {
             if (exitCode !== 0) {
                 this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
                 this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
+                this.currentProcess = undefined
+                releaseBuildMutex()
+                resultPromise.reject({exitCode, signal, pid})
             } else {
                 this.extension.logger.info(`Successfully built. PID: ${pid}`)
                 this.extension.statusbaritem.displayStatus('success', 'Build succeeded.')
@@ -152,11 +159,12 @@ export class Builder {
                 } finally {
                     this.currentProcess = undefined
                     releaseBuildMutex()
+                    resultPromise.resolve()
                 }
             }
-            this.currentProcess = undefined
-            releaseBuildMutex()
         })
+
+        return resultPromise.promise
     }
 
     private buildInitiator(rootFile: string, languageId: string, recipeName: string | undefined = undefined, releaseBuildMutex: () => void) {

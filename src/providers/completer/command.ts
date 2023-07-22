@@ -4,7 +4,6 @@ import {Environment, EnvSnippetType} from './environment'
 import type {IProvider, ILwCompletionItem, ICommand} from './interface'
 import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
 import * as lwfs from '../../lib/lwfs/lwfs'
-import { ExternalPromise } from '../../utils/externalpromise'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import type { CompletionUpdater } from '../../components/completionupdater'
 import type { Completer } from '../completion'
@@ -126,7 +125,7 @@ export class Command implements IProvider, ICommand {
     private readonly defaultCmds: CmdEnvSuggestion[] = []
     private readonly defaultSymbols: CmdEnvSuggestion[] = []
     private readonly packageCmds = new Map<string, CmdEnvSuggestion[]>()
-    readonly #readyPromise = new ExternalPromise<void>()
+    readonly readyPromise: Promise<void>
 
     constructor(
         private readonly extension: {
@@ -138,11 +137,7 @@ export class Command implements IProvider, ICommand {
         },
         private readonly environment: Environment
     ) {
-        void this.load().then(() => this.#readyPromise.resolve())
-    }
-
-    get readyPromise() {
-        return this.#readyPromise.promise
+        this.readyPromise = new Promise((resolve) => this.load().then(() => resolve()))
     }
 
     private async load() {

@@ -3,7 +3,6 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import {escapeRegExp} from '../../utils/utils'
 import { readFilePath } from '../../lib/lwfs/lwfs'
-import { ExternalPromise } from '../../utils/externalpromise'
 
 
 export interface AtSuggestionItemEntry {
@@ -18,7 +17,7 @@ export class AtSuggestion implements IProvider {
     private readonly triggerCharacter: string
     private readonly escapedTriggerCharacter: string
     private readonly suggestions: vscode.CompletionItem[] = []
-    readonly #readyPromise = new ExternalPromise<void>()
+    readonly readyPromise: Promise<void>
 
     constructor(
         private readonly extension: {
@@ -30,17 +29,13 @@ export class AtSuggestion implements IProvider {
         this.triggerCharacter = triggerCharacter
         this.escapedTriggerCharacter = escapeRegExp(this.triggerCharacter)
 
-        void this.initialize().then(() => this.#readyPromise.resolve())
+        this.readyPromise = new Promise((resolve) => this.initialize().then(() => resolve()))
 
         vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
             if (e.affectsConfiguration('latex-workshop.intellisense.atSuggestionJSON.replace')) {
                 void this.initialize()
             }
         })
-    }
-
-    get readyPromise() {
-        return this.#readyPromise.promise
     }
 
     private async initialize() {

@@ -5,6 +5,7 @@ import * as path from 'path'
 import {replaceWebviewPlaceholders} from '../utils/webview'
 import { hasTexId } from '../utils/hastexid'
 import { Manager } from './manager'
+import { ExternalPromise } from '../utils/externalpromise'
 
 
 type SnippetViewResult = RenderResult | {
@@ -31,28 +32,26 @@ export class SnippetView {
             return
         }
         const uri = webview.asWebviewUri(pdfFileUri).toString()
-        let disposable: vscode.Disposable | undefined
-        const promise = new Promise<RenderResult | undefined>((resolve) => {
-            disposable = this.snippetViewProvider.onDidReceiveMessage((e: SnippetViewResult) => {
-                if (e.type !== 'png') {
-                    return
-                }
-                if (e.uri === uri) {
-                    resolve(e)
-                }
-            })
+        const resultPromise = new ExternalPromise<RenderResult | undefined>()
+        const disposable = this.snippetViewProvider.onDidReceiveMessage((e: SnippetViewResult) => {
+            if (e.type !== 'png') {
+                return
+            }
+            if (e.uri === uri) {
+                resultPromise.resolve(e)
+            }
+        })
+        try {
             setTimeout(() => {
                 disposable?.dispose()
-                resolve(undefined)
+                resultPromise.resolve(undefined)
             }, 3000)
             void webview.postMessage({
                 type: 'pdf',
                 uri,
                 opts
             })
-        })
-        try {
-            const renderResult = await promise
+            const renderResult = await resultPromise.promise
             return renderResult?.data
         } finally {
             disposable?.dispose()

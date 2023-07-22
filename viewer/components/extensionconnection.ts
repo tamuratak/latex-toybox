@@ -68,10 +68,8 @@ class ConnectionPort {
         const server = `${scheme}://${window.location.hostname}:${window.location.port}`
         this.socket = new Promise((resolve, reject) => {
             const sock = new WebSocket(server)
-            sock.addEventListener('open', () => {
-                resolve(sock)
-            })
-            sock.addEventListener('error', () => reject(new Error(`Failed to connect to ${server}`)) )
+            sock.addEventListener('open', () => resolve(sock) )
+            sock.addEventListener('error', (ev) => reject(new Error(`Failed to connect to ${server}: ${ev}`)) )
         })
         this.startConnectionKeeper()
     }
