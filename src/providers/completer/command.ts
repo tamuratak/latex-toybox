@@ -51,12 +51,6 @@ export function splitSignatureString(signature: string): CmdSignature {
 }
 
 export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwCompletionItem {
-    readonly command?: vscode.Command
-    readonly detail?: string
-    readonly documentation?: string
-    readonly filterText?: string
-    insertText?: string | vscode.SnippetString
-    readonly sortText?: string
     readonly label: string
     readonly package: string
     readonly signature: CmdSignature

@@ -1825,6 +1825,6 @@
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
     "tmp": "0.2.1",
-    "typescript": "5.1.6"
+    "typescript": "5.2.0-beta"
   }
 }

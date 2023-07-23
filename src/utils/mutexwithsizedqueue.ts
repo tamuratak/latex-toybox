@@ -4,6 +4,9 @@ export class MutexWithSizedQueueError extends Error { }
 
 export class MaxWaitingLimitError extends MutexWithSizedQueueError { }
 
+(Symbol as any).dispose ??= Symbol("Symbol.dispose");
+(Symbol as any).asyncDispose ??= Symbol("Symbol.asyncDispose");
+
 /**
  * A mutex with a queue of a maximum size.
  */
@@ -35,6 +38,15 @@ export class MutexWithSizedQueue {
         return release
     }
 
+    async acquireUsable(): Promise<AsyncDisposable> {
+        const release = await this.acquire()
+        return {
+            async [Symbol.asyncDispose]() {
+                return release()
+            },
+        }
+    }
+
     get waiting() {
         return this.#waiting
     }
@@ -62,4 +74,11 @@ export class MutexWithSizedQueue {
             release?.()
         }
     }
+}
+
+const mutex = new MutexWithSizedQueue(1)
+
+export async function f() {
+    await using _lock = await mutex.acquireUsable()
+    // console.log(lock)
 }
