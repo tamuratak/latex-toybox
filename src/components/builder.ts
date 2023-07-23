@@ -120,7 +120,7 @@ export class Builder {
         const pid = this.currentProcess.pid
         this.extension.logger.info(`External build process spawned. PID: ${pid}.`)
 
-        const stepLog = this.extension.compilerLog.createStepLog(rootFile, [{name: 'external', command, args}], 0)
+        const stepLog = this.extension.compilerLog.createStepLog(rootFile, {name: 'external', command, args}, {stepIndex: 1, totalStepsLength: 1})
         this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
             stepLog.append(newStdout.toString())
         })
@@ -140,41 +140,28 @@ export class Builder {
         })
 
         this.currentProcess.on('exit', async (exitCode, signal) => {
-            void this.extension.compilerLog.parse(stepLog)
-            if (exitCode !== 0) {
-                this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
-                this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
-                this.currentProcess = undefined
-                releaseBuildMutex()
-                resultPromise.reject({exitCode, signal, pid})
-            } else {
-                this.extension.logger.info(`Successfully built. PID: ${pid}`)
-                this.extension.statusbaritem.displayStatus('success', 'Build succeeded.')
-                try {
+            try {
+                void this.extension.compilerLog.parse(stepLog)
+                if (exitCode !== 0) {
+                    this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
+                    this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
+                    resultPromise.reject({exitCode, signal, pid})
+                } else {
+                    this.extension.logger.info(`Successfully built. PID: ${pid}`)
+                    this.extension.statusbaritem.displayStatus('success', 'Build succeeded.')
                     if (rootFile === undefined) {
                         this.extension.viewer.refreshExistingViewer()
                     } else {
                         await this.buildFinished(rootFile)
                     }
-                } finally {
-                    this.currentProcess = undefined
-                    releaseBuildMutex()
-                    resultPromise.resolve()
                 }
+            } finally {
+                this.currentProcess = undefined
+                releaseBuildMutex()
             }
         })
 
         return resultPromise.promise
-    }
-
-    private buildInitiator(rootFile: string, languageId: string, recipeName: string | undefined = undefined, releaseBuildMutex: () => void) {
-        const steps = this.createSteps(rootFile, languageId, recipeName)
-        if (steps === undefined) {
-            const message = `Cannot create steps: ${rootFile}, ${languageId}, ${recipeName}`
-            this.extension.logger.error(message)
-            throw new Error(message)
-        }
-        this.buildStep(rootFile, steps, 0, recipeName || 'Build', releaseBuildMutex) // use 'Build' as default name
     }
 
     /**
@@ -218,33 +205,51 @@ export class Builder {
                     }
                 }
             }
-            this.buildInitiator(rootFile, languageId, recipeName, releaseBuildMutex)
+            await this.buildInitiator(rootFile, languageId, recipeName)
+            await this.buildFinished(rootFile)
         } catch (e) {
-            this.extension.logger.error('Unexpected Error: please see the console log of the Developer Tools of VS Code.')
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
+            if (e instanceof Error) {
+                this.extension.logger.logError(e)
+            }
+        } finally {
             releaseBuildMutex()
-            throw(e)
         }
     }
 
-    private progressString(recipeName: string, steps: StepCommand[], index: number) {
-        if (steps.length < 2) {
+    private async buildInitiator(rootFile: string, languageId: string, recipeName: string | undefined = undefined) {
+        const steps = this.createSteps(rootFile, languageId, recipeName)
+        if (steps === undefined) {
+            const message = `Cannot create steps: ${rootFile}, ${languageId}, ${recipeName}`
+            this.extension.logger.error(message)
+            throw new Error(message)
+        }
+        this.extension.compilerLog.clear()
+        const totalStepsLength = steps.length
+        for(let index = 0; index < steps.length; index++) {
+            const step = steps[index]
+            const stepIndex = index + 1
+            const processString = this.progressString(recipeName || 'Build', step, {stepIndex, totalStepsLength})
+            this.extension.statusbaritem.displayStatus('ongoing', '', processString)
+            await this.buildStep(rootFile, step, {stepIndex, totalStepsLength})
+        }
+        this.extension.logger.info(`Recipe of length ${steps.length} finished.`)
+    }
+
+    private progressString(recipeName: string, step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
+        if (totalStepsLength < 2) {
             return recipeName
         } else {
-            return recipeName + `: ${index + 1}/${steps.length} (${steps[index].name})`
+            return ' ' + recipeName + `: ${stepIndex}/${totalStepsLength} (${step.name})`
         }
     }
 
-    private buildStep(rootFile: string, steps: StepCommand[], index: number, recipeName: string, releaseBuildMutex: () => void) {
-        if (index === 0) {
-            this.extension.compilerLog.clear()
-        }
-        this.extension.statusbaritem.displayStatus('ongoing', '', ` ${this.progressString(recipeName, steps, index)}`)
-        this.extension.logger.logCommand(`Recipe step ${index + 1}`, steps[index].command, steps[index].args)
-        this.extension.logger.info(`Recipe step env: ${JSON.stringify(steps[index].env)}`)
+    private buildStep(rootFile: string, step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
+        this.extension.logger.logCommand(`Recipe step ${stepIndex}`, step.command, step.args)
+        this.extension.logger.info(`Recipe step env: ${JSON.stringify(step.env)}`)
         const envVars = Object.create(null) as ProcessEnv
         Object.keys(process.env).forEach(key => envVars[key] = process.env[key])
-        const currentEnv = steps[index].env
+        const currentEnv = step.env
         if (currentEnv) {
             Object.keys(currentEnv).forEach(key => envVars[key] = currentEnv[key])
         }
@@ -253,17 +258,17 @@ export class Builder {
         const envVarsPath = envVars['Path']
         envVars['max_print_line'] = maxPrintLine
         let workingDirectory: string
-        if (steps[index].command === 'latexmk' && rootFile === this.extension.manager.localRootFile && this.extension.manager.rootDir) {
+        if (step.command === 'latexmk' && rootFile === this.extension.manager.localRootFile && this.extension.manager.rootDir) {
             workingDirectory = this.extension.manager.rootDir
         } else {
             workingDirectory = path.dirname(rootFile)
         }
         this.extension.logger.info(`cwd: ${workingDirectory}`)
-        this.currentProcess = cs.spawn(steps[index].command, steps[index].args, {cwd: workingDirectory, env: envVars})
+        this.currentProcess = cs.spawn(step.command, step.args, {cwd: workingDirectory, env: envVars})
         const pid = this.currentProcess.pid
         this.extension.logger.info(`LaTeX build process spawned. PID: ${pid}.`)
 
-        const stepLog = this.extension.compilerLog.createStepLog(rootFile, steps, index)
+        const stepLog = this.extension.compilerLog.createStepLog(rootFile, step, {stepIndex, totalStepsLength})
 
         this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
             stepLog.append(newStdout.toString())
@@ -273,6 +278,8 @@ export class Builder {
             stepLog.appendError(newStderr.toString())
         })
 
+        const resultPromise = new ExternalPromise<void>()
+
         this.currentProcess.on('error', err => {
             this.extension.logger.error(`LaTeX fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}.`)
             this.extension.logger.error(`Does the executable exist? $PATH: ${envVarsPATH}`)
@@ -280,35 +287,31 @@ export class Builder {
             this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
             this.currentProcess = undefined
-            releaseBuildMutex()
+            resultPromise.reject(err)
         })
 
-        this.currentProcess.on('exit', async (exitCode, signal) => {
-            void this.extension.compilerLog.parse(stepLog, rootFile)
-            if (exitCode !== 0) {
-                this.extension.logger.error(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stepLog.stderr}.`)
-                this.extension.logger.error(`The environment variable $PATH: ${envVarsPATH}`)
-                this.extension.logger.error(`The environment variable $Path: ${envVarsPath}`)
-                this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
-
-                this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
-                this.currentProcess = undefined
-                releaseBuildMutex()
-            } else {
-                if (index === steps.length - 1) {
-                    this.extension.logger.info(`Recipe of length ${steps.length} finished. PID: ${pid}.`)
-                    try {
-                        await this.buildFinished(rootFile)
-                    } finally {
-                        this.currentProcess = undefined
-                        releaseBuildMutex()
-                    }
+        this.currentProcess.on('exit', (exitCode, signal) => {
+            try {
+                void this.extension.compilerLog.parse(stepLog, rootFile)
+                if (exitCode !== 0) {
+                    this.extension.logger.error(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stepLog.stderr}.`)
+                    this.extension.logger.error(`The environment variable $PATH: ${envVarsPATH}`)
+                    this.extension.logger.error(`The environment variable $Path: ${envVarsPath}`)
+                    this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
+                    this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
+                    this.currentProcess = undefined
+                    resultPromise.reject({exitCode, signal, pid})
                 } else {
                     this.extension.logger.info(`A step in recipe finished. PID: ${pid}.`)
-                    this.buildStep(rootFile, steps, index + 1, recipeName, releaseBuildMutex)
+                    this.currentProcess = undefined
+                    resultPromise.resolve()
                 }
+            } catch(e) {
+                resultPromise.reject(e)
             }
         })
+
+        return resultPromise.promise
     }
 
     private async buildFinished(rootFile: string) {

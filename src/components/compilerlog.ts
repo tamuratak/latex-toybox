@@ -11,8 +11,8 @@ export class BuildStepLog {
     private readonly logPanel: vscode.OutputChannel
     readonly languageId: string
 
-    constructor(step: StepCommand, stepIndex: number, totalSteps: number) {
-        const name = `LaTeX Compiler Log: ${stepIndex + 1} of ${totalSteps} ${step.name}`
+    constructor(step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
+        const name = `LaTeX Compiler Log: ${stepIndex} of ${totalStepsLength} ${step.name}`
         const languageId = this.detectLanguageId(step)
         this.languageId = languageId
         this.logPanel = this.createPanel(name, languageId)
@@ -72,8 +72,8 @@ export class CompilerLog {
         )
     }
 
-    createStepLog(_rootfile: string | undefined, steps: StepCommand[], stepIndex: number): BuildStepLog {
-        const stepLog = new BuildStepLog(steps[stepIndex], stepIndex, steps.length)
+    createStepLog(_rootfile: string | undefined, step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}): BuildStepLog {
+        const stepLog = new BuildStepLog(step, {stepIndex, totalStepsLength})
         this.stepLogs.push(stepLog)
         return stepLog
     }
