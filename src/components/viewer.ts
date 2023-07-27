@@ -42,11 +42,11 @@ export class Viewer {
         this.managerService = new PdfViewerManagerService(extension)
         this.pdfViewerPanelSerializer = new PdfViewerPanelSerializer(extension, this.panelService, this.managerService)
 
-        this.extension.eventBus.buildFinished.event((rootFile: string) => {
-            this.refreshExistingViewer(rootFile)
-        })
-
         this.extension.eventBus.buildFinished.event((rootFile) => {
+            this.refreshExistingViewer(rootFile)
+            if (rootFile === undefined) {
+                return
+            }
             const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
             // If the PDF viewer is internal, we call SyncTeX in src/components/viewer.ts.
             if (configuration.get('view.pdf.viewer') === 'external' && configuration.get('synctex.afterBuild.enabled')) {

@@ -185,6 +185,9 @@ export class Manager {
         }, 3000)
 
         this.extension.eventBus.buildFinished.event((rootFile) => {
+            if (rootFile === undefined) {
+                return
+            }
             return this.parseFlsFile(rootFile)
         })
 

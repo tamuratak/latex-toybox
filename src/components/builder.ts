@@ -10,7 +10,6 @@ import type { Logger } from './logger'
 import type { CompilerLog } from './compilerlog'
 import type { Manager } from './manager'
 import type { LwStatusBarItem } from './statusbaritem'
-import type { Viewer } from './viewer'
 import { statPath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 
@@ -39,12 +38,11 @@ export class Builder {
     private previousLanguageId: string | undefined
 
     constructor(private readonly extension: {
-        eventBus: EventBus,
-        logger: Logger,
-        compilerLog: CompilerLog,
-        manager: Manager,
-        statusbaritem: LwStatusBarItem,
-        viewer: Viewer
+        readonly eventBus: EventBus,
+        readonly logger: Logger,
+        readonly compilerLog: CompilerLog,
+        readonly manager: Manager,
+        readonly statusbaritem: LwStatusBarItem
     }) { }
 
     /**
@@ -101,12 +99,21 @@ export class Builder {
      * @param rootFile The root file to be compiled.
      */
     async buildWithExternalCommand(command: string, args: string[], pwd: string, rootFile: string | undefined = undefined) {
+        const releaseBuildMutex = await this.preprocess()
+        try {
+            await this.buildWithExternalCommandImpl(command, args, pwd, rootFile)
+            await this.buildFinished(rootFile)
+        } finally {
+            releaseBuildMutex()
+        }
+    }
+
+    private async buildWithExternalCommandImpl(command: string, args: string[], pwd: string, rootFile: string | undefined = undefined) {
         if (rootFile) {
             // Stop watching the PDF file to avoid reloading the PDF viewer twice.
             // The builder will be responsible for refreshing the viewer.
             this.extension.manager.ignorePdfFile(rootFile)
         }
-        const releaseBuildMutex = await this.preprocess()
         this.extension.statusbaritem.displayStatus('ongoing')
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
         const wd = workspaceFolder?.uri.fsPath || pwd
@@ -135,29 +142,21 @@ export class Builder {
             this.extension.logger.error(`Build fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}. Does the executable exist?`)
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
             this.currentProcess = undefined
-            releaseBuildMutex()
             resultPromise.reject(err)
         })
 
-        this.currentProcess.on('exit', async (exitCode, signal) => {
-            try {
-                void this.extension.compilerLog.parse(stepLog)
-                if (exitCode !== 0) {
-                    this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
-                    this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
-                    resultPromise.reject({exitCode, signal, pid})
-                } else {
-                    this.extension.logger.info(`Successfully built. PID: ${pid}`)
-                    this.extension.statusbaritem.displayStatus('success', 'Build succeeded.')
-                    if (rootFile === undefined) {
-                        this.extension.viewer.refreshExistingViewer()
-                    } else {
-                        await this.buildFinished(rootFile)
-                    }
-                }
-            } finally {
+        this.currentProcess.on('exit', (exitCode, signal) => {
+            void this.extension.compilerLog.parse(stepLog)
+            if (exitCode !== 0) {
+                this.extension.logger.error(`Build returns with error: ${exitCode}/${signal}. PID: ${pid}.`)
+                this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
                 this.currentProcess = undefined
-                releaseBuildMutex()
+                resultPromise.reject({exitCode, signal, pid})
+            } else {
+                this.extension.logger.info(`Successfully built. PID: ${pid}`)
+                this.extension.statusbaritem.displayStatus('success', 'Build succeeded.')
+                this.currentProcess = undefined
+                resultPromise.resolve()
             }
         })
 
@@ -314,7 +313,7 @@ export class Builder {
         return resultPromise.promise
     }
 
-    private async buildFinished(rootFile: string) {
+    private async buildFinished(rootFile: string | undefined) {
         this.extension.logger.info(`Successfully built ${rootFile}.`)
         this.extension.statusbaritem.displayStatus('success', 'Recipe succeeded.')
         if (this.extension.compilerLog.isLaTeXmkSkipped) {
