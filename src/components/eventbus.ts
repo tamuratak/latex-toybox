@@ -29,7 +29,7 @@ export class EventBus {
      * and it includes the name of the root file that was used for the build.
      * If the `subfiles` package is used, it can be one of the subfiles.
      */
-    readonly buildFinished = new AwaitableEventEmitter<string, 'buildfinished'>('buildfinished')
+    readonly buildFinished = new AwaitableEventEmitter<string | undefined, 'buildfinished'>('buildfinished')
     readonly completionUpdated = new AwaitableEventEmitter<string, 'completionupdated'>('completionupdated')
     readonly findRootFileEnd = new AwaitableEventEmitter<string | undefined, 'findrootfileend'>('findrootfileend')
     readonly pdfViewerStatusChanged = new AwaitableEventEmitter<PdfViewerState, 'pdfviewerstatuschanged'>('pdfviewerstatuschanged')

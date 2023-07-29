@@ -24,6 +24,9 @@ export class AuxManager {
             void extension.eventBus.auxUpdated.fire(rootFile)
         })
         extension.eventBus.buildFinished.event(async (rootFile) => {
+            if (rootFile === undefined) {
+                return
+            }
             await this.setNumbersFromAuxFile(rootFile)
             void extension.eventBus.auxUpdated.fire(rootFile)
         })
