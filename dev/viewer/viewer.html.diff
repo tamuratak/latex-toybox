@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.8/web/viewer.html	2023-07-02 15:02:20.000000000 +0900
-+++ viewer/viewer.html	2023-06-26 08:55:37.000000000 +0900
+--- ../tmp/pdfjs-3.9/web/viewer.html	2023-07-30 12:52:46.000000000 +0900
++++ viewer/viewer.html	2023-08-01 08:15:36.000000000 +0900
 @@ -25,18 +25,25 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -78,7 +78,7 @@
                  <div class="toolbarButtonSpacer"></div>
                  <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="findbar" aria-expanded="false" aria-controls="findbar">
                    <span data-l10n-id="findbar_label">Find</span>
-@@ -315,6 +337,15 @@
+@@ -318,6 +340,15 @@
                      <option title="" value="2" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 200 }'>200%</option>
                      <option title="" value="3" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 300 }'>300%</option>
                      <option title="" value="4" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 400 }'>400%</option>
@@ -94,7 +94,7 @@
                    </select>
                  </span>
                </div>
-@@ -330,6 +361,7 @@
+@@ -333,6 +364,7 @@
  
          <div id="viewerContainer" tabindex="0">
            <div id="viewer" class="pdfViewer"></div>
