@@ -45,53 +45,64 @@ async function createPdfWorker() {
     pdfjsLib.GlobalWorkerOptions.workerPort = new Worker(blobUrl);
 }
 
+let previousTask;
+
 async function renderPdfFile(url, opts) {
-    let loadingTask = pdfjsLib.getDocument({
-        url,
-        cMapUrl: pdfjsDistUri + '/cmaps/',
-        cMapPacked: true,
-        isOffscreenCanvasSupported: false
-    });
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(opts.pageNumber);
-    let scale = 1;
-    let viewport = page.getViewport({ scale });
+    await previousTask;
+    let resolve;
+    previousTask = new Promise((res) => { resolve = res; })
+    try {
+        let loadingTask = pdfjsLib.getDocument({
+            url,
+            cMapUrl: pdfjsDistUri + '/cmaps/',
+            cMapPacked: true,
+            isOffscreenCanvasSupported: false
+        });
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(opts.pageNumber);
+        let scale = 1;
+        let viewport = page.getViewport({ scale });
 
-    const height = Math.floor(viewport.height);
-    const width = Math.floor(viewport.width);
-    scale = Math.min(opts.height/height, opts.width/width);
-    viewport = page.getViewport({ scale });
+        const height = Math.floor(viewport.height);
+        const width = Math.floor(viewport.width);
+        scale = Math.min(opts.height / height, opts.width / width);
+        viewport = page.getViewport({ scale });
 
-    //
-    // Prepare canvas using PDF page dimensions
-    //
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
+        //
+        // Prepare canvas using PDF page dimensions
+        //
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
 
-    //
-    // Render PDF page into canvas context
-    //
-    const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-        intent: 'print'
-    };
-    let renderTask = page.render(renderContext);
-    setTimeout(() => {
-        try {
-            renderTask?.cancel();
-            loadingTask?.destroy();
-        } catch (e) {
-            // ignore
-        }
-    }, 5000);
-    await renderTask.promise;
-    renderTask = undefined;
-    await loadingTask.destroy();
-    loadingTask = undefined;
-    return {canvas, pdf};
+        //
+        // Render PDF page into canvas context
+        //
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport,
+            intent: 'print'
+        };
+        let renderTask = page.render(renderContext);
+        setTimeout(async () => {
+            try {
+                renderTask?.cancel();
+                await loadingTask?.destroy();
+            } catch (e) {
+                // ignore
+            } finally {
+                resolve();
+            }
+        }, 5000);
+        await renderTask.promise;
+        renderTask = undefined;
+        await loadingTask.destroy();
+        loadingTask = undefined;
+        return { canvas, pdf };
+    } finally {
+        resolve();
+    }
 }
 
 createPdfWorker();
