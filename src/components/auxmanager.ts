@@ -7,7 +7,7 @@ import { isCacheLatest } from '../utils/utils'
 
 
 interface AuxStore {
-    readonly labelsMap: Map<string, { refNumber: string, pageNumber: string }>,
+    readonly labelsMap: Map<string, { refNumber: string, pageNumber: string }[]>,
     mtime: number
 }
 
@@ -60,11 +60,21 @@ export class AuxManager {
                 if (result === null) {
                     break
                 }
-                if ( result[1].endsWith('@cref') && auxLabelsStore.has(result[1].replace('@cref', '')) ) {
+                let refNumber = result[2]
+                const [label, pageNumber] = [result[1], result[3]]
+                if (refNumber.startsWith('{') && refNumber.endsWith('}')) {
+                    refNumber = refNumber.slice(1, -1)
+                }
+                if (label.endsWith('@cref') && auxLabelsStore.has(label.replace('@cref', ''))) {
                     // Drop extra \newlabel entries added by cleveref
                     continue
                 }
-                auxLabelsStore.set(result[1], {refNumber: result[2], pageNumber: result[3]})
+                const labelPosArray = auxLabelsStore.get(label)
+                if (labelPosArray) {
+                    labelPosArray.push({ refNumber, pageNumber })
+                } else {
+                    auxLabelsStore.set(label, [{refNumber, pageNumber}])
+                }
             }
         } catch {
             // Ignore error

@@ -80,7 +80,11 @@ export class LabelDefinition implements IProvider {
         if (!auxFileStore) {
             return
         }
-        return {...ret, prevIndex: auxFileStore.labelsMap.get(token)}
+        const labelPosArray = auxFileStore.labelsMap.get(token)
+        if (!labelPosArray || labelPosArray.length > 1) {
+            return
+        }
+        return {...ret, prevIndex: labelPosArray[0]}
     }
 
     private updateAll() {
