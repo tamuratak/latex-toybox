@@ -1,7 +1,7 @@
 {
-    "latex-workshop.intellisense.atSuggestionJSON.replace": {
+    "latex-toybox.intellisense.atSuggestionJSON.replace": {
         "@+": "\\sum",
         "@8": "",
     },
-    "latex-workshop.intellisense.atSuggestion.trigger.latex": "#"
+    "latex-toybox.intellisense.atSuggestion.trigger.latex": "#"
 }

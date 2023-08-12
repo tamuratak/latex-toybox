@@ -75,13 +75,13 @@ export class LatexLogParser {
     }
 
    private parseLine(line: string, state: ParserState, buildLog: LogEntry[]) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         let excludeRegexp: RegExp[]
         try {
             excludeRegexp = (configuration.get('message.latexlog.exclude') as string[]).map(regexp => RegExp(regexp))
         } catch (e) {
             if (e instanceof Error) {
-                this.extension.logger.info(`latex-workshop.message.latexlog.exclude is invalid: ${e.message}`)
+                this.extension.logger.info(`latex-toybox.message.latexlog.exclude is invalid: ${e.message}`)
             }
             return
         }

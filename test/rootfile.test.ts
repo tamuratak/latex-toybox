@@ -7,7 +7,7 @@ import {
     getFixtureDir,
     runTestWithFixture,
     sleep,
-    obtainLatexWorkshop
+    obtainLatexToybox
 } from './utils/ciutils'
 
 suite('RootFile test suite', () => {
@@ -24,7 +24,7 @@ suite('RootFile test suite', () => {
         const doc = await vscode.workspace.openTextDocument(texFilePath)
         await vscode.window.showTextDocument(doc)
         await findRootFileEnd
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         console.log(`rootFile: ${extension.exports.realExtension.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension?.manager.rootFile, path.join(fixtureDir, mainFileName))
     })
@@ -38,7 +38,7 @@ suite('RootFile test suite', () => {
         const doc = await vscode.workspace.openTextDocument(aTexFilePath)
         await vscode.window.showTextDocument(doc)
         await findRootFileEnd
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         console.log(`rootFile: ${extension.exports.realExtension.manager.rootFile}`)
         assert.strictEqual(extension.exports.realExtension.manager.rootFile, path.join(fixtureDir, mainFileName))
         await sleep(2000)

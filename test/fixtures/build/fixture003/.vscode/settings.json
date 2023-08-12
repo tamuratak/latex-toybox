@@ -1,5 +1,5 @@
 {
-    "latex-workshop.latex.tools": [
+    "latex-toybox.latex.tools": [
         {
             "name": "latexmk",
             "command": "latexmk",

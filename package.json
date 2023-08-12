@@ -1,15 +1,15 @@
 {
-  "name": "latex-workshop",
-  "displayName": "LaTeX Workshop",
-  "description": "Boost LaTeX typesetting efficiency with preview, compile, autocomplete, colorize, and more.",
+  "name": "latex-toybox",
+  "displayName": "LaTeX Toybox",
+  "description": "An extension for VS Code that offers comprehensive support for editing LaTeX documents, incorporating a range of experimental features.",
   "icon": "icons/icon.png",
   "version": "29.2.1",
-  "publisher": "James-Yu",
+  "publisher": "tamuratak",
   "license": "MIT",
-  "homepage": "https://github.com/James-Yu/LaTeX-Workshop",
+  "homepage": "https://github.com/tamuratak/latex-toybox",
   "repository": {
     "type": "git",
-    "url": "https://github.com/James-Yu/LaTeX-Workshop.git"
+    "url": "https://github.com/tamuratak/latex-toybox.git"
   },
   "engines": {
     "vscode": "^1.81.0"
@@ -28,8 +28,8 @@
     "hint"
   ],
   "activationEvents": [
-    "onCommand:latex-workshop.activate",
-    "onWebviewPanel:latex-workshop-pdf"
+    "onCommand:latex-toybox.activate",
+    "onWebviewPanel:latex-toybox-pdf"
   ],
   "main": "./out/src/main.js",
   "capabilities": {
@@ -205,205 +205,205 @@
     ],
     "commands": [
       {
-        "command": "latex-workshop.navigate-envpair",
+        "command": "latex-toybox.navigate-envpair",
         "title": "Navigate to matching begin/end",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.saveWithoutBuilding",
+        "command": "latex-toybox.saveWithoutBuilding",
         "title": "Save without Building",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.build",
+        "command": "latex-toybox.build",
         "title": "Build LaTeX project",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "icon": "$(debug-start)",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.recipes",
+        "command": "latex-toybox.recipes",
         "title": "Build with recipe",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.view",
+        "command": "latex-toybox.view",
         "title": "View LaTeX PDF file",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "icon": "$(open-preview)",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.tab",
+        "command": "latex-toybox.tab",
         "title": "View LaTeX PDF file in VSCode tab",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.viewInBrowser",
+        "command": "latex-toybox.viewInBrowser",
         "title": "View LaTeX PDF file in web browser",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.viewExternal",
+        "command": "latex-toybox.viewExternal",
         "title": "View LaTeX PDF file in external viewer",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.refresh-viewer",
+        "command": "latex-toybox.refresh-viewer",
         "title": "Refresh all LaTeX PDF viewers",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.kill",
+        "command": "latex-toybox.kill",
         "title": "Kill LaTeX compiler process",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.synctex",
+        "command": "latex-toybox.synctex",
         "title": "SyncTeX from cursor",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.citation",
+        "command": "latex-toybox.citation",
         "title": "Open citation browser",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.compilerlog",
+        "command": "latex-toybox.compilerlog",
         "title": "View LaTeX compiler logs",
-        "category": "LaTeX Workshop",
+        "category": "LaTeX Toybox",
         "enablement": "!virtualWorkspace"
       },
       {
-        "command": "latex-workshop.log",
-        "title": "Show LaTeX Workshop messages",
-        "category": "LaTeX Workshop"
+        "command": "latex-toybox.log",
+        "title": "Show LaTeX Toybox messages",
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.texdoc",
+        "command": "latex-toybox.texdoc",
         "title": "Show package documentation",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.texdocUsepackages",
+        "command": "latex-toybox.texdocUsepackages",
         "title": "Show package documentation actually used",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.promote-sectioning",
+        "command": "latex-toybox.promote-sectioning",
         "title": "Promote all the section levels used in the selection",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.demote-sectioning",
+        "command": "latex-toybox.demote-sectioning",
         "title": "Demote all the section levels used in the selection",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.select-section",
+        "command": "latex-toybox.select-section",
         "title": "Select the current section",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.structure-toggle-follow-cursor",
+        "command": "latex-toybox.structure-toggle-follow-cursor",
         "title": "Toggle follow cursor",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.bibsort",
+        "command": "latex-toybox.bibsort",
         "title": "Sort BibTeX file",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.bibalign",
+        "command": "latex-toybox.bibalign",
         "title": "Align BibTeX file",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.bibalignsort",
+        "command": "latex-toybox.bibalignsort",
         "title": "Sort and align BibTeX file",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.openMathPreviewPanel",
+        "command": "latex-toybox.openMathPreviewPanel",
         "title": "Open Math Preview Panel",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.closeMathPreviewPanel",
+        "command": "latex-toybox.closeMathPreviewPanel",
         "title": "Close Math Preview Panel",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       },
       {
-        "command": "latex-workshop.toggleMathPreviewPanel",
+        "command": "latex-toybox.toggleMathPreviewPanel",
         "title": "Toggle Math Preview Panel",
-        "category": "LaTeX Workshop"
+        "category": "LaTeX Toybox"
       }
     ],
     "keybindings": [
       {
         "key": "ctrl+l alt+m",
         "mac": "cmd+l alt+m",
-        "command": "latex-workshop.toggleMathPreviewPanel",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-workshop.bind.altKeymap.enabled"
+        "command": "latex-toybox.toggleMathPreviewPanel",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-toybox.bind.altKeymap.enabled"
       },
       {
         "key": "ctrl+l alt+b",
         "mac": "cmd+l alt+b",
-        "command": "latex-workshop.build",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.build",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "ctrl+l alt+v",
         "mac": "cmd+l alt+v",
-        "command": "latex-workshop.view",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.view",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "ctrl+l alt+j",
         "mac": "cmd+l alt+j",
-        "command": "latex-workshop.synctex",
-        "when": "editorTextFocus && editorLangId == 'latex' && config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.synctex",
+        "when": "editorTextFocus && editorLangId == 'latex' && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "ctrl+alt+m",
         "mac": "cmd+alt+m",
-        "command": "latex-workshop.toggleMathPreviewPanel",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-workshop.bind.altKeymap.enabled"
+        "command": "latex-toybox.toggleMathPreviewPanel",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-toybox.bind.altKeymap.enabled"
       },
       {
         "key": "ctrl+alt+b",
         "mac": "cmd+alt+b",
-        "command": "latex-workshop.build",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.build",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "ctrl+alt+v",
         "mac": "cmd+alt+v",
-        "command": "latex-workshop.view",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.view",
+        "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "ctrl+alt+j",
         "mac": "cmd+alt+j",
-        "command": "latex-workshop.synctex",
-        "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-workshop.bind.altKeymap.enabled && !virtualWorkspace"
+        "command": "latex-toybox.synctex",
+        "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
       },
       {
         "key": "enter",
-        "command": "latex-workshop.onEnterKey",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
+        "command": "latex-toybox.onEnterKey",
+        "when": "config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
       },
       {
         "key": "alt+enter",
-        "command": "latex-workshop.onAltEnterKey",
-        "when": "config.latex-workshop.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
+        "command": "latex-toybox.onAltEnterKey",
+        "when": "config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/"
       }
     ],
     "configurationDefaults": {
@@ -416,7 +416,7 @@
       "type": "object",
       "title": "LaTeX",
       "properties": {
-        "latex-workshop.latex.recipes": {
+        "latex-toybox.latex.recipes": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -493,15 +493,15 @@
               ]
             }
           ],
-          "markdownDescription": "Define LaTeX compiling recipes. Each recipe in the list is an object containing its name and the names of tools to be used sequentially, which are defined in `#latex-workshop.latex.tools#`. By default, the first recipe is used to compile the project. For details, please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#latex-recipes."
+          "markdownDescription": "Define LaTeX compiling recipes. Each recipe in the list is an object containing its name and the names of tools to be used sequentially, which are defined in `#latex-toybox.latex.tools#`. By default, the first recipe is used to compile the project. For details, please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#latex-recipes."
         },
-        "latex-workshop.latex.recipe.default": {
+        "latex-toybox.latex.recipe.default": {
           "scope": "resource",
           "type": "string",
           "default": "first",
-          "markdownDescription": "Define which recipe is used by `#latex-workshop.build#`. It also applies to auto build. Recipes are referred to by their names as defined in `#latex-workshop.latex.recipes#`. Note there are two particular values: \n- `first` means to use the first recipe in `#latex-workshop.latex.recipes#`;\n- `lastUsed` means to use the last run recipe."
+          "markdownDescription": "Define which recipe is used by `#latex-toybox.build#`. It also applies to auto build. Recipes are referred to by their names as defined in `#latex-toybox.latex.recipes#`. Note there are two particular values: \n- `first` means to use the first recipe in `#latex-toybox.latex.recipes#`;\n- `lastUsed` means to use the last run recipe."
         },
-        "latex-workshop.latex.tools": {
+        "latex-toybox.latex.tools": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -636,28 +636,28 @@
           ],
           "markdownDescription": "Define LaTeX compiling tools to be used in recipes. Each tool is labeled by its `name`. When invoked, `command` is spawned with arguments defined in `args` and environment variables defined in `env`. Typically no spaces should appear in each argument unless in paths. List of available placeholders: `%DOC%`, `%DOC_W32%, %DOC_EXT%`, `%DOC_EXT_W32%`, `%DOCFILE%`, `%DOCFILE_EXT%`, `%DIR%`, `%DIR_W32%`, and `%OUTDIR%`, `%OUTDIR_W32%`. Please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#placeholders for a complete list of all placeholders."
         },
-        "latex-workshop.latex.external.build.command": {
+        "latex-toybox.latex.external.build.command": {
           "scope": "resource",
           "type": "string",
           "default": "",
-          "markdownDescription": "The external command to execute when calling latex-workshop.build. This is useful when compiling relies on a Makefile or a bespoke script. When defined, it completely bypasses the recipes and root file detection mechanism."
+          "markdownDescription": "The external command to execute when calling latex-toybox.build. This is useful when compiling relies on a Makefile or a bespoke script. When defined, it completely bypasses the recipes and root file detection mechanism."
         },
-        "latex-workshop.latex.external.build.args": {
+        "latex-toybox.latex.external.build.args": {
           "scope": "resource",
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "The arguments of `#latex-workshop.latex.external.build.command#` when calling latex-workshop.build."
+          "markdownDescription": "The arguments of `#latex-toybox.latex.external.build.command#` when calling latex-toybox.build."
         },
-        "latex-workshop.latex.outDir": {
+        "latex-toybox.latex.outDir": {
           "scope": "resource",
           "type": "string",
           "default": "%DIR%",
           "markdownDescription": "The directory where the extension tries to find project files (e.g., PDF and SyncTeX files) are located. Both relative and absolute paths are supported. Relative path start from the root file location, so beware if it is located in sub-directory. The path must not contain a trailing slash. The LaTeX toolchain should output files to this path. For a list of supported placeholders, please visit https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#placeholders."
         },
-        "latex-workshop.latex.texDirs": {
+        "latex-toybox.latex.texDirs": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -666,7 +666,7 @@
           "default": [],
           "markdownDescription": "List of directories where to look for extra input `.tex` files. \nAbsolute paths are required. You may also need to set the environment variable `TEXINPUTS` properly for the LaTeX compiler to find the `.tex` files, see the `env` parameter of [recipes](https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#latex-recipes)."
         },
-        "latex-workshop.latex.verbatimEnvs": {
+        "latex-toybox.latex.verbatimEnvs": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -679,19 +679,19 @@
           ],
           "markdownDescription": "List environments with verbatim-like content. These environments are stripped off the `.tex` files before any parsing occurs. Note that this variable has no effect on syntax highlighting."
         },
-        "latex-workshop.kpsewhich.path": {
+        "latex-toybox.kpsewhich.path": {
           "scope": "window",
           "type": "string",
           "default": "kpsewhich",
           "markdownDescription": "Define the location of the kpsewhich executable file."
         },
-        "latex-workshop.kpsewhich.enabled": {
+        "latex-toybox.kpsewhich.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Use kpsewhich as defined by `#latex-workshop.kpsewhich.path#` to resolve bibliography files in addition to looking into the directories listed in `#latex-workshop.latex.bibDirs#`."
+          "markdownDescription": "Use kpsewhich as defined by `#latex-toybox.kpsewhich.path#` to resolve bibliography files in addition to looking into the directories listed in `#latex-toybox.latex.bibDirs#`."
         },
-        "latex-workshop.latex.bibDirs": {
+        "latex-toybox.latex.bibDirs": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -700,7 +700,7 @@
           "default": [],
           "markdownDescription": "List of directories where to look for `.bib` files. Absolute paths are required. This setting is only used by the intellisense feature, you may also need to set the environment variable `BIBINPUTS` properly for the LaTeX compiler to find the `.bib` files."
         },
-        "latex-workshop.latex.search.rootFiles.include": {
+        "latex-toybox.latex.search.rootFiles.include": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -713,28 +713,28 @@
           ],
           "markdownDescription": "Patterns of files to consider for the root detection mechanism. Relative paths are computed from the workspace folder. To detect the root file and the tex file tree, we parse all the `.tex` listed here. If you want to specify all `.tex` files inside directory, say `foo`, and all its subdirectories recursively, you need to use `**/foo/**/*.tex`. If you only want to match `.tex` files at the top level of the workspace, use `*.tex`. For more details, see https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#multi-file-projects"
         },
-        "latex-workshop.latex.search.rootFiles.exclude": {
+        "latex-toybox.latex.search.rootFiles.exclude": {
           "scope": "resource",
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "Patterns of files to exclude from the root detection mechanism. See also `#latex-workshop.latex.search.rootFiles.include#`. For more details, see the https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#multi-file-projects."
+          "markdownDescription": "Patterns of files to exclude from the root detection mechanism. See also `#latex-toybox.latex.search.rootFiles.include#`. For more details, see the https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#multi-file-projects."
         },
-        "latex-workshop.latex.rootFile.useSubFile": {
+        "latex-toybox.latex.rootFile.useSubFile": {
           "scope": "resource",
           "type": "boolean",
           "default": true,
           "markdownDescription": "When the `subfiles` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfiles}` can be LaTeXing. When `true`, the extension uses the subfile as the rootFile for the `autobuild`, `clean` and `synctex` commands."
         },
-        "latex-workshop.latex.rootFile.doNotPrompt": {
+        "latex-toybox.latex.rootFile.doNotPrompt": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "When the `subfiles` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfiles}` can be LaTeXing. When `false`, the `build` and `view` commands  ask the user's choice first. When `true`, the subfile is used when `#latex-workshop.latex.rootFile.useSubFile#` is also `true`, otherwise the rootFile is used."
+          "markdownDescription": "When the `subfiles` package is used, either the main file or any subfile containing `\\documentclass[main.tex]{subfiles}` can be LaTeXing. When `false`, the `build` and `view` commands  ask the user's choice first. When `true`, the subfile is used when `#latex-toybox.latex.rootFile.useSubFile#` is also `true`, otherwise the rootFile is used."
         },
-        "latex-workshop.latex.watch.files.ignore": {
+        "latex-toybox.latex.watch.files.ignore": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -773,7 +773,7 @@
           ],
           "markdownDescription": "Files to ignore from the watching mechanism used for triggering autobuild. This property must be an array of glob patterns. The patterns are matched against the absolute file path. To ignore everything inside the `texmf` tree, `**/texmf/**` can be used."
         },
-        "latex-workshop.latex.autoBuild.run": {
+        "latex-toybox.latex.autoBuild.run": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -789,7 +789,7 @@
           "default": "onFileChange",
           "markdownDescription": "When the extension shall auto build LaTeX project using the default (first) recipe. \n- `onSave` builds the project upon saving a `tex` file in vscode.\n- `onFileChange` builds the project upon detecting a file change in any of the dependencies, even modified by other applications.\n\n Note that `onSave` is more restrictive than `onFileChange` "
         },
-        "latex-workshop.view.outline.sections": {
+        "latex-toybox.view.outline.sections": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -804,7 +804,7 @@
           ],
           "markdownDescription": "The section names of LaTeX outline hierarchy. It is also used by the folding mechanism. This property is an array of case-sensitive strings in the order of document structure hierarchy. For multiple tags in the same level, separate the tags with `|` as delimiters, e.g., `section|alternative`."
         },
-        "latex-workshop.view.outline.commands": {
+        "latex-toybox.view.outline.commands": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -815,19 +815,19 @@
           ],
           "markdownDescription": "The names of the commands to be shown in the outline/structure views. The commands must be called in the form `\\commandname{arg}`."
         },
-        "latex-workshop.view.outline.floats.enabled": {
+        "latex-toybox.view.outline.floats.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Show the floating objects (figures and tables) in the outline/structure views."
         },
-        "latex-workshop.view.outline.numbers.enabled": {
+        "latex-toybox.view.outline.numbers.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Show the sectioning numbers in the outline/structure views."
         },
-        "latex-workshop.view.pdf.viewer": {
+        "latex-toybox.view.pdf.viewer": {
           "scope": "window",
           "type": "string",
           "default": "tab",
@@ -843,7 +843,7 @@
             "[Experimental] Open PDF with the external viewer set in \"View > Pdf > External: command\"."
           ]
         },
-        "latex-workshop.view.pdf.tab.editorGroup": {
+        "latex-toybox.view.pdf.tab.editorGroup": {
           "scope": "window",
           "type": "string",
           "default": "right",
@@ -863,19 +863,19 @@
             "Put the viewer tab in a new group below the current one"
           ]
         },
-        "latex-workshop.view.pdf.tab.openDelay": {
+        "latex-toybox.view.pdf.tab.openDelay": {
           "scope": "window",
           "type": "number",
           "default": 1000,
           "markdownDescription": "Defines the delay in milliseconds to wait for a tab opening. Please increase the value if you encounter a focus issue after opening a tab."
         },
-        "latex-workshop.view.pdf.reload.delay": {
+        "latex-toybox.view.pdf.reload.delay": {
           "scope": "resource",
           "type": "number",
           "default": 250,
           "markdownDescription": "Delay before reloading a PDF file after last change, in milliseconds."
         },
-        "latex-workshop.view.pdf.ref.viewer": {
+        "latex-toybox.view.pdf.ref.viewer": {
           "type": "string",
           "default": "auto",
           "enum": [
@@ -885,13 +885,13 @@
           ],
           "markdownDescription": "PDF viewer used for [View on PDF] link on \\ref."
         },
-        "latex-workshop.view.pdf.port": {
+        "latex-toybox.view.pdf.port": {
           "scope": "window",
           "type": "number",
           "default": 0,
           "markdownDescription": "Define the port to listen on for communicating with the internal viewer. The default value \"0\" means the port is chosen randomly by the application."
         },
-        "latex-workshop.view.pdf.synctex.keybinding": {
+        "latex-toybox.view.pdf.synctex.keybinding": {
           "scope": "window",
           "type": "string",
           "default": "ctrl-click",
@@ -901,7 +901,7 @@
           ],
           "markdownDescription": "Which keybinding to use for the internal viewer for reverse synctex. `ctrl`/`cmd` + click (default) or double click. You must reload VSCode or the PDF viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.keyboardEvent": {
+        "latex-toybox.view.pdf.keyboardEvent": {
           "scope": "window",
           "type": "string",
           "default": "auto",
@@ -913,13 +913,13 @@
           "markdownDescription": "Rebroadcasting KeyboardEvent on the internal viewers. If keyboard shortcuts on the internal viewer do not work well, change this setting."
         },
 
-        "latex-workshop.view.pdf.zoom": {
+        "latex-toybox.view.pdf.zoom": {
           "scope": "window",
           "type": "string",
           "default": "auto",
           "markdownDescription": "The default zoom level of the PDF viewer. This default value will be passed to the viewer upon opening. Possible values are `auto`, `page-actual`, `page-fit`, `page-width`, and one-based scale values (e.g., 0.5 for 50%, 2.0 for 200%)."
         },
-        "latex-workshop.view.pdf.trim": {
+        "latex-toybox.view.pdf.trim": {
           "scope": "window",
           "type": "number",
           "default": 0,
@@ -937,25 +937,25 @@
             "Trim 15% at margin"
           ]
         },
-        "latex-workshop.view.pdf.scrollMode": {
+        "latex-toybox.view.pdf.scrollMode": {
           "scope": "window",
           "type": "number",
           "default": 0,
           "markdownDescription": "The default scroll mode of the PDF viewer. This default value will be passed to the viewer upon opening. Possible values are `0` (vertical), `1`(horizontal), `2` (wrapped), `3` (page)."
         },
-        "latex-workshop.view.pdf.spreadMode": {
+        "latex-toybox.view.pdf.spreadMode": {
           "scope": "window",
           "type": "number",
           "default": 0,
           "markdownDescription": "The default spread mode of the PDF viewer. This default value will be passed to the viewer upon opening. Possible values are `0` (none), `1` (odd) and `2` (even)."
         },
-        "latex-workshop.view.pdf.hand": {
+        "latex-toybox.view.pdf.hand": {
           "scope": "window",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Define if the hand tool is enabled by default in the PDF viewer."
         },
-        "latex-workshop.view.pdf.invertMode.enabled": {
+        "latex-toybox.view.pdf.invertMode.enabled": {
           "scope": "window",
           "type": "string",
           "enum": [
@@ -973,79 +973,79 @@
             "Disable the invert filter"
           ]
         },
-        "latex-workshop.view.pdf.invert": {
+        "latex-toybox.view.pdf.invert": {
           "scope": "window",
           "type": "number",
           "default": 0,
           "markdownDescription": "Define the CSS invert filter level of the PDF viewer. This config can invert the color of PDF. Possible values are from 0 to 1. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.invertMode.brightness": {
+        "latex-toybox.view.pdf.invertMode.brightness": {
           "scope": "window",
           "type": "number",
           "default": 1,
           "markdownDescription": "Define the CSS brightness filter level of the PDF viewer when the invert mode is enabled. Possible values are from 0 to 2. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.invertMode.grayscale": {
+        "latex-toybox.view.pdf.invertMode.grayscale": {
           "scope": "window",
           "type": "number",
           "default": 0.6,
           "markdownDescription": "Define the CSS grayscale filter level of the PDF viewer when the invert mode is enabled. Possible values are from 0 to 1. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.invertMode.hueRotate": {
+        "latex-toybox.view.pdf.invertMode.hueRotate": {
           "scope": "window",
           "type": "number",
           "default": 180,
           "markdownDescription": "Define the CSS hue-rotate filter angle of the PDF viewer when the invert mode is enabled. Possible values are from 0 to 360. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.invertMode.sepia": {
+        "latex-toybox.view.pdf.invertMode.sepia": {
           "scope": "window",
           "type": "number",
           "default": 0,
           "markdownDescription": "Define the CSS sepia filter level of the PDF viewer when the invert mode is enabled. Possible values are from 0 to 1. Reload the viewer to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.light.pageColorsForeground": {
+        "latex-toybox.view.pdf.color.light.pageColorsForeground": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The foreground color of the document when the OS appearance is light. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.light.pageColorsBackground": {
+        "latex-toybox.view.pdf.color.light.pageColorsBackground": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The background color of the document when the OS appearance is light. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.light.backgroundColor": {
+        "latex-toybox.view.pdf.color.light.backgroundColor": {
           "scope": "window",
           "type": "string",
           "default": "#ffffff",
           "markdownDescription": "The background color of the viewer when the OS appearance is light. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.dark.pageColorsForeground": {
+        "latex-toybox.view.pdf.color.dark.pageColorsForeground": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The foreground color of the document when the OS appearance is dark. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.dark.pageColorsBackground": {
+        "latex-toybox.view.pdf.color.dark.pageColorsBackground": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The background color of the document when the OS appearance is dark. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.color.dark.backgroundColor": {
+        "latex-toybox.view.pdf.color.dark.backgroundColor": {
           "scope": "window",
           "type": "string",
           "default": "#ffffff",
           "markdownDescription": "The background color of the viewer when the OS appearance is dark. The string must represent a color in HTML. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.view.pdf.external.viewer.command": {
+        "latex-toybox.view.pdf.external.viewer.command": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The command to execute when using external viewer. This function is not officially supported."
         },
-        "latex-workshop.view.pdf.external.viewer.args": {
+        "latex-toybox.view.pdf.external.viewer.args": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1054,15 +1054,15 @@
           "default": [
             "%PDF%"
           ],
-          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.viewer.command#` when using external viewer. This function is not officially supported. %PDF% is the placeholder for the absolute path to the generated PDF file."
+          "markdownDescription": "The arguments for `#latex-toybox.view.pdf.external.viewer.command#` when using external viewer. This function is not officially supported. %PDF% is the placeholder for the absolute path to the generated PDF file."
         },
-        "latex-workshop.view.pdf.external.synctex.command": {
+        "latex-toybox.view.pdf.external.synctex.command": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The command to execute when forward synctex to external viewer. This function is not officially supported."
         },
-        "latex-workshop.view.pdf.external.synctex.args": {
+        "latex-toybox.view.pdf.external.synctex.args": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1073,45 +1073,45 @@
             "%PDF%",
             "%TEX%"
           ],
-          "markdownDescription": "The arguments for `#latex-workshop.view.pdf.external.synctex.args#` when forward synctex to external viewer. %LINE% is the line number, %PDF% is the placeholder for the absolute path to the generated PDF file, and %TEX% is the source LaTeX file path with `.tex` extension from which syncTeX is fired."
+          "markdownDescription": "The arguments for `#latex-toybox.view.pdf.external.synctex.args#` when forward synctex to external viewer. %LINE% is the line number, %PDF% is the placeholder for the absolute path to the generated PDF file, and %TEX% is the source LaTeX file path with `.tex` extension from which syncTeX is fired."
         },
-        "latex-workshop.synctex.path": {
+        "latex-toybox.synctex.path": {
           "scope": "window",
           "type": "string",
           "default": "synctex",
           "markdownDescription": "Define the location of SyncTeX executive file. Additional arguments, e.g., synctex modes and position of click, will be appended to this command."
         },
-        "latex-workshop.synctex.afterBuild.enabled": {
+        "latex-toybox.synctex.afterBuild.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Execute forward synctex at cursor position after compiling LaTeX project."
         },
-        "latex-workshop.synctex.synctexjs.enabled": {
+        "latex-toybox.synctex.synctexjs.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Enable using a builtin synctex function. The command set in latex-workshop.synctex.path will not be used."
+          "markdownDescription": "Enable using a builtin synctex function. The command set in latex-toybox.synctex.path will not be used."
         },
-        "latex-workshop.linting.chktex.enabled": {
+        "latex-toybox.linting.chktex.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable linting LaTeX with `chktex`."
         },
-        "latex-workshop.linting.lacheck.enabled": {
+        "latex-toybox.linting.lacheck.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable linting LaTeX with `lacheck`."
         },
-        "latex-workshop.linting.chktex.exec.path": {
+        "latex-toybox.linting.chktex.exec.path": {
           "scope": "window",
           "type": "string",
           "default": "chktex",
-          "markdownDescription": "Define the location of ChkTeX executive file. This command will be joint with `#latex-workshop.linting.chktex.exec.args#` and required arguments to form a complete command of ChkTeX."
+          "markdownDescription": "Define the location of ChkTeX executive file. This command will be joint with `#latex-toybox.linting.chktex.exec.args#` and required arguments to form a complete command of ChkTeX."
         },
-        "latex-workshop.linting.chktex.exec.args": {
+        "latex-toybox.linting.chktex.exec.args": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -1126,37 +1126,37 @@
           ],
           "markdownDescription": "Linter arguments to check LaTeX syntax of the current file state in real time with ChkTeX. Arguments must be in separate strings in the array. Additional arguments, i.e., `-I0 -f%f:%l:%c:%d:%k:%n:%m\\n` will be appended when constructing the command. Current file contents will be piped to the command through stdin."
         },
-        "latex-workshop.linting.chktex.convertOutput.column.enabled": {
+        "latex-toybox.linting.chktex.convertOutput.column.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable converting ChkTeX outputs' column numbers for non-ASCII characters."
         },
-        "latex-workshop.linting.chktex.convertOutput.column.chktexrcTabSize": {
+        "latex-toybox.linting.chktex.convertOutput.column.chktexrcTabSize": {
           "scope": "resource",
           "type": "number",
           "default": -1,
-          "markdownDescription": "Write the `TabSize` number from `.chktexrc`. The default value \"-1\" means that LaTeX Workshop will try to find `.chktexrc` and to read the value from it."
+          "markdownDescription": "Write the `TabSize` number from `.chktexrc`. The default value \"-1\" means that LaTeX Toybox will try to find `.chktexrc` and to read the value from it."
         },
-        "latex-workshop.linting.delay": {
+        "latex-toybox.linting.delay": {
           "scope": "resource",
           "type": "number",
           "default": 500,
-          "markdownDescription": "Defines the delay in milliseconds for linter to wait after stopped typing. This config only matters when `#latex-workshop.linting.run#` is set to `onType`."
+          "markdownDescription": "Defines the delay in milliseconds for linter to wait after stopped typing. This config only matters when `#latex-toybox.linting.run#` is set to `onType`."
         },
-        "latex-workshop.linting.lacheck.exec.path": {
+        "latex-toybox.linting.lacheck.exec.path": {
           "scope": "window",
           "type": "string",
           "default": "lacheck",
           "markdownDescription": "Define the location of LaCheck executive file."
         },
-        "latex-workshop.check.duplicatedLabels.enabled": {
+        "latex-toybox.check.duplicatedLabels.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable checking for duplicated labels. A new check is triggered every time the intellisense data is updated."
         },
-        "latex-workshop.intellisense.citation.label": {
+        "latex-toybox.intellisense.citation.label": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1172,7 +1172,7 @@
             "Show publication authors in the inline mode."
           ]
         },
-        "latex-workshop.intellisense.citation.format": {
+        "latex-toybox.intellisense.citation.format": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -1188,7 +1188,7 @@
           ],
           "markdownDescription": "List of fields to display for citation preview and intellisense. This list is also used as the filter text to narrow down the intellisense suggestions."
         },
-        "latex-workshop.intellisense.triggers.latex": {
+        "latex-toybox.intellisense.triggers.latex": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1199,22 +1199,22 @@
           ],
           "markdownDescription": "Additional trigger characters for intellisense of LaTeX documents. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.intellisense.atSuggestion.trigger.latex": {
+        "latex-toybox.intellisense.atSuggestion.trigger.latex": {
           "scope": "window",
           "type": "string",
           "default": "@",
           "markdownDescription": "Character to trigger snippet suggestions as part of intellisense. Set this variable to `''` to deactivate these suggestions. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.intellisense.atSuggestionJSON.replace": {
+        "latex-toybox.intellisense.atSuggestionJSON.replace": {
           "scope": "window",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
           "default": {},
-          "markdownDescription": "Dictionary of `\"prefix\": \"snippet command\"` to replace the default suggestions in `data/at-suggestions.json` or to define a new suggestion. An empty action removes the snippet from the default list. E.g. `{ \"@.\": \"\\cdot\", \"@6\": \"\" }`. Note that in this setting, the prefix must start with `@`, no matter what the true trigger character defined by `#latex-workshop.intellisense.atSuggestion.trigger.latex#` is."
+          "markdownDescription": "Dictionary of `\"prefix\": \"snippet command\"` to replace the default suggestions in `data/at-suggestions.json` or to define a new suggestion. An empty action removes the snippet from the default list. E.g. `{ \"@.\": \"\\cdot\", \"@6\": \"\" }`. Note that in this setting, the prefix must start with `@`, no matter what the true trigger character defined by `#latex-toybox.intellisense.atSuggestion.trigger.latex#` is."
         },
-        "latex-workshop.intellisense.file.exclude": {
+        "latex-toybox.intellisense.file.exclude": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -1248,7 +1248,7 @@
           ],
           "markdownDescription": "Patterns to ignore in file completion"
         },
-        "latex-workshop.intellisense.file.base": {
+        "latex-toybox.intellisense.file.base": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1264,61 +1264,61 @@
             "both"
           ]
         },
-        "latex-workshop.intellisense.label.keyval": {
+        "latex-toybox.intellisense.label.keyval": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Scan for labels defined as `label={some tex}` to add to the reference intellisense menu. The braces are mandatory."
         },
-        "latex-workshop.intellisense.unimathsymbols.enabled": {
+        "latex-toybox.intellisense.unimathsymbols.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": false,
           "markdownDescription": "When `\\` is typed, show unimath symbols in the dropdown selector."
         },
-        "latex-workshop.intellisense.package.enabled": {
+        "latex-toybox.intellisense.package.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Auto-complete commands and environments from used packages."
         },
-        "latex-workshop.intellisense.package.extra": {
+        "latex-toybox.intellisense.package.extra": {
           "scope": "window",
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "List of extra packages to always add to the auto-completion mechanism. When `#latex-workshop.intellisense.package.enabled#` is set to `true`, the commands and environments defined in these extra packages will be added to the intellisense suggestions."
+          "markdownDescription": "List of extra packages to always add to the auto-completion mechanism. When `#latex-toybox.intellisense.package.enabled#` is set to `true`, the commands and environments defined in these extra packages will be added to the intellisense suggestions."
         },
-        "latex-workshop.intellisense.package.env.enabled": {
+        "latex-toybox.intellisense.package.env.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
-          "markdownDescription": "If true, every environment provided by an included package is available by a snippet `\\envname`. Only applies when `#latex-workshop.intellisense.package.enabled#` is true. "
+          "markdownDescription": "If true, every environment provided by an included package is available by a snippet `\\envname`. Only applies when `#latex-toybox.intellisense.package.enabled#` is true. "
         },
-        "latex-workshop.intellisense.package.dirs": {
+        "latex-toybox.intellisense.package.dirs": {
           "scope": "window",
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "List of extra directories to look for package completion files in addition to those provided by the extension. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Intellisense#commands-starting-with- to learn how to generate these files. Files found in these directories have a higher priority over the default ones. This setting is only relevant when `#latex-workshop.intellisense.package.env.enabled#` is true."
+          "markdownDescription": "List of extra directories to look for package completion files in addition to those provided by the extension. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Intellisense#commands-starting-with- to learn how to generate these files. Files found in these directories have a higher priority over the default ones. This setting is only relevant when `#latex-toybox.intellisense.package.env.enabled#` is true."
         },
-        "latex-workshop.intellisense.includegraphics.preview.enabled": {
+        "latex-toybox.intellisense.includegraphics.preview.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable preview for `\\includegraphics` completion."
         },
-        "latex-workshop.message.badbox.show": {
+        "latex-toybox.message.badbox.show": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Show badbox information in the problems panel."
         },
-        "latex-workshop.message.bibtexlog.exclude": {
+        "latex-toybox.message.bibtexlog.exclude": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1327,7 +1327,7 @@
           "default": [],
           "markdownDescription": "Exclude bibtex log messages matching the given regexp from the problems panel."
         },
-        "latex-workshop.message.latexlog.exclude": {
+        "latex-toybox.message.latexlog.exclude": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1336,97 +1336,97 @@
           "default": [],
           "markdownDescription": "Exclude latex log messages matching the given regexp from the problems panel."
         },
-        "latex-workshop.message.convertFilenameEncoding": {
+        "latex-toybox.message.convertFilenameEncoding": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Convert the encoding of filenames if necessary when displaying them in the problems panel."
         },
-        "latex-workshop.showContextMenu": {
+        "latex-toybox.showContextMenu": {
           "scope": "window",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable the LaTeX contextual menu. This menu is deactivated as it is available through the new LaTeX badge. Just set this variable to `true` to recover the menu."
         },
-        "latex-workshop.bind.enter.key": {
+        "latex-toybox.bind.enter.key": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable the automatic insertion of `\\item` on a newline when pressing `Enter` in a line starting in `\\item`."
         },
-        "latex-workshop.bind.altKeymap.enabled": {
+        "latex-toybox.bind.altKeymap.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Use alternative keymap combo, i.e., `ctrl`+`l` `alt`+`key`, to replace the default `ctrl`/`cmd`+`alt` shortcuts."
         },
-        "latex-workshop.hover.ref.enabled": {
+        "latex-toybox.hover.ref.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable Hover on References."
         },
-        "latex-workshop.hover.ref.number.enabled": {
+        "latex-toybox.hover.ref.number.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Show number assigned to the reference in the previous compilation."
         },
-        "latex-workshop.hover.citation.enabled": {
+        "latex-toybox.hover.citation.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable Hover on Citations."
         },
-        "latex-workshop.hover.command.enabled": {
+        "latex-toybox.hover.command.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable Hover on Commands to show the possible signatures."
         },
-        "latex-workshop.hover.preview.enabled": {
+        "latex-toybox.hover.preview.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable Hover Preview."
         },
-        "latex-workshop.hover.preview.maxLines": {
+        "latex-toybox.hover.preview.maxLines": {
           "scope": "window",
           "type": "number",
           "default": 20,
           "markdownDescription": "Maximum number of lines between the beginning of the math environment and the cursor position to allow preview."
         },
-        "latex-workshop.hover.preview.scale": {
+        "latex-toybox.hover.preview.scale": {
           "scope": "window",
           "type": "number",
           "default": 1,
           "markdownDescription": "Scaling of Hover Preview."
         },
-        "latex-workshop.hover.preview.newcommand.parseTeXFile.enabled": {
+        "latex-toybox.hover.preview.newcommand.parseTeXFile.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable newcommands defined in the current TeX file to be included in Hover Preview."
         },
-        "latex-workshop.hover.preview.newcommand.newcommandFile": {
+        "latex-toybox.hover.preview.newcommand.newcommandFile": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "Set the path of a file containing newcommands to be used in Hover Preview. If the path is relative, it is joined with the root dir."
         },
-        "latex-workshop.hover.preview.cursor.enabled": {
+        "latex-toybox.hover.preview.cursor.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Render cursor in Hover Preview at the current position."
         },
-        "latex-workshop.hover.preview.cursor.symbol": {
+        "latex-toybox.hover.preview.cursor.symbol": {
           "scope": "window",
           "type": "string",
           "default": "\\!|\\!",
           "markdownDescription": "Cursor symbol in Hover Preview."
         },
-        "latex-workshop.hover.preview.cursor.color": {
+        "latex-toybox.hover.preview.cursor.color": {
           "scope": "window",
           "type": "string",
           "default": "auto",
@@ -1454,7 +1454,7 @@
           ],
           "markdownDescription": "The color of cursor in Hover Preview."
         },
-        "latex-workshop.hover.preview.mathjax.extensions": {
+        "latex-toybox.hover.preview.mathjax.extensions": {
           "scope": "window",
           "type": "array",
           "default": [],
@@ -1488,19 +1488,19 @@
           },
           "uniqueItems": true
         },
-        "latex-workshop.intellisense.optionalArgsEntries.enabled": {
+        "latex-toybox.intellisense.optionalArgsEntries.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Some LaTeX commands can have several forms, each with different arguments. If set to True, the intellisense completion list will have one entry for each form of a given command. Default is true."
         },
-        "latex-workshop.intellisense.useTabStops.enabled": {
+        "latex-toybox.intellisense.useTabStops.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Many snippets use PlaceHolders of the form `${\\d:some_tex`}` for their argument. You may prefer to use TabStops `${\\d}` instead, which allows for direct call to intellisense again. Default is true. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.intellisense.citation.backend": {
+        "latex-toybox.intellisense.citation.backend": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1510,7 +1510,7 @@
           "default": "bibtex",
           "markdownDescription": "Backend to use for citation intellisense."
         },
-        "latex-workshop.intellisense.bibtexJSON.replace": {
+        "latex-toybox.intellisense.bibtexJSON.replace": {
           "scope": "resource",
           "type": "object",
           "additionalProperties": {
@@ -1520,9 +1520,9 @@
             }
           },
           "default": {},
-          "markdownDescription": "Dictionary of `\"entry name\": [\"array\", \"of\", \"fields\"]` to replace the default fields used in `data/bibtex-entries.json`. See `data/bibtex-entries.json` for the list of fields for each entry. This variable is used when `#latex-workshop.intellisense.citation.backend#` is set to `biblatex`."
+          "markdownDescription": "Dictionary of `\"entry name\": [\"array\", \"of\", \"fields\"]` to replace the default fields used in `data/bibtex-entries.json`. See `data/bibtex-entries.json` for the list of fields for each entry. This variable is used when `#latex-toybox.intellisense.citation.backend#` is set to `biblatex`."
         },
-        "latex-workshop.intellisense.biblatexJSON.replace": {
+        "latex-toybox.intellisense.biblatexJSON.replace": {
           "scope": "resource",
           "type": "object",
           "additionalProperties": {
@@ -1532,9 +1532,9 @@
             }
           },
           "default": {},
-          "markdownDescription": "Dictionary of `\"entry name\": [\"array\", \"of\", \"fields\"]` to replace the default fields used in `data/biblatex-entries.json`. See `data/biblatex-entries.json` for the list of fields for each entry. This variable is used when `#latex-workshop.intellisense.citation.backend#` is set to `bibtex`."
+          "markdownDescription": "Dictionary of `\"entry name\": [\"array\", \"of\", \"fields\"]` to replace the default fields used in `data/biblatex-entries.json`. See `data/biblatex-entries.json` for the list of fields for each entry. This variable is used when `#latex-toybox.intellisense.citation.backend#` is set to `bibtex`."
         },
-        "latex-workshop.intellisense.commandsJSON.replace": {
+        "latex-toybox.intellisense.commandsJSON.replace": {
           "scope": "window",
           "type": "object",
           "additionalProperties": {
@@ -1543,13 +1543,13 @@
           "default": {},
           "markdownDescription": "Dictionary of `\"command name\": \"command action\"` to replace the default snippets in `data/commands.json`. Remove the leading `\\` of the command name. See `data/commands.json` for the list of command names. An empty action removes the snippet. E.g. `{ \"[\": \"[ ${1} \\\\]\", \"figure\": \"\" }`. Reload vscode to make any change in this configuration effective."
         },
-        "latex-workshop.texdoc.path": {
+        "latex-toybox.texdoc.path": {
           "scope": "window",
           "type": "string",
           "default": "texdoc",
           "markdownDescription": "Define the location of the `texdoc` executable. This command is used to show a package documentation."
         },
-        "latex-workshop.texdoc.args": {
+        "latex-toybox.texdoc.args": {
           "scope": "window",
           "type": "array",
           "items": {
@@ -1560,13 +1560,13 @@
           ],
           "markdownDescription": "Texdoc arguments to see a package documentation. Arguments must be in separate strings in the array. The package name is automatically appended to the arguments."
         },
-        "latex-workshop.bibtex-format.tab": {
+        "latex-toybox.bibtex-format.tab": {
           "scope": "resource",
           "type": "string",
           "default": "2 spaces",
           "markdownDescription": "Indentation for each field. The string can be `\"tab\"` or of the form `\"X spaces\"` or simply `\"X\"` where `X` is a number."
         },
-        "latex-workshop.bibtex-format.surround": {
+        "latex-toybox.bibtex-format.surround": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1576,7 +1576,7 @@
           "default": "Curly braces",
           "description": "Surround each field value with either {Curly braces} or \"Quotation marks\"."
         },
-        "latex-workshop.bibtex-format.case": {
+        "latex-toybox.bibtex-format.case": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1586,13 +1586,13 @@
           "default": "lowercase",
           "description": "Determines if field names should be formatted like 'AUTHOR' or 'author'."
         },
-        "latex-workshop.bibtex-format.trailingComma": {
+        "latex-toybox.bibtex-format.trailingComma": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
           "description": "Keep the trailing comma of the last field item."
         },
-        "latex-workshop.bibtex-format.sortby": {
+        "latex-toybox.bibtex-format.sortby": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -1603,7 +1603,7 @@
             "key"
           ]
         },
-        "latex-workshop.bibtex-format.handleDuplicates": {
+        "latex-toybox.bibtex-format.handleDuplicates": {
           "scope": "resource",
           "type": "string",
           "enum": [
@@ -1614,18 +1614,18 @@
           "default": "Highlight Duplicates",
           "markdownDescription": "How to handle duplicates found by the bibtex sorting functions. Duplicates are decided according to the `bibtex-format.sortby` config."
         },
-        "latex-workshop.bibtex-format.sort.enabled": {
+        "latex-toybox.bibtex-format.sort.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
           "markdownDescription": "Sort content when calling VSCode format on a .bib file."
         },
-        "latex-workshop.bibtex-format.align-equal.enabled": {
+        "latex-toybox.bibtex-format.align-equal.enabled": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "Align equal signs when calling VSCode format on a .bib file."
         },
-        "latex-workshop.bibtex-entries.first": {
+        "latex-toybox.bibtex-entries.first": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -1635,30 +1635,30 @@
             "string",
             "xdata"
           ],
-          "markdownDescription": "When `#latex-workshop.bibtex-fields.sort.enabled#` is true, these fields are put at the top, in the order defined by the array."
+          "markdownDescription": "When `#latex-toybox.bibtex-fields.sort.enabled#` is true, these fields are put at the top, in the order defined by the array."
         },
-        "latex-workshop.bibtex-fields.sort.enabled": {
+        "latex-toybox.bibtex-fields.sort.enabled": {
           "scope": "resource",
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Sort fields inside every entry. The sorting order is defined by `#latex-workshop.bibtex-fields.order#`. This variable only has effect when formatting bibtex aligns fields. It is not possible to sort entries without aligning them."
+          "markdownDescription": "Sort fields inside every entry. The sorting order is defined by `#latex-toybox.bibtex-fields.order#`. This variable only has effect when formatting bibtex aligns fields. It is not possible to sort entries without aligning them."
         },
-        "latex-workshop.bibtex-fields.order": {
+        "latex-toybox.bibtex-fields.order": {
           "scope": "resource",
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "When `#latex-workshop.bibtex-fields.sort.enabled#` is true, sort fields according the order defined here and then alphabetically for non listed fields."
+          "markdownDescription": "When `#latex-toybox.bibtex-fields.sort.enabled#` is true, sort fields according the order defined here and then alphabetically for non listed fields."
         },
-        "latex-workshop.mathpreviewpanel.cursor.enabled": {
+        "latex-toybox.mathpreviewpanel.cursor.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Render a cursor on the math preview panel."
         },
-        "latex-workshop.mathpreviewpanel.editorGroup": {
+        "latex-toybox.mathpreviewpanel.editorGroup": {
           "scope": "window",
           "type": "string",
           "default": "below",
@@ -1678,31 +1678,31 @@
             "Put the math preview panel in a new group below the current one"
           ]
         },
-        "latex-workshop.selection.smart.latex.enabled": {
+        "latex-toybox.selection.smart.latex.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
           "markdownDescription": "Enable AST based smart selection. Command ids are `editor.action.smartSelect.expand` and `editor.action.smartSelect.shrink`."
         },
-        "latex-workshop.codespaces.portforwarding.openDelay": {
+        "latex-toybox.codespaces.portforwarding.openDelay": {
           "scope": "window",
           "type": "number",
           "default": 20000,
           "markdownDescription": "Delay to wait for GitHub Codespaces Authentication of port forwarding to be resolved, in milliseconds."
         },
-        "latex-workshop.decoration.rootFile": {
+        "latex-toybox.decoration.rootFile": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The decoration used to indicate the root file in the file explorer."
         },
-        "latex-workshop.decoration.rootSubFile": {
+        "latex-toybox.decoration.rootSubFile": {
           "scope": "window",
           "type": "string",
           "default": "",
           "markdownDescription": "The decoration used to indicate the root subfile in the file explorer."
         },
-        "latex-workshop.inlayHints.enabled": {
+        "latex-toybox.inlayHints.enabled": {
           "scope": "window",
           "type": "boolean",
           "default": true,
@@ -1713,68 +1713,68 @@
     "menus": {
       "editor/context": [
         {
-          "when": "config.latex-workshop.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
-          "command": "latex-workshop.build",
+          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
+          "command": "latex-toybox.build",
           "group": "navigation@100"
         },
         {
-          "when": "config.latex-workshop.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
-          "command": "latex-workshop.synctex",
+          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
+          "command": "latex-toybox.synctex",
           "group": "navigation@101"
         }
       ],
       "editor/title": [
         {
           "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
-          "command": "latex-workshop.view",
+          "command": "latex-toybox.view",
           "group": "navigation@2"
         },
         {
           "when": "editorLangId =~ /^latex$|^latex-expl3$|^rsweave$|^jlweave$/ && !virtualWorkspace",
-          "command": "latex-workshop.build",
+          "command": "latex-toybox.build",
           "group": "navigation@1"
         }
       ],
       "view/title": [
         {
-          "when": "view == latex-workshop-structure",
-          "command": "latex-workshop.structure-toggle-follow-cursor"
+          "when": "view == latex-toybox-structure",
+          "command": "latex-toybox.structure-toggle-follow-cursor"
         }
       ]
     },
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "latex-workshop-activitybar",
+          "id": "latex-toybox-activitybar",
           "title": "LaTeX",
           "icon": "./icons/activity-bar.svg"
         }
       ]
     },
     "views": {
-      "latex-workshop-activitybar": [
+      "latex-toybox-activitybar": [
         {
-          "id": "latex-workshop-commands",
+          "id": "latex-toybox-commands",
           "name": "Commands",
-          "when": "latex-workshop:enabled"
+          "when": "latex-toybox:enabled"
         },
         {
-          "id": "latex-workshop-structure",
+          "id": "latex-toybox-structure",
           "name": "Structure",
-          "when": "latex-workshop:enabled"
+          "when": "latex-toybox:enabled"
         },
         {
-          "id": "latex-workshop-snippet-view",
+          "id": "latex-toybox-snippet-view",
           "type": "webview",
-          "when": "latex-workshop:enabled",
+          "when": "latex-toybox:enabled",
           "name": "Snippet View"
         }
       ]
     },
     "customEditors": [
       {
-        "viewType": "latex-workshop-pdf-hook",
-        "displayName": "LaTeX Workshop Internal PDF Viewer",
+        "viewType": "latex-toybox-pdf-hook",
+        "displayName": "LaTeX Toybox Internal PDF Viewer",
         "selector": [
           {
             "filenamePattern": "*.pdf"

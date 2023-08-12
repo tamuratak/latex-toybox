@@ -8,7 +8,7 @@
 		}
 	],
 	"settings": {
-		"latex-workshop.latex.rootFile.useSubFile": false,
-		"latex-workshop.latex.autoBuild.run": "never"
+		"latex-toybox.latex.rootFile.useSubFile": false,
+		"latex-toybox.latex.autoBuild.run": "never"
 	}
 }

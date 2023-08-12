@@ -185,7 +185,7 @@ export class CompilerLogParser {
             diagsCollection[item.file].push(diag)
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
         for (const file in diagsCollection) {
             let file1 = file

@@ -1,4 +1,4 @@
 {
-    "latex-workshop.latex.rootFile.doNotPrompt": true,
-    "latex-workshop.latex.search.rootFiles.include": ["main/*.tex"]
+    "latex-toybox.latex.rootFile.doNotPrompt": true,
+    "latex-toybox.latex.search.rootFiles.include": ["main/*.tex"]
 }

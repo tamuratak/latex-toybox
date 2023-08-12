@@ -8,8 +8,8 @@
 		}
 	],
 	"settings": {
-		"latex-workshop.intellisense.citation.label":"bibtex key",
-		"latex-workshop.intellisense.citation.format": [
+		"latex-toybox.intellisense.citation.label":"bibtex key",
+		"latex-toybox.intellisense.citation.format": [
 			"author",
 			"title",
 			"journal",

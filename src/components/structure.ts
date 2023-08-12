@@ -47,11 +47,11 @@ export class StructureTreeView {
         readonly logger: Logger
     } & ConstructorParameters<typeof SectionNodeProvider>[0]) {
         this.sectionNodeProvider = new SectionNodeProvider(extension)
-        this.treeView = vscode.window.createTreeView('latex-workshop-structure', { treeDataProvider: this.sectionNodeProvider, showCollapseAll: true })
+        this.treeView = vscode.window.createTreeView('latex-toybox-structure', { treeDataProvider: this.sectionNodeProvider, showCollapseAll: true })
 
         extension.extensionContext.subscriptions.push(
             this.treeView,
-            vscode.commands.registerCommand('latex-workshop.structure-toggle-follow-cursor', () => {
+            vscode.commands.registerCommand('latex-toybox.structure-toggle-follow-cursor', () => {
                 this.followCursor = ! this.followCursor
                 this.extension.logger.info(`Follow cursor is set to ${this.followCursor}.`)
             }),
@@ -72,7 +72,7 @@ export class StructureTreeView {
                 return
             }),
             vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-                if (e.affectsConfiguration('latex-workshop.view.outline')) {
+                if (e.affectsConfiguration('latex-toybox.view.outline')) {
                     void this.computeTreeStructure()
                 }
             })

@@ -141,7 +141,7 @@ export class Command implements IProvider, ICommand {
     }
 
     private async load() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const packageDirUri = vscode.Uri.file(`${this.extension.extensionRoot}/data/packages/`)
         const files = await vscode.workspace.fs.readDirectory(packageDirUri)
         for (const file of files) {
@@ -180,7 +180,7 @@ export class Command implements IProvider, ICommand {
     }
 
     initialize(defaultCmds: {[key: string]: CmdItemEntry}) {
-        const snippetReplacements = vscode.workspace.getConfiguration('latex-workshop').get('intellisense.commandsJSON.replace') as {[key: string]: string}
+        const snippetReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.commandsJSON.replace') as {[key: string]: string}
 
         // Initialize default commands and `latex-mathsymbols`
         Object.keys(defaultCmds).forEach(key => {
@@ -217,7 +217,7 @@ export class Command implements IProvider, ICommand {
     }
 
     provide(languageId: string, document?: vscode.TextDocument, position?: vscode.Position): ILwCompletionItem[] {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
         let range: vscode.Range | undefined = undefined
         if (document && position) {
@@ -286,7 +286,7 @@ export class Command implements IProvider, ICommand {
     }
 
     getExtraPkgs(languageId: string): string[] {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const extraPackages = Array.from(configuration.get('intellisense.package.extra') as string[])
         if (languageId === 'latex-expl3') {
             extraPackages.push('latex-document')
@@ -298,7 +298,7 @@ export class Command implements IProvider, ICommand {
     }
 
     private entryCmdToCompletion(itemKey: string, item: CmdItemEntry): CmdEnvSuggestion {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useTabStops = configuration.get('intellisense.useTabStops.enabled')
         const backslash = item.command.startsWith(' ') ? '' : '\\'
         const label = item.label ? `${item.label}` : `${backslash}${item.command}`
@@ -339,7 +339,7 @@ export class Command implements IProvider, ICommand {
 
     provideCmdInPkg(pkg: string, cmdDuplicationDetector: CommandSignatureDuplicationDetector): CmdEnvSuggestion[] {
         const suggestions: CmdEnvSuggestion[] = []
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useOptionalArgsEntries = configuration.get('intellisense.optionalArgsEntries.enabled')
 
         // No package command defined

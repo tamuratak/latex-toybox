@@ -50,7 +50,7 @@ export class MathJaxPool {
     private initializeExtensions() {
         void this.loadExtensions()
         vscode.workspace.onDidChangeConfiguration(async (ev) => {
-            if (ev.affectsConfiguration('latex-workshop.hover.preview.mathjax.extensions')) {
+            if (ev.affectsConfiguration('latex-toybox.hover.preview.mathjax.extensions')) {
                 return this.loadExtensions()
             }
         })
@@ -63,7 +63,7 @@ export class MathJaxPool {
     }
 
     private async loadExtensions() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const extensions = configuration.get('hover.preview.mathjax.extensions', []) as SupportedExtension[]
         const extensionsToLoad = extensions.filter((ex) => supportedExtensionList.includes(ex))
         const proxy = await this.proxyPromise

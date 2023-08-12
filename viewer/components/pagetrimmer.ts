@@ -1,4 +1,4 @@
-import type { ILatexWorkshopPdfViewer, IPDFViewerApplication } from './interface.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -170,9 +170,9 @@ window.addEventListener('resize', () => {
 })
 
 export class PageTrimmer {
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         // Set observers after a pdf file is loaded in the first time.
         this.lwApp.lwEventBus.onPagesLoaded(setObserverToTrim, { once: true })

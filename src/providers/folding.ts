@@ -5,7 +5,7 @@ export class FoldingProvider implements vscode.FoldingRangeProvider {
     private readonly sectionRegex: RegExp[] = []
 
     constructor() {
-        const sections = vscode.workspace.getConfiguration('latex-workshop').get('view.outline.sections') as string[]
+        const sections = vscode.workspace.getConfiguration('latex-toybox').get('view.outline.sections') as string[]
         this.sectionRegex = sections.map(section => RegExp(`\\\\(?:${section})(?:\\*)?(?:\\[[^\\[\\]\\{\\}]*\\])?{(.*)}`, 'm'))
     }
 

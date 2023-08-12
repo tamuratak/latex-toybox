@@ -6,7 +6,7 @@ import * as vscode from 'vscode'
 import {sleep} from '../../src/utils/utils'
 import {activate} from '../../src/main'
 import type {EventName} from '../../src/components/eventbus'
-import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
+import type {PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
 import { ExternalPromise } from '../../src/utils/externalpromise'
 
 export {sleep}
@@ -53,7 +53,7 @@ export function runTestWithFixture(
     if (rootPath && path.basename(rootPath) === fixtureName && !shouldSkip) {
         test( fixtureName + ': ' + label, async () => {
             try {
-                await waitLatexWorkshopActivated()
+                await waitLatexToyboxActivated()
                 const findRootFileEnd = promisify('findrootfileend')
                 await cb(findRootFileEnd)
             } catch (e) {
@@ -93,13 +93,13 @@ export function runTestWithFixture(
 }
 
 export async function printLogMessages() {
-    await vscode.commands.executeCommand('latex-workshop.log')
+    await vscode.commands.executeCommand('latex-toybox.log')
     await sleep(1000)
     await vscode.commands.executeCommand('workbench.action.output.toggleOutput')
     await sleep(1000)
     const logMessage = vscode.window.activeTextEditor?.document.getText()
     console.log(logMessage)
-    await vscode.commands.executeCommand('latex-workshop.log', true)
+    await vscode.commands.executeCommand('latex-toybox.log', true)
     await sleep(1000)
     const compilerLogMessage = vscode.window.activeTextEditor?.document.getText()
     console.log(compilerLogMessage)
@@ -161,7 +161,7 @@ export async function waitUntil<T>(
 
 export async function promisify(event: EventName): Promise<void> {
     addLogMessage(`promisify (${event}): Start`)
-    const extension = obtainLatexWorkshop()
+    const extension = obtainLatexToybox()
     const resultPromise = new ExternalPromise<void>()
     const disposable = extension.exports.realExtension.eventBus.on(event, () => {
         resultPromise.resolve()
@@ -184,8 +184,8 @@ export async function promisify(event: EventName): Promise<void> {
     return resultPromise.promise
 }
 
-export function obtainLatexWorkshop() {
-    const extension = vscode.extensions.getExtension<ReturnType<typeof activate>>('James-Yu.latex-workshop')
+export function obtainLatexToybox() {
+    const extension = vscode.extensions.getExtension<ReturnType<typeof activate>>('tamuratak.latex-toybox')
     if (extension && extension.exports && extension.exports.realExtension) {
         const exports = extension.exports
         if (exports.realExtension) {
@@ -193,18 +193,18 @@ export function obtainLatexWorkshop() {
             return {...extension, exports: {...exports, realExtension}}
         }
     }
-    throw new Error('LaTeX Workshop not activated.')
+    throw new Error('LaTeX Toybox not activated.')
 }
 
-export async function waitLatexWorkshopActivated() {
-    await vscode.commands.executeCommand('latex-workshop.activate')
-    return obtainLatexWorkshop()
+export async function waitLatexToyboxActivated() {
+    await vscode.commands.executeCommand('latex-toybox.activate')
+    return obtainLatexToybox()
 }
 
 export async function waitGivenRootFile(file: string) {
     await sleep(1000)
     const result = await waitUntil(() => {
-        const extension = obtainLatexWorkshop()
+        const extension = obtainLatexToybox()
         const rootFile = extension.exports.realExtension.manager.rootFile
         return rootFile === file
     })
@@ -218,13 +218,13 @@ export async function executeVscodeCommand(command: string) {
 
 export async function viewPdf() {
     const promise = Promise.all([promisify('pdfviewerpagesloaded'), promisify('pdfviewerstatuschanged')])
-    await executeVscodeCommand('latex-workshop.view')
+    await executeVscodeCommand('latex-toybox.view')
     await promise
     await sleep(3000)
 }
 
 export function getViewerStatus(pdfFilePath: string) {
-    const extension = obtainLatexWorkshop()
+    const extension = obtainLatexToybox()
     const pdfFileUri = vscode.Uri.file(pdfFilePath)
     const rs = extension.exports.realExtension?.viewer.getViewerState(pdfFileUri)
     let ret: PdfViewerState | undefined

@@ -1,12 +1,12 @@
 {
-    "latex-workshop.latex.outDir": "%DIR%/out dir",
-    "latex-workshop.latex.recipes": [
+    "latex-toybox.latex.outDir": "%DIR%/out dir",
+    "latex-toybox.latex.recipes": [
         {
             "name": "latexmk_copy",
             "tools": ["latexmk", "copyPDF"]
         }
     ],
-    "latex-workshop.latex.tools": [
+    "latex-toybox.latex.tools": [
         {
             "name": "latexmk",
             "command": "latexmk",

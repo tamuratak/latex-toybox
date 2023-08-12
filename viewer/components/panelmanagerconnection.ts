@@ -1,17 +1,17 @@
-import type { PanelManagerResponse, PanelRequest, PdfViewerState } from '../../types/latex-workshop-protocol-types/index'
+import type { PanelManagerResponse, PanelRequest, PdfViewerState } from '../../types/latex-toybox-protocol-types/index'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isTrustedOrigin } from '../utils/origin.js'
 import { isEmbedded, isPdfjsShortcut } from '../utils/utils.js'
-import type { ILatexWorkshopPdfViewer, IPDFViewerApplication, PdfjsEventName } from './interface.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication, PdfjsEventName } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
 
 export class PanelManagerConnection {
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
     readonly #restoredState = new ExternalPromise<PdfViewerState | undefined>()
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         void this.startReceivingPanelManagerResponse()
         void this.startRebroadcastingKeyboardEvent()
@@ -33,12 +33,12 @@ export class PanelManagerConnection {
         await this.lwApp.pdfViewerStarted
         window.addEventListener('message', (e) => {
             if (!isTrustedOrigin(e.origin)) {
-                console.log('LatexWorkshopPdfViewer received a message with invalid origin')
+                console.log('LatexToyboxPdfViewer received a message with invalid origin')
                 return
             }
             const data = e.data as PanelManagerResponse
             if (!data.type) {
-                console.log('LatexWorkshopPdfViewer received a message of unknown type')
+                console.log('LatexToyboxPdfViewer received a message of unknown type')
                 return
             }
             switch (data.type) {

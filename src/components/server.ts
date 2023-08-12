@@ -61,7 +61,7 @@ export class Server {
             new vscode.Disposable(() => this.dispose())
         )
 
-        this.extension.logger.info('[Server] Creating LaTeX Workshop http and websocket server.')
+        this.extension.logger.info('[Server] Creating LaTeX Toybox http and websocket server.')
     }
 
     get serverStarted(): Promise<void> {
@@ -90,7 +90,7 @@ export class Server {
     }
 
     private initializeHttpServer() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const viewerPort = configuration.get('view.pdf.port', 0)
         this.httpServer.listen(viewerPort, '127.0.0.1', undefined, async () => {
             const address = this.httpServer.address()
@@ -106,7 +106,7 @@ export class Server {
             }
         })
         this.httpServer.on('error', (err) => {
-            this.extension.logger.error(`[Server] Error creating LaTeX Workshop http server: ${JSON.stringify(err)}.`)
+            this.extension.logger.error(`[Server] Error creating LaTeX Toybox http server: ${JSON.stringify(err)}.`)
         })
     }
 

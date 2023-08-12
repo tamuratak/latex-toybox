@@ -51,7 +51,7 @@ export class LabelDefinitionUpdater {
 
     // This function will return the reference defined by the node, or all references in `content`
     private getRefFromNode(node: latexParser.Node, lines: string[], nextNode?: latexParser.Node): LabelDefinitionElement[] {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const useLabelKeyVal = configuration.get('intellisense.label.keyval')
         const refs: LabelDefinitionElement[] = []
         let label = ''

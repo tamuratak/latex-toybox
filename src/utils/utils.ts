@@ -60,7 +60,7 @@ export function stripEnvironments(text: string, envs: string[]): string {
 export function stripCommentsAndVerbatim(text: string): string {
     let content = stripComments(text)
     content = content.replace(/\\verb\*?([^a-zA-Z0-9]).*?\1/g, '')
-    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+    const configuration = vscode.workspace.getConfiguration('latex-toybox')
     const verbatimEnvs = configuration.get('latex.verbatimEnvs') as string[]
     return stripEnvironments(content, verbatimEnvs)
 }
@@ -116,7 +116,7 @@ export async function resolveFile(dirs: string[], inputFile: string, suffix: str
  */
 export function replaceArgumentPlaceholders(rootFile: string): (arg: string) => string {
     return (arg: string) => {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(rootFile))
 
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
         const workspaceDir = workspaceFolder?.uri.fsPath.split(path.sep).join('/') || ''

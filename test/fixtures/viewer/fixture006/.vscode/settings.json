@@ -1,4 +1,4 @@
 {
-    "latex-workshop.latex.outDir": "./out",
-    "latex-workshop.view.pdf.viewer": "tab"
+    "latex-toybox.latex.outDir": "./out",
+    "latex-toybox.view.pdf.viewer": "tab"
 }

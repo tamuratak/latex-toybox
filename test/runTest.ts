@@ -40,13 +40,13 @@ async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer'
                 '--user-data-dir=' + tmpdir.name,
                 '--extensions-dir=' + extTmpdir.name,
                 '--lang=C',
-                '--log=James-Yu.latex-workshop:debug',
+                '--log=tamuratak.latex-toybox:debug',
                 '--disable-keytar',
                 '--disable-telemetry',
                 '--disable-gpu'
             ],
             extensionTestsEnv: {
-                LATEXWORKSHOP_CI: '1'
+                LATEXTOYBOX_CI: '1'
             }
         })
         clearTimeout(nodejsTimeout)

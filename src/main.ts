@@ -35,13 +35,13 @@ import { StructureTreeView } from './components/structure'
 function conflictExtensionCheck() {
     function check(extensionID: string, name: string, suggestion: string) {
         if (vscode.extensions.getExtension(extensionID) !== undefined) {
-            void vscode.window.showWarningMessage(`LaTeX Workshop is incompatible with extension "${name}". ${suggestion}`)
+            void vscode.window.showWarningMessage(`LaTeX Toybox is incompatible with extension "${name}". ${suggestion}`)
         }
     }
     check('tomoki1207.pdf', 'vscode-pdf', 'Please consider disabling either extension.')
 }
 
-function registerLatexWorkshopCommands(
+function registerLatexToyboxCommands(
     extension: {
         readonly extensionContext: vscode.ExtensionContext,
         readonly commander: Commander
@@ -49,43 +49,43 @@ function registerLatexWorkshopCommands(
 ) {
 
     extension.extensionContext.subscriptions.push(
-        vscode.commands.registerCommand('latex-workshop.saveWithoutBuilding', () => extension.commander.saveWithoutBuilding()),
-        vscode.commands.registerCommand('latex-workshop.build', () => extension.commander.build()),
-        vscode.commands.registerCommand('latex-workshop.recipes', (recipe: string | undefined) => extension.commander.recipes(recipe)),
-        vscode.commands.registerCommand('latex-workshop.view', (mode: 'tab' | 'browser' | 'external' | vscode.Uri | undefined) => extension.commander.view(mode)),
-        vscode.commands.registerCommand('latex-workshop.refresh-viewer', () => extension.commander.refresh()),
-        vscode.commands.registerCommand('latex-workshop.tab', () => extension.commander.view('tab')),
-        vscode.commands.registerCommand('latex-workshop.viewInBrowser', () => extension.commander.view('browser')),
-        vscode.commands.registerCommand('latex-workshop.viewExternal', () => extension.commander.view('external')),
-        vscode.commands.registerCommand('latex-workshop.kill', () => extension.commander.kill()),
-        vscode.commands.registerCommand('latex-workshop.synctex', () => extension.commander.synctex()),
-        vscode.commands.registerCommand('latex-workshop.texdoc', (pkg: string | undefined) => extension.commander.texdoc(pkg)),
-        vscode.commands.registerCommand('latex-workshop.texdocUsepackages', () => extension.commander.texdocUsepackages()),
-        vscode.commands.registerCommand('latex-workshop.synctexto', (line: number, filePath: string) => extension.commander.synctexonref(line, filePath)),
-        vscode.commands.registerCommand('latex-workshop.activate', () => undefined),
-        vscode.commands.registerCommand('latex-workshop.citation', () => extension.commander.citation()),
-        vscode.commands.registerCommand('latex-workshop.log', () => extension.commander.log()),
-        vscode.commands.registerCommand('latex-workshop.compilerlog', () => extension.commander.log('compiler')),
-        vscode.commands.registerCommand('latex-workshop.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
-        vscode.commands.registerCommand('latex-workshop.navigate-envpair', () => extension.commander.navigateToEnvPair()),
-        vscode.commands.registerCommand('latex-workshop.onEnterKey', () => extension.commander.onEnterKey()),
-        vscode.commands.registerCommand('latex-workshop.onAltEnterKey', () => extension.commander.onEnterKey('alt')),
-        vscode.commands.registerCommand('latex-workshop.revealOutputDir', () => extension.commander.revealOutputDir()),
+        vscode.commands.registerCommand('latex-toybox.saveWithoutBuilding', () => extension.commander.saveWithoutBuilding()),
+        vscode.commands.registerCommand('latex-toybox.build', () => extension.commander.build()),
+        vscode.commands.registerCommand('latex-toybox.recipes', (recipe: string | undefined) => extension.commander.recipes(recipe)),
+        vscode.commands.registerCommand('latex-toybox.view', (mode: 'tab' | 'browser' | 'external' | vscode.Uri | undefined) => extension.commander.view(mode)),
+        vscode.commands.registerCommand('latex-toybox.refresh-viewer', () => extension.commander.refresh()),
+        vscode.commands.registerCommand('latex-toybox.tab', () => extension.commander.view('tab')),
+        vscode.commands.registerCommand('latex-toybox.viewInBrowser', () => extension.commander.view('browser')),
+        vscode.commands.registerCommand('latex-toybox.viewExternal', () => extension.commander.view('external')),
+        vscode.commands.registerCommand('latex-toybox.kill', () => extension.commander.kill()),
+        vscode.commands.registerCommand('latex-toybox.synctex', () => extension.commander.synctex()),
+        vscode.commands.registerCommand('latex-toybox.texdoc', (pkg: string | undefined) => extension.commander.texdoc(pkg)),
+        vscode.commands.registerCommand('latex-toybox.texdocUsepackages', () => extension.commander.texdocUsepackages()),
+        vscode.commands.registerCommand('latex-toybox.synctexto', (line: number, filePath: string) => extension.commander.synctexonref(line, filePath)),
+        vscode.commands.registerCommand('latex-toybox.activate', () => undefined),
+        vscode.commands.registerCommand('latex-toybox.citation', () => extension.commander.citation()),
+        vscode.commands.registerCommand('latex-toybox.log', () => extension.commander.log()),
+        vscode.commands.registerCommand('latex-toybox.compilerlog', () => extension.commander.log('compiler')),
+        vscode.commands.registerCommand('latex-toybox.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
+        vscode.commands.registerCommand('latex-toybox.navigate-envpair', () => extension.commander.navigateToEnvPair()),
+        vscode.commands.registerCommand('latex-toybox.onEnterKey', () => extension.commander.onEnterKey()),
+        vscode.commands.registerCommand('latex-toybox.onAltEnterKey', () => extension.commander.onEnterKey('alt')),
+        vscode.commands.registerCommand('latex-toybox.revealOutputDir', () => extension.commander.revealOutputDir()),
 
-        vscode.commands.registerCommand('latex-workshop.promote-sectioning', () => extension.commander.shiftSectioningLevel('promote')),
-        vscode.commands.registerCommand('latex-workshop.demote-sectioning', () => extension.commander.shiftSectioningLevel('demote')),
-        vscode.commands.registerCommand('latex-workshop.select-section', () => extension.commander.selectSection()),
+        vscode.commands.registerCommand('latex-toybox.promote-sectioning', () => extension.commander.shiftSectioningLevel('promote')),
+        vscode.commands.registerCommand('latex-toybox.demote-sectioning', () => extension.commander.shiftSectioningLevel('demote')),
+        vscode.commands.registerCommand('latex-toybox.select-section', () => extension.commander.selectSection()),
 
-        vscode.commands.registerCommand('latex-workshop.openMathPreviewPanel', () => extension.commander.openMathPreviewPanel()),
-        vscode.commands.registerCommand('latex-workshop.closeMathPreviewPanel', () => extension.commander.closeMathPreviewPanel()),
-        vscode.commands.registerCommand('latex-workshop.toggleMathPreviewPanel', () => extension.commander.toggleMathPreviewPanel())
+        vscode.commands.registerCommand('latex-toybox.openMathPreviewPanel', () => extension.commander.openMathPreviewPanel()),
+        vscode.commands.registerCommand('latex-toybox.closeMathPreviewPanel', () => extension.commander.closeMathPreviewPanel()),
+        vscode.commands.registerCommand('latex-toybox.toggleMathPreviewPanel', () => extension.commander.toggleMathPreviewPanel())
     )
 
 }
 
-function generateLatexWorkshopApi(extension: Extension, structureViewer: StructureTreeView) {
+function generateLatexToyboxApi(extension: Extension, structureViewer: StructureTreeView) {
     return {
-        realExtension:  process.env['LATEXWORKSHOP_CI'] ? {...extension, structureViewer} : undefined
+        realExtension:  process.env['LATEXTOYBOX_CI'] ? {...extension, structureViewer} : undefined
     }
 }
 
@@ -96,22 +96,22 @@ let extensionToDispose: Extension | undefined
 // since vscode.Disposable doesn't support async dispose().
 // - https://github.com/microsoft/vscode/issues/114688#issuecomment-768253918
 export function deactivate() {
-    void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', false)
+    void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', false)
     return extensionToDispose?.dispose()
 }
 
-export function activate(context: vscode.ExtensionContext): ReturnType<typeof generateLatexWorkshopApi> {
+export function activate(context: vscode.ExtensionContext): ReturnType<typeof generateLatexToyboxApi> {
     const extension = new Extension(context)
     extensionToDispose = extension
-    void vscode.commands.executeCommand('setContext', 'latex-workshop:enabled', true)
+    void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', true)
 
-    registerLatexWorkshopCommands(extension)
+    registerLatexToyboxCommands(extension)
     const structureViewer = new StructureTreeView(extension)
     new ProvidersManager(extension)
 
     conflictExtensionCheck()
 
-    return generateLatexWorkshopApi(extension, structureViewer)
+    return generateLatexToyboxApi(extension, structureViewer)
 }
 
 export class Extension {
@@ -179,7 +179,7 @@ export class Extension {
         this.graphicsPreview = new GraphicsPreview(this)
         this.mathPreview = new MathPreview(this)
         this.mathPreviewPanel = new MathPreviewPanel(this)
-        this.logger.info('LaTeX Workshop initialized.')
+        this.logger.info('LaTeX Toybox initialized.')
     }
 
     async dispose() {
@@ -188,7 +188,7 @@ export class Extension {
     }
 
     private addLogFundamentals() {
-        this.logger.info('Initializing LaTeX Workshop.')
+        this.logger.info('Initializing LaTeX Toybox.')
         this.logger.info(`Extension root: ${this.extensionRoot}`)
         this.logger.info(`$PATH: ${process.env.PATH}`)
         this.logger.info(`$SHELL: ${process.env.SHELL}`)

@@ -3,7 +3,7 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
-import { getFixtureDir, runUnitTestWithFixture, waitLatexWorkshopActivated } from '../../utils/ciutils'
+import { getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated } from '../../utils/ciutils'
 import assert from 'assert'
 
 import { ChkTeX } from '../../../src/components/linterlib/chktex'
@@ -14,7 +14,7 @@ suite('linter test suite', () => {
     runUnitTestWithFixture('fixture030_linter', 'test chktex', async () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const linter = new ChkTeX(extension)
         await linter.lintRootFile()
@@ -25,7 +25,7 @@ suite('linter test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const subFilePath = path.join(fixtureDir, 'sub/sub.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const linter = new ChkTeX(extension)
         const log = fs.readFileSync(path.join(fixtureDir, 'chktex.linterlog')).toString()
@@ -39,7 +39,7 @@ suite('linter test suite', () => {
     runUnitTestWithFixture('fixture030_linter', 'test lacheck', async () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const linter = new LaCheck(extension)
         await linter.lintRootFile()
@@ -50,7 +50,7 @@ suite('linter test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const subFilePath = path.join(fixtureDir, 'sub/sub.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const linter = new LaCheck(extension)
         const log = fs.readFileSync(path.join(fixtureDir, 'lacheck.linterlog')).toString()

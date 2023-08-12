@@ -17,7 +17,7 @@ export class HoverProvider implements vscode.HoverProvider {
 
     public async provideHover(document: vscode.TextDocument, position: vscode.Position, ctoken: vscode.CancellationToken): Promise<vscode.Hover | undefined> {
         this.extension.mathPreview.getColor()
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const hov = configuration.get('hover.preview.enabled') as boolean
         const hovReference = configuration.get('hover.ref.enabled') as boolean
         const hovCitation = configuration.get('hover.citation.enabled') as boolean
@@ -48,7 +48,7 @@ export class HoverProvider implements vscode.HoverProvider {
         if (onAPackage(document, position, token)) {
             const pkg = encodeURIComponent(JSON.stringify(token))
             const md = `Package **${token}** \n\n`
-            const mdLink = new vscode.MarkdownString(`[View documentation](command:latex-workshop.texdoc?${pkg})`)
+            const mdLink = new vscode.MarkdownString(`[View documentation](command:latex-toybox.texdoc?${pkg})`)
             mdLink.isTrusted = true
             const ctanUrl = `https://ctan.org/pkg/${token}`
             const ctanLink = new vscode.MarkdownString(`[${ctanUrl}](${ctanUrl})`)
@@ -98,7 +98,7 @@ export class HoverProvider implements vscode.HoverProvider {
             pkgLink = '\n\nView documentation for package(s) '
             pkgs.forEach(p => {
                 const pkg = encodeURIComponent(JSON.stringify(p))
-                pkgLink += `[${p}](command:latex-workshop.texdoc?${pkg}),`
+                pkgLink += `[${p}](command:latex-toybox.texdoc?${pkg}),`
             })
             pkgLink = pkgLink.substring(0, pkgLink.lastIndexOf(',')) + '.'
         }

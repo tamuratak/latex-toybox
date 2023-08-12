@@ -1,11 +1,11 @@
 {
-    "latex-workshop.latex.recipes": [
+    "latex-toybox.latex.recipes": [
         {
             "name": "latexmk",
             "tools": ["latexmk"]
         }
     ],
-    "latex-workshop.latex.tools": [
+    "latex-toybox.latex.tools": [
         {
             "name": "latexmk",
             "command": "latexmk",

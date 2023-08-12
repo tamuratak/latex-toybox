@@ -39,7 +39,7 @@ export function hidePrintButton() {
 export function setCssRuleForToolbar() {
     let styleSheet: CSSStyleSheet | undefined
     for (const style of document.styleSheets) {
-        if (style.href && /latexworkshop.css/.exec(style.href)) {
+        if (style.href && /latextoybox.css/.exec(style.href)) {
             styleSheet = style
             break
         }

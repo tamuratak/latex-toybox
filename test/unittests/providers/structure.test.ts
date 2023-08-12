@@ -2,16 +2,16 @@
 
 import * as vscode from 'vscode'
 import * as path from 'path'
-import {getFixtureDir, runUnitTestWithFixture, waitLatexWorkshopActivated} from '../../utils/ciutils'
+import {getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated} from '../../utils/ciutils'
 import assert from 'assert'
 
 import { SectionNodeProvider } from '../../../src/components/structurelib/sectionnodeprovider'
 
 async function resetConfig() {
     const config = vscode.workspace.getConfiguration()
-    await config.update('latex-workshop.view.outline.numbers.enabled', undefined)
-    await config.update('latex-workshop.view.outline.sections', undefined)
-    await config.update('latex-workshop.view.outline.floats.enabled', undefined)
+    await config.update('latex-toybox.view.outline.numbers.enabled', undefined)
+    await config.update('latex-toybox.view.outline.sections', undefined)
+    await config.update('latex-toybox.view.outline.floats.enabled', undefined)
 }
 
 suite('unit test suite', () => {
@@ -21,7 +21,7 @@ suite('unit test suite', () => {
     runUnitTestWithFixture('fixture020_structure', 'test structure', async () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -48,8 +48,8 @@ suite('unit test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const config = vscode.workspace.getConfiguration()
-        await config.update('latex-workshop.view.outline.numbers.enabled', false)
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        await config.update('latex-toybox.view.outline.numbers.enabled', false)
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -61,12 +61,12 @@ suite('unit test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const config = vscode.workspace.getConfiguration()
-        await config.update('latex-workshop.view.outline.sections', [
+        await config.update('latex-toybox.view.outline.sections', [
             'section',
             'altsection',
             'subsubsection'
         ])
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -79,8 +79,8 @@ suite('unit test suite', () => {
         const fixtureDir = getFixtureDir()
         const texFilePath = path.join(fixtureDir, 'main.tex')
         const config = vscode.workspace.getConfiguration()
-        await config.update('latex-workshop.view.outline.floats.enabled', false)
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        await config.update('latex-toybox.view.outline.floats.enabled', false)
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = texFilePath
         const structure = new SectionNodeProvider(extension)
         await structure.update(true)
@@ -93,7 +93,7 @@ suite('unit test suite', () => {
 
     teardown(async () => {
         await resetConfig()
-        const extension = (await waitLatexWorkshopActivated()).exports.realExtension as any
+        const extension = (await waitLatexToyboxActivated()).exports.realExtension as any
         extension.manager.rootFile = undefined
     })
 })

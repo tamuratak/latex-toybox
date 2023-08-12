@@ -33,13 +33,13 @@ export class BibLogParser {
             return
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         let excludeRegexp: RegExp[]
         try {
             excludeRegexp = (configuration.get('message.bibtexlog.exclude') as string[]).map(regexp => RegExp(regexp))
         } catch (e) {
             if (e instanceof Error) {
-                this.extension.logger.info(`latex-workshop.message.bibtexlog.exclude is invalid: ${e.message}`)
+                this.extension.logger.info(`latex-toybox.message.bibtexlog.exclude is invalid: ${e.message}`)
             }
             return
         }

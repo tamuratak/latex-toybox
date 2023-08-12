@@ -1,5 +1,5 @@
 import type * as vscode from 'vscode'
-import type {PdfViewerState} from '../../types/latex-workshop-protocol-types/index'
+import type {PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
 import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter'
 import type { Logger } from './logger'
 

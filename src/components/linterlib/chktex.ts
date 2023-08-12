@@ -57,7 +57,7 @@ export class ChkTeX implements ILinter {
     }
 
     private async chktexWrapper(linterid: string, configScope: vscode.ConfigurationScope, filePath: string, requiredArgs: string[], content?: string): Promise<string | undefined> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', configScope)
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', configScope)
         const command = configuration.get('linting.chktex.exec.path') as string
         const args = [...(configuration.get('linting.chktex.exec.args') as string[])]
         if (!args.includes('-l')) {
@@ -137,7 +137,7 @@ export class ChkTeX implements ILinter {
     }
 
     private async getChktexrcTabSize(file: string): Promise<number | undefined> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(file))
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(file))
         const args = configuration.get('linting.chktex.exec.args') as string[]
         let filePath: string | undefined
         if (args.includes('-l')) {
@@ -208,7 +208,7 @@ export class ChkTeX implements ILinter {
     }
 
     private async callConvertColumn(column: number, filePathArg: string, line: number, tabSizeArg?: number): Promise<number> {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', this.extension.manager.getWorkspaceFolderRootDir())
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', this.extension.manager.getWorkspaceFolderRootDir())
         if (!configuration.get('linting.chktex.convertOutput.column.enabled', true)) {
             return column
         }
@@ -279,7 +279,7 @@ export class ChkTeX implements ILinter {
             }
             diagArray.push(diag)
         }
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
         for (const [file, diagArray] of diagsCollection) {
             // Only report ChkTeX errors on TeX files. We should avoid

@@ -25,14 +25,14 @@ export class HoverPreviewOnRefProvider {
     async provideHoverPreviewOnRef(tex: TexMathEnv, newCommand: string, labelDef: LabelDefinitionEntry, color: string): Promise<vscode.Hover> {
         const md = await this.renderSvgOnRef(tex, newCommand, labelDef, color)
         const line = labelDef.position.line
-        const link = vscode.Uri.parse('command:latex-workshop.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
+        const link = vscode.Uri.parse('command:latex-toybox.synctexto').with({ query: JSON.stringify([line, labelDef.file]) })
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         return new vscode.Hover( [this.mputils.addDummyCodeBlock(`![equation](${md})`), mdLink], tex.range )
     }
 
     async renderSvgOnRef(tex: TexMathEnv, newCommand: string, labelDef: Pick<LabelDefinitionEntry, 'label' | 'prevIndex'>, color: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
 
         let newTeXString: string

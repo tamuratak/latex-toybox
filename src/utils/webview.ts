@@ -55,7 +55,7 @@ export async function openWebviewPanel(
         }
     }
     // Then, we set the focus back to the .tex file
-    const configuration = vscode.workspace.getConfiguration('latex-workshop')
+    const configuration = vscode.workspace.getConfiguration('latex-toybox')
     const delay = configuration.get('view.pdf.tab.openDelay', 1000)
     setTimeout(async () => {
         if (!preserveFocus) {

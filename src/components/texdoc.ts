@@ -13,7 +13,7 @@ export class TeXDoc {
     }) { }
 
     private runTexdoc(pkg: string) {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const texdocPath = configuration.get('texdoc.path') as string
         const texdocArgs = Array.from(configuration.get('texdoc.args') as string[])
         texdocArgs.push(pkg)

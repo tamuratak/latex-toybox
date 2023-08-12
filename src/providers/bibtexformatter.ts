@@ -23,9 +23,9 @@ export class BibtexFormatter {
         this.duplicatesDiagnostics = vscode.languages.createDiagnosticCollection('BibTeX')
         this.diags = []
         extension.extensionContext.subscriptions.push(
-            vscode.commands.registerCommand('latex-workshop.bibsort', () => this.bibtexFormat(true, false)),
-            vscode.commands.registerCommand('latex-workshop.bibalign', () => this.bibtexFormat(false, true)),
-            vscode.commands.registerCommand('latex-workshop.bibalignsort', () => this.bibtexFormat(true, true))
+            vscode.commands.registerCommand('latex-toybox.bibsort', () => this.bibtexFormat(true, false)),
+            vscode.commands.registerCommand('latex-toybox.bibalign', () => this.bibtexFormat(false, true)),
+            vscode.commands.registerCommand('latex-toybox.bibalignsort', () => this.bibtexFormat(true, true))
         )
     }
 
@@ -66,7 +66,7 @@ export class BibtexFormatter {
     public async formatDocument(document: vscode.TextDocument, sort: boolean, align: boolean, range?: vscode.Range): Promise<vscode.TextEdit[]> {
         // Get configuration
         const bibtexUtils = new BibtexUtils(this.extension, document.uri)
-        const config = vscode.workspace.getConfiguration('latex-workshop', document)
+        const config = vscode.workspace.getConfiguration('latex-toybox', document)
         const handleDuplicates = config.get('bibtex-format.handleDuplicates') as 'Ignore Duplicates' | 'Highlight Duplicates' | 'Comment Duplicates'
         const lineOffset = range ? range.start.line : 0
         const columnOffset = range ? range.start.character : 0
@@ -156,13 +156,13 @@ export class BibtexFormatterProvider implements vscode.DocumentFormattingEditPro
     }
 
     public provideDocumentFormattingEdits(document: vscode.TextDocument): Promise<vscode.TextEdit[]> {
-        const sort = vscode.workspace.getConfiguration('latex-workshop', document).get('bibtex-format.sort.enabled') as boolean
+        const sort = vscode.workspace.getConfiguration('latex-toybox', document).get('bibtex-format.sort.enabled') as boolean
         this.extension.logger.info('Start bibtex formatting on behalf of VSCode\'s formatter.')
         return this.formatter.formatDocument(document, sort, true)
     }
 
     public provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range): Promise<vscode.TextEdit[]> {
-        const sort = vscode.workspace.getConfiguration('latex-workshop', document).get('bibtex-format.sort.enabled') as boolean
+        const sort = vscode.workspace.getConfiguration('latex-toybox', document).get('bibtex-format.sort.enabled') as boolean
         this.extension.logger.info('Start bibtex selection formatting on behalf of VSCode\'s formatter.')
         return this.formatter.formatDocument(document, sort, true, range)
     }

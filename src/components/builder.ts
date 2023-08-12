@@ -324,7 +324,7 @@ export class Builder {
 
     private createSteps(rootFile: string, languageId: string, recipeName: string | undefined): StepCommand[] | undefined {
         const steps: StepCommand[] = []
-        const configuration = vscode.workspace.getConfiguration('latex-workshop', vscode.Uri.file(rootFile))
+        const configuration = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(rootFile))
 
         const recipes = configuration.get('latex.recipes', []) as Recipe[]
         const defaultRecipeName: string = configuration.get('latex.recipe.default', 'first')

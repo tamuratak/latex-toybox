@@ -1,4 +1,4 @@
 {
-    "latex-workshop.latex.rootFile.doNotPrompt": true,
-    "latex-workshop.latex.watch.files.ignore": ["**/s.tex"]
+    "latex-toybox.latex.rootFile.doNotPrompt": true,
+    "latex-toybox.latex.watch.files.ignore": ["**/s.tex"]
 }

@@ -65,7 +65,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     }
 
     private refreshLaTeXModelConfig() {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const cmds = configuration.get('view.outline.commands') as string[]
         const envs = configuration.get('view.outline.floats.enabled') as boolean ? ['figure', 'frame', 'table'] : ['frame']
 
@@ -114,7 +114,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // Step 2: Create the hierarchy of these sections.
         const structure = buildLaTeXHierarchy(
             flatStructure,
-            subFile && vscode.workspace.getConfiguration('latex-workshop').get('view.outline.numbers.enabled') as boolean
+            subFile && vscode.workspace.getConfiguration('latex-toybox').get('view.outline.numbers.enabled') as boolean
         )
 
         // Step 3: Determine the lastLine of all sections.
@@ -294,7 +294,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
             cmdArgs.push(argString.slice(1, argString.length - 1))
         })
 
-        const texDirs = vscode.workspace.getConfiguration('latex-workshop').get('latex.texDirs') as string[]
+        const texDirs = vscode.workspace.getConfiguration('latex-toybox').get('latex.texDirs') as string[]
 
         let candidate: string | undefined
         // \input{sub.tex}
@@ -334,7 +334,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         const treeItem: vscode.TreeItem = new vscode.TreeItem(element.label, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None)
 
         treeItem.command = {
-            command: 'latex-workshop.goto-section',
+            command: 'latex-toybox.goto-section',
             title: '',
             arguments: [element.fileName, element.lineNumber]
         }

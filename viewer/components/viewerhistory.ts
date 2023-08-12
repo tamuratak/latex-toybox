@@ -1,4 +1,4 @@
-import type {ILatexWorkshopPdfViewer} from './interface.js'
+import type {ILatexToyboxPdfViewer} from './interface.js'
 
 // Static HTML elements
 const viewerContainerElement = document.getElementById('viewerContainer') as HTMLElement
@@ -18,13 +18,13 @@ export class ViewerHistory {
      * the viewer scrolls to the position.
      */
     private currentPrevIndex: number | 'historyIsEmpty' = 'historyIsEmpty'
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
     /**
      * The scroll position when the Back button is clicked newly.
      */
     private scrollPositionWhenGoingBack: number | undefined
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         this.registerKeybinding()
     }

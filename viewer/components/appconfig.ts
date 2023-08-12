@@ -1,5 +1,5 @@
-import type { PdfViewerParams } from '../../types/latex-workshop-protocol-types/index'
-import type { ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
+import type { PdfViewerParams } from '../../types/latex-toybox-protocol-types/index'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isPrefersColorSchemeDark } from '../utils/utils.js'
 
@@ -10,9 +10,9 @@ declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
 export class AppConfig {
     readonly #setupAppOptionsPromise = new ExternalPromise<void>()
     readonly #paramsPromise = new ExternalPromise<PdfViewerParams>()
-    private readonly lwApp: ILatexWorkshopPdfViewer
+    private readonly lwApp: ILatexToyboxPdfViewer
 
-    constructor(lwApp: ILatexWorkshopPdfViewer) {
+    constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         void this.fetchParams().then(params => this.#paramsPromise.resolve(params))
         void this.setupAppOptions()

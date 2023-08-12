@@ -8,7 +8,7 @@
 		}
 	],
 	"settings": {
-		"latex-workshop.latex.recipe.default": "fake",
-		"latex-workshop.latex.recipes": []
+		"latex-toybox.latex.recipe.default": "fake",
+		"latex-toybox.latex.recipes": []
 	}
 }

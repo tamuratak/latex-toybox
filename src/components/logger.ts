@@ -6,7 +6,7 @@ export class Logger implements ILogger {
     private readonly logPanel: vscode.LogOutputChannel
 
     constructor(extensionContextSubscriptions: vscode.ExtensionContext['subscriptions']) {
-        this.logPanel = vscode.window.createOutputChannel('LaTeX Workshop', { log: true })
+        this.logPanel = vscode.window.createOutputChannel('LaTeX Toybox', { log: true })
         extensionContextSubscriptions.push(this.logPanel)
     }
 

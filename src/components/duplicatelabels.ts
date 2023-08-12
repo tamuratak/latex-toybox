@@ -18,7 +18,7 @@ export class DuplicateLabels {
     }) {
         this.extension = extension
         this.extension.eventBus.completionUpdated.event((file: string) => {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop')
+            const configuration = vscode.workspace.getConfiguration('latex-toybox')
             if (configuration.get('check.duplicatedLabels.enabled')) {
                 this.run(file)
             }

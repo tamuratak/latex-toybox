@@ -18,14 +18,14 @@ export class Configuration {
 
     private readonly configurationsToLog = [
         'editor.acceptSuggestionOnEnter',
-        'latex-workshop.bind.enter.key',
-        'latex-workshop.hover.preview.mathjax.extensions',
-        'latex-workshop.intellisense.package.enabled',
-        'latex-workshop.latex.autoBuild.run',
-        'latex-workshop.latex.outDir',
-        'latex-workshop.latex.recipes',
-        'latex-workshop.latex.tools',
-        'latex-workshop.view.pdf.keyboardEvent'
+        'latex-toybox.bind.enter.key',
+        'latex-toybox.hover.preview.mathjax.extensions',
+        'latex-toybox.intellisense.package.enabled',
+        'latex-toybox.latex.autoBuild.run',
+        'latex-toybox.latex.outDir',
+        'latex-toybox.latex.recipes',
+        'latex-toybox.latex.tools',
+        'latex-toybox.view.pdf.keyboardEvent'
     ]
 
     private logConfiguration() {

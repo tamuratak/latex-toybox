@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import type {PanelRequest, PdfViewerState} from '../../../types/latex-workshop-protocol-types/index'
+import type {PanelRequest, PdfViewerState} from '../../../types/latex-toybox-protocol-types/index'
 import {escapeHtml, sleep} from '../../utils/utils'
 import type {PdfViewerManagerService} from './pdfviewermanager'
 import { getNonce } from '../../utils/getnonce'
@@ -117,7 +117,7 @@ export class PdfViewerPanelService {
             return
         }
         if (vscode.env.remoteName === 'codespaces' && vscode.env.uiKind === vscode.UIKind.Web) {
-            const configuration = vscode.workspace.getConfiguration('latex-workshop')
+            const configuration = vscode.workspace.getConfiguration('latex-toybox')
             const delay = configuration.get('codespaces.portforwarding.openDelay', 20000)
             // We have to open the url in a browser tab for the authentication of port forwarding through githubpreview.dev.
             await vscode.env.openExternal(url)
@@ -128,7 +128,7 @@ export class PdfViewerPanelService {
 
     async createPdfViewerPanel(pdfFileUri: vscode.Uri, viewColumn: vscode.ViewColumn): Promise<PdfViewerPanel> {
         await this.extension.server.serverStarted
-        const panel = vscode.window.createWebviewPanel('latex-workshop-pdf', path.basename(pdfFileUri.path), viewColumn, {
+        const panel = vscode.window.createWebviewPanel('latex-toybox-pdf', path.basename(pdfFileUri.path), viewColumn, {
             enableScripts: true,
             retainContextWhenHidden: true
         })
@@ -139,7 +139,7 @@ export class PdfViewerPanelService {
     }
 
     private getKeyboardEventConfig(): boolean {
-        const configuration = vscode.workspace.getConfiguration('latex-workshop')
+        const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const setting: 'auto' | 'force' | 'never' = configuration.get('view.pdf.keyboardEvent', 'auto')
         if (setting === 'auto') {
             return true
