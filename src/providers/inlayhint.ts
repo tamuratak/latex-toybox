@@ -59,10 +59,11 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
         const result: InlayHint[] = []
         for (const nodeResult of labelNodes) {
             const node = nodeResult.node
-            const labelEntry = auxStore.labelsMap.get(node.label)
-            if (!labelEntry) {
+            const labelPosArray = auxStore.labelsMap.get(node.label)
+            if (!labelPosArray || labelPosArray.length > 1) {
                 continue
             }
+            const labelEntry = labelPosArray[0]
             const hint = new InlayHint(toVscodePosition(node.location.end), '(' + labelEntry.refNumber + ')')
             result.push(hint)
         }
