@@ -49,10 +49,6 @@ export class SyncTex {
         indicator.style.left = `${scrollX}px`
         indicator.style.top = `${scrollY}px`
         setTimeout(() => indicator.className = 'hide', 10)
-        setTimeout(() => {
-            indicator.style.left = ''
-            indicator.style.top = ''
-        }, 1000)
     }
 
     private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
