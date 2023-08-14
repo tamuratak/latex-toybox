@@ -45,10 +45,16 @@ export class SyncTex {
         this.lwApp.viewerHistory.pushCurrentPositionToHistory()
 
         const indicator = document.getElementById('synctex-indicator') as HTMLElement
-        indicator.className = 'show'
+        indicator.className = ''
         indicator.style.left = `${scrollX}px`
         indicator.style.top = `${scrollY}px`
-        setTimeout(() => indicator.className = 'hide', 20)
+        // We call requestAnimationFrame twice.
+        // See https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Tips
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                indicator.className = 'pop'
+            })
+        })
     }
 
     private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
