@@ -64,30 +64,33 @@ export class CursorRenderer {
         if (cursorNode && latexParser.isCommand(cursorNode)) {
             return
         }
-        let nodeStart: number | undefined
-        let nodeEnd: number | undefined
+        let newCursorNodeLoc: {
+            start: { offset: number },
+            end: { offset: number }
+        } | undefined
         const texString = texMath.texString
         const cursorOffset = convertPositionToOffset(cursorPos, texString)
-        if (latexParser.hasContentArray(findResult.node)) {
-            const {prev} = findPrevNextNode(cursorOffset, findResult.node.content)
+        if (latexParser.hasContentArray(cursorNode)) {
+            const {prev, next} = findPrevNextNode(cursorOffset, cursorNode.content)
             if (latexParser.isSubscript(prev) || latexParser.isSuperscript(prev)) {
                 const arg = prev.arg
                 if (latexParser.isMathCharacter(arg) && arg.location?.end.offset === cursorOffset) {
-                    nodeStart = arg.location?.start.offset
-                    nodeEnd = arg.location?.end.offset
+                    newCursorNodeLoc = arg.location
                 }
+            } else if (latexParser.isSubscript(next) || latexParser.isSuperscript(next)) {
+                newCursorNodeLoc = prev?.location
             }
-        }
-        if (latexParser.isSuperscript(cursorNode) || latexParser.isSubscript(cursorNode)) {
+        } else if (latexParser.isSuperscript(cursorNode) || latexParser.isSubscript(cursorNode)) {
             const arg = cursorNode.arg
             if (arg && latexParser.isMathCharacter(arg)) {
-                nodeStart = arg.location?.start.offset
-                nodeEnd = arg.location?.end.offset
+                newCursorNodeLoc = arg.location
             } else {
                 return
             }
         }
-        if (nodeStart !== undefined && nodeEnd !== undefined) {
+        if (newCursorNodeLoc) {
+            const nodeStart = newCursorNodeLoc.start.offset
+            const nodeEnd = newCursorNodeLoc.end.offset
             const newTexString = texString.substring(0, nodeStart)
                 + '{~'
                 + texString.substring(nodeStart, cursorOffset)
