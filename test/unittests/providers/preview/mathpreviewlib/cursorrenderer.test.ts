@@ -4,7 +4,7 @@ import * as vscode from 'vscode'
 import { runUnitTestWithFixture } from '../../../../utils/ciutils'
 import { UtensilsParser } from '../../../../../src/components/utensilsparser'
 import { TeXMathEnvFinder } from '../../../../../src/components/mathpreviewlib/texmathenvfinder'
-import { CursorRenderer } from '../../../../../src/components/mathpreviewlib/cursorrenderer'
+import { CursorRenderer, isCursorInsideTexMath } from '../../../../../src/components/mathpreviewlib/cursorrenderer'
 import { TextDocumentLike } from '../../../../../src/components/mathpreviewlib/textdocumentlike'
 
 const utensilsParser = new UtensilsParser()
@@ -34,21 +34,20 @@ suite('unit test suite: mathpreviewlib/cursorrenderer', () => {
         const cursorPos = new vscode.Position(0, 0)
         const texMath = finder.findMathEnvIncludingPosition(doc, cursorPos)
         assert(texMath)
-        const renderer = new CursorRenderer({utensilsParser})
 
-        const result = renderer.isCursorInsideTexMath(texMath.range, cursorPos)
+        const result = isCursorInsideTexMath(texMath.range, cursorPos)
         assert.strictEqual(result, false)
 
         const cursorPos1 = new vscode.Position(0, 1)
-        const result1 = renderer.isCursorInsideTexMath(texMath.range, cursorPos1)
+        const result1 = isCursorInsideTexMath(texMath.range, cursorPos1)
         assert.strictEqual(result1, true)
 
         const cursorPos4 = new vscode.Position(0, 4)
-        const result4 = renderer.isCursorInsideTexMath(texMath.range, cursorPos4)
+        const result4 = isCursorInsideTexMath(texMath.range, cursorPos4)
         assert.strictEqual(result4, true)
 
         const cursorPos5 = new vscode.Position(0, 5)
-        const result5 = renderer.isCursorInsideTexMath(texMath.range, cursorPos5)
+        const result5 = isCursorInsideTexMath(texMath.range, cursorPos5)
         assert.strictEqual(result5, false)
 
     })
