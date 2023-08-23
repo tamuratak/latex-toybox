@@ -147,3 +147,7 @@ export function findNodeContactedWithPosition(document: TextDocument, position: 
     }
     return
 }
+
+export function isSubOrSuper(node: latexParser.Node | undefined): node is latexParser.Subscript | latexParser.Superscript {
+    return latexParser.isSubscript(node) || latexParser.isSuperscript(node)
+}

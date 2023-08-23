@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import { TexMathEnv } from './texmathenvfinder'
 
 import type { ITextDocumentLike } from './textdocumentlike'
-import { convertPositionToOffset, findPrevNextNode, toLuPos } from '../../utils/utensils'
+import { convertPositionToOffset, findPrevNextNode, isSubOrSuper, toLuPos } from '../../utils/utensils'
 import type { UtensilsParser } from '../utensilsparser'
 
 
@@ -72,15 +72,17 @@ export class CursorRenderer {
         const cursorOffset = convertPositionToOffset(cursorPos, texString)
         if (latexParser.hasContentArray(cursorNode)) {
             const {prev, next} = findPrevNextNode(cursorOffset, cursorNode.content)
-            if (latexParser.isSubscript(prev) || latexParser.isSuperscript(prev)) {
+            if (isSubOrSuper(prev)) {
                 const arg = prev.arg
-                if (latexParser.isMathCharacter(arg) && arg.location?.end.offset === cursorOffset) {
+                if (latexParser.isGroup(arg) && isSubOrSuper(next)) {
+                    return
+                } else if (latexParser.isMathCharacter(arg) && arg.location?.end.offset === cursorOffset) {
                     newCursorNodeLoc = arg.location
                 }
-            } else if (latexParser.isSubscript(next) || latexParser.isSuperscript(next)) {
+            } else if (isSubOrSuper(next)) {
                 newCursorNodeLoc = prev?.location
             }
-        } else if (latexParser.isSuperscript(cursorNode) || latexParser.isSubscript(cursorNode)) {
+        } else if (isSubOrSuper(cursorNode)) {
             const arg = cursorNode.arg
             if (arg && latexParser.isMathCharacter(arg)) {
                 newCursorNodeLoc = arg.location
