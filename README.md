@@ -38,6 +38,8 @@ To streamline maintenance and enhance security measures, I removed some features
 - Magic comment support
 - Creating temporary directory to build
 - Formatting LaTeX documents
+- R Sweave and Weave.jl supports
+- old-style Docker supports
 - Counting words
 
 ## Feature requests

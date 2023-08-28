@@ -21,7 +21,7 @@ import { LwFileWatcher } from './managerlib/lwfilewatcher'
 import { getTeXChildren } from './managerlib/gettexchildren'
 import { findWorkspace, isExcluded } from './managerlib/utils'
 import { getDirtyContent } from '../utils/getdirtycontent'
-import { inferLanguageId, isTexOrWeaveFile } from '../utils/hastexid'
+import { inferLanguageId, isTexFile } from '../utils/hastexid'
 import type { Logger } from './logger'
 import type { Viewer } from './viewer'
 import type { Completer } from '../providers/completion'
@@ -693,6 +693,7 @@ export class Manager {
             cacheEntry.bibs.cache.clear()
             cacheEntry.bibs.mtime = 0
         }
+        // TODO
         const bibReg = /(?:\\(?:bibliography|addbibresource)(?:\[[^[\]{}]*\])?){(.+?)}|(?:\\putbib)\[(.+?)\]/g
         while (true) {
             const result = bibReg.exec(content)
@@ -744,7 +745,7 @@ export class Manager {
                 if (inputFile === rootFile || this.isWatched(inputFile)) {
                     continue
                 }
-                if (isTexOrWeaveFile(vscode.Uri.file(inputFile))) {
+                if (isTexFile(vscode.Uri.file(inputFile))) {
                     // Parse tex files as imported subfiles.
                     this.gracefulCachedContent(rootFile).children.cache.add(inputFile)
                     await this.parseFileAndSubs(inputFile, rootFile, new Set())
@@ -809,13 +810,13 @@ export class Manager {
 
     private async onWatchingNewFile(fileUri: vscode.Uri) {
         this.extension.logger.info(`Added to file watcher: ${fileUri}`)
-        if (isTexOrWeaveFile(fileUri)) {
+        if (isTexFile(fileUri)) {
             await this.updateContentEntry(fileUri)
         }
     }
 
     private async onWatchedFileChanged(fileUri: vscode.Uri) {
-        if (isTexOrWeaveFile(fileUri)) {
+        if (isTexFile(fileUri)) {
             await this.updateContentEntry(fileUri)
         }
         await this.buildOnFileChanged(fileUri)

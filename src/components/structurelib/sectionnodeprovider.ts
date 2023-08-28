@@ -5,7 +5,6 @@ import { Section, SectionKind } from '../structure'
 import { resolveFile } from '../../utils/utils'
 import { buildLaTeXHierarchy } from './sectionnodeproviderlib/structure'
 import { setLastLineOfEachSection } from './sectionnodeproviderlib/utils'
-import { parseRnwChildCommand } from './sectionnodeproviderlib/rnw'
 import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
 import { getDirtyContent } from '../../utils/getdirtycontent'
 import type { Logger } from '../logger'
@@ -155,21 +154,10 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
             return []
         }
 
-        // Get a list of rnw child chunks
-        const rnwChildren = subFile ? await parseRnwChildCommand(content, file, this.extension.manager.rootFile || '') : []
-        let rnwChild = rnwChildren.shift()
-
         // Parse each base-level node. If the node has contents, that function
         // will be called recursively.
         let sections: Section[] = []
         for (const node of ast.content) {
-            while (rnwChild && node.location && rnwChild.line <= node.location.start.line) {
-                sections = [
-                    ...sections,
-                    ...await this.buildLaTeXSectionFromFile(rnwChild.subFile, subFile, filesBuilt)
-                ]
-                rnwChild = rnwChildren.shift()
-            }
             sections = [
                 ...sections,
                 ...await this.parseLaTeXNode(node, file, subFile, filesBuilt)
@@ -294,7 +282,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
             cmdArgs.push(argString.slice(1, argString.length - 1))
         })
 
-        const texDirs = vscode.workspace.getConfiguration('latex-toybox').get('latex.texDirs') as string[]
+        const texDirs = vscode.workspace.getConfiguration('latex-toybox').get('latex.texDirs', []) as string[]
 
         let candidate: string | undefined
         // \input{sub.tex}
@@ -302,27 +290,32 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
              'subfile', 'loadglsentries'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 0) {
             candidate = await resolveFile(
-                [path.dirname(file),
-                 path.dirname(this.extension.manager.rootFile || ''),
-                 ...texDirs],
-                cmdArgs[0])
+                [
+                    path.dirname(file),
+                    path.dirname(this.extension.manager.rootFile || ''),
+                    ...texDirs
+                ],
+                cmdArgs[0]
+            )
         }
         // \import{sections/}{section1.tex}
         if (['import', 'inputfrom', 'includefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
             candidate = await resolveFile(
-                [cmdArgs[0],
-                 path.join(
-                    path.dirname(this.extension.manager.rootFile || ''),
-                    cmdArgs[0])],
-                cmdArgs[1])
+                [
+                    cmdArgs[0],
+                    path.join(path.dirname(this.extension.manager.rootFile || ''), cmdArgs[0])
+                ],
+                cmdArgs[1]
+            )
         }
         // \subimport{01-IntroDir/}{01-Intro.tex}
         if (['subimport', 'subinputfrom', 'subincludefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
             candidate = await resolveFile(
                 [path.dirname(file)],
-                path.join(cmdArgs[0], cmdArgs[1]))
+                path.join(cmdArgs[0], cmdArgs[1])
+            )
         }
 
         return candidate ? this.buildLaTeXSectionFromFile(candidate, subFile, filesBuilt) : []

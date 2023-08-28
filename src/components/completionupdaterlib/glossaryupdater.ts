@@ -143,74 +143,15 @@ export class GlossaryUpdater {
 
     /**
      * Update the Manager cache for references defined in `file` with `nodes`.
-     * If `nodes` is `undefined`, `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
      * @param file The path of a LaTeX file.
      * @param nodes AST of a LaTeX file.
-     * @param content The content of a LaTeX file.
      */
-    update(file: string, nodes?: latexParser.Node[], content?: string) {
+    update(file: string, nodes: latexParser.Node[]) {
         const cache = this.extension.manager.getCachedContent(file)
         if (cache === undefined) {
             return
         }
-        if (nodes !== undefined) {
-            cache.element.glossary = this.getGlossaryFromNodeArray(nodes, file)
-        } else if (content !== undefined) {
-            cache.element.glossary = this.getGlossaryFromContent(content, file)
-        }
+        cache.element.glossary = this.getGlossaryFromNodeArray(nodes, file)
     }
 
-    private getGlossaryFromContent(content: string, file: string): GlossarySuggestion[] {
-        const glossaries: GlossarySuggestion[] = []
-        const glossaryList: string[] = []
-
-        // We assume that the label is always result[1] and use getDescription(result) for the description
-        const regexes: {
-            [key: string]: {
-                regex: RegExp,
-                type: GlossaryType,
-                getDescription: (result: RegExpMatchArray) => string
-            }
-        } = {
-            'glossary': {
-                regex: /\\(?:provide|new)glossaryentry{([^{}]*)}\s*{(?:(?!description).)*description=(?:([^{},]*)|{([^{}]*))[,}]/gms,
-                type: GlossaryType.glossary,
-                getDescription: (result) => { return result[2] ? result[2] : result[3] }
-            },
-            'longGlossary': {
-                regex: /\\long(?:provide|new)glossaryentry{([^{}]*)}\s*{[^{}]*}\s*{([^{}]*)}/gms,
-                type: GlossaryType.glossary,
-                getDescription: (result) => { return result[2] }
-            },
-            'acronym': {
-                regex: /\\newacronym(?:\[[^[\]]*\])?{([^{}]*)}{[^{}]*}{([^{}]*)}/gm,
-                type: GlossaryType.acronym,
-                getDescription: (result) => { return result[2] }
-            }
-        }
-
-        for(const key in regexes){
-            while(true) {
-                const result = regexes[key].regex.exec(content)
-                if (result === null) {
-                    break
-                }
-                const positionContent = content.substring(0, result.index).split('\n')
-                if (glossaryList.includes(result[1])) {
-                    continue
-                }
-                glossaries.push({
-                    type: regexes[key].type,
-                    file,
-                    position: new vscode.Position(positionContent.length - 1, positionContent[positionContent.length - 1].length),
-                    label: result[1],
-                    detail: regexes[key].getDescription(result),
-                    kind: vscode.CompletionItemKind.Reference
-                })
-            }
-        }
-
-        return glossaries
-    }
 }

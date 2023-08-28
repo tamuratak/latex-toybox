@@ -1,4 +1,3 @@
-import * as utils from '../utils/utils'
 import {latexParser} from 'latex-utensils'
 import * as vscode from 'vscode'
 import {CommandUpdater} from './completionupdaterlib/commandupdater'
@@ -66,13 +65,6 @@ export class CompletionUpdater {
             this.commandUpdater.update(file, nodes)
         } else {
             this.extension.logger.info(`Cannot parse a TeX file: ${file}`)
-            this.extension.logger.info('Fall back to regex-based completion.')
-            // Do the update with old style.
-            const contentNoComment = utils.stripCommentsAndVerbatim(content)
-            this.referenceUpdater.update(file, undefined, undefined, contentNoComment)
-            this.glossaryUpdater.update(file, undefined, contentNoComment)
-            this.environmentUpdater.update(file, undefined, undefined, contentNoComment)
-            this.commandUpdater.update(file, undefined, contentNoComment)
         }
         if (cache) {
             if (isContentOnDisk) {

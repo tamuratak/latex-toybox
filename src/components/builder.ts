@@ -345,13 +345,7 @@ export class Builder {
         } else if (defaultRecipeName === 'lastUsed' && this.previouslyUsedRecipe) {
             recipe = this.previouslyUsedRecipe
         } else if (defaultRecipeName === 'first' || defaultRecipeName === 'lastUsed' && !this.previouslyUsedRecipe) {
-            let candidates: Recipe[] = recipes
-            if (languageId === 'rsweave') {
-                candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('rnw|rsweave'))
-            } else if (languageId === 'jlweave') {
-                candidates = recipes.filter(candidate => candidate.name.toLowerCase().match('jnw|jlweave|weave.jl'))
-            }
-            recipe = candidates[0]
+            recipe = recipes[0]
         }
         if (recipe === undefined) {
             this.extension.logger.error(`Failed to resolve build recipe: ${[recipeName, defaultRecipeName]}`)
