@@ -12,22 +12,15 @@ export class EnvironmentUpdater {
 
     /**
      * Updates the Manager cache for environments used in `file` with `nodes`.
-     * If `nodes` is `undefined`, `content` is parsed with regular expressions,
-     * and the result is used to update the cache.
      * @param file The path of a LaTeX file.
      * @param nodes AST of a LaTeX file.
-     * @param content The content of a LaTeX file.
      */
-    update(file: string, nodes?: latexParser.Node[], lines?: string[], content?: string) {
+    update(file: string, nodes: latexParser.Node[], lines: string[]) {
         const cache = this.extension.manager.getCachedContent(file)
         if (cache === undefined) {
             return
         }
-        if (nodes !== undefined && lines !== undefined) {
-            cache.element.environment = this.getEnvFromNodeArray(nodes, lines)
-        } else if (content !== undefined) {
-            cache.element.environment = this.getEnvFromContent(content)
-        }
+        cache.element.environment = this.getEnvFromNodeArray(nodes, lines)
     }
 
     // This function will return all environments in a node array, including sub-nodes
@@ -57,33 +50,6 @@ export class EnvironmentUpdater {
         }
         if (latexParser.hasContentArray(node)) {
             envs = envs.concat(this.getEnvFromNodeArray(node.content, lines))
-        }
-        return envs
-    }
-
-    private getEnvFromContent(content: string): CmdEnvSuggestion[] {
-        const envReg = /\\begin\s?{([^{}]*)}/g
-        const envs: CmdEnvSuggestion[] = []
-        const envList: string[] = []
-        while (true) {
-            const result = envReg.exec(content)
-            if (result === null) {
-                break
-            }
-            if (envList.includes(result[1])) {
-                continue
-            }
-            const documentation = '`' + result[1] + '`'
-            const filterText = result[1]
-            const env = new CmdEnvSuggestion(
-                `${result[1]}`,
-                '',
-                { name: result[1], args: '' },
-                vscode.CompletionItemKind.Module,
-                { documentation, filterText }
-            )
-            envs.push(env)
-            envList.push(result[1])
         }
         return envs
     }

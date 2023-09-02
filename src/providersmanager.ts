@@ -9,7 +9,7 @@ import { DefinitionProvider } from './providers/definition'
 import { ReferenceProvider } from './providers/reference'
 import { RenameProvider } from './providers/rename'
 import { BibtexCompleter } from './providers/bibtexcompletion'
-import { FoldingProvider, WeaveFoldingProvider } from './providers/folding'
+import { FoldingProvider } from './providers/folding'
 import { BibtexFormatterProvider } from './providers/bibtexformatter'
 import type { Extension } from './main'
 import { MathPreviewPanelSerializer } from './components/mathpreviewpanel'
@@ -57,7 +57,7 @@ export class ProvidersManager {
     constructor(extension: Extension){
         this.registerProviders(extension, extension.extensionContext)
 
-        const latexDoctexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave', 'doctex'])
+        const latexDoctexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'doctex'])
         const selectionRangeProvider = new SelectionRangeProvider(extension)
         const ltInlayHintsProvider = new LtInlayHintsProvider(extension)
         const fileDecorationProvider = new FileDecorationProvider(extension)
@@ -137,8 +137,7 @@ export class ProvidersManager {
     }
 
     private registerProviders(extension: Extension, context: vscode.ExtensionContext) {
-        const latexSelector = selectDocumentsWithId(['latex', 'latex-expl3', 'jlweave', 'rsweave'])
-        const weaveSelector = selectDocumentsWithId(['jlweave', 'rsweave'])
+        const latexSelector = selectDocumentsWithId(['latex', 'latex-expl3'])
         const bibtexFormatter = new BibtexFormatterProvider(extension)
 
         context.subscriptions.push(
@@ -169,7 +168,6 @@ export class ProvidersManager {
 
         context.subscriptions.push(
             vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider()),
-            vscode.languages.registerFoldingRangeProvider(weaveSelector, new WeaveFoldingProvider())
         )
 
         context.subscriptions.push(

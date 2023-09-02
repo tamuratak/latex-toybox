@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
-import {stripCommentsAndVerbatim, isNewCommand, NewCommand} from '../../utils/utils'
+import {isNewCommand, NewCommand} from '../../utils/utils'
 import * as path from 'path'
 
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
@@ -87,7 +87,7 @@ export class NewCommandFinder {
     }
 
     async findNewCommand(content: string): Promise<string[]> {
-        let commands: string[] = []
+        const commands: string[] = []
         try {
             const ast = await this.extension.utensilsParser.parseLatexPreamble(content)
             for (const node of ast.content) {
@@ -103,23 +103,10 @@ export class NewCommandFinder {
                     commands.push(s)
                 }
             }
+            return commands
         } catch (e) {
-            commands = []
-            const regex = /(\\(?:(?:(?:(?:re)?new|provide)command|DeclareMathOperator)(\*)?{\\[a-zA-Z]+}(?:\[[^[\]{}]*\])*{.*})|\\(?:def\\[a-zA-Z]+(?:#[0-9])*{.*})|\\DeclarePairedDelimiter{\\[a-zA-Z]+}{[^{}]*}{[^{}]*})/gm
-            const noCommentContent = stripCommentsAndVerbatim(content)
-            let result: RegExpExecArray | null
-            do {
-                result = regex.exec(noCommentContent)
-                if (result) {
-                    let command = result[1]
-                    if (result[2]) {
-                        command = command.replace(/\*/, '')
-                    }
-                    commands.push(command)
-                }
-            } while (result)
+            return []
         }
-        return commands
     }
 
 }
