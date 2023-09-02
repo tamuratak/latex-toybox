@@ -1716,7 +1716,7 @@
     "latex-utensils": "6.1.0",
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.5",
-    "pdfjs-dist": "3.9.179",
+    "pdfjs-dist": "3.10.111",
     "workerpool": "6.4.2",
     "ws": "8.13.0"
   },
