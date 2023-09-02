@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.9/web/viewer.html	2023-07-30 12:52:46.000000000 +0900
-+++ viewer/viewer.html	2023-08-01 08:15:36.000000000 +0900
+--- ../tmp/pdfjs-3.10/web/viewer.html	2023-08-27 17:53:36.000000000 +0900
++++ viewer/viewer.html	2023-09-02 10:03:30.000000000 +0900
 @@ -25,18 +25,25 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -12,19 +12,19 @@
 -<script src="../build/pdf.js"></script>
 -
 +    <!--
-+      Because latexworkshop.css is loaded after viewer.css,
-+      we can override viewer.css by editing latexworkshop.css.
-+      DONT EDIT viewer.css. EDIT latexworkshop.css instead.
++      Because latextoybox.css is loaded after viewer.css,
++      we can override viewer.css by editing latextoybox.css.
++      DONT EDIT viewer.css. EDIT latextoybox.css instead.
 +    -->
      <link rel="stylesheet" href="viewer.css">
  
 -  <script src="viewer.js"></script>
-+    <link rel="stylesheet" href="latexworkshop.css">
++    <link rel="stylesheet" href="latextoybox.css">
 +
 +
 +<!-- This snippet is used in production (included from viewer.html) -->
 +<link rel="resource" type="application/l10n" href="locale/locale.properties">
-+<script src="/out/viewer/latexworkshop.js" type="module"></script>
++<script src="/out/viewer/latextoybox.js" type="module"></script>
    </head>
  
 -  <body tabindex="1">
@@ -41,7 +41,7 @@
        </div>  <!-- sidebarContainer -->
  
        <div id="mainContainer">
-@@ -229,6 +236,14 @@
+@@ -237,6 +244,14 @@
                </button>
              </div>
  
@@ -56,7 +56,7 @@
              <div class="horizontalToolbarSeparator"></div>
  
              <button id="documentProperties" class="secondaryToolbarButton" title="Document Properties…" tabindex="69" data-l10n-id="document_properties" aria-controls="documentPropertiesDialog">
-@@ -237,13 +252,20 @@
+@@ -245,13 +260,20 @@
            </div>
          </div>  <!-- secondaryToolbar -->
  
@@ -78,7 +78,7 @@
                  <div class="toolbarButtonSpacer"></div>
                  <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="findbar" aria-expanded="false" aria-controls="findbar">
                    <span data-l10n-id="findbar_label">Find</span>
-@@ -318,6 +340,15 @@
+@@ -326,6 +348,15 @@
                      <option title="" value="2" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 200 }'>200%</option>
                      <option title="" value="3" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 300 }'>300%</option>
                      <option title="" value="4" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 400 }'>400%</option>
@@ -94,7 +94,7 @@
                    </select>
                  </span>
                </div>
-@@ -333,6 +364,7 @@
+@@ -341,6 +372,7 @@
  
          <div id="viewerContainer" tabindex="0">
            <div id="viewer" class="pdfViewer"></div>
