@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
-import {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
+import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import {CmdEnvSuggestion, splitSignatureString} from './command'
 import * as lwfs from '../../lib/lwfs/lwfs'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
@@ -23,7 +23,20 @@ function isEnvItemEntry(obj: any): obj is EnvItemEntry {
     return (typeof obj.name === 'string')
 }
 
-export enum EnvSnippetType { AsName, AsCommand, ForBegin, }
+export enum EnvSnippetType {
+    /**
+     * \begin{ab|
+     */
+    AsName,
+    /**
+     * \|
+     */
+    AsCommand,
+    /**
+     * \begin{|
+     */
+    ForBegin
+}
 
 export class Environment implements IProvider {
     private defaultEnvsAsName: CmdEnvSuggestion[] = []
@@ -134,15 +147,16 @@ export class Environment implements IProvider {
         args: {document: vscode.TextDocument, position: vscode.Position}
     ) {
         const payload = {document: args.document, position: args.position}
-        return this.provide(payload)
+        return this.provide(payload.document, payload.position)
     }
 
-    private provide(args: {document: vscode.TextDocument, position: vscode.Position}): vscode.CompletionItem[] {
+    private provide(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
         if (vscode.window.activeTextEditor === undefined) {
             return []
         }
         let snippetType: EnvSnippetType = EnvSnippetType.ForBegin
-        if (vscode.window.activeTextEditor.selections.length > 1 || args.document.lineAt(args.position.line).text.slice(args.position.character).match(/[a-zA-Z*]*}/)) {
+        // \begin{|} \end{|} or \begin{ab|}
+        if (vscode.window.activeTextEditor.selections.length > 1 || document.lineAt(position.line).text.slice(position.character).match(/^[a-zA-Z*]*}/)) {
             snippetType = EnvSnippetType.AsName
         }
 
@@ -153,7 +167,7 @@ export class Environment implements IProvider {
         // Insert package environments
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         if (configuration.get('intellisense.package.enabled')) {
-            const extraPackages = this.extension.completer.command.getExtraPkgs(args.document.languageId)
+            const extraPackages = this.extension.completer.command.getExtraPkgs(document.languageId)
             if (extraPackages) {
                 extraPackages.forEach(pkg => {
                     this.getEnvFromPkg(pkg, snippetType).forEach(env => {
@@ -181,18 +195,34 @@ export class Environment implements IProvider {
         this.extension.manager.getIncludedTeX().forEach(cachedFile => {
             const cachedEnvs = this.extension.manager.getCachedContent(cachedFile)?.element.environment
             cachedEnvs?.forEach(env => {
+                const newEnv = env.clone()
                 if (! envList.includes(env.label)) {
                     if (snippetType === EnvSnippetType.ForBegin) {
-                        env.insertText = new vscode.SnippetString(`${env.label}}\n\t$0\n\\end{${env.label}}`)
+                        newEnv.insertText = new vscode.SnippetString(`${env.label}}\n\t$0\n\\end{${env.label}}`)
                     } else {
-                        env.insertText = env.label
+                        newEnv.insertText = env.label
                     }
-                    suggestions.push(env)
-                    envList.push(env.label)
+                    suggestions.push(newEnv)
+                    envList.push(newEnv.label)
                 }
             })
         })
 
+        return suggestions
+    }
+
+    provideEnvsAsCommandInFile(filePath: string, cmdDuplicationDetector: CommandNameDuplicationDetector): CmdEnvSuggestion[] {
+        const suggestions: CmdEnvSuggestion[] = []
+        const cachedEnvs = this.extension.manager.getCachedContent(filePath)?.element.environment
+        cachedEnvs?.forEach(env => {
+            const newEnv = env.clone()
+            newEnv.insertText = new vscode.SnippetString('begin{' + env.label + '}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{' + env.label + '}')
+            newEnv.kind = vscode.CompletionItemKind.Snippet
+            if (!cmdDuplicationDetector.has(newEnv)) {
+                suggestions.push(newEnv)
+                cmdDuplicationDetector.add(newEnv)
+            }
+        })
         return suggestions
     }
 
