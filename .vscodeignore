@@ -58,3 +58,8 @@ node_modules/wicked-good-xpath/
 node_modules/xmldom-sre/
 node_modules/mj-context-menu/
 node_modules/esm/
+
+node_modules/mathjax-full/node_modules/esm/
+node_modules/mathjax-full/node_modules/mhchemparser/
+node_modules/mathjax-full/node_modules/mj-context-menu/
+node_modules/mathjax-full/node_modules/speech-rule-engine/
