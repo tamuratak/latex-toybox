@@ -103,13 +103,13 @@ export function deactivate() {
 export function activate(context: vscode.ExtensionContext): ReturnType<typeof generateLatexToyboxApi> {
     const extension = new Extension(context)
     extensionToDispose = extension
-    void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', true)
 
     registerLatexToyboxCommands(extension)
     const structureViewer = new StructureTreeView(extension)
     new ProvidersManager(extension)
 
     conflictExtensionCheck()
+    void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', true)
 
     return generateLatexToyboxApi(extension, structureViewer)
 }

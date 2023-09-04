@@ -355,12 +355,12 @@
       {
         "key": "enter",
         "command": "latex-toybox.onEnterKey",
-        "when": "config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
+        "when": "latex-toybox:enabled && config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
       },
       {
         "key": "alt+enter",
         "command": "latex-toybox.onAltEnterKey",
-        "when": "config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/"
+        "when": "latex-toybox:enabled && config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/"
       }
     ],
     "configurationDefaults": {
