@@ -18,9 +18,6 @@ tsconfig.eslint.json
 tsconfig.eslint.viewer.json
 viewer/tsconfig.json
 dev/
-demo_media/
-VERSION/
-VERSION
 .idea/
 __pycache__/
 .mypy_cache/
@@ -32,8 +29,8 @@ __pycache__/
 **/*.map
 node_modules/**/*.d.ts
 
+node_modules/rimraf/
 node_modules/latex-utensils/node_modules/
-
 
 node_modules/pdfjs-dist/build/*.min.js
 node_modules/pdfjs-dist/legacy/
@@ -43,16 +40,12 @@ node_modules/pdfjs-dist/web/
 node_modules/pdfjs-dist/node_modules/canvas/
 node_modules/pdfjs-dist/node_modules/path2d-polyfill/
 
-
 node_modules/mathjax-full/components/
 node_modules/mathjax-full/es5/
 node_modules/mathjax-full/ts/
 node_modules/mathjax-full/js/output/chtml/
 node_modules/mathjax-full/js/input/asciimath/
 node_modules/mathjax-full/js/input/mathml/
-
 node_modules/mathjax-full/node_modules/esm/
 node_modules/mathjax-full/node_modules/mj-context-menu/
 node_modules/mathjax-full/node_modules/speech-rule-engine/
-
-node_modules/rimraf/
