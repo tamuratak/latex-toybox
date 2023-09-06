@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
+import { ContextAwareKind } from './completionkind'
 
 export class CommandReplacer implements IContexAwareProvider {
     readonly needsAst = false
@@ -24,7 +25,7 @@ export class CommandReplacer implements IContexAwareProvider {
         const mathCommands = ['\\mathbf', '\\mathit', '\\mathrm', '\\mathtt', '\\mathsf', '\\mathbb', '\\mathcal']
         if (textCommands.includes(command)) {
             const items = textCommands.map(cmd => {
-                const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
+                const item = new vscode.CompletionItem(cmd, ContextAwareKind)
                 item.insertText = cmd
                 item.filterText = command
                 if (commandRange) {
@@ -36,7 +37,7 @@ export class CommandReplacer implements IContexAwareProvider {
         }
         if (mathCommands.includes(command)) {
             const items = mathCommands.map(cmd => {
-                const item = new vscode.CompletionItem(cmd, vscode.CompletionItemKind.Issue)
+                const item = new vscode.CompletionItem(cmd, ContextAwareKind)
                 item.insertText = cmd
                 item.filterText = command
                 if (commandRange) {

@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
+import { ContextAwareKind } from './completionkind'
 
 export class EnvCloser implements IContexAwareProvider {
     readonly needsAst = true
@@ -34,7 +35,7 @@ export class EnvCloser implements IContexAwareProvider {
             if (beginEnd.name === 'begin' && beginEndPos.isBefore(position)) {
                 const envName = latexParser.stringify(beginEnd.args[0].content)
                 const prefix = context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter ? '' : '\\'
-                const item = new vscode.CompletionItem(`${prefix}end{${envName}}`, vscode.CompletionItemKind.Issue)
+                const item = new vscode.CompletionItem(`${prefix}end{${envName}}`, ContextAwareKind)
                 return [item]
             }
         }

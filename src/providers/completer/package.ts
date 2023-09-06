@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import { readFilePath } from '../../lib/lwfs/lwfs'
 import { ExternalPromise } from '../../utils/externalpromise'
+import { PackageClassNameKind } from './completionkind'
 
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')
@@ -36,7 +37,7 @@ export class Package implements IProvider {
     private initialize(defaultPackages: {[key: string]: PackageItemEntry}) {
         Object.keys(defaultPackages).forEach(key => {
             const item = defaultPackages[key]
-            const pack = new vscode.CompletionItem(item.command, vscode.CompletionItemKind.Module)
+            const pack = new vscode.CompletionItem(item.command, PackageClassNameKind)
             pack.detail = item.detail
             pack.documentation = new vscode.MarkdownString(`[${item.documentation}](${item.documentation})`)
             this.suggestions.push(pack)

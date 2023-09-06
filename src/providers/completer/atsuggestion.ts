@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import type {IProvider} from './interface'
 import {escapeRegExp} from '../../utils/utils'
 import { readFilePath } from '../../lib/lwfs/lwfs'
+import { CommandKind } from './completionkind'
 
 
 export interface AtSuggestionItemEntry {
@@ -49,7 +50,7 @@ export class AtSuggestion implements IProvider {
             if (body === '') {
                 return
             }
-            const completionItem = new vscode.CompletionItem(prefix.replace('@', this.triggerCharacter), vscode.CompletionItemKind.Function)
+            const completionItem = new vscode.CompletionItem(prefix.replace('@', this.triggerCharacter), CommandKind)
             completionItem.insertText = new vscode.SnippetString(body)
             completionItem.documentation = body
             completionItem.detail = body
@@ -61,7 +62,7 @@ export class AtSuggestion implements IProvider {
             if (item.prefix in suggestionReplacements) {
                 return
             }
-            const completionItem = new vscode.CompletionItem(item.prefix.replace('@', this.triggerCharacter), vscode.CompletionItemKind.Function)
+            const completionItem = new vscode.CompletionItem(item.prefix.replace('@', this.triggerCharacter), CommandKind)
             completionItem.insertText = new vscode.SnippetString(item.body)
             completionItem.documentation = new vscode.MarkdownString(item.description)
             completionItem.detail = item.description

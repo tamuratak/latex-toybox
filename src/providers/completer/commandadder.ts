@@ -3,6 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
 import { findNodeContactedWithPosition, toVscodePosition } from '../../utils/utensils'
 import { Command } from './command'
+import { ContextAwareKind } from './completionkind'
 
 export class CommandAdder implements IContexAwareProvider {
     readonly needsAst = true
@@ -37,7 +38,7 @@ export class CommandAdder implements IContexAwareProvider {
         const memo = new Set<string>()
         const items: vscode.CompletionItem[] = []
         for (const cmdItem of cmdItems) {
-            const item = new vscode.CompletionItem(cmdItem.label, vscode.CompletionItemKind.Issue)
+            const item = new vscode.CompletionItem(cmdItem.label, ContextAwareKind)
             item.insertText = ''
             const match = /^(\\[a-zA-Z]+)\{/.exec(cmdItem.label)
             if (!match) {

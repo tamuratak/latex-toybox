@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 
 import type {IProvider} from './interface'
 import { readFilePath } from '../../lib/lwfs/lwfs'
+import { PackageClassNameKind } from './completionkind'
 
 
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')
@@ -31,7 +32,7 @@ export class DocumentClass implements IProvider {
     private initialize(classes: {[key: string]: ClassItemEntry}) {
         Object.keys(classes).forEach(key => {
             const item = classes[key]
-            const cl = new vscode.CompletionItem(item.command, vscode.CompletionItemKind.Module)
+            const cl = new vscode.CompletionItem(item.command, PackageClassNameKind)
             cl.detail = item.detail
             cl.documentation = new vscode.MarkdownString(`[${item.documentation}](${item.documentation})`)
             this.suggestions.push(cl)

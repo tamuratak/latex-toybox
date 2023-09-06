@@ -3,6 +3,7 @@ import { latexParser } from 'latex-utensils'
 import { IContexAwareProvider } from './interface'
 import { Environment } from './environment'
 import { toLuPos, toVscodePosition } from '../../utils/utensils'
+import { ContextAwareKind } from './completionkind'
 
 
 export class EnvRename implements IContexAwareProvider {
@@ -57,7 +58,7 @@ export class EnvRename implements IContexAwareProvider {
             if (/[{[]/.test(env.label)) {
                 continue
             }
-            const item = new vscode.CompletionItem(env.label, vscode.CompletionItemKind.Issue)
+            const item = new vscode.CompletionItem(env.label, ContextAwareKind)
             item.insertText = ''
             const ledit = vscode.TextEdit.replace(beginNameRange, env.label + '}')
             const redit = vscode.TextEdit.replace(endNameRange, env.label)

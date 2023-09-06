@@ -24,6 +24,7 @@ import { CommandAdder } from './completer/commandadder'
 import type { LatexAstManager } from '../components/astmanager'
 import type { GraphicsPreview } from '../components/graphicspreview'
 import type { MathPreview } from '../components/mathpreview'
+import { FileKind, ReferenceKind } from './completer/completionkind'
 
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
@@ -170,7 +171,7 @@ export class Completer implements vscode.CompletionItemProvider {
 
     async resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): Promise<vscode.CompletionItem> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        if (item.kind === vscode.CompletionItemKind.Reference) {
+        if (item.kind === ReferenceKind) {
             if (typeof item.label !== 'string') {
                 return item
             }
@@ -191,7 +192,7 @@ export class Completer implements vscode.CompletionItemProvider {
                 item.documentation = data.documentation
                 return item
             }
-        } else if (item.kind === vscode.CompletionItemKind.File) {
+        } else if (item.kind === FileKind) {
             const preview = configuration.get('intellisense.includegraphics.preview.enabled') as boolean
             if (!preview) {
                 return item
@@ -204,7 +205,7 @@ export class Completer implements vscode.CompletionItemProvider {
             if (md === undefined) {
                 return item
             }
-            const ret = new vscode.CompletionItem(item.label, vscode.CompletionItemKind.File)
+            const ret = new vscode.CompletionItem(item.label, FileKind)
             ret.documentation = md
             return ret
         } else {

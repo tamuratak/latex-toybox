@@ -8,6 +8,7 @@ import {stripCommentsAndVerbatim} from '../../utils/utils'
 import type { Manager } from '../../components/manager'
 import type { Logger } from '../../components/logger'
 import { statPath } from '../../lib/lwfs/lwfs'
+import { FileKind, FolderKind } from './completionkind'
 
 
 const ignoreFiles = ['**/.vscode', '**/.vscodeignore', '**/.gitignore']
@@ -121,7 +122,7 @@ abstract class AbstractInput implements IProvider {
                     }
                     const fileType = await statPath(filePath)
                     if (fileType.type === vscode.FileType.Directory) {
-                        const item = new vscode.CompletionItem(`${file}/`, vscode.CompletionItemKind.Folder)
+                        const item = new vscode.CompletionItem(`${file}/`, FolderKind)
                         if (range) {
                             item.range = range
                         }
@@ -129,7 +130,7 @@ abstract class AbstractInput implements IProvider {
                         item.detail = dir
                         suggestions.push(item)
                     } else if (! provideDirOnly) {
-                        const item = new vscode.CompletionItem(file, vscode.CompletionItemKind.File)
+                        const item = new vscode.CompletionItem(file, FileKind)
                         const preview = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.includegraphics.preview.enabled') as boolean
                         if (preview && ['includegraphics', 'includesvg'].includes(command)) {
                             item.documentation = filePath

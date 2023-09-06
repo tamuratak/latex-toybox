@@ -9,6 +9,7 @@ import type { CompletionUpdater } from '../../components/completionupdater'
 import type { Completer } from '../completion'
 import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
+import { CommandKind } from './completionkind'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
@@ -361,7 +362,7 @@ export class Command implements IProvider, ICommand {
             label,
             'latex',
             splitSignatureString(itemKey),
-            vscode.CompletionItemKind.Function,
+            CommandKind,
             { insertText, filterText, documentation, detail, sortText, command }
         )
         return suggestion

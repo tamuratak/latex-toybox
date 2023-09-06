@@ -1,7 +1,7 @@
-import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 import {CmdEnvSuggestion} from '../../providers/completer/command'
 import type { Manager } from '../manager'
+import { EnvKind } from '../../providers/completer/completionkind'
 
 
 export class EnvironmentUpdater {
@@ -64,7 +64,7 @@ export class EnvironmentUpdater {
             name,
             '',
             { name, args: '' },
-            vscode.CompletionItemKind.Module,
+            EnvKind,
             { documentation, filterText }
         )
     }
