@@ -38,21 +38,35 @@ export class EnvironmentUpdater {
         // Nonetheless, they have already been included in `defaultEnvs`.
         if (latexParser.isEnvironment(node) && !memo.has(node.name)) {
             memo.add(node.name)
-            const documentation = '`' + node.name + '`'
-            const filterText = node.name
-            const env = new CmdEnvSuggestion(
-                node.name,
-                '',
-                { name: node.name, args: '' },
-                vscode.CompletionItemKind.Module,
-                { documentation, filterText }
-            )
+            const env = this.createEnvSuggestion(node.name)
             envs.push(env)
+        } else if (latexParser.isCommand(node) && ['newtheorem', 'newtheorem*', 'newenvironment'].includes(node.name)){
+            const arg = node.args[0]?.content[0]
+            if (latexParser.isTextString(arg)) {
+                const name = arg.content
+                if (!memo.has(name)) {
+                    memo.add(name)
+                    const env = this.createEnvSuggestion(name)
+                    envs.push(env)
+                }
+            }
         }
         if (latexParser.hasContentArray(node)) {
             envs = envs.concat(this.getEnvFromNodeArray(node.content, lines, memo))
         }
         return envs
+    }
+
+    private createEnvSuggestion(name: string) {
+        const documentation = '`' + name + '`'
+        const filterText = name
+        return new CmdEnvSuggestion(
+            name,
+            '',
+            { name, args: '' },
+            vscode.CompletionItemKind.Module,
+            { documentation, filterText }
+        )
     }
 
 }
