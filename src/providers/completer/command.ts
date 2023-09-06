@@ -65,7 +65,7 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
         label: string,
         pkg: string,
         signature: CmdSignature,
-        kind: vscode.CompletionItemKind,
+        kind: vscode.CompletionItemKind | undefined,
         args: {
             command?: vscode.Command | undefined,
             documentation?: string | undefined,
@@ -97,6 +97,23 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
         if (args.sortText) {
             this.sortText = args.sortText
         }
+    }
+
+    clone(): CmdEnvSuggestion {
+        return new CmdEnvSuggestion(
+            this.label,
+            this.package,
+            this.signature,
+            this.kind,
+            {
+                command: this.command,
+                documentation: this.documentation,
+                detail: this.detail,
+                filterText: this.filterText,
+                insertText: this.insertText,
+                sortText: this.sortText
+            }
+        )
     }
 
     /**
@@ -270,18 +287,31 @@ export class Command implements IProvider, ICommand {
         // user defined commands, whose name matches a default command or one provided by a package
         const commandNameDuplicationDetector = new CommandNameDuplicationDetector(suggestions)
         this.extension.manager.getIncludedTeX().forEach(tex => {
-            const cmds = this.extension.manager.getCachedContent(tex)?.element.command
-            cmds?.forEach(cmd => {
-                if (!commandNameDuplicationDetector.has(cmd)) {
-                    if (range) {
-                        cmd.range = range
-                    }
-                    suggestions.push(cmd)
-                    commandNameDuplicationDetector.add(cmd)
-                }
-            })
+            const cmds = this.provideCmdsInFile(tex, commandNameDuplicationDetector, range)
+            suggestions.push(...cmds)
+            const envCmds = this.environment.provideEnvsAsCommandInFile(tex, commandNameDuplicationDetector)
+            suggestions.push(...envCmds)
         })
 
+        return suggestions
+    }
+
+    private provideCmdsInFile(
+        filePath: string,
+        commandNameDuplicationDetector: CommandNameDuplicationDetector,
+        range: vscode.Range | undefined
+    ) {
+        const suggestions: CmdEnvSuggestion[] = []
+        const cmds = this.extension.manager.getCachedContent(filePath)?.element.command
+        cmds?.forEach(cmd => {
+            if (!commandNameDuplicationDetector.has(cmd)) {
+                if (range) {
+                    cmd.range = range
+                }
+                suggestions.push(cmd)
+                commandNameDuplicationDetector.add(cmd)
+            }
+        })
         return suggestions
     }
 
