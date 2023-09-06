@@ -5,6 +5,7 @@ import { readFilePath } from '../lib/lwfs/lwfs'
 import { hasBibtexId } from '../utils/hastexid'
 import type { Logger } from '../components/logger'
 import type { Manager } from '../components/manager'
+import { BibtexSnippetKind } from './completer/completionkind'
 
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
@@ -120,7 +121,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     }
 
     private entryToCompletion(itemName: string, itemFields: string[], config: BibtexFormatConfig, maxLengths: {[key: string]: number}): vscode.CompletionItem {
-        const suggestion: vscode.CompletionItem = new vscode.CompletionItem(itemName, vscode.CompletionItemKind.Snippet)
+        const suggestion: vscode.CompletionItem = new vscode.CompletionItem(itemName, BibtexSnippetKind)
         suggestion.detail = itemName
         suggestion.documentation = `Add a @${itemName} entry`
         let count: number = 1
@@ -142,7 +143,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     private fieldsToCompletion(itemName: string, fields: string[], config: BibtexFormatConfig, maxLengths: {[key: string]: number}): vscode.CompletionItem[] {
         const suggestions: vscode.CompletionItem[] = []
         fields.forEach(field => {
-            const suggestion: vscode.CompletionItem = new vscode.CompletionItem(field, vscode.CompletionItemKind.Snippet)
+            const suggestion: vscode.CompletionItem = new vscode.CompletionItem(field, BibtexSnippetKind)
             suggestion.detail = field
             suggestion.documentation = `Add ${field} = ${config.left}${config.right}`
             suggestion.insertText = new vscode.SnippetString(`${field}` + ' '.repeat(maxLengths[itemName] - field.length) + ` = ${config.left}$1${config.right},`)

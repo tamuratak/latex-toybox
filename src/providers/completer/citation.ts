@@ -8,6 +8,7 @@ import { toVscodePosition } from '../../utils/utensils'
 import type { BibtexAstManager } from '../../components/astmanager'
 import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
+import { ReferenceKind } from './completionkind'
 
 
 export class Fields extends Map<string, string> {
@@ -59,7 +60,7 @@ export class Fields extends Map<string, string> {
 export interface CiteSuggestion {
     readonly key: string,
     readonly label: string,
-    readonly kind: vscode.CompletionItemKind,
+    readonly kind: typeof ReferenceKind,
     readonly detail?: string,
     readonly fields: Fields,
     readonly file: string,
@@ -263,7 +264,7 @@ export class Citation implements IProvider {
                     label: entry.internalKey,
                     file,
                     position: toVscodePosition(entry.location.start),
-                    kind: vscode.CompletionItemKind.Reference,
+                    kind: ReferenceKind,
                     fields: this.entryToFields(entry)
                 }
                 newEntry.push(item)

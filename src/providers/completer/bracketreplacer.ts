@@ -4,6 +4,7 @@ import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../
 import { IContexAwareProvider } from './interface'
 import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import { getPrevChar } from './utils/position'
+import { ContextAwareKind } from './completionkind'
 
 
 export class BracketReplacer implements IContexAwareProvider {
@@ -134,7 +135,7 @@ export class BracketReplacer implements IContexAwareProvider {
         for (const [sortkey, pairs] of this.bracketPairs) {
             for (const [left, right] of pairs) {
                 const sortText = sortkey + reverseCaseOfFirstCharacterAndConvertToHex(left)
-                const item = new vscode.CompletionItem(left, vscode.CompletionItemKind.Issue)
+                const item = new vscode.CompletionItem(left, ContextAwareKind)
                 item.insertText = ''
                 const ledit = vscode.TextEdit.replace(leftBracketRange, left)
                 const redit = vscode.TextEdit.replace(rightBracketRange, right)

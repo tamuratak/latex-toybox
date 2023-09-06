@@ -5,6 +5,7 @@ import { IContexAwareProvider } from './interface'
 import { toVscodePosition } from '../../utils/utensils'
 import { toVscodeRange } from '../../utils/utensils'
 import { isPositionAtTerminator } from './utils/position'
+import { ContextAwareKind } from './completionkind'
 
 
 export class CommandRemover implements IContexAwareProvider {
@@ -40,7 +41,7 @@ export class CommandRemover implements IContexAwareProvider {
         const edits: vscode.TextEdit[] = []
         const commandStart = toVscodePosition(commandNode.location.start)
         const removeRange = new vscode.Range(commandStart, commandStart.translate(0, commandNode.name.length + 1))
-        const item = new vscode.CompletionItem('Remove Command', vscode.CompletionItemKind.Issue)
+        const item = new vscode.CompletionItem('Remove Command', ContextAwareKind)
         item.insertText = ''
         item.filterText = document.getText(removeRange)
         const edit = vscode.TextEdit.delete(removeRange)

@@ -8,6 +8,7 @@ import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
 import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
 import type { Completer } from '../completion'
+import { EnvAsCmdKind, EnvKind } from './completionkind'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -217,7 +218,7 @@ export class Environment implements IProvider {
         cachedEnvs?.forEach(env => {
             const newEnv = env.clone()
             newEnv.insertText = new vscode.SnippetString('begin{' + env.label + '}\n\t${0:${TM_SELECTED_TEXT}}\n\\end{' + env.label + '}')
-            newEnv.kind = vscode.CompletionItemKind.Snippet
+            newEnv.kind = EnvAsCmdKind
             if (!cmdDuplicationDetector.has(newEnv)) {
                 suggestions.push(newEnv)
                 cmdDuplicationDetector.add(newEnv)
@@ -279,15 +280,15 @@ export class Environment implements IProvider {
                 item.name,
                 'latex',
                 splitSignatureString(itemKey),
-                vscode.CompletionItemKind.Module,
+                EnvKind,
                 {detail, documentation, sortText}
             )
         } else {
             let kind: vscode.CompletionItemKind
             if (type === EnvSnippetType.AsCommand) {
-                kind = vscode.CompletionItemKind.Snippet
+                kind = EnvAsCmdKind
             } else {
-                kind = vscode.CompletionItemKind.Module
+                kind = EnvKind
             }
             const configuration = vscode.workspace.getConfiguration('latex-toybox')
             const useTabStops = configuration.get('intellisense.useTabStops.enabled')

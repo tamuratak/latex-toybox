@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import {CiteSuggestion, Fields} from '../../providers/completer/citation'
 import type { Logger } from '../logger'
 import type { Manager } from '../manager'
+import { ReferenceKind } from '../../providers/completer/completionkind'
 
 
 export class CitationUpdater {
@@ -40,7 +41,7 @@ export class CitationUpdater {
                 key: result[1],
                 label: result[1],
                 file,
-                kind: vscode.CompletionItemKind.Reference,
+                kind: ReferenceKind,
                 detail: `${postContent}\n...`,
                 fields: new Fields(),
                 position: new vscode.Position(positionContent.length - 1, positionContent[positionContent.length - 1].length)

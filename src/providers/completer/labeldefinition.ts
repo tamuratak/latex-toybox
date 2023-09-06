@@ -5,6 +5,7 @@ import type { EventBus } from '../../components/eventbus'
 import type { CompletionUpdater } from '../../components/completionupdater'
 import type { Manager } from '../../components/manager'
 import type { AuxManager } from '../../components/auxmanager'
+import { ReferenceKind } from './completionkind'
 
 
 export interface LabelDefinitionElement {
@@ -59,11 +60,11 @@ export class LabelDefinition implements IProvider {
             if (range) {
                 items.push({...entry,
                     range,
-                    kind: vscode.CompletionItemKind.Reference,
+                    kind: ReferenceKind,
                 })
             } else {
                 items.push({...entry,
-                    kind: vscode.CompletionItemKind.Reference,
+                    kind: ReferenceKind,
                 })
             }
         }

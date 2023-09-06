@@ -1,9 +1,9 @@
-import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 
 import {GlossarySuggestion, GlossaryType} from '../../providers/completer/glossary'
 import { toVscodePosition } from '../../utils/utensils'
 import { Manager } from '../manager'
+import { ReferenceKind } from '../../providers/completer/completionkind'
 
 interface GlossaryEntry {
     readonly label: string | undefined,
@@ -40,7 +40,7 @@ export class GlossaryUpdater {
                         position: toVscodePosition(node.location.start),
                         label: entry.label,
                         detail: entry.description,
-                        kind: vscode.CompletionItemKind.Reference
+                        kind: ReferenceKind
                     })
                 }
             }

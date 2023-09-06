@@ -4,6 +4,7 @@ import { CmdEnvSuggestion } from '../../../providers/completer/command'
 import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completer/commandlib/commandlib'
 import { Completer } from '../../../providers/completion'
 import { Manager } from '../../manager'
+import { CommandKind } from '../../../providers/completer/completionkind'
 
 
 export class CommandFinder {
@@ -38,7 +39,7 @@ export class CommandFinder {
                     `\\${name}`,
                     '',
                     {name, args: this.getArgsFromNode(node)},
-                    vscode.CompletionItemKind.Function,
+                    CommandKind,
                     {documentation, insertText, filterText, command}
                 )
                 cmds.push(cmd)
@@ -55,7 +56,7 @@ export class CommandFinder {
                 const cmd = new CmdEnvSuggestion(`\\${node.name}`,
                     this.whichPackageProvidesCommand(node.name),
                     { name: node.name, args: this.getArgsFromNode(node) },
-                    vscode.CompletionItemKind.Function,
+                    CommandKind,
                     {documentation, insertText, command}
                 )
                 cmds.push(cmd)
@@ -85,7 +86,7 @@ export class CommandFinder {
                         `\\${label}`,
                         'user-defined',
                         {name: label, args},
-                        vscode.CompletionItemKind.Function,
+                        CommandKind,
                         {documentation, insertText, filterText, command}
                     )
                     cmds.push(cmd)
