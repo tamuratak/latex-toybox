@@ -20,27 +20,28 @@ export class EnvironmentUpdater {
         if (cache === undefined) {
             return
         }
-        cache.element.environment = this.getEnvFromNodeArray(nodes, lines)
+        cache.element.environment = this.getEnvFromNodeArray(nodes, lines, new Set<string>())
     }
 
     // This function will return all environments in a node array, including sub-nodes
-    private getEnvFromNodeArray(nodes: latexParser.Node[], lines: string[]): CmdEnvSuggestion[] {
+    private getEnvFromNodeArray(nodes: latexParser.Node[], lines: string[], memo: Set<string>): CmdEnvSuggestion[] {
         let envs: CmdEnvSuggestion[] = []
         for (let index = 0; index < nodes.length; ++index) {
-            envs = envs.concat(this.getEnvFromNode(nodes[index], lines))
+            envs = envs.concat(this.getEnvFromNode(nodes[index], lines, memo))
         }
         return envs
     }
 
-    private getEnvFromNode(node: latexParser.Node, lines: string[]): CmdEnvSuggestion[] {
+    private getEnvFromNode(node: latexParser.Node, lines: string[], memo: Set<string>): CmdEnvSuggestion[] {
         let envs: CmdEnvSuggestion[] = []
         // Here we only check `isEnvironment` which excludes `align*` and `verbatim`.
         // Nonetheless, they have already been included in `defaultEnvs`.
-        if (latexParser.isEnvironment(node)) {
+        if (latexParser.isEnvironment(node) && !memo.has(node.name)) {
+            memo.add(node.name)
             const documentation = '`' + node.name + '`'
             const filterText = node.name
             const env = new CmdEnvSuggestion(
-                `${node.name}`,
+                node.name,
                 '',
                 { name: node.name, args: '' },
                 vscode.CompletionItemKind.Module,
@@ -49,7 +50,7 @@ export class EnvironmentUpdater {
             envs.push(env)
         }
         if (latexParser.hasContentArray(node)) {
-            envs = envs.concat(this.getEnvFromNodeArray(node.content, lines))
+            envs = envs.concat(this.getEnvFromNodeArray(node.content, lines, memo))
         }
         return envs
     }
