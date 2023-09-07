@@ -147,47 +147,42 @@ export class Environment implements IProvider {
         _: RegExpMatchArray | undefined,
         args: {document: vscode.TextDocument, position: vscode.Position}
     ) {
-        const payload = {document: args.document, position: args.position}
-        return this.provide(payload.document, payload.position)
+        return this.provide(args.document, args.position)
     }
 
-    private provide(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+    private provide(document: vscode.TextDocument, position: vscode.Position) {
         if (vscode.window.activeTextEditor === undefined) {
             return []
         }
+        if (vscode.window.activeTextEditor.selections.length > 1) {
+            return []
+        }
         let snippetType: EnvSnippetType = EnvSnippetType.ForBegin
+        let range: vscode.Range | undefined
         // \begin{|} \end{|} or \begin{ab|}
-        if (vscode.window.activeTextEditor.selections.length > 1 || document.lineAt(position.line).text.slice(position.character).match(/^[a-zA-Z*]*}/)) {
+        if (document.lineAt(position.line).text.slice(position.character).match(/^[a-zA-Z*]*}/)) {
             snippetType = EnvSnippetType.AsName
+            range = document.getWordRangeAtPosition(position, /[a-zA-Z*]+/)
         }
 
         // Extract cached envs and add to default ones
-        const suggestions: vscode.CompletionItem[] = Array.from(this.getDefaultEnvs(snippetType))
+        const suggestions: CmdEnvSuggestion[] = Array.from(this.getDefaultEnvs(snippetType))
         const envList: string[] = this.getDefaultEnvs(snippetType).map(env => env.label)
 
         // Insert package environments
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         if (configuration.get('intellisense.package.enabled')) {
             const extraPackages = this.extension.completer.command.getExtraPkgs(document.languageId)
-            if (extraPackages) {
-                extraPackages.forEach(pkg => {
-                    this.getEnvFromPkg(pkg, snippetType).forEach(env => {
-                        if (!envList.includes(env.label)) {
-                            suggestions.push(env)
-                            envList.push(env.label)
-                        }
-                    })
-                })
-            }
-            this.extension.manager.getIncludedTeX().forEach(tex => {
-                const pkgs = this.extension.manager.getCachedContent(tex)?.element.package
-                pkgs?.forEach(pkg => {
-                    this.getEnvFromPkg(pkg, snippetType).forEach(env => {
-                        if (!envList.includes(env.label)) {
-                            suggestions.push(env)
-                            envList.push(env.label)
-                        }
-                    })
+            const pkgsInFile = this.extension.manager.getIncludedTeX().map(tex => {
+                const pkg = this.extension.manager.getCachedContent(tex)?.element.package
+                return pkg ? Array.from(pkg) : []
+            }).flat();
+            [...extraPackages, ...pkgsInFile].forEach(pkg => {
+                this.getEnvFromPkg(pkg, snippetType).forEach(env => {
+                    if (!envList.includes(env.label)) {
+                        suggestions.push(env)
+                        envList.push(env.label)
+                    }
                 })
             })
         }
@@ -209,7 +204,19 @@ export class Environment implements IProvider {
             })
         })
 
-        return suggestions
+        if (snippetType === EnvSnippetType.AsName) {
+            return suggestions.map(sugg => {
+                if (range) {
+                    const newSugg = sugg.clone()
+                    newSugg.range = range
+                    return newSugg
+                } else {
+                    return sugg
+                }
+            })
+        } else {
+            return suggestions
+        }
     }
 
     provideEnvsAsCommandInFile(filePath: string, cmdDuplicationDetector: CommandNameDuplicationDetector): CmdEnvSuggestion[] {

@@ -4,7 +4,6 @@ import type {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
 import { latexParser } from 'latex-utensils'
 
 export interface IProvider {
-
     /**
      * Returns the array of completion items. Should be called only from `Completer.completion`.
      */
