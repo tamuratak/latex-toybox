@@ -39,6 +39,9 @@ export class EnvRename implements IContexAwareProvider {
         if (!latexParser.isEnvironment(node) && !latexParser.isMathEnv(node) && !latexParser.isMathEnvAligned(node) && !latexParser.isVerbatim(node)) {
             return []
         }
+        if (node.location.start.line !== loc.line) {
+            return []
+        }
         const startPos = toVscodePosition(node.location.start)
         const beginNameRange = new vscode.Range(
             startPos.translate(0, '\\begin{'.length),
