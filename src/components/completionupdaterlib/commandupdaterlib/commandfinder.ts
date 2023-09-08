@@ -53,7 +53,8 @@ export class CommandFinder {
                 if (isTriggerSuggestNeeded(node.name)) {
                     command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
                 }
-                const cmd = new CmdEnvSuggestion(`\\${node.name}`,
+                const cmd = new CmdEnvSuggestion(
+                    `\\${node.name}`,
                     this.whichPackageProvidesCommand(node.name),
                     { name: node.name, args: this.getArgsFromNode(node) },
                     CommandKind,

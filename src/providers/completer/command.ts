@@ -318,7 +318,7 @@ export class Command implements IProvider, ICommand {
 
     getExtraPkgs(languageId: string): string[] {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        const extraPackages = Array.from(configuration.get('intellisense.package.extra') as string[])
+        const extraPackages = Array.from(configuration.get<string[]>('intellisense.package.extra', []))
         if (languageId === 'latex-expl3') {
             extraPackages.push('latex-document')
             extraPackages.push('expl3')
