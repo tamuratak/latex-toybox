@@ -167,7 +167,7 @@ export class ProvidersManager {
         )
 
         context.subscriptions.push(
-            vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider()),
+            vscode.languages.registerFoldingRangeProvider(latexSelector, new FoldingProvider(extension)),
         )
 
         context.subscriptions.push(
