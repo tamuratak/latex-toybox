@@ -8,12 +8,10 @@ import {Command} from './completer/command'
 import type {CmdItemEntry} from './completer/command'
 import {Environment} from './completer/environment'
 import type {EnvItemEntry} from './completer/environment'
-import {AtSuggestion} from './completer/atsuggestion'
 import {LabelDefinition} from './completer/labeldefinition'
 import {Package} from './completer/package'
 import {Input, Import, SubImport} from './completer/input'
 import {Glossary} from './completer/glossary'
-import {escapeRegExp} from '../utils/utils'
 import { readFilePath } from '../lib/lwfs/lwfs'
 import { BracketReplacer } from './completer/bracketreplacer'
 import { CommandRemover } from './completer/commandremover'
@@ -47,7 +45,6 @@ export class Completer implements vscode.CompletionItemProvider {
     private readonly import: Import
     private readonly subImport: SubImport
     readonly glossary: Glossary
-    readonly atSuggestionCompleter: AtSuggestionCompleter
     private readonly bracketReplacer: BracketReplacer
     private readonly commandAdder: CommandAdder
     private readonly commandRemover: CommandRemover
@@ -77,7 +74,6 @@ export class Completer implements vscode.CompletionItemProvider {
         this.import = new Import(extension)
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
-        this.atSuggestionCompleter = new AtSuggestionCompleter(extension)
         this.bracketReplacer = new BracketReplacer()
         this.commandAdder = new CommandAdder(this.command)
         this.commandRemover = new CommandRemover()
@@ -90,7 +86,6 @@ export class Completer implements vscode.CompletionItemProvider {
             this.command.readyPromise,
             this.environment.readyPromise,
             this.package.readyPromise,
-            this.atSuggestionCompleter.readyPromise
         ]).then(() => resolve()))
     }
 
@@ -275,41 +270,4 @@ export class Completer implements vscode.CompletionItemProvider {
     }
 }
 
-export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
-    private readonly atSuggestion: AtSuggestion
-    private readonly triggerCharacter: string
 
-    constructor(extension: {
-        readonly extensionRoot: string
-    }) {
-        const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        const triggerCharacter = configuration.get('intellisense.atSuggestion.trigger.latex') as string
-        this.atSuggestion = new AtSuggestion(extension, triggerCharacter)
-        this.triggerCharacter = triggerCharacter
-    }
-
-    get readyPromise() {
-        return this.atSuggestion.readyPromise
-    }
-
-    provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
-    ): vscode.CompletionItem[] | undefined {
-        const line = document.lineAt(position).text.substring(0, position.character)
-        return this.completion(line, {document, position, token, context})
-    }
-
-    private completion(line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}): vscode.CompletionItem[] {
-        const escapedTriggerCharacter = escapeRegExp(this.triggerCharacter)
-        const reg = new RegExp(escapedTriggerCharacter + '[^\\\\s]*$')
-        const result = line.match(reg)
-        let suggestions: vscode.CompletionItem[] = []
-        if (result) {
-            suggestions = this.atSuggestion.provideFrom(result, args)
-        }
-        return suggestions
-    }
-}

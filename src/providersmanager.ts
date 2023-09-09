@@ -13,6 +13,7 @@ import { FoldingProvider } from './providers/folding'
 import { BibtexFormatterProvider } from './providers/bibtexformatter'
 import type { Extension } from './main'
 import { MathPreviewPanelSerializer } from './components/mathpreviewpanel'
+import { AtSuggestionCompleter } from './providers/atsuggestion'
 
 
 abstract class SingleProviderManager implements vscode.Disposable {
@@ -88,9 +89,10 @@ export class ProvidersManager {
                 register(): vscode.Disposable {
                     const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     const atSuggestionLatexTrigger = configuration.get('intellisense.atSuggestion.trigger.latex', '@')
+                    const atSuggestionCompleter = new AtSuggestionCompleter(extension, atSuggestionLatexTrigger)
                     return vscode.languages.registerCompletionItemProvider(
                         latexDoctexSelector,
-                        extension.completer.atSuggestionCompleter,
+                        atSuggestionCompleter,
                         atSuggestionLatexTrigger
                     )
                 }

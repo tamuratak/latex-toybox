@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
-import type {IProvider} from './interface'
-import {escapeRegExp} from '../../utils/utils'
+import type { IProvider } from '../completer/interface'
+import { escapeRegExp } from '../../utils/utils'
 import { readFilePath } from '../../lib/lwfs/lwfs'
-import { CommandKind } from './completionkind'
+import { CommandKind } from '../completer/completionkind'
 
 
 export interface AtSuggestionItemEntry {
@@ -99,4 +99,5 @@ export class AtSuggestion implements IProvider {
         })
         return this.suggestions
     }
+
 }

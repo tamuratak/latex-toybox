@@ -2,6 +2,5 @@
     "latex-toybox.intellisense.atSuggestionJSON.replace": {
         "@+": "\\sum",
         "@8": "",
-    },
-    "latex-toybox.intellisense.atSuggestion.trigger.latex": "#"
+    }
 }
