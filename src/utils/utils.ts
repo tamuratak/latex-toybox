@@ -43,7 +43,7 @@ export function stripComments(text: string): string {
 export function stripEnvironments(text: string, envs: string[]): string {
     const envsAlt = envs.join('|')
     const pattern = `\\\\begin{(${envsAlt})}.*?\\\\end{\\1}`
-    const reg = RegExp(pattern, 'gms')
+    const reg = new RegExp(pattern, 'gms')
     return text.replace(reg, (match, ..._args) => {
         const len = Math.max(match.split('\n').length, 1)
         return '\n'.repeat(len - 1)

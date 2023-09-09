@@ -1,12 +1,24 @@
 import * as vscode from 'vscode'
+import type { Manager } from '../components/manager'
 
 
 export class FoldingProvider implements vscode.FoldingRangeProvider {
-    private readonly sectionRegex: RegExp[] = []
+    private sectionRegex: RegExp[]
 
-    constructor() {
-        const sections = vscode.workspace.getConfiguration('latex-toybox').get('view.outline.sections') as string[]
-        this.sectionRegex = sections.map(section => RegExp(`\\\\(?:${section})(?:\\*)?(?:\\[[^\\[\\]\\{\\}]*\\])?{(.*)}`, 'm'))
+    constructor(private readonly extension: {
+        readonly manager: Manager
+    }) {
+        this.sectionRegex = this.createSectionRegex()
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('latex-toybox.view.outline.sections', this.extension.manager.getWorkspaceFolderRootDir())) {
+                this.sectionRegex = this.createSectionRegex()
+            }
+        })
+    }
+
+    private createSectionRegex() {
+        const sections = vscode.workspace.getConfiguration('latex-toybox').get<string[]>('view.outline.sections', [])
+        return sections.map(section => new RegExp(`\\\\(?:${section})(?:\\*)?(?:\\[[^\\[\\]\\{\\}]*\\])?{(.*)}`, 'm'))
     }
 
     public provideFoldingRanges(document: vscode.TextDocument): vscode.FoldingRange[] {

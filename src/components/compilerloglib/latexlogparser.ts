@@ -78,7 +78,7 @@ export class LatexLogParser {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         let excludeRegexp: RegExp[]
         try {
-            excludeRegexp = (configuration.get('message.latexlog.exclude') as string[]).map(regexp => RegExp(regexp))
+            excludeRegexp = (configuration.get('message.latexlog.exclude') as string[]).map(regexp => new RegExp(regexp))
         } catch (e) {
             if (e instanceof Error) {
                 this.extension.logger.info(`latex-toybox.message.latexlog.exclude is invalid: ${e.message}`)
