@@ -18,7 +18,7 @@ export class FoldingProvider implements vscode.FoldingRangeProvider {
 
     private createSectionRegex() {
         const sections = vscode.workspace.getConfiguration('latex-toybox').get<string[]>('view.outline.sections', [])
-        return sections.map(section => RegExp(`\\\\(?:${section})(?:\\*)?(?:\\[[^\\[\\]\\{\\}]*\\])?{(.*)}`, 'm'))
+        return sections.map(section => new RegExp(`\\\\(?:${section})(?:\\*)?(?:\\[[^\\[\\]\\{\\}]*\\])?{(.*)}`, 'm'))
     }
 
     public provideFoldingRanges(document: vscode.TextDocument): vscode.FoldingRange[] {
