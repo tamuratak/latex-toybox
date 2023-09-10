@@ -9,6 +9,7 @@ import {
     runTestWithFixture,
     sleep
 } from './utils/ciutils'
+import { AtSuggestionCompleter } from '../src/providers/atsuggestion'
 
 
 function assertCompletionItemContainsSnippet(items: vscode.CompletionItem[], prefix: string, snippet: string): void {
@@ -78,7 +79,9 @@ suite('Completion test suite', () => {
         await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
-        const items = extension.exports.realExtension.completer.atSuggestionCompleter.provideCompletionItems(
+        const atSuggestionCompleter = new AtSuggestionCompleter(extension.exports.realExtension, '@')
+        await atSuggestionCompleter.readyPromise
+        const items = atSuggestionCompleter.provideCompletionItems(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
@@ -104,7 +107,9 @@ suite('Completion test suite', () => {
         await sleep(1000)
         const pos = new vscode.Position(3,1)
         const token = new vscode.CancellationTokenSource().token
-        const items = extension.exports.realExtension.completer.atSuggestionCompleter.provideCompletionItems(
+        const atSuggestionCompleter = new AtSuggestionCompleter(extension.exports.realExtension, '#')
+        await atSuggestionCompleter.readyPromise
+        const items = atSuggestionCompleter.provideCompletionItems(
             doc, pos, token,
             {
                 triggerKind: vscode.CompletionTriggerKind.Invoke,
