@@ -1,28 +1,28 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 
-import type {IContexAwareProvider, IProvider} from './completer/interface'
-import {Citation} from './completer/citation'
-import {DocumentClass} from './completer/documentclass'
-import {Command} from './completer/command'
-import type {CmdItemEntry} from './completer/command'
-import {Environment} from './completer/environment'
-import type {EnvItemEntry} from './completer/environment'
-import {LabelDefinition} from './completer/labeldefinition'
-import {Package} from './completer/package'
-import {Input, Import, SubImport} from './completer/input'
-import {Glossary} from './completer/glossary'
+import type { IContexAwareProvider, IProvider } from './completionlib/interface'
+import { Citation } from './completionlib/citation'
+import { DocumentClass } from './completionlib/documentclass'
+import { Command } from './completionlib/command'
+import type { CmdItemEntry } from './completionlib/command'
+import { Environment } from './completionlib/environment'
+import type { EnvItemEntry } from './completionlib/environment'
+import { LabelDefinition } from './completionlib/labeldefinition'
+import { Package } from './completionlib/package'
+import { Input, Import, SubImport } from './completionlib/input'
+import { Glossary } from './completionlib/glossary'
 import { readFilePath } from '../lib/lwfs/lwfs'
-import { BracketReplacer } from './completer/bracketreplacer'
-import { CommandRemover } from './completer/commandremover'
-import { CommandReplacer } from './completer/commandreplacer'
-import { EnvCloser } from './completer/envcloser'
-import { EnvRename } from './completer/envrename'
-import { CommandAdder } from './completer/commandadder'
+import { BracketReplacer } from './completionlib/bracketreplacer'
+import { CommandRemover } from './completionlib/commandremover'
+import { CommandReplacer } from './completionlib/commandreplacer'
+import { EnvCloser } from './completionlib/envcloser'
+import { EnvRename } from './completionlib/envrename'
+import { CommandAdder } from './completionlib/commandadder'
 import type { LatexAstManager } from '../components/astmanager'
 import type { GraphicsPreview } from '../components/graphicspreview'
 import type { MathPreview } from '../components/mathpreview'
-import { FileKind, ReferenceKind } from './completer/completionkind'
+import { FileKind, ReferenceKind } from './completionlib/completionkind'
 
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
@@ -208,7 +208,16 @@ export class Completer implements vscode.CompletionItemProvider {
         }
     }
 
-    private async completion(type: CompletionType, line: string, args: {document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext}) {
+    private async completion(
+        type: CompletionType,
+        line: string,
+        args: {
+            document: vscode.TextDocument,
+            position: vscode.Position,
+            token: vscode.CancellationToken,
+            context: vscode.CompletionContext
+        }
+    ) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
         switch (type) {

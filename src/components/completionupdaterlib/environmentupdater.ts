@@ -1,7 +1,7 @@
-import {latexParser} from 'latex-utensils'
-import {CmdEnvSuggestion} from '../../providers/completer/command'
+import { latexParser } from 'latex-utensils'
+import { CmdEnvSuggestion } from '../../providers/completionlib/command'
 import type { Manager } from '../manager'
-import { EnvKind } from '../../providers/completer/completionkind'
+import { EnvKind } from '../../providers/completionlib/completionkind'
 
 
 export class EnvironmentUpdater {

@@ -1,21 +1,21 @@
 import * as vscode from 'vscode'
 
-import {MathJaxPool} from './mathpreviewlib/mathjaxpool'
+import { MathJaxPool } from './mathpreviewlib/mathjaxpool'
 import * as utils from '../utils/svg'
-import type {LabelDefinitionEntry} from '../providers/completer/labeldefinition'
-import {getCurrentThemeLightness} from '../utils/theme'
+import type { LabelDefinitionEntry } from '../providers/completionlib/labeldefinition'
+import { getCurrentThemeLightness } from '../utils/theme'
 
-import {CursorRenderer} from './mathpreviewlib/cursorrenderer'
-import {type ITextDocumentLike, TextDocumentLike} from './mathpreviewlib/textdocumentlike'
-import {NewCommandFinder} from './mathpreviewlib/newcommandfinder'
-import {TexMathEnv, TeXMathEnvFinder} from './mathpreviewlib/texmathenvfinder'
-import {HoverPreviewOnRefProvider} from './mathpreviewlib/hoverpreviewonref'
-import {MathPreviewUtils} from './mathpreviewlib/mathpreviewutils'
+import { CursorRenderer } from './mathpreviewlib/cursorrenderer'
+import { type ITextDocumentLike, TextDocumentLike } from './mathpreviewlib/textdocumentlike'
+import { NewCommandFinder } from './mathpreviewlib/newcommandfinder'
+import { TexMathEnv, TeXMathEnvFinder } from './mathpreviewlib/texmathenvfinder'
+import { HoverPreviewOnRefProvider } from './mathpreviewlib/hoverpreviewonref'
+import { MathPreviewUtils } from './mathpreviewlib/mathpreviewutils'
 import { Logger } from './logger'
 import { Manager } from './manager'
 import { UtensilsParser } from './utensilsparser'
 
-export type {TexMathEnv} from './mathpreviewlib/texmathenvfinder'
+export type { TexMathEnv } from './mathpreviewlib/texmathenvfinder'
 
 
 export class MathPreview {

@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import * as utils from '../../utils/svg'
-import type {MathJaxPool} from './mathjaxpool'
-import type {LabelDefinitionEntry} from '../../providers/completer/labeldefinition'
-import type {TexMathEnv} from './texmathenvfinder'
-import type {MathPreviewUtils} from './mathpreviewutils'
+import type { MathJaxPool } from './mathjaxpool'
+import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition'
+import type { TexMathEnv } from './texmathenvfinder'
+import type { MathPreviewUtils } from './mathpreviewutils'
 import type { Logger } from '../logger'
 
 

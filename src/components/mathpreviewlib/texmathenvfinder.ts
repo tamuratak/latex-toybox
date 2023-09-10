@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import * as utils from '../../utils/utils'
 import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike'
-import type { LabelDefinitionEntry } from '../../providers/completer/labeldefinition'
+import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition'
 
 export type TexMathEnv = {
     readonly texString: string,
