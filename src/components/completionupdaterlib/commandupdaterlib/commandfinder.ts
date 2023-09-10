@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { CmdEnvSuggestion } from '../../../providers/completer/command'
-import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completer/commandlib/commandlib'
-import { Completer } from '../../../providers/completion'
-import { Manager } from '../../manager'
-import { CommandKind } from '../../../providers/completer/completionkind'
+import { CmdEnvSuggestion } from '../../../providers/completionlib/command'
+import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completionlib/commandlib/commandlib'
+import type { Completer } from '../../../providers/completion'
+import type { Manager } from '../../manager'
+import { CommandKind } from '../../../providers/completionlib/completionkind'
 
 
 export class CommandFinder {

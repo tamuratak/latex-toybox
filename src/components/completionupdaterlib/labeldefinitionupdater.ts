@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import {latexParser} from 'latex-utensils'
 import {isNewCommand} from '../../utils/utils'
 
-import { LabelDefinitionElement } from '../../providers/completer/labeldefinition'
+import type { LabelDefinitionElement } from '../../providers/completionlib/labeldefinition'
 import { toVscodeRange } from '../../utils/utensils'
 import type { Manager } from '../manager'
 

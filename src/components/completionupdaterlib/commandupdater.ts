@@ -1,6 +1,6 @@
 import {latexParser} from 'latex-utensils'
 
-import { CommandNameDuplicationDetector } from '../../providers/completer/commandlib/commandlib'
+import { CommandNameDuplicationDetector } from '../../providers/completionlib/commandlib/commandlib'
 import { CommandFinder } from './commandupdaterlib/commandfinder'
 import type { Completer } from '../../providers/completion'
 import type { Manager } from '../manager'

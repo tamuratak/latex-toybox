@@ -5,7 +5,7 @@ import { readFilePath } from '../lib/lwfs/lwfs'
 import { hasBibtexId } from '../utils/hastexid'
 import type { Logger } from '../components/logger'
 import type { Manager } from '../components/manager'
-import { BibtexSnippetKind } from './completer/completionkind'
+import { BibtexSnippetKind } from './completionlib/completionkind'
 
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
