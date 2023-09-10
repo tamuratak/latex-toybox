@@ -39,8 +39,9 @@ To streamline maintenance and enhance security measures, I removed some features
 - Creating temporary directory to build
 - Formatting LaTeX documents
 - R Sweave and Weave.jl supports
-- legacy Docker supports
+- Legacy Docker supports
 - Counting words
+- Tweaks for MiKTeX
 
 ## Feature requests
 
