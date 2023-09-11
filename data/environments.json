@@ -111,27 +111,6 @@
   "smallmatrix": {
     "name": "smallmatrix"
   },
-  "definition": {
-    "name": "definition"
-  },
-  "example": {
-    "name": "example"
-  },
-  "remark": {
-    "name": "remark"
-  },
-  "lemma": {
-    "name": "lemma"
-  },
-  "theorem": {
-    "name": "theorem"
-  },
-  "corollary": {
-    "name": "corollary"
-  },
-  "proposition": {
-    "name": "proposition"
-  },
   "proof": {
     "name": "proof"
   },
