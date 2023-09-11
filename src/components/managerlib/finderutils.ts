@@ -69,7 +69,7 @@ export class FinderUtils {
         const regex = /(?:\\documentclass\[(.*)\]{subfiles})/
         const result = content.match(regex)
         if (result) {
-            const file = await utils.resolveFile([path.dirname(vscode.window.activeTextEditor.document.fileName)], result[1])
+            const file = await utils.findFileInDirs([path.dirname(vscode.window.activeTextEditor.document.fileName)], result[1])
             if (file) {
                 this.extension.logger.info(`Found root file of this subfile from active editor: ${file}`)
             } else {

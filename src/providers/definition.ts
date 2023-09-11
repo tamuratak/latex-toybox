@@ -26,7 +26,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
         }
 
         if (line.match(regexDocumentclass)) {
-            return utils.resolveFile([path.dirname(vscode.window.activeTextEditor.document.fileName)], token, '.cls')
+            return utils.findFileInDirs([path.dirname(vscode.window.activeTextEditor.document.fileName)], token, '.cls')
         }
 
         let dirs: string[] = []
@@ -43,7 +43,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
         }
 
         if (dirs.length > 0) {
-            return utils.resolveFile(dirs, token, '.tex')
+            return utils.findFileInDirs(dirs, token, '.tex')
         }
         return undefined
     }
