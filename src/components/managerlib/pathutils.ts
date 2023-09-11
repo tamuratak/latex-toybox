@@ -100,7 +100,7 @@ export class PathUtils {
         } else {
             searchDirs = [baseDir, ...bibDirs]
         }
-        const bibPath = await utils.resolveFile(searchDirs, bib, '.bib')
+        const bibPath = await utils.findFileInDirs(searchDirs, bib, '.bib')
 
         if (!bibPath) {
             this.extension.logger.info(`Cannot find .bib file: ${bib}`)

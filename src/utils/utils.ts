@@ -89,7 +89,7 @@ export type CommandArgument = {
  * @param suffix The suffix of the input file
  * @return an absolute path or undefined if the file does not exist
  */
-export async function resolveFile(dirs: string[], inputFile: string, suffix: string = '.tex') {
+export async function findFileInDirs(dirs: string[], inputFile: string, suffix: string = '.tex') {
     if (inputFile.startsWith('/')) {
         dirs.unshift('')
     }

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
-import { resolveFile } from './utils'
+import { findFileInDirs } from './utils'
 
 
 interface MatchPath {
@@ -61,14 +61,14 @@ export class InputFileRegExp {
 
         if (match.matchedString.startsWith('\\subimport') || match.matchedString.startsWith('\\subinputfrom') || match.matchedString.startsWith('\\subincludefrom')) {
             if (match.directory) {
-                return resolveFile([path.dirname(currentFile)], path.join(match.directory, match.path))
+                return findFileInDirs([path.dirname(currentFile)], path.join(match.directory, match.path))
             }
         } else if (match.matchedString.startsWith('\\import') || match.matchedString.startsWith('\\inputfrom') || match.matchedString.startsWith('\\includefrom')) {
             if (match.directory) {
-                return resolveFile([match.directory, path.join(path.dirname(rootFile), match.directory)], match.path)
+                return findFileInDirs([match.directory, path.join(path.dirname(rootFile), match.directory)], match.path)
             }
         } else {
-            return resolveFile([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path)
+            return findFileInDirs([path.dirname(currentFile), path.dirname(rootFile), ...texDirs], match.path)
         }
         return
     }

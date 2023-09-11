@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 import { latexParser } from 'latex-utensils'
 import { Section, SectionKind } from '../structure'
-import { resolveFile } from '../../utils/utils'
+import { findFileInDirs } from '../../utils/utils'
 import { buildLaTeXHierarchy } from './sectionnodeproviderlib/structure'
 import { setLastLineOfEachSection } from './sectionnodeproviderlib/utils'
 import { captionify, findEnvCaption } from './sectionnodeproviderlib/caption'
@@ -289,7 +289,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         if (['input', 'InputIfFileExists', 'include', 'SweaveInput',
              'subfile', 'loadglsentries'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 0) {
-            candidate = await resolveFile(
+            candidate = await findFileInDirs(
                 [
                     path.dirname(file),
                     path.dirname(this.extension.manager.rootFile || ''),
@@ -301,7 +301,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // \import{sections/}{section1.tex}
         if (['import', 'inputfrom', 'includefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
-            candidate = await resolveFile(
+            candidate = await findFileInDirs(
                 [
                     cmdArgs[0],
                     path.join(path.dirname(this.extension.manager.rootFile || ''), cmdArgs[0])
@@ -312,7 +312,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
         // \subimport{01-IntroDir/}{01-Intro.tex}
         if (['subimport', 'subinputfrom', 'subincludefrom'].includes(node.name.replace(/\*$/, ''))
             && cmdArgs.length > 1) {
-            candidate = await resolveFile(
+            candidate = await findFileInDirs(
                 [path.dirname(file)],
                 path.join(cmdArgs[0], cmdArgs[1])
             )

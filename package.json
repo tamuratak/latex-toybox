@@ -1211,15 +1211,6 @@
           "default": true,
           "markdownDescription": "If true, every environment provided by an included package is available by a snippet `\\envname`. Only applies when `#latex-toybox.intellisense.package.enabled#` is true. "
         },
-        "latex-toybox.intellisense.package.dirs": {
-          "scope": "window",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "markdownDescription": "List of extra directories to look for package completion files in addition to those provided by the extension. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Intellisense#commands-starting-with- to learn how to generate these files. Files found in these directories have a higher priority over the default ones. This setting is only relevant when `#latex-toybox.intellisense.package.env.enabled#` is true."
-        },
         "latex-toybox.intellisense.includegraphics.preview.enabled": {
           "scope": "window",
           "type": "boolean",
