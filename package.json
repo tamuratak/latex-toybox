@@ -1710,7 +1710,7 @@
     "micromatch": "4.0.5",
     "pdfjs-dist": "3.10.111",
     "workerpool": "6.5.0",
-    "ws": "8.14.1"
+    "ws": "8.14.2"
   },
   "devDependencies": {
     "@types/cross-spawn": "6.0.2",
@@ -1719,13 +1719,13 @@
     "@types/node": "18.15.3",
     "@types/tmp": "0.2.3",
     "@types/vscode": "1.81.0",
-    "@types/workerpool": "6.4.1",
+    "@types/workerpool": "6.4.2",
     "@types/ws": "8.5.5",
-    "@typescript-eslint/eslint-plugin": "6.7.0",
-    "@typescript-eslint/parser": "6.7.0",
+    "@typescript-eslint/eslint-plugin": "6.7.3",
+    "@typescript-eslint/parser": "6.7.3",
     "@vscode/test-electron": "2.3.4",
     "@vscode/vsce": "2.21.0",
-    "eslint": "8.49.0",
+    "eslint": "8.50.0",
     "glob": "10.3.3",
     "mocha": "10.2.0",
     "rimraf": "3.0.2",
