@@ -1,5 +1,5 @@
---- ../tmp/pdfjs-3.10/web/viewer.html	2023-08-27 17:53:36.000000000 +0900
-+++ viewer/viewer.html	2023-09-02 10:03:30.000000000 +0900
+--- ../tmp/pdfjs-3.11/web/viewer.html	2023-09-24 19:37:10.000000000 +0900
++++ viewer/viewer.html	2023-09-28 07:53:48.000000000 +0900
 @@ -25,18 +25,25 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
