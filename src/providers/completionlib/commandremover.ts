@@ -4,7 +4,7 @@ import { findNodeContactedWithPosition, toLuPos } from '../../utils/utensils'
 import { IContexAwareProvider } from './interface'
 import { toVscodePosition } from '../../utils/utensils'
 import { toVscodeRange } from '../../utils/utensils'
-import { isPositionAtTerminator } from './utils/position'
+import { isPositionAtClosingBrace } from './utils/position'
 import { ContextAwareKind } from './completionkind'
 
 
@@ -15,8 +15,7 @@ export class CommandRemover implements IContexAwareProvider {
         if (context.triggerKind === vscode.CompletionTriggerKind.TriggerCharacter) {
             return false
         }
-        const wordRange = document.getWordRangeAtPosition(position, /\\[a-zA-Z]+\{/)
-        if (wordRange || isPositionAtTerminator(document, position)) {
+        if (isPositionAtClosingBrace(document, position)) {
             return true
         } else {
             return false
