@@ -31,6 +31,7 @@ import type { Commander } from '../commander'
 import type { DuplicateLabels } from './duplicatelabels'
 import type { CompletionUpdater } from './completionupdater'
 import { ManagerWatcher } from './managerlib/managerwatcher'
+import { inspectReadable } from '../utils/inspect'
 
 
 /**
@@ -385,7 +386,7 @@ export class Manager {
             try {
                 this.#rootFilePromise = rootFilePromise
                 const wsfolders = vscode.workspace.workspaceFolders?.map(e => e.uri.toString(true))
-                this.extension.logger.info(`Current workspace folders: ${JSON.stringify(wsfolders)}`)
+                this.extension.logger.info(`Current workspace folders: ${inspectReadable(wsfolders)}`)
                 this.localRootFile = undefined
                 const findMethods = [
                     () => this.finderUtils.findRootFromMagic(),

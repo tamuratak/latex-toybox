@@ -4,6 +4,7 @@ import type { LwFileWatcher } from './lwfilewatcher'
 import type { Logger } from '../logger'
 import type { Viewer } from '../viewer'
 import { sleep } from '../../utils/utils'
+import { inspectReadable } from '../../utils/inspect'
 
 
 export class PdfWatcher {
@@ -65,8 +66,8 @@ export class PdfWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.debug(`PdfWatcher.pdfsWatched: ${JSON.stringify(Array.from(this.watchedPdfs))}`)
-        this.extension.logger.debug(`PdfWatcher.ignoredPdfUris: ${JSON.stringify(Array.from(this.ignoredPdfUris))}`)
+        this.extension.logger.debug(`PdfWatcher.pdfsWatched: ${inspectReadable(this.watchedPdfs)}`)
+        this.extension.logger.debug(`PdfWatcher.ignoredPdfUris: ${inspectReadable(this.ignoredPdfUris)}`)
     }
 
 }

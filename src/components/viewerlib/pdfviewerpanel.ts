@@ -10,6 +10,7 @@ import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
 import { EventBus } from '../eventbus'
 import { Logger } from '../logger'
 import { Server } from '../server'
+import { inspectCompact } from '../../utils/inspect'
 
 
 export class PdfViewerPanel {
@@ -81,7 +82,7 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             localResourceRoots: [vscode.Uri.file(resourceFolder)]
         }
         await this.extension.server.serverStarted
-        this.extension.logger.info(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${JSON.stringify(argState)}`)
+        this.extension.logger.info(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${inspectCompact(argState)}`)
         const state = argState.state
         let pdfFileUri: vscode.Uri | undefined
         if (state.path) {

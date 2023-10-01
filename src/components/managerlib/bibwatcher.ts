@@ -4,6 +4,7 @@ import { toKey } from '../../utils/tokey'
 import type { LwFileWatcher } from './lwfilewatcher'
 import type { Completer } from '../../providers/completion'
 import type { Logger } from '../logger'
+import { inspectReadable } from '../../utils/inspect'
 
 
 export class BibWatcher {
@@ -66,7 +67,7 @@ export class BibWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.debug(`BibWatcher.bibsWatched: ${JSON.stringify(Array.from(this.watchedBibs))}`)
+        this.extension.logger.debug(`BibWatcher.bibsWatched: ${inspectReadable(this.watchedBibs)}`)
     }
 
 }

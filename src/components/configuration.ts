@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { Logger } from './logger'
+import { inspectReadable } from '../utils/inspect'
 
 
 export class Configuration {
@@ -35,7 +36,7 @@ export class Configuration {
             const configuration = vscode.workspace.getConfiguration(undefined, workspace)
             for(const config of this.configurationsToLog) {
                 const value = configuration.get(config)
-                this.extension.logger.info(`${config}: ${JSON.stringify(value, null, ' ')}`)
+                this.extension.logger.info(`${config}: ${inspectReadable(value)}`)
             }
         }
     }

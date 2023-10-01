@@ -12,6 +12,7 @@ import type { Manager } from './manager'
 import type { LwStatusBarItem } from './statusbaritem'
 import { statPath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
+import { inspectCompact } from '../utils/inspect'
 
 const maxPrintLine = '10000'
 
@@ -245,7 +246,7 @@ export class Builder {
 
     private buildStep(rootFile: string, step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
         this.extension.logger.logCommand(`Recipe step ${stepIndex}`, step.command, step.args)
-        this.extension.logger.info(`Recipe step env: ${JSON.stringify(step.env)}`)
+        this.extension.logger.info(`Recipe step env: ${inspectCompact(step.env)}`)
         const envVars = Object.create(null) as ProcessEnv
         Object.keys(process.env).forEach(key => envVars[key] = process.env[key])
         const currentEnv = step.env

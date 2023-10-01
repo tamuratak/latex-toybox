@@ -3,15 +3,15 @@ import type ws from 'ws'
 import * as path from 'path'
 import * as cs from 'cross-spawn'
 
-import type {Locator, SyncTeXRecordForward} from './locator'
-import {openWebviewPanel} from '../utils/webview'
-import {getCurrentThemeLightness} from '../utils/theme'
+import type { Locator, SyncTeXRecordForward } from './locator'
+import { openWebviewPanel } from '../utils/webview'
+import { getCurrentThemeLightness } from '../utils/theme'
 
-import type {ClientRequest, PdfViewerParams, PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
+import type { ClientRequest, PdfViewerParams, PdfViewerState } from '../../types/latex-toybox-protocol-types/index'
 
-import {Client} from './viewerlib/client'
-import {PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService} from './viewerlib/pdfviewerpanel'
-import {PdfViewerManagerService} from './viewerlib/pdfviewermanager'
+import { Client } from './viewerlib/client'
+import { PdfViewerPanel, PdfViewerPanelSerializer, PdfViewerPanelService } from './viewerlib/pdfviewerpanel'
+import { PdfViewerManagerService } from './viewerlib/pdfviewermanager'
 import * as lwfs from '../lib/lwfs/lwfs'
 import { encodePathWithPrefix } from '../utils/encodepdffilepath'
 import type { EventBus } from './eventbus'
@@ -20,7 +20,8 @@ import type { Manager } from './manager'
 import type { Server } from './server'
 import type { LwStatusBarItem } from './statusbaritem'
 import { ExternalPromise } from '../utils/externalpromise'
-export {PdfViewerHookProvider} from './viewerlib/pdfviewerhook'
+import { inspectCompact } from '../utils/inspect'
+export { PdfViewerHookProvider } from './viewerlib/pdfviewerhook'
 
 
 export class Viewer {
@@ -100,7 +101,7 @@ export class Viewer {
      * refreshes all the PDF viewers.
      */
     refreshExistingViewer(sourceFile?: string, pdfFileUri?: vscode.Uri): void {
-        this.extension.logger.info(`Call refreshExistingViewer: ${JSON.stringify({sourceFile})}`)
+        this.extension.logger.info(`Call refreshExistingViewer: ${inspectCompact({sourceFile})}`)
         const pdfFile = pdfFileUri || (sourceFile ? this.tex2pdf(sourceFile, true) : undefined)
         if (pdfFile === undefined) {
             this.clientMap.forEach(clientSet => {

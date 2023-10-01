@@ -12,6 +12,7 @@ import type { Logger } from './logger'
 import type { Manager } from './manager'
 import type { Viewer } from './viewer'
 import { ExternalPromise } from '../utils/externalpromise'
+import { inspectCompact } from '../utils/inspect'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -177,7 +178,7 @@ export class Locator {
     private invokeSyncTeXCommandForward(line: number, col: number, filePath: string, pdfFile: string): Thenable<SyncTeXRecordForward> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const args = ['view', '-i', `${line}:${col + 1}:${filePath}`, '-o', pdfFile]
-        this.extension.logger.info(`Execute synctex with args ${JSON.stringify(args)}`)
+        this.extension.logger.info(`Execute synctex with args ${inspectCompact(args)}`)
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfFile)})
@@ -227,7 +228,7 @@ export class Locator {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
 
         const args = ['edit', '-o', `${page}:${x}:${y}:${pdfPath}`]
-        this.extension.logger.info(`Executing synctex with args ${JSON.stringify(args)}`)
+        this.extension.logger.info(`Executing synctex with args: ${inspectCompact(args)}`)
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfPath)})

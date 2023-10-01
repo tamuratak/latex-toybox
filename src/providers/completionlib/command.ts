@@ -10,6 +10,7 @@ import type { Completer } from '../completion'
 import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
 import { CommandKind } from './completionkind'
+import { inspectCompact } from '../../utils/inspect'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')
@@ -178,7 +179,7 @@ export class Command implements IProvider, ICommand {
                                 pkgEntry.push(this.entryCmdToCompletion(key, cmds[key]))
                             } else {
                                 this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
-                                this.extension.logger.info(`Missing field in entry: "${key}": ${JSON.stringify(cmds[key])}`)
+                                this.extension.logger.info(`Missing field in entry: "${key}": ${inspectCompact(cmds[key])}`)
                             }
                         })
                     } catch (e) {

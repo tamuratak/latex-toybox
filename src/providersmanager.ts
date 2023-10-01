@@ -14,6 +14,7 @@ import { BibtexFormatterProvider } from './providers/bibtexformatter'
 import type { Extension } from './main'
 import { MathPreviewPanelSerializer } from './components/mathpreviewpanel'
 import { AtSuggestionCompleter } from './providers/atsuggestion'
+import { inspectCompact } from './utils/inspect'
 
 
 abstract class SingleProviderManager implements vscode.Disposable {
@@ -74,7 +75,7 @@ export class ProvidersManager {
                     const configuration = vscode.workspace.getConfiguration('latex-toybox')
                     const userTriggersLatex = configuration.get('intellisense.triggers.latex', ['{'])
                     const latexTriggers = ['\\', ','].concat(userTriggersLatex)
-                    extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${JSON.stringify(latexTriggers)}`)
+                    extension.logger.info(`Trigger characters for intellisense of LaTeX documents: ${inspectCompact(latexTriggers)}`)
                     return vscode.languages.registerCompletionItemProvider(latexDoctexSelector, extension.completer, ...latexTriggers)
                 }
             },
