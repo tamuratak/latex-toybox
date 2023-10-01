@@ -83,8 +83,9 @@ export class PathUtils {
                     return bibPath
                 }
             }
-        } catch(e) {
+        } catch (e) {
             this.extension.logger.info(`Cannot run kpsewhich to resolve .bib file: ${bib}`)
+            this.extension.logger.logError(e)
         }
         return undefined
     }

@@ -221,10 +221,8 @@ export class Commander {
                 pdfFile = this.extension.manager.tex2pdf(this.extension.manager.rootFile)
             }
             return this.extension.locator.syncTeX(undefined, undefined, pdfFile)
-        } catch(e) {
-            if (e instanceof Error) {
-                this.extension.logger.logError(e)
-            }
+        } catch (e) {
+            this.extension.logger.logError(e)
             throw e
         }
     }

@@ -4,6 +4,7 @@ import type { CompilerLog } from '../compilerlog'
 import type { Completer } from '../../providers/completion'
 import type { Logger } from '../logger'
 import type { Manager } from '../manager'
+import { inspectReadable } from '../../utils/inspect'
 
 const multiLineWarning = /^Warning--(.+)\n--line (\d+) of file (.+)$/gm
 const singleLineWarning = /^Warning--(.+) in ([^\s]+)\s*$/gm
@@ -38,9 +39,7 @@ export class BibLogParser {
         try {
             excludeRegexp = (configuration.get('message.bibtexlog.exclude') as string[]).map(regexp => new RegExp(regexp))
         } catch (e) {
-            if (e instanceof Error) {
-                this.extension.logger.info(`latex-toybox.message.bibtexlog.exclude is invalid: ${e.message}`)
-            }
+            this.extension.logger.info(`latex-toybox.message.bibtexlog.exclude is invalid: ${inspectReadable(e)}`)
             return
         }
         this.buildLog = []

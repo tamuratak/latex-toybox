@@ -6,6 +6,5 @@ export class FakeLogger implements ILogger {
     debug(){}
     error(){}
     logError() {}
-    logOnRejected() {}
     showLog() {}
 }

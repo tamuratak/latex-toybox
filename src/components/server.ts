@@ -190,9 +190,7 @@ export class Server {
                 this.extension.logger.info(`[Server] Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
                 this.extension.logger.error(`[Server] Error reading PDF file: ${fileUri.toString(true)}`)
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
                 response.writeHead(404)
                 response.end()
             }

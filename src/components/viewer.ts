@@ -156,9 +156,7 @@ export class Viewer {
                 value: url
             })
             this.extension.logger.info(`Something bad happened when opening PDF viewer for ${pdfFileUri.toString(true)}`)
-            if (e instanceof Error) {
-                this.extension.logger.logError(e)
-            }
+            this.extension.logger.logError(e)
         }
     }
 

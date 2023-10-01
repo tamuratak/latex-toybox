@@ -165,9 +165,7 @@ export class Locator {
                 this.extension.viewer.syncTeX(pdfFile, record)
             } catch (e) {
                 this.extension.logger.info('[SyncTexJs] Forward SyncTeX failed.')
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
             }
         } else {
             const record = await this.invokeSyncTeXCommandForward(line, character, filePath, pdfFile)
@@ -280,9 +278,7 @@ export class Locator {
                 record = await this.synctexjs.syncTexJsBackward(Number(data.page), data.pos[0], data.pos[1], pdfPath)
             } catch (e) {
                 this.extension.logger.info('[SyncTexJs] Backward SyncTeX failed.')
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
                 return
             }
         } else {
@@ -299,8 +295,9 @@ export class Locator {
                     record.input = ed
                     break
                 }
-            } catch(e) {
+            } catch (e) {
                 this.extension.logger.error(`[SyncTexJs] isSameRealPath throws error: ${record.input} and ${ed}`)
+                this.extension.logger.logError(e)
             }
         }
 
@@ -326,7 +323,7 @@ export class Locator {
             editor.selection = new vscode.Selection(pos, pos)
             await vscode.commands.executeCommand('revealLine', {lineNumber: row, at: 'center'})
             this.animateToNotify(editor, pos)
-        } catch(e: unknown) {
+        } catch (e: unknown) {
             if (e instanceof Error) {
                 this.extension.logger.logError(e)
             }
