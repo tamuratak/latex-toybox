@@ -150,7 +150,7 @@ export class Viewer {
             this.extension.logger.info(`Serving PDF file at ${url}`)
             await vscode.env.openExternal(vscode.Uri.parse(url, true))
             this.extension.logger.info(`Open PDF viewer for ${pdfFileUri.toString(true)}`)
-        } catch (e: unknown) {
+        } catch (e) {
             void vscode.window.showInputBox({
                 prompt: 'Unable to open browser. Please copy and visit this link.',
                 value: url

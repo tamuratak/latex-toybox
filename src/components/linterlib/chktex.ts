@@ -8,6 +8,7 @@ import { convertFilenameEncoding } from '../../utils/convertfilename'
 import { existsPath, readFilePath } from '../../lib/lwfs/lwfs'
 import type { Logger } from '../logger'
 import type { Manager } from '../manager'
+import { inspectReadable } from '../../utils/inspect'
 
 
 interface ChkTeXLogEntry {
@@ -67,14 +68,13 @@ export class ChkTeX implements ILinter {
             }
         }
 
-        let stdout: string
+        let stdout: string | undefined
         try {
             stdout = await this.#linterUtil.processWrapper(linterid, command, args.concat(requiredArgs).filter(arg => arg !== ''), {cwd: path.dirname(filePath)}, content)
-        } catch (err: any) {
-            if ('stdout' in err) {
+        } catch (err) {
+            this.extension.logger.error(`chktex failed: ${inspectReadable({command, args, err})}`)
+            if (err instanceof Object && 'stdout' in err) {
                 stdout = err.stdout as string
-            } else {
-                return undefined
             }
         }
 
