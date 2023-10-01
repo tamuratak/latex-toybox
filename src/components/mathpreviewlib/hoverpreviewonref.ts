@@ -49,8 +49,8 @@ export class HoverPreviewOnRefProvider {
             const xml = await this.mj.typeset(typesetArg, typesetOpts)
             const svg = utils.svgToDataUrl(xml)
             return svg
-        } catch(e) {
-            this.extension.logger.logOnRejected(e)
+        } catch (e) {
+            this.extension.logger.logError(e)
             this.extension.logger.error(`Error when MathJax is rendering ${typesetArg}`)
             throw e
         }

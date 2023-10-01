@@ -10,6 +10,7 @@ import { readFileAsBuffer } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 import type { Logger } from './logger'
 import type { Viewer } from './viewer'
+import { inspectCompact, inspectReadable } from '../utils/inspect'
 
 class WsServer extends ws.Server {
     private readonly validOrigin: string
@@ -32,7 +33,7 @@ class WsServer extends ws.Server {
     shouldHandle(req: http.IncomingMessage): boolean {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
-            this.extension.logger.info(`[Server] Origin in WebSocket upgrade request is invalid: ${JSON.stringify(req.headers)}`)
+            this.extension.logger.info(`[Server] Origin in WebSocket upgrade request is invalid: ${inspectReadable(req.headers)}`)
             this.extension.logger.info(`[Server] Valid origin: ${this.validOrigin}`)
             return false
         } else {
@@ -96,17 +97,17 @@ export class Server {
             const address = this.httpServer.address()
             if (address && typeof address !== 'string') {
                 this.address = address
-                this.extension.logger.info(`[Server] Server successfully started: ${JSON.stringify(address)}`)
+                this.extension.logger.info(`[Server] Server successfully started: ${inspectCompact(address)}`)
                 this.validOriginUri = await this.obtainValidOrigin(address.port)
                 this.extension.logger.info(`[Server] valdOrigin is ${this.validOrigin}`)
                 this.initializeWsServer()
                 this.#serverStarted.resolve()
             } else {
-                this.extension.logger.error(`[Server] Server failed to start. Address is invalid: ${JSON.stringify(address)}`)
+                this.extension.logger.error(`[Server] Server failed to start. Address is invalid: ${inspectCompact(address)}`)
             }
         })
         this.httpServer.on('error', (err) => {
-            this.extension.logger.error(`[Server] Error creating LaTeX Toybox http server: ${JSON.stringify(err)}.`)
+            this.extension.logger.error(`[Server] Error creating LaTeX Toybox http server: ${inspectReadable(err)}.`)
         })
     }
 
@@ -120,7 +121,7 @@ export class Server {
         const wsServer = new WsServer(this.httpServer, this.extension, this.validOrigin)
         wsServer.on('connection', (websocket) => {
             websocket.on('message', (msg: string) => this.extension.viewer.handler(websocket, msg))
-            websocket.on('error', (err) => this.extension.logger.error(`[Server] Error on WebSocket connection. ${JSON.stringify(err)}`))
+            websocket.on('error', (err) => this.extension.logger.error(`[Server] Error on WebSocket connection. ${inspectReadable(err)}`))
         })
     }
 
@@ -133,7 +134,7 @@ export class Server {
     private checkHttpOrigin(req: http.IncomingMessage, response: http.ServerResponse): boolean {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
-            this.extension.logger.info(`[Server] Origin in http request is invalid: ${JSON.stringify(req.headers)}`)
+            this.extension.logger.info(`[Server] Origin in http request is invalid: ${inspectReadable(req.headers)}`)
             this.extension.logger.info(`[Server] Valid origin: ${this.validOrigin}`)
             response.writeHead(403)
             response.end()
@@ -189,9 +190,7 @@ export class Server {
                 this.extension.logger.info(`[Server] Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
                 this.extension.logger.error(`[Server] Error reading PDF file: ${fileUri.toString(true)}`)
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
                 response.writeHead(404)
                 response.end()
             }

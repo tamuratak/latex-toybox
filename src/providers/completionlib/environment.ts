@@ -9,6 +9,7 @@ import type { Logger } from '../../components/logger'
 import type { Manager } from '../../components/manager'
 import type { Completer } from '../completion'
 import { EnvAsCmdKind, EnvKind } from './completionkind'
+import { inspectCompact } from '../../utils/inspect'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')
@@ -73,7 +74,7 @@ export class Environment implements IProvider {
                     Object.keys(envs).forEach(key => {
                         if (! isEnvItemEntry(envs[key])) {
                             this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
-                            this.extension.logger.info(`Missing field in entry: "${key}": ${JSON.stringify(envs[key])}`)
+                            this.extension.logger.info(`Missing field in entry: "${key}": ${inspectCompact(envs[key])}`)
                             delete envs[key]
                         }
                     })

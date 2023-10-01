@@ -12,6 +12,7 @@ import type { Logger } from './logger'
 import type { Manager } from './manager'
 import type { Viewer } from './viewer'
 import { ExternalPromise } from '../utils/externalpromise'
+import { inspectCompact } from '../utils/inspect'
 
 export type SyncTeXRecordForward = {
     page: number,
@@ -164,9 +165,7 @@ export class Locator {
                 this.extension.viewer.syncTeX(pdfFile, record)
             } catch (e) {
                 this.extension.logger.info('[SyncTexJs] Forward SyncTeX failed.')
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
             }
         } else {
             const record = await this.invokeSyncTeXCommandForward(line, character, filePath, pdfFile)
@@ -177,7 +176,7 @@ export class Locator {
     private invokeSyncTeXCommandForward(line: number, col: number, filePath: string, pdfFile: string): Thenable<SyncTeXRecordForward> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const args = ['view', '-i', `${line}:${col + 1}:${filePath}`, '-o', pdfFile]
-        this.extension.logger.info(`Execute synctex with args ${JSON.stringify(args)}`)
+        this.extension.logger.info(`Execute synctex with args ${inspectCompact(args)}`)
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfFile)})
@@ -227,7 +226,7 @@ export class Locator {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
 
         const args = ['edit', '-o', `${page}:${x}:${y}:${pdfPath}`]
-        this.extension.logger.info(`Executing synctex with args ${JSON.stringify(args)}`)
+        this.extension.logger.info(`Executing synctex with args: ${inspectCompact(args)}`)
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfPath)})
@@ -279,9 +278,7 @@ export class Locator {
                 record = await this.synctexjs.syncTexJsBackward(Number(data.page), data.pos[0], data.pos[1], pdfPath)
             } catch (e) {
                 this.extension.logger.info('[SyncTexJs] Backward SyncTeX failed.')
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
                 return
             }
         } else {
@@ -298,8 +295,9 @@ export class Locator {
                     record.input = ed
                     break
                 }
-            } catch(e) {
+            } catch (e) {
                 this.extension.logger.error(`[SyncTexJs] isSameRealPath throws error: ${record.input} and ${ed}`)
+                this.extension.logger.logError(e)
             }
         }
 
@@ -325,7 +323,7 @@ export class Locator {
             editor.selection = new vscode.Selection(pos, pos)
             await vscode.commands.executeCommand('revealLine', {lineNumber: row, at: 'center'})
             this.animateToNotify(editor, pos)
-        } catch(e: unknown) {
+        } catch (e: unknown) {
             if (e instanceof Error) {
                 this.extension.logger.logError(e)
             }

@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { toKey } from '../../utils/tokey'
 import type { LwFileWatcher } from './lwfilewatcher'
 import type { Logger } from '../logger'
+import { inspectReadable } from '../../utils/inspect'
 
 
 export class ManagerWatcher {
@@ -68,7 +69,7 @@ export class ManagerWatcher {
     }
 
     logWatchedFiles() {
-        this.extension.logger.debug(`ManagerWatcher.watchedFiles: ${JSON.stringify(Array.from(this.watchedFiles))}`)
+        this.extension.logger.debug(`ManagerWatcher.watchedFiles: ${inspectReadable(this.watchedFiles)}`)
     }
 
 }

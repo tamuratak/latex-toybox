@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { ILogger } from '../interfaces'
+import { inspectCompact, inspectReadable } from '../utils/inspect'
 
 
 export class Logger implements ILogger {
@@ -16,7 +17,7 @@ export class Logger implements ILogger {
 
     logCommand(message: string, command: string, args: readonly string[] = []) {
         this.info(message + ': ' + command)
-        this.info(message + ' args: ' + JSON.stringify(args))
+        this.info(message + ' args: ' + inspectCompact(args))
     }
 
     debug(message: string) {
@@ -27,19 +28,8 @@ export class Logger implements ILogger {
         this.logPanel.error(message)
     }
 
-    logError(e: Error) {
-        this.error(e.message)
-        if (e.stack) {
-            this.error(e.stack)
-        }
-    }
-
-    logOnRejected(e: unknown) {
-        if (e instanceof Error) {
-            this.logError(e)
-        } else {
-            this.error(String(e))
-        }
+    logError(e: unknown) {
+        this.error(inspectReadable(e))
     }
 
     showLog() {

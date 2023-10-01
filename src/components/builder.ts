@@ -12,6 +12,7 @@ import type { Manager } from './manager'
 import type { LwStatusBarItem } from './statusbaritem'
 import { statPath } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
+import { inspectCompact, inspectReadable } from '../utils/inspect'
 
 const maxPrintLine = '10000'
 
@@ -60,9 +61,7 @@ export class Builder {
                     cp.execSync(`taskkill /F /T /PID ${pid}`, { timeout: 1000 })
                 }
             } catch (e) {
-                if (e instanceof Error) {
-                    this.extension.logger.error(`Error when killing child processes of the current process. ${e.message}`)
-                }
+                this.extension.logger.error(`Error when killing child processes of the current process. ${inspectReadable(e)}`)
             } finally {
                 proc.kill()
                 this.extension.logger.info(`Kill the current process. PID: ${pid}`)
@@ -208,9 +207,7 @@ export class Builder {
             await this.buildFinished(rootFile)
         } catch (e) {
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
-            if (e instanceof Error) {
-                this.extension.logger.logError(e)
-            }
+            this.extension.logger.logError(e)
         } finally {
             releaseBuildMutex()
         }
@@ -245,7 +242,7 @@ export class Builder {
 
     private buildStep(rootFile: string, step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
         this.extension.logger.logCommand(`Recipe step ${stepIndex}`, step.command, step.args)
-        this.extension.logger.info(`Recipe step env: ${JSON.stringify(step.env)}`)
+        this.extension.logger.info(`Recipe step env: ${inspectCompact(step.env)}`)
         const envVars = Object.create(null) as ProcessEnv
         Object.keys(process.env).forEach(key => envVars[key] = process.env[key])
         const currentEnv = step.env
@@ -305,7 +302,7 @@ export class Builder {
                     this.currentProcess = undefined
                     resultPromise.resolve()
                 }
-            } catch(e) {
+            } catch (e) {
                 resultPromise.reject(e)
             }
         })

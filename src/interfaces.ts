@@ -8,6 +8,6 @@ export interface ILogger {
     debug(message: string): void,
     error(message: string): void,
     logError(e: Error): void,
-    logOnRejected(e: unknown): void,
+    logError(e: unknown): void,
     showLog(): void
 }

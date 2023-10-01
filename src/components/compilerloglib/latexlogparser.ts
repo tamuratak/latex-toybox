@@ -5,6 +5,7 @@ import type { LogEntry } from './core'
 import type { CompilerLog } from '../compilerlog'
 import type { Manager } from '../manager'
 import type { Logger } from '../logger'
+import { inspectReadable } from '../../utils/inspect'
 
 const latexError = /^(?:(.*):(\d+):|!)(?: (.+) Error:)? (.+?)$/
 const latexBox = /^((?:Over|Under)full \\[vh]box \([^)]*\)) in paragraph at lines (\d+)--(\d+)$/
@@ -80,9 +81,7 @@ export class LatexLogParser {
         try {
             excludeRegexp = (configuration.get('message.latexlog.exclude') as string[]).map(regexp => new RegExp(regexp))
         } catch (e) {
-            if (e instanceof Error) {
-                this.extension.logger.info(`latex-toybox.message.latexlog.exclude is invalid: ${e.message}`)
-            }
+            this.extension.logger.info(`latex-toybox.message.latexlog.exclude is invalid: ${inspectReadable(e)}`)
             return
         }
         // Compose the current file
