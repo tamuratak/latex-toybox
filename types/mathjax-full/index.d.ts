@@ -1,8 +1,8 @@
-import type { default as TexError } from 'mathjax-full/js/input/tex/TexError.js'
-import type { TeX } from 'mathjax-full/js/input/tex.js'
-import type { LiteElement } from 'mathjax-full/js/adaptors/lite/Element'
-import type { LiteDocument } from 'mathjax-full/js/adaptors/lite/Document.js'
-import type { LiteText } from 'mathjax-full/js/adaptors/lite/Text.js'
+import type { default as TexError } from 'mathjax-full/cjs/input/tex/TexError.js'
+import type { TeX } from 'mathjax-full/cjs/input/tex.js'
+import type { LiteElement } from 'mathjax-full/cjs/adaptors/lite/Element'
+import type { LiteDocument } from 'mathjax-full/cjs/adaptors/lite/Document.js'
+import type { LiteText } from 'mathjax-full/cjs/adaptors/lite/Text.js'
 
 export type SupportedExtension =
     'action' |

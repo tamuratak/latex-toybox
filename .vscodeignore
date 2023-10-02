@@ -41,12 +41,16 @@ node_modules/pdfjs-dist/web/
 node_modules/pdfjs-dist/node_modules/canvas/
 node_modules/pdfjs-dist/node_modules/path2d-polyfill/
 
+node_modules/mathjax-full/bundle/
 node_modules/mathjax-full/components/
-node_modules/mathjax-full/es5/
+node_modules/mathjax-full/mjs/
 node_modules/mathjax-full/ts/
-node_modules/mathjax-full/js/output/chtml/
-node_modules/mathjax-full/js/input/asciimath/
-node_modules/mathjax-full/js/input/mathml/
+node_modules/mathjax-full/cjs/output/chtml/
+node_modules/mathjax-full/cjs/input/asciimath/
+node_modules/mathjax-full/cjs/input/mathml/
 node_modules/mathjax-full/node_modules/esm/
 node_modules/mathjax-full/node_modules/mj-context-menu/
 node_modules/mathjax-full/node_modules/speech-rule-engine/
+node_modules/mathjax-full/node_modules/mathjax-modern-font/
+!node_modules/mathjax-full/node_modules/mathjax-modern-font/cjs/
+!node_modules/mathjax-full/node_modules/mathjax-modern-font/package.json
