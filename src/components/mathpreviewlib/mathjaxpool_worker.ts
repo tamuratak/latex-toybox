@@ -9,8 +9,14 @@ import type { LiteElement } from 'mathjax-full/js/adaptors/lite/Element.js'
 import type { MathDocument } from 'mathjax-full/js/core/MathDocument.js'
 import type { LiteDocument } from 'mathjax-full/js/adaptors/lite/Document.js'
 import type { LiteText } from 'mathjax-full/js/adaptors/lite/Text.js'
-import 'mathjax-full/js/input/tex/AllPackages.js'
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const {source} = require('mathjax-full/components/src/source.js') as {source: Record<string, string>};
+Object.entries(source).forEach(([componentName, filePath]) => {
+    if (componentName.startsWith('[tex]/')) {
+        void import(filePath);
+    }
+})
 
 const adaptor = liteAdaptor()
 RegisterHTMLHandler(adaptor)
@@ -51,6 +57,7 @@ export function typeset(arg: string, opts: { scale: number, color: string }): st
     if (minWidth !== undefined) {
         svgHtml = svgHtml.replace('width="100%"', `width="${minWidth}ex"`)
     }
+    svgHtml = svgHtml.replaceAll('stroke-width="0"', 'stroke-width="7"')
     return svgHtml
 }
 
