@@ -1,15 +1,15 @@
 import * as workerpool from 'workerpool'
 import type {ConvertOption, SupportedExtension, SvgOption, TexOption} from 'mathjax-full'
-import { mathjax } from 'mathjax-full/js/mathjax.js'
-import { TeX } from 'mathjax-full/js/input/tex.js'
-import { SVG } from 'mathjax-full/js/output/svg.js'
-import { liteAdaptor } from 'mathjax-full/js/adaptors/liteAdaptor.js'
-import { RegisterHTMLHandler } from 'mathjax-full/js/handlers/html.js'
-import type { LiteElement } from 'mathjax-full/js/adaptors/lite/Element.js'
-import type { MathDocument } from 'mathjax-full/js/core/MathDocument.js'
-import type { LiteDocument } from 'mathjax-full/js/adaptors/lite/Document.js'
-import type { LiteText } from 'mathjax-full/js/adaptors/lite/Text.js'
-import 'mathjax-full/js/input/tex/AllPackages.js'
+import { mathjax } from 'mathjax-full/cjs/mathjax.js'
+import { TeX } from 'mathjax-full/cjs/input/tex.js'
+import { SVG } from 'mathjax-full/cjs/output/svg.js'
+import { liteAdaptor } from 'mathjax-full/cjs/adaptors/liteAdaptor.js'
+import { RegisterHTMLHandler } from 'mathjax-full/cjs/handlers/html.js'
+import type { LiteElement } from 'mathjax-full/cjs/adaptors/lite/Element.js'
+import type { MathDocument } from 'mathjax-full/cjs/core/MathDocument.js'
+import type { LiteDocument } from 'mathjax-full/cjs/adaptors/lite/Document.js'
+import type { LiteText } from 'mathjax-full/cjs/adaptors/lite/Text.js'
+import 'mathjax-full/cjs/input/tex/AllPackages.js'
 
 
 const adaptor = liteAdaptor()
@@ -51,6 +51,7 @@ export function typeset(arg: string, opts: { scale: number, color: string }): st
     if (minWidth !== undefined) {
         svgHtml = svgHtml.replace('width="100%"', `width="${minWidth}ex"`)
     }
+    svgHtml = svgHtml.replaceAll('stroke-width="0"', 'stroke-width="7"')
     return svgHtml
 }
 
