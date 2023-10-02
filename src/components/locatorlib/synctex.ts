@@ -87,12 +87,10 @@ export class SyncTexJs {
         try {
             const s = (await readFileAsBuffer(vscode.Uri.file(synctexFile))).toString('binary')
             return parseSyncTex(s)
-        } catch (e: unknown) {
+        } catch (e) {
             if (await existsPath(synctexFile)) {
                 this.extension.logger.error(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
             }
         }
 
@@ -101,12 +99,10 @@ export class SyncTexJs {
             const b = zlib.gunzipSync(data)
             const s = b.toString('binary')
             return parseSyncTex(s)
-        } catch (e: unknown) {
+        } catch (e) {
             if (await existsPath(synctexFileGz)) {
                 this.extension.logger.error(`[SyncTexJs] parseSyncTex failed with: ${synctexFileGz}`)
-                if (e instanceof Error) {
-                    this.extension.logger.logError(e)
-                }
+                this.extension.logger.logError(e)
             }
         }
 

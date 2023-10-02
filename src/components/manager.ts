@@ -524,7 +524,9 @@ export class Manager {
                 this.extension.logger.info(`Found files that might be root, choose the first one: ${candidates}`)
                 return candidates[0]
             }
-        } catch (e) {}
+        } catch (e) {
+            this.extension.logger.error(`Error when calling findRootInWorkspace(): ${inspectReadable(e)}`)
+        }
         return undefined
     }
 

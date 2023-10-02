@@ -323,10 +323,8 @@ export class Locator {
             editor.selection = new vscode.Selection(pos, pos)
             await vscode.commands.executeCommand('revealLine', {lineNumber: row, at: 'center'})
             this.animateToNotify(editor, pos)
-        } catch (e: unknown) {
-            if (e instanceof Error) {
-                this.extension.logger.logError(e)
-            }
+        } catch (e) {
+            this.extension.logger.logError(e)
         }
     }
 

@@ -102,11 +102,9 @@ export class GraphicsPreview {
                 return undefined
             }
             return dataUrl
-        } catch (e: unknown) {
+        } catch (e) {
             this.extension.logger.error(`Failed to renderGraphicsAsDataUrl: ${pdfFilePath}`)
-            if (e instanceof Error) {
-                this.extension.logger.logError(e)
-            }
+            this.extension.logger.logError(e)
             return undefined
         }
     }

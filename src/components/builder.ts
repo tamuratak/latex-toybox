@@ -61,10 +61,14 @@ export class Builder {
                     cp.execSync(`taskkill /F /T /PID ${pid}`, { timeout: 1000 })
                 }
             } catch (e) {
-                this.extension.logger.error(`Error when killing child processes of the current process. ${inspectReadable(e)}`)
+                this.extension.logger.error(`Error when killing child processes of the current process: ${inspectReadable(e)}`)
             } finally {
-                proc.kill()
                 this.extension.logger.info(`Kill the current process. PID: ${pid}`)
+                try {
+                    proc.kill()
+                } catch (e) {
+                    this.extension.logger.error(`Error when killing the current process: ${inspectReadable(e)}`)
+                }
             }
         } else {
             this.extension.logger.info('LaTeX build process to kill is not found.')

@@ -7,6 +7,7 @@ import { convertFilenameEncoding } from '../../utils/convertfilename'
 import { existsPath } from '../../lib/lwfs/lwfs'
 import type { Logger } from '../logger'
 import type { Manager } from '../manager'
+import { inspectReadable } from '../../utils/inspect'
 
 
 interface LaCheckLogEntry {
@@ -47,14 +48,13 @@ export class LaCheck implements ILinter {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', configScope)
         const command = configuration.get('linting.lacheck.exec.path') as string
 
-        let stdout: string
+        let stdout: string | undefined
         try {
             stdout = await this.#linterUtil.processWrapper(linterid, command, [filePath], {cwd: path.dirname(filePath)}, content)
-        } catch (err: any) {
-            if ('stdout' in err) {
+        } catch (err) {
+            this.extension.logger.error(`lacheck failed: ${inspectReadable({command, filePath, err})}`)
+            if (err instanceof Object && 'stdout' in err) {
                 stdout = err.stdout as string
-            } else {
-                return undefined
             }
         }
 
