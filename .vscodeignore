@@ -33,6 +33,7 @@ node_modules/rimraf/
 node_modules/latex-utensils/node_modules/
 
 node_modules/pdfjs-dist/build/*.min.js
+node_modules/pdfjs-dist/build/*.min.mjs
 node_modules/pdfjs-dist/legacy/
 node_modules/pdfjs-dist/image_decoders/
 node_modules/pdfjs-dist/lib/

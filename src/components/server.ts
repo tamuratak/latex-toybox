@@ -223,6 +223,7 @@ export class Server {
                     contentType = 'text/html'
                     break
                 }
+                case '.mjs':
                 case '.js': {
                     contentType = 'text/javascript'
                     break
