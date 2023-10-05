@@ -148,7 +148,7 @@ export class Server {
         response: http.ServerResponse,
         content: Buffer,
         contentType: string,
-        isVeiewerHtml: boolean = false
+        { isVeiewerHtml }: { isVeiewerHtml: boolean } = { isVeiewerHtml: false }
     ) {
         //
         // Headers to enable site isolation.
@@ -271,7 +271,7 @@ export class Server {
                     response.end()
                 } else {
                     if (request.url?.startsWith('/viewer.html')) {
-                        this.sendOkResponse(response, content, contentType, true)
+                        this.sendOkResponse(response, content, contentType, { isVeiewerHtml: true })
                     } else {
                         this.sendOkResponse(response, content, contentType)
                     }
