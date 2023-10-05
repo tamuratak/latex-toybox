@@ -1,7 +1,7 @@
 src/lib/await-semaphore/
 src/lib/synctexjs/
-test/utils/decycle.ts
 viewer/viewer.js
+viewer/viewer.mjs
 data/
 dev/
 icons/
