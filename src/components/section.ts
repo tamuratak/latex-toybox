@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { stripCommentsAndVerbatim } from '../utils/utils'
+import { stripCommentsAndVerbatim } from '../utils/strip'
 import type { Logger } from './logger'
 
 interface MatchSection {

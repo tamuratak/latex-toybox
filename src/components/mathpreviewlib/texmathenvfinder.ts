@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import * as utils from '../../utils/utils'
 import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike'
 import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition'
+import { stripCommentsAndVerbatim } from '../../utils/strip'
 
 export type TexMathEnv = {
     readonly texString: string,
@@ -91,7 +92,7 @@ export class TeXMathEnvFinder {
     //             startPos1
     findEndPair(document: ITextDocumentLike, endPat: RegExp, startPos1: vscode.Position): vscode.Position | undefined {
         const currentLine = document.lineAt(startPos1).text.substring(startPos1.character)
-        const l = utils.stripCommentsAndVerbatim(currentLine)
+        const l = stripCommentsAndVerbatim(currentLine)
         let m = l.match(endPat)
         if (m && m.index !== undefined) {
             return startPos1.translate(0, m.index + m[0].length)
@@ -99,7 +100,7 @@ export class TeXMathEnvFinder {
 
         let lineNum = startPos1.line + 1
         while (lineNum <= document.lineCount) {
-            m = utils.stripCommentsAndVerbatim(document.lineAt(lineNum).text).match(endPat)
+            m = stripCommentsAndVerbatim(document.lineAt(lineNum).text).match(endPat)
             if (m && m.index !== undefined) {
                 return new vscode.Position(lineNum, m.index + m[0].length)
             }
@@ -113,7 +114,7 @@ export class TeXMathEnvFinder {
     //  return pos                 endPos1
     private findBeginPair(document: ITextDocumentLike, beginPat: RegExp, endPos1: vscode.Position, limit: number): vscode.Position | undefined {
         const currentLine = document.lineAt(endPos1).text.substring(0, endPos1.character)
-        let l = utils.stripCommentsAndVerbatim(currentLine)
+        let l = stripCommentsAndVerbatim(currentLine)
         let m = l.match(beginPat)
         if (m && m.index !== undefined) {
             return new vscode.Position(endPos1.line, m.index)
@@ -122,7 +123,7 @@ export class TeXMathEnvFinder {
         let i = 0
         while (lineNum >= 0 && i < limit) {
             l = document.lineAt(lineNum).text
-            l = utils.stripCommentsAndVerbatim(l)
+            l = stripCommentsAndVerbatim(l)
             m = l.match(beginPat)
             if (m && m.index !== undefined) {
                 return new vscode.Position(lineNum, m.index)

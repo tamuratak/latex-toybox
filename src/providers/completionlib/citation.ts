@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
-import {bibtexParser} from 'latex-utensils'
-import {trimMultiLineString} from '../../utils/utils'
-import type {ILwCompletionItem} from './interface'
+import { bibtexParser } from 'latex-utensils'
+import { trimMultiLineString } from '../../utils/strip'
+import type { ILwCompletionItem } from './interface'
 
-import type {IProvider} from './interface'
+import type { IProvider } from './interface'
 import { toVscodePosition } from '../../utils/utensils'
 import type { BibtexAstManager } from '../../components/astmanager'
 import type { Logger } from '../../components/logger'

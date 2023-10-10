@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import {latexParser} from 'latex-utensils'
-import {isNewCommand, NewCommand} from '../../utils/utils'
+import { latexParser } from 'latex-utensils'
+import { isNewCommand, NewCommand } from '../../utils/newcommand'
 import * as path from 'path'
 
 import { readFilePathGracefully } from '../../lib/lwfs/lwfs'

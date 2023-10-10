@@ -1,8 +1,8 @@
 import * as path from 'path'
-import * as utils from '../../utils/utils'
 
 import { existsPath, readFilePathGracefully } from '../../lib/lwfs/lwfs'
 import { InputFileRegExp } from '../../utils/inputfilepath'
+import { stripCommentsAndVerbatim } from '../../utils/strip'
 
 /**
  * Return the list of files (recursively) included in `file`
@@ -13,7 +13,7 @@ import { InputFileRegExp } from '../../utils/inputfilepath'
  */
 export async function getTeXChildren(file: string, maybeRootFile: string, children = new Set<string>()): Promise < string[] > {
     let content = await readFilePathGracefully(file) || ''
-        content = utils.stripCommentsAndVerbatim(content)
+        content = stripCommentsAndVerbatim(content)
 
         const inputFileRegExp = new InputFileRegExp()
         const newChildren = new Set<string>()
