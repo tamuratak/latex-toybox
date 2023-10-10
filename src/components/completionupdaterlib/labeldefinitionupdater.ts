@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import {latexParser} from 'latex-utensils'
-import {isNewCommand} from '../../utils/utils'
+import { latexParser } from 'latex-utensils'
+import { isNewCommand } from '../../utils/newcommand'
 
 import type { LabelDefinitionElement } from '../../providers/completionlib/labeldefinition'
 import { toVscodeRange } from '../../utils/utensils'

@@ -32,6 +32,7 @@ import type { DuplicateLabels } from './duplicatelabels'
 import type { CompletionUpdater } from './completionupdater'
 import { ManagerWatcher } from './managerlib/managerwatcher'
 import { inspectReadable } from '../utils/inspect'
+import { stripCommentsAndVerbatim } from '../utils/strip'
 
 
 /**
@@ -466,7 +467,7 @@ export class Manager {
             this.extension.logger.info(`The active document cannot be used as the root file: ${vscode.window.activeTextEditor.document.uri.toString(true)}`)
             return undefined
         }
-        const content = utils.stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
+        const content = stripCommentsAndVerbatim(vscode.window.activeTextEditor.document.getText())
         if (/\\begin{document}/m.exec(content)) {
             const activeDocFilePath = vscode.window.activeTextEditor.document.fileName
             const mainFileOfActiveDoc = await this.finderUtils.findMainFileFromDocumentClassSubFiles(content)
@@ -508,7 +509,7 @@ export class Manager {
                     return file.fsPath
                 }
                 let content = await readFileGracefully(file) || ''
-                content = utils.stripCommentsAndVerbatim(content)
+                content = stripCommentsAndVerbatim(content)
                 if (/\\begin{document}/m.exec(content)) {
                     // Can be a root
                     const children = await getTeXChildren(file.fsPath, file.fsPath)
@@ -628,7 +629,7 @@ export class Manager {
         if (!content) {
             return
         }
-        content = utils.stripCommentsAndVerbatim(content)
+        content = stripCommentsAndVerbatim(content)
         await this.findAndParseBibFilesInContent(content, file)
         await this.parseInputFiles(content, file, maybeRootFile, alreadyParsed)
     }
