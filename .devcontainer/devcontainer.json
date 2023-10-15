@@ -1,4 +1,4 @@
 {
-	"name": "Node.js 16 & TeX Live Base",
-	"dockerFile": "texlive/Dockerfile"
+	"name": "Node.js 18 & TeX Live Base",
+	"dockerFile": "stable/Dockerfile"
 }
