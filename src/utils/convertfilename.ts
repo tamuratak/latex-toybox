@@ -22,9 +22,10 @@ export const iconvLiteSupportedEncodings = [
 ]
 
 export async function convertFilenameEncoding(filePath: string) {
+    const buf = Buffer.from(filePath, 'binary')
     for (const enc of iconvLiteSupportedEncodings) {
         try {
-            const fpath = iconv.decode(Buffer.from(filePath, 'binary'), enc)
+            const fpath = iconv.decode(buf, enc)
             if (await existsPath(fpath)) {
                 return fpath
             }

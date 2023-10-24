@@ -41,7 +41,7 @@ export async function readFilePathGracefully(filepath: string): Promise<string |
 }
 
 export async function readFile(fileUri: vscode.Uri): Promise<string> {
-    const result = await readFileAsBuffer(fileUri)
+    const result = await readFileAsUint8Array(fileUri)
     return result.toString()
 }
 
@@ -53,12 +53,11 @@ export async function readFileGracefully(fileUri: vscode.Uri): Promise<string | 
     }
 }
 
-export async function readFileAsBuffer(fileUri: vscode.Uri): Promise<Buffer> {
+export async function readFileAsUint8Array(fileUri: vscode.Uri): Promise<Uint8Array> {
     if (isLocalUri(fileUri)) {
         return fs.promises.readFile(fileUri.fsPath)
     } else {
-        const resultUint8 = await vscode.workspace.fs.readFile(fileUri)
-        return Buffer.from(resultUint8)
+        return vscode.workspace.fs.readFile(fileUri)
     }
 }
 
