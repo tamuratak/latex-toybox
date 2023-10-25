@@ -12,7 +12,11 @@ export function normalize(filePath: string) {
 }
 
 export async function isSameRealPath(filePathA: string, filePathB: string): Promise<boolean> {
-    const a = normalize(await fs.promises.realpath(path.normalize(filePathA)))
-    const b = normalize(await fs.promises.realpath(path.normalize(filePathB)))
-    return a === b
+    try {
+        const a = normalize(await fs.promises.realpath(path.normalize(filePathA)))
+        const b = normalize(await fs.promises.realpath(path.normalize(filePathB)))
+        return a === b
+    } catch (e) {
+        return false
+    }
 }

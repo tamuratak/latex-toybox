@@ -1,9 +1,8 @@
-import * as iconv from 'iconv-lite'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as zlib from 'zlib'
 import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../../lib/synctexjs/synctexjs'
-import {iconvLiteSupportedEncodings} from '../../utils/convertfilename'
+import {ConvertFilenameEncodingIterator} from '../../utils/convertfilename'
 import {isSameRealPath} from '../../utils/pathnormalize'
 import { existsPath, readFileAsUint8Array } from '../../lib/lwfs/lwfs'
 import type { ILogger } from '../../interfaces'
@@ -123,15 +122,10 @@ export class SyncTexJs {
             } catch { }
         }
         for (const inputFilePath in pdfSyncObject.blockNumberLine) {
-            const buf = Buffer.from(inputFilePath, 'binary')
-            for (const enc of iconvLiteSupportedEncodings) {
-                let convertedInputFilePath = ''
-                try {
-                    convertedInputFilePath = iconv.decode(buf, enc)
-                    if (await isSameRealPath(convertedInputFilePath, filePath)) {
-                        return inputFilePath
-                    }
-                } catch { }
+            for (const convertedInputFilePath of new ConvertFilenameEncodingIterator(inputFilePath)) {
+                if (await isSameRealPath(convertedInputFilePath, filePath)) {
+                    return inputFilePath
+                }
             }
         }
         return undefined
@@ -240,14 +234,10 @@ export class SyncTexJs {
         if (await existsPath(inputFilePath)) {
             return inputFilePath
         }
-        const buf = Buffer.from(inputFilePath, 'binary')
-        for (const enc of iconvLiteSupportedEncodings) {
-            try {
-                const s = iconv.decode(buf, enc)
-                if (await existsPath(s)) {
-                    return s
-                }
-            } catch {}
+        for (const convertedFilePath of new ConvertFilenameEncodingIterator(inputFilePath)) {
+            if (await existsPath(convertedFilePath)) {
+                return convertedFilePath
+            }
         }
 
         throw new SyncTexJsError(`Input file to jump to does not exist in the file system: ${inputFilePath}`)
