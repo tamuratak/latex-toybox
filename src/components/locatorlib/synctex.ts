@@ -1,11 +1,10 @@
-import * as iconv from 'iconv-lite'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as zlib from 'zlib'
 import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../../lib/synctexjs/synctexjs'
-import {iconvLiteSupportedEncodings} from '../../utils/convertfilename'
+import {ConvertFilenameEncodingIterator} from '../../utils/convertfilename'
 import {isSameRealPath} from '../../utils/pathnormalize'
-import { existsPath, readFileAsBuffer } from '../../lib/lwfs/lwfs'
+import { existsPath, readFileAsUint8Array } from '../../lib/lwfs/lwfs'
 import type { ILogger } from '../../interfaces'
 import { inspectCompact } from '../../utils/inspect'
 
@@ -85,7 +84,8 @@ export class SyncTexJs {
         const synctexFileGz = synctexFile + '.gz'
 
         try {
-            const s = (await readFileAsBuffer(vscode.Uri.file(synctexFile))).toString('binary')
+            const u8array = await readFileAsUint8Array(vscode.Uri.file(synctexFile))
+            const s = Buffer.from(u8array).toString('binary')
             return parseSyncTex(s)
         } catch (e) {
             if (await existsPath(synctexFile)) {
@@ -95,7 +95,7 @@ export class SyncTexJs {
         }
 
         try {
-            const data = await readFileAsBuffer(vscode.Uri.file(synctexFileGz))
+            const data = await readFileAsUint8Array(vscode.Uri.file(synctexFileGz))
             const b = zlib.gunzipSync(data)
             const s = b.toString('binary')
             return parseSyncTex(s)
@@ -122,14 +122,10 @@ export class SyncTexJs {
             } catch { }
         }
         for (const inputFilePath in pdfSyncObject.blockNumberLine) {
-            for (const enc of iconvLiteSupportedEncodings) {
-                let convertedInputFilePath = ''
-                try {
-                    convertedInputFilePath = iconv.decode(Buffer.from(inputFilePath, 'binary'), enc)
-                    if (await isSameRealPath(convertedInputFilePath, filePath)) {
-                        return inputFilePath
-                    }
-                } catch { }
+            for (const convertedInputFilePath of new ConvertFilenameEncodingIterator(inputFilePath)) {
+                if (await isSameRealPath(convertedInputFilePath, filePath)) {
+                    return inputFilePath
+                }
             }
         }
         return undefined
@@ -238,13 +234,10 @@ export class SyncTexJs {
         if (await existsPath(inputFilePath)) {
             return inputFilePath
         }
-        for (const enc of iconvLiteSupportedEncodings) {
-            try {
-                const s = iconv.decode(Buffer.from(inputFilePath, 'binary'), enc)
-                if (await existsPath(s)) {
-                    return s
-                }
-            } catch {}
+        for (const convertedFilePath of new ConvertFilenameEncodingIterator(inputFilePath)) {
+            if (await existsPath(convertedFilePath)) {
+                return convertedFilePath
+            }
         }
 
         throw new SyncTexJsError(`Input file to jump to does not exist in the file system: ${inputFilePath}`)

@@ -6,7 +6,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 
 import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
-import { readFileAsBuffer } from '../lib/lwfs/lwfs'
+import { readFileAsUint8Array } from '../lib/lwfs/lwfs'
 import { ExternalPromise } from '../utils/externalpromise'
 import type { Logger } from './logger'
 import type { Viewer } from './viewer'
@@ -146,7 +146,7 @@ export class Server {
 
     private sendOkResponse(
         response: http.ServerResponse,
-        content: Buffer,
+        content: string | Uint8Array,
         contentType: string,
         { isVeiewerHtml }: { isVeiewerHtml: boolean } = { isVeiewerHtml: false }
     ) {
@@ -185,7 +185,7 @@ export class Server {
                 return
             }
             try {
-                const buf: Buffer = await readFileAsBuffer(fileUri)
+                const buf = await readFileAsUint8Array(fileUri)
                 this.sendOkResponse(response, buf, 'application/pdf')
                 this.extension.logger.info(`[Server] Preview PDF file: ${fileUri.toString(true)}`)
             } catch (e) {
@@ -198,7 +198,7 @@ export class Server {
         } else if (request.url === '/config.json') {
             const params = this.extension.viewer.viewerParams()
             const content = JSON.stringify(params)
-            this.sendOkResponse(response, Buffer.from(content), 'application/json')
+            this.sendOkResponse(response, content, 'application/json')
             return
         } else {
             let root: string

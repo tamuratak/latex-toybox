@@ -19,18 +19,49 @@ export const iconvLiteSupportedEncodings = [
     'CP860', 'CP861', 'CP862', 'CP863', 'CP864', 'CP865', 'CP866', 'CP869',
     'CP922', 'CP1046', 'CP1124', 'CP1125', 'CP1129', 'CP1133', 'CP1161', 'CP1162', 'CP1163',
     'koi8-r', 'koi8-u', 'koi8-ru', 'koi8-t'
-]
+] as const
 
 export async function convertFilenameEncoding(filePath: string) {
-    for (const enc of iconvLiteSupportedEncodings) {
-        try {
-            const fpath = iconv.decode(Buffer.from(filePath, 'binary'), enc)
-            if (await existsPath(fpath)) {
-                return fpath
-            }
-        } catch (e) {
-
+    for (const fpath of new ConvertFilenameEncodingIterator(filePath)) {
+        if (await existsPath(fpath)) {
+            return fpath
         }
     }
     return undefined
+}
+
+export class ConvertFilenameEncodingIterator implements IterableIterator<string> {
+    private readonly fileNameBuffer: Buffer
+    private index = 0
+
+    constructor(filePath: string) {
+        this.fileNameBuffer = Buffer.from(filePath, 'binary')
+    }
+
+    private computeNext() {
+        while (true) {
+            try {
+                const enc = iconvLiteSupportedEncodings[this.index]
+                if (!enc) {
+                    return
+                }
+                this.index += 1
+                return iconv.decode(this.fileNameBuffer, enc)
+            } catch (e) { }
+        }
+    }
+
+    next(): IteratorResult<string, undefined> {
+        const value = this.computeNext()
+        if (value === undefined) {
+            return { value: undefined, done: true }
+        } else {
+            return { value, done: false }
+        }
+    }
+
+    [Symbol.iterator]() {
+        return this
+    }
+
 }
