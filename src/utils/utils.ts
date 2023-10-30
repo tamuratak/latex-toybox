@@ -8,6 +8,12 @@ export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+const encoder = new TextEncoder()
+// Return the number of bytes of a string in UTF-8 encoding.
+export function byteLength(str: string) {
+    return encoder.encode(str).length
+}
+
 export function escapeHtml(s: string): string {
     return s.replace(/&/g, '&amp;')
             .replace(/"/g, '&quot;')

@@ -7,7 +7,7 @@ import { isSameRealPath } from '../../utils/pathnormalize.js'
 import { existsPath, readFileAsUint8Array } from '../../lib/lwfs/lwfs.js'
 import type { ILogger } from '../../interfaces.js'
 import { inspectCompact } from '../../utils/inspect.js'
-
+import * as xuserdefined from '../../utils/xuserdefined'
 
 class Rectangle {
     readonly top: number
@@ -85,7 +85,7 @@ export class SyncTexJs {
 
         try {
             const u8array = await readFileAsUint8Array(vscode.Uri.file(synctexFile))
-            const s = Buffer.from(u8array).toString('binary')
+            const s = xuserdefined.decode(u8array)
             return parseSyncTex(s)
         } catch (e) {
             if (await existsPath(synctexFile)) {
