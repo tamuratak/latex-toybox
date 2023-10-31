@@ -10,7 +10,7 @@ export function sleep(ms: number) {
 
 const encoder = new TextEncoder()
 // Return the number of bytes of a string in UTF-8 encoding.
-export function byteLength(str: string) {
+export function byteLengthAsUtf8(str: string) {
     return encoder.encode(str).length
 }
 

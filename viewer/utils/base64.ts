@@ -29,7 +29,8 @@ export function encodeToBase64Url(str: string) {
 }
 
 export function decodeFromBase64Url(b64url: string) {
-    const tmp = b64url + '='.repeat(4 - b64url.length % 4)
+    // Notice that we need 0 repeat if b64url.length % 4 === 0.
+    const tmp = b64url + '='.repeat((4 - b64url.length % 4) % 4)
     const b64 = tmp.replace(/-/g, '+').replace(/_/g, '/')
     return decodeFromBase64(b64)
 }

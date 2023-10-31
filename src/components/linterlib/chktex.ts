@@ -9,7 +9,7 @@ import { existsPath, readFilePath } from '../../lib/lwfs/lwfs.js'
 import type { Logger } from '../logger.js'
 import type { Manager } from '../manager.js'
 import { inspectReadable } from '../../utils/inspect.js'
-import { byteLength } from '../../utils/utils'
+import { byteLengthAsUtf8 } from '../../utils/utils.js'
 
 
 interface ChkTeXLogEntry {
@@ -242,7 +242,7 @@ export class ChkTeX implements ILinter {
     private convertColumn(colArg: number, lineString: string, tabSize = 8): number {
         const col = colArg - 1
         // We assume the text file is encoded in UTF-8.
-        const charByteArray = Array.from(lineString).map((c) => byteLength(c))
+        const charByteArray = Array.from(lineString).map((c) => byteLengthAsUtf8(c))
         let i = 0
         let pos = 0
         while (i < charByteArray.length) {

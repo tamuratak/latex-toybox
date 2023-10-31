@@ -1,6 +1,6 @@
 import * as iconv from 'iconv-lite'
 import { existsPath } from '../lib/lwfs/lwfs.js'
-import * as xuserdefined from './xuserdefined'
+import * as xuserdefined from './xuserdefined.js'
 
 // https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
 export const iconvLiteSupportedEncodings = [

@@ -1,4 +1,4 @@
-import { encodeToBase64 } from './base64'
+import { encodeToBase64 } from './base64.js'
 
 export function svgToDataUrl(xml: string): string {
     const svg64 = encodeToBase64(xml)
