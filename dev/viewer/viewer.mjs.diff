@@ -1,0 +1,103 @@
+--- ../tmp/pdfjs-4.0/web/viewer.mjs	2023-11-05 18:06:24
++++ viewer/viewer.mjs	2023-11-06 10:18:29
+@@ -2539,7 +2539,7 @@
+   PENDING: 3
+ };
+ const FIND_TIMEOUT = 250;
+-const MATCH_SCROLL_OFFSET_TOP = -50;
++const MATCH_SCROLL_OFFSET_TOP = -100;
+ const MATCH_SCROLL_OFFSET_LEFT = -400;
+ const CHARACTERS_TO_NORMALIZE = {
+   "\u2010": "-",
+\ No newline at end of file
+@@ -5136,7 +5136,7 @@
+       this.#dispatchEvent();
+       return;
+     }
+-    this.switchView(view, true);
++    this.switchView(view, false);
+     if (!this.isInitialEventDispatched) {
+       this.#dispatchEvent();
+     }
+\ No newline at end of file
+@@ -6948,7 +6948,7 @@
+       if (typeof console !== "undefined") {
+         const locale = bundle.locales[0];
+         const ids = Array.from(missingIds).join(", ");
+-        console.warn(`[fluent] Missing translations in ${locale}: ${ids}`);
++        // console.warn(`[fluent] Missing translations in ${locale}: ${ids}`);
+       }
+     }
+     if (!hasAtLeastOneBundle && typeof console !== "undefined") {
+\ No newline at end of file
+@@ -9089,7 +9089,7 @@
+     this.#annotationEditorMode = options.annotationEditorMode ?? AnnotationEditorType.NONE;
+     this.imageResourcesPath = options.imageResourcesPath || "";
+     this.enablePrintAutoRotate = options.enablePrintAutoRotate || false;
+-    this.removePageBorders = options.removePageBorders || false;
++    this.removePageBorders = options.removePageBorders || true;
+     this.isOffscreenCanvasSupported = options.isOffscreenCanvasSupported ?? true;
+     this.maxCanvasPixels = options.maxCanvasPixels;
+     this.l10n = options.l10n || NullL10n;
+\ No newline at end of file
+@@ -11034,10 +11034,10 @@
+   }
+   async _writeToStorage() {
+     const databaseStr = JSON.stringify(this.database);
+-    localStorage.setItem("pdfjs.history", databaseStr);
++    // localStorage.setItem("pdfjs.history", databaseStr);
+   }
+   async _readFromStorage() {
+-    return localStorage.getItem("pdfjs.history");
++    return // localStorage.getItem("pdfjs.history");
+   }
+   async set(name, val) {
+     await this._initializedPromise;
+\ No newline at end of file
+@@ -11597,7 +11597,7 @@
+         title = url;
+       }
+     }
+-    this.setTitle(title);
++    // this.setTitle(title);
+   },
+   setTitle(title = this._title) {
+     this._title = title;
+\ No newline at end of file
+@@ -13630,11 +13630,11 @@
+ const GenericCom = {};
+ class GenericPreferences extends BasePreferences {
+   async _writeToStorage(prefObj) {
+-    localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
++    // localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
+   }
+   async _readFromStorage(prefObj) {
+-    return {
+-      prefs: JSON.parse(localStorage.getItem("pdfjs.preferences"))
++    return  {
++      prefs: undefined // JSON.parse(localStorage.getItem("pdfjs.preferences"))
+     };
+   }
+ }
+\ No newline at end of file
+@@ -13884,6 +13884,9 @@
+ }
+ window.addEventListener("keydown", function (event) {
+   if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
++    if (window.parent !== window) {
++      return;
++    }
+     window.print();
+     event.preventDefault();
+     event.stopImmediatePropagation();
+\ No newline at end of file
+@@ -14079,7 +14082,7 @@
+   try {
+     parent.document.dispatchEvent(event);
+   } catch (ex) {
+-    console.error(`webviewerloaded: ${ex}`);
++    // console.error(`webviewerloaded: ${ex}`);
+     document.dispatchEvent(event);
+   }
+   PDFViewerApplication.run(config);
+\ No newline at end of file
