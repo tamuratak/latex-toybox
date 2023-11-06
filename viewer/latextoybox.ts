@@ -158,11 +158,11 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
 
 // Defines pdfjsLib globally.
 // @ts-expect-error
-await import('/build/pdf.js')
+await import('/build/pdf.mjs')
 
 const extension = new LateXToyboxPdfViewer()
 await extension.waitSetupAppOptionsReady()
 
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
 // @ts-expect-error
-await import('/viewer.js')
+await import('/viewer.mjs')
