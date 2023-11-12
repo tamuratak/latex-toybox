@@ -1,4 +1,4 @@
-import type { PdfViewerState } from '../../types/latex-toybox-protocol-types/index'
+import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 

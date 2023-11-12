@@ -31,6 +31,7 @@
     "onWebviewPanel:latex-toybox-pdf"
   ],
   "main": "./out/src/main.js",
+  "type": "commonjs",
   "capabilities": {
     "virtualWorkspaces": {
       "supported": "limited",

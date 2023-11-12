@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 import * as cs from 'cross-spawn'
-import type { Logger } from './logger'
-import type { Manager } from './manager'
-import { ExternalPromise } from '../utils/externalpromise'
+import type { Logger } from './logger.js'
+import type { Manager } from './manager.js'
+import { ExternalPromise } from '../utils/externalpromise.js'
 
 
 export class TeXDoc {

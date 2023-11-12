@@ -1,11 +1,11 @@
-import assert from 'assert'
+import assert from 'node:assert'
 import * as vscode from 'vscode'
 
-import { runUnitTestWithFixture } from '../../../../utils/ciutils'
-import { UtensilsParser } from '../../../../../src/components/utensilsparser'
-import { TeXMathEnvFinder } from '../../../../../src/components/mathpreviewlib/texmathenvfinder'
-import { CursorRenderer, isCursorInsideTexMath } from '../../../../../src/components/mathpreviewlib/cursorrenderer'
-import { TextDocumentLike } from '../../../../../src/components/mathpreviewlib/textdocumentlike'
+import { runUnitTestWithFixture } from '../../../../utils/ciutils.js'
+import { UtensilsParser } from '../../../../../src/components/utensilsparser.js'
+import { TeXMathEnvFinder } from '../../../../../src/components/mathpreviewlib/texmathenvfinder.js'
+import { CursorRenderer, isCursorInsideTexMath } from '../../../../../src/components/mathpreviewlib/cursorrenderer.js'
+import { TextDocumentLike } from '../../../../../src/components/mathpreviewlib/textdocumentlike.js'
 
 const utensilsParser = new UtensilsParser()
 

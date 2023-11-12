@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import type { ReferenceStore } from '../components/referencestore'
+import type { ReferenceStore } from '../components/referencestore.js'
 
 
 export class RenameProvider implements vscode.RenameProvider {

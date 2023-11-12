@@ -1,5 +1,5 @@
 import * as iconv from 'iconv-lite'
-import { existsPath } from '../lib/lwfs/lwfs'
+import { existsPath } from '../lib/lwfs/lwfs.js'
 
 // https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
 export const iconvLiteSupportedEncodings = [

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import type ws from 'ws'
 
-import type {ServerResponse} from '../../../types/latex-toybox-protocol-types/index'
+import type { ServerResponse } from 'latex-toybox-protocol-types'
 
 
 export class Client {

@@ -1,5 +1,5 @@
-import * as assert from 'assert'
-import * as path from 'path'
+import * as assert from 'node:assert'
+import * as path from 'node:path'
 
 import * as vscode from 'vscode'
 
@@ -8,8 +8,8 @@ import {
     obtainLatexToybox,
     runTestWithFixture,
     sleep
-} from './utils/ciutils'
-import { AtSuggestionCompleter } from '../src/providers/atsuggestion'
+} from './utils/ciutils.js'
+import { AtSuggestionCompleter } from '../src/providers/atsuggestion.js'
 
 
 function assertCompletionItemContainsSnippet(items: vscode.CompletionItem[], prefix: string, snippet: string): void {

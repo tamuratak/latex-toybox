@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { stat } from '../../lib/lwfs/lwfs'
-import { toKey } from '../../utils/tokey'
-import { Mutex } from '../../lib/await-semaphore'
-import { isCacheLatest } from '../../utils/utils'
+import { stat } from '../../lib/lwfs/lwfs.js'
+import { toKey } from '../../utils/tokey.js'
+import { Mutex } from '../../lib/await-semaphore/index.js'
+import { isCacheLatest } from '../../utils/utils.js'
 
 
 interface AstEntry<Ast> {

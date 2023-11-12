@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import * as path from 'path'
-import { getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated } from '../../utils/ciutils'
-import assert from 'assert'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+import { getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated } from '../../utils/ciutils.js'
+import assert from 'node:assert'
 
-import { ChkTeX } from '../../../src/components/linterlib/chktex'
-import { LaCheck } from '../../../src/components/linterlib/lacheck'
+import { ChkTeX } from '../../../src/components/linterlib/chktex.js'
+import { LaCheck } from '../../../src/components/linterlib/lacheck.js'
 
 suite('linter test suite', () => {
 

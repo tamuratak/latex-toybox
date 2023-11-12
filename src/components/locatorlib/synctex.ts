@@ -1,12 +1,12 @@
-import * as path from 'path'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
-import * as zlib from 'zlib'
-import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../../lib/synctexjs/synctexjs'
-import {ConvertFilenameEncodingIterator} from '../../utils/convertfilename'
-import {isSameRealPath} from '../../utils/pathnormalize'
-import { existsPath, readFileAsUint8Array } from '../../lib/lwfs/lwfs'
-import type { ILogger } from '../../interfaces'
-import { inspectCompact } from '../../utils/inspect'
+import * as zlib from 'node:zlib'
+import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../../lib/synctexjs/synctexjs.js'
+import { ConvertFilenameEncodingIterator } from '../../utils/convertfilename.js'
+import { isSameRealPath } from '../../utils/pathnormalize.js'
+import { existsPath, readFileAsUint8Array } from '../../lib/lwfs/lwfs.js'
+import type { ILogger } from '../../interfaces.js'
+import { inspectCompact } from '../../utils/inspect.js'
 
 
 class Rectangle {

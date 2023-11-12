@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { ILogger } from '../interfaces'
-import { inspectCompact, inspectReadable } from '../utils/inspect'
+import { ILogger } from '../interfaces.js'
+import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 
 
 export class Logger implements ILogger {

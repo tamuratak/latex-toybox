@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
 
-import { convertFilenameEncoding } from '../../utils/convertfilename'
-import { LatexLogParser } from './latexlogparser'
-import { BibLogParser } from './biblogparser'
-import { existsPath } from '../../lib/lwfs/lwfs'
-import { BuildStepLog, CompilerLog } from '../compilerlog'
-import { getDirtyContent } from '../../utils/getdirtycontent'
-import type { Completer } from '../../providers/completion'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
+import { convertFilenameEncoding } from '../../utils/convertfilename.js'
+import { LatexLogParser } from './latexlogparser.js'
+import { BibLogParser } from './biblogparser.js'
+import { existsPath } from '../../lib/lwfs/lwfs.js'
+import { BuildStepLog, CompilerLog } from '../compilerlog.js'
+import { getDirtyContent } from '../../utils/getdirtycontent.js'
+import type { Completer } from '../../providers/completion.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
 
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.

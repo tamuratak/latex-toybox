@@ -1,11 +1,11 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import { MutexWithSizedQueue } from '../../utils/mutexwithsizedqueue'
-import { toVscodeRange } from '../../utils/utensils'
-import type { EventBus } from '../eventbus'
-import type { Manager } from '../manager'
-import type { LatexAstManager } from '../astmanager'
-import type { ReferenceStore } from '../referencestore'
+import { MutexWithSizedQueue } from '../../utils/mutexwithsizedqueue.js'
+import { toVscodeRange } from '../../utils/utensils.js'
+import type { EventBus } from '../eventbus.js'
+import type { Manager } from '../manager.js'
+import type { LatexAstManager } from '../astmanager.js'
+import type { ReferenceStore } from '../referencestore.js'
 
 
 export class ReferenceUpdater {

@@ -1,8 +1,8 @@
-import * as path from 'path'
+import * as path from 'node:path'
 
-import { existsPath, readFilePathGracefully } from '../../lib/lwfs/lwfs'
-import { InputFileRegExp } from '../../utils/inputfilepath'
-import { stripCommentsAndVerbatim } from '../../utils/strip'
+import { existsPath, readFilePathGracefully } from '../../lib/lwfs/lwfs.js'
+import { InputFileRegExp } from '../../utils/inputfilepath.js'
+import { stripCommentsAndVerbatim } from '../../utils/strip.js'
 
 /**
  * Return the list of files (recursively) included in `file`

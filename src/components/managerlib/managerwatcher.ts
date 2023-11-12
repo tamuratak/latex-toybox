@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { toKey } from '../../utils/tokey'
-import type { LwFileWatcher } from './lwfilewatcher'
-import type { Logger } from '../logger'
-import { inspectReadable } from '../../utils/inspect'
+import { toKey } from '../../utils/tokey.js'
+import type { LwFileWatcher } from './lwfilewatcher.js'
+import type { Logger } from '../logger.js'
+import { inspectReadable } from '../../utils/inspect.js'
 
 
 export class ManagerWatcher {

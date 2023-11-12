@@ -1,21 +1,21 @@
 import * as vscode from 'vscode'
 
-import { MathJaxPool } from './mathpreviewlib/mathjaxpool'
-import * as utils from '../utils/svg'
-import type { LabelDefinitionEntry } from '../providers/completionlib/labeldefinition'
-import { getCurrentThemeLightness } from '../utils/theme'
+import { MathJaxPool } from './mathpreviewlib/mathjaxpool.js'
+import * as utils from '../utils/svg.js'
+import type { LabelDefinitionEntry } from '../providers/completionlib/labeldefinition.js'
+import { getCurrentThemeLightness } from '../utils/theme.js'
 
-import { CursorRenderer } from './mathpreviewlib/cursorrenderer'
-import { type ITextDocumentLike, TextDocumentLike } from './mathpreviewlib/textdocumentlike'
-import { NewCommandFinder } from './mathpreviewlib/newcommandfinder'
-import { TexMathEnv, TeXMathEnvFinder } from './mathpreviewlib/texmathenvfinder'
-import { HoverPreviewOnRefProvider } from './mathpreviewlib/hoverpreviewonref'
-import { MathPreviewUtils } from './mathpreviewlib/mathpreviewutils'
-import { Logger } from './logger'
-import { Manager } from './manager'
-import { UtensilsParser } from './utensilsparser'
+import { CursorRenderer } from './mathpreviewlib/cursorrenderer.js'
+import { type ITextDocumentLike, TextDocumentLike } from './mathpreviewlib/textdocumentlike.js'
+import { NewCommandFinder } from './mathpreviewlib/newcommandfinder.js'
+import { TexMathEnv, TeXMathEnvFinder } from './mathpreviewlib/texmathenvfinder.js'
+import { HoverPreviewOnRefProvider } from './mathpreviewlib/hoverpreviewonref.js'
+import { MathPreviewUtils } from './mathpreviewlib/mathpreviewutils.js'
+import { Logger } from './logger.js'
+import { Manager } from './manager.js'
+import { UtensilsParser } from './utensilsparser.js'
 
-export type { TexMathEnv } from './mathpreviewlib/texmathenvfinder'
+export type { TexMathEnv } from './mathpreviewlib/texmathenvfinder.js'
 
 
 export class MathPreview {

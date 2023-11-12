@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import type { LogEntry } from './core'
-import type { CompilerLog } from '../compilerlog'
-import type { Completer } from '../../providers/completion'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
-import { inspectReadable } from '../../utils/inspect'
+import type { LogEntry } from './core.js'
+import type { CompilerLog } from '../compilerlog.js'
+import type { Completer } from '../../providers/completion.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
+import { inspectReadable } from '../../utils/inspect.js'
 
 const multiLineWarning = /^Warning--(.+)\n--line (\d+) of file (.+)$/gm
 const singleLineWarning = /^Warning--(.+) in ([^\s]+)\s*$/gm

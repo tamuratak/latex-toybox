@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 
-import type {IProvider} from './interface'
-import type { EventBus } from '../../components/eventbus'
-import type { CompletionUpdater } from '../../components/completionupdater'
-import type { Manager } from '../../components/manager'
-import type { AuxManager } from '../../components/auxmanager'
-import { ReferenceKind } from './completionkind'
+import type {IProvider} from './interface.js'
+import type { EventBus } from '../../components/eventbus.js'
+import type { CompletionUpdater } from '../../components/completionupdater.js'
+import type { Manager } from '../../components/manager.js'
+import type { AuxManager } from '../../components/auxmanager.js'
+import { ReferenceKind } from './completionkind.js'
 
 
 export interface LabelDefinitionElement {

@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
-import {tokenizer, onAPackage} from '../utils/tokenizer'
-import type { Completer } from './completion'
-import type { GraphicsPreview } from '../components/graphicspreview'
-import type { MathPreview } from '../components/mathpreview'
-import type { Manager } from '../components/manager'
+import { tokenizer, onAPackage } from '../utils/tokenizer.js'
+import type { Completer } from './completion.js'
+import type { GraphicsPreview } from '../components/graphicspreview.js'
+import type { MathPreview } from '../components/mathpreview.js'
+import type { Manager } from '../components/manager.js'
 
 
 export class HoverProvider implements vscode.HoverProvider {

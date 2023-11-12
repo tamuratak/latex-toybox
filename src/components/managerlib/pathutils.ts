@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 import * as cs from 'cross-spawn'
-import * as utils from '../../utils/utils'
+import * as utils from '../../utils/utils.js'
 
-import { existsPath } from '../../lib/lwfs/lwfs'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
+import { existsPath } from '../../lib/lwfs/lwfs.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
 
 
 export class PathUtils {

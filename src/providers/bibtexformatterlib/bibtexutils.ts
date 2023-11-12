@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import {bibtexParser} from 'latex-utensils'
 
-import type { Logger } from '../../components/logger'
+import type { Logger } from '../../components/logger.js'
 
 
 export declare type BibtexEntry = bibtexParser.Entry | bibtexParser.StringEntry

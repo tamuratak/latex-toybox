@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import type { LogEntry } from './core'
-import type { CompilerLog } from '../compilerlog'
-import type { Manager } from '../manager'
-import type { Logger } from '../logger'
-import { inspectReadable } from '../../utils/inspect'
+import type { LogEntry } from './core.js'
+import type { CompilerLog } from '../compilerlog.js'
+import type { Manager } from '../manager.js'
+import type { Logger } from '../logger.js'
+import { inspectReadable } from '../../utils/inspect.js'
 
 const latexError = /^(?:(.*):(\d+):|!)(?: (.+) Error:)? (.+?)$/
 const latexBox = /^((?:Over|Under)full \\[vh]box \([^)]*\)) in paragraph at lines (\d+)--(\d+)$/

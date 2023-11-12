@@ -1,4 +1,4 @@
-import { CmdEnvSuggestion } from '../command'
+import { CmdEnvSuggestion } from '../command.js'
 
 
 /**

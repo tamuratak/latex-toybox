@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { readFilePathGracefully } from '../lib/lwfs/lwfs'
+import { readFilePathGracefully } from '../lib/lwfs/lwfs.js'
 
 
 /**

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 
 import * as vscode from 'vscode'
-import * as path from 'path'
-import {getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated} from '../../utils/ciutils'
-import assert from 'assert'
+import * as path from 'node:path'
+import {getFixtureDir, runUnitTestWithFixture, waitLatexToyboxActivated} from '../../utils/ciutils.js'
+import assert from 'node:assert'
 
-import { SectionNodeProvider } from '../../../src/components/structurelib/sectionnodeprovider'
+import { SectionNodeProvider } from '../../../src/components/structurelib/sectionnodeprovider.js'
 
 async function resetConfig() {
     const config = vscode.workspace.getConfiguration()

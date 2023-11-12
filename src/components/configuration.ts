@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { Logger } from './logger'
-import { inspectReadable } from '../utils/inspect'
+import { Logger } from './logger.js'
+import { inspectReadable } from '../utils/inspect.js'
 
 
 export class Configuration {

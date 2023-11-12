@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { findNodeContactedWithPosition, toLuPos } from '../../utils/utensils'
-import { IContexAwareProvider } from './interface'
-import { toVscodePosition } from '../../utils/utensils'
-import { toVscodeRange } from '../../utils/utensils'
-import { isPositionAtClosingBrace } from './utils/position'
-import { ContextAwareKind } from './completionkind'
+import { findNodeContactedWithPosition, toLuPos } from '../../utils/utensils.js'
+import { IContexAwareProvider } from './interface.js'
+import { toVscodePosition } from '../../utils/utensils.js'
+import { toVscodeRange } from '../../utils/utensils.js'
+import { isPositionAtClosingBrace } from './utils/position.js'
+import { ContextAwareKind } from './completionkind.js'
 
 
 export class CommandRemover implements IContexAwareProvider {

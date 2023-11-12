@@ -1,12 +1,12 @@
 import * as vscode from 'vscode'
 import {bibtexParser} from 'latex-utensils'
 
-import {BibtexUtils} from './bibtexformatterlib/bibtexutils'
-import type {BibtexEntry} from './bibtexformatterlib/bibtexutils'
-import { toVscodeRange } from '../utils/utensils'
-import type { BibtexAstManager } from '../components/astmanager'
-import type { Logger } from '../components/logger'
-import type { LwStatusBarItem } from '../components/statusbaritem'
+import {BibtexUtils} from './bibtexformatterlib/bibtexutils.js'
+import type {BibtexEntry} from './bibtexformatterlib/bibtexutils.js'
+import { toVscodeRange } from '../utils/utensils.js'
+import type { BibtexAstManager } from '../components/astmanager.js'
+import type { Logger } from '../components/logger.js'
+import type { LwStatusBarItem } from '../components/statusbaritem.js'
 
 
 export class BibtexFormatter {

@@ -1,10 +1,10 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import { TexMathEnv } from './texmathenvfinder'
+import { TexMathEnv } from './texmathenvfinder.js'
 
-import type { ITextDocumentLike } from './textdocumentlike'
-import { convertPositionToOffset, findPrevNextNode, isSubOrSuper, toLuPos } from '../../utils/utensils'
-import type { UtensilsParser } from '../utensilsparser'
+import type { ITextDocumentLike } from './textdocumentlike.js'
+import { convertPositionToOffset, findPrevNextNode, isSubOrSuper, toLuPos } from '../../utils/utensils.js'
+import type { UtensilsParser } from '../utensilsparser.js'
 
 
 // Test whether cursor is in tex command strings

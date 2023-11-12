@@ -1,13 +1,13 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import type { ILinter } from '../linter'
-import { LinterUtil } from './linterutil'
-import { convertFilenameEncoding } from '../../utils/convertfilename'
-import { existsPath } from '../../lib/lwfs/lwfs'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
-import { inspectReadable } from '../../utils/inspect'
+import type { ILinter } from '../linter.js'
+import { LinterUtil } from './linterutil.js'
+import { convertFilenameEncoding } from '../../utils/convertfilename.js'
+import { existsPath } from '../../lib/lwfs/lwfs.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
+import { inspectReadable } from '../../utils/inspect.js'
 
 
 interface LaCheckLogEntry {

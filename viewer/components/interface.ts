@@ -1,6 +1,6 @@
-import type {ClientRequest, PanelRequest, PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
-import type {SyncTex} from './synctex.js'
-import type {ViewerHistory} from './viewerhistory.js'
+import type { ClientRequest, PanelRequest, PdfViewerState } from 'latex-toybox-protocol-types'
+import type { SyncTex } from './synctex.js'
+import type { ViewerHistory } from './viewerhistory.js'
 import type { ViewerLoading } from './viewerloading.js'
 
 

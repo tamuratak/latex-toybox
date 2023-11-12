@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import { findFileInDirs } from './utils'
+import { findFileInDirs } from './utils.js'
 
 
 interface MatchPath {

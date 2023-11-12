@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import {tokenizer} from '../utils/tokenizer'
-import * as utils from '../utils/utils'
-import { existsPath, isVirtualUri } from '../lib/lwfs/lwfs'
-import type { Manager } from '../components/manager'
-import type { Completer } from './completion'
+import {tokenizer} from '../utils/tokenizer.js'
+import * as utils from '../utils/utils.js'
+import { existsPath, isVirtualUri } from '../lib/lwfs/lwfs.js'
+import type { Manager } from '../components/manager.js'
+import type { Completer } from './completion.js'
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
 

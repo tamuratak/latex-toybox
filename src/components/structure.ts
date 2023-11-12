@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
-import { SectionNodeProvider } from './structurelib/sectionnodeprovider'
-import { hasTexId } from '../utils/hastexid'
-import { Logger } from './logger'
-import { EventBus } from './eventbus'
+import { SectionNodeProvider } from './structurelib/sectionnodeprovider.js'
+import { hasTexId } from '../utils/hastexid.js'
+import { Logger } from './logger.js'
+import { EventBus } from './eventbus.js'
 
 
 export enum SectionKind {

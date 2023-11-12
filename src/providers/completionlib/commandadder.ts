@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { IContexAwareProvider } from './interface'
-import { findNodeContactedWithPosition, toVscodePosition } from '../../utils/utensils'
-import { Command } from './command'
-import { ContextAwareKind } from './completionkind'
+import { IContexAwareProvider } from './interface.js'
+import { findNodeContactedWithPosition, toVscodePosition } from '../../utils/utensils.js'
+import { Command } from './command.js'
+import { ContextAwareKind } from './completionkind.js'
 
 export class CommandAdder implements IContexAwareProvider {
     readonly needsAst = true

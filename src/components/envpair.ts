@@ -1,7 +1,7 @@
 import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
-import { toLuPos, toVscodePosition } from '../utils/utensils'
-import type { LatexAstManager } from './astmanager'
+import { toLuPos, toVscodePosition } from '../utils/utensils.js'
+import type { LatexAstManager } from './astmanager.js'
 
 
 export class EnvPair {

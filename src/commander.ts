@@ -1,16 +1,16 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import {TeXDoc} from './components/texdoc'
-import { hasTexId } from './utils/hastexid'
-import type { Builder } from './components/builder'
-import type { Viewer } from './components/viewer'
-import type { Locator } from './components/locator'
-import type { Completer } from './providers/completion'
-import type { CompilerLog } from './components/compilerlog'
-import type { Section } from './components/section'
-import type { MathPreviewPanel } from './components/mathpreviewpanel'
-import type { EnvPair } from './components/envpair'
+import { TeXDoc } from './components/texdoc.js'
+import { hasTexId } from './utils/hastexid.js'
+import type { Builder } from './components/builder.js'
+import type { Viewer } from './components/viewer.js'
+import type { Locator } from './components/locator.js'
+import type { Completer } from './providers/completion.js'
+import type { CompilerLog } from './components/compilerlog.js'
+import type { Section } from './components/section.js'
+import type { MathPreviewPanel } from './components/mathpreviewpanel.js'
+import type { EnvPair } from './components/envpair.js'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {

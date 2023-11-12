@@ -1,9 +1,9 @@
 import {latexParser} from 'latex-utensils'
 
-import { CommandNameDuplicationDetector } from '../../providers/completionlib/commandlib/commandlib'
-import { CommandFinder } from './commandupdaterlib/commandfinder'
-import type { Completer } from '../../providers/completion'
-import type { Manager } from '../manager'
+import { CommandNameDuplicationDetector } from '../../providers/completionlib/commandlib/commandlib.js'
+import { CommandFinder } from './commandupdaterlib/commandfinder.js'
+import type { Completer } from '../../providers/completion.js'
+import type { Manager } from '../manager.js'
 
 
 export class CommandUpdater {

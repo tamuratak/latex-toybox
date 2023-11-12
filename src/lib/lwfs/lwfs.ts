@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import { hasTexId } from '../../utils/hastexid'
+import * as fs from 'node:fs'
+import { hasTexId } from '../../utils/hastexid.js'
 
 
 export function isLocalUri(uri: vscode.Uri): boolean {

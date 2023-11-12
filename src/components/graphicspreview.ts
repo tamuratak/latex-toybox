@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
-import { existsPath } from '../lib/lwfs/lwfs'
-import type { Completer } from '../providers/completion'
-import type { Logger } from './logger'
-import type { Manager } from './manager'
-import type { SnippetView } from './snippetview'
+import * as path from 'node:path'
+import { existsPath } from '../lib/lwfs/lwfs.js'
+import type { Completer } from '../providers/completion.js'
+import type { Logger } from './logger.js'
+import type { Manager } from './manager.js'
+import type { SnippetView } from './snippetview.js'
 
 
 export class GraphicsPreview {

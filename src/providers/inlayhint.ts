@@ -2,11 +2,11 @@ import { latexParser } from 'latex-utensils'
 import * as vscode from 'vscode'
 import type { Event, InlayHintsProvider, Range, TextDocument } from 'vscode'
 import { EventEmitter, InlayHint } from 'vscode'
-import { toVscodePosition, toVscodeRange } from '../utils/utensils'
-import type { AuxManager } from '../components/auxmanager'
-import type { LatexAstManager } from '../components/astmanager'
-import type { Manager } from '../components/manager'
-import type { EventBus } from '../components/eventbus'
+import { toVscodePosition, toVscodeRange } from '../utils/utensils.js'
+import type { AuxManager } from '../components/auxmanager.js'
+import type { LatexAstManager } from '../components/astmanager.js'
+import type { Manager } from '../components/manager.js'
+import type { EventBus } from '../components/eventbus.js'
 
 
 export class LtInlayHintsProvider implements InlayHintsProvider {

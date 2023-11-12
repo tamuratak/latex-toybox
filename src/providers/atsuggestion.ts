@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
-import { AtSuggestion } from './atsuggestionlib/atsuggestion'
-import { escapeRegExp } from '../utils/utils'
+import { AtSuggestion } from './atsuggestionlib/atsuggestion.js'
+import { escapeRegExp } from '../utils/utils.js'
 
 export class AtSuggestionCompleter implements vscode.CompletionItemProvider {
     private readonly atSuggestion: AtSuggestion

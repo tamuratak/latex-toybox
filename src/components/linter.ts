@@ -1,12 +1,12 @@
 import * as vscode from 'vscode'
 
-import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue'
-import { ChkTeX } from './linterlib/chktex'
-import { LaCheck } from './linterlib/lacheck'
-import { isLocalLatexDocument } from '../lib/lwfs/lwfs'
-import type { EventBus } from './eventbus'
-import type { Logger } from './logger'
-import type { Manager } from './manager'
+import { MutexWithSizedQueue } from '../utils/mutexwithsizedqueue.js'
+import { ChkTeX } from './linterlib/chktex.js'
+import { LaCheck } from './linterlib/lacheck.js'
+import { isLocalLatexDocument } from '../lib/lwfs/lwfs.js'
+import type { EventBus } from './eventbus.js'
+import type { Logger } from './logger.js'
+import type { Manager } from './manager.js'
 
 export interface ILinter {
     readonly linterDiagnostics: vscode.DiagnosticCollection,

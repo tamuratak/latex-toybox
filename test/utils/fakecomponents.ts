@@ -1,4 +1,4 @@
-import { ILogger } from '../../src/interfaces'
+import { ILogger } from '../../src/interfaces.js'
 
 export class FakeLogger implements ILogger {
     info() {}

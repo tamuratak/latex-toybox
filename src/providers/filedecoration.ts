@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import type { Manager } from '../components/manager'
-import type { EventBus } from '../components/eventbus'
+import type { Manager } from '../components/manager.js'
+import type { EventBus } from '../components/eventbus.js'
 
 
 export class FileDecorationProvider implements vscode.FileDecorationProvider {

@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import * as micromatch from 'micromatch'
 
-import type { IProvider } from './interface'
-import { stripCommentsAndVerbatim } from '../../utils/strip'
-import type { Manager } from '../../components/manager'
-import type { Logger } from '../../components/logger'
-import { statPath } from '../../lib/lwfs/lwfs'
-import { FileKind, FolderKind } from './completionkind'
+import type { IProvider } from './interface.js'
+import { stripCommentsAndVerbatim } from '../../utils/strip.js'
+import type { Manager } from '../../components/manager.js'
+import type { Logger } from '../../components/logger.js'
+import { statPath } from '../../lib/lwfs/lwfs.js'
+import { FileKind, FolderKind } from './completionkind.js'
 
 
 const ignoreFiles = ['**/.vscode', '**/.vscodeignore', '**/.gitignore']

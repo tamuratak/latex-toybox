@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
-import type {IProvider, ILwCompletionItem} from './interface'
-import type { Manager } from '../../components/manager'
+import type {IProvider, ILwCompletionItem} from './interface.js'
+import type { Manager } from '../../components/manager.js'
 
 
 export enum GlossaryType {

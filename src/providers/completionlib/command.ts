@@ -1,16 +1,16 @@
 import * as vscode from 'vscode'
 
-import {Environment, EnvSnippetType} from './environment'
-import type {IProvider, ILwCompletionItem, ICommand} from './interface'
-import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib'
-import * as lwfs from '../../lib/lwfs/lwfs'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
-import type { CompletionUpdater } from '../../components/completionupdater'
-import type { Completer } from '../completion'
-import type { Logger } from '../../components/logger'
-import type { Manager } from '../../components/manager'
-import { CommandKind } from './completionkind'
-import { inspectCompact } from '../../utils/inspect'
+import {Environment, EnvSnippetType} from './environment.js'
+import type {IProvider, ILwCompletionItem, ICommand} from './interface.js'
+import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded} from './commandlib/commandlib.js'
+import * as lwfs from '../../lib/lwfs/lwfs.js'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey.js'
+import type { CompletionUpdater } from '../../components/completionupdater.js'
+import type { Completer } from '../completion.js'
+import type { Logger } from '../../components/logger.js'
+import type { Manager } from '../../components/manager.js'
+import { CommandKind } from './completionkind.js'
+import { inspectCompact } from '../../utils/inspect.js'
 
 
 type DataUnimathSymbolsJsonType = typeof import('../../../data/unimathsymbols.json')

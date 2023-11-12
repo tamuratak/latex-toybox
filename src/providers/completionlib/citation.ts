@@ -1,14 +1,14 @@
 import * as vscode from 'vscode'
 import { bibtexParser } from 'latex-utensils'
-import { trimMultiLineString } from '../../utils/strip'
-import type { ILwCompletionItem } from './interface'
+import { trimMultiLineString } from '../../utils/strip.js'
+import type { ILwCompletionItem } from './interface.js'
 
-import type { IProvider } from './interface'
-import { toVscodePosition } from '../../utils/utensils'
-import type { BibtexAstManager } from '../../components/astmanager'
-import type { Logger } from '../../components/logger'
-import type { Manager } from '../../components/manager'
-import { ReferenceKind } from './completionkind'
+import type { IProvider } from './interface.js'
+import { toVscodePosition } from '../../utils/utensils.js'
+import type { BibtexAstManager } from '../../components/astmanager.js'
+import type { Logger } from '../../components/logger.js'
+import type { Manager } from '../../components/manager.js'
+import { ReferenceKind } from './completionkind.js'
 
 
 export class Fields extends Map<string, string> {

@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 
-import type {IProvider} from './interface'
-import { readFilePath } from '../../lib/lwfs/lwfs'
-import { PackageClassNameKind } from './completionkind'
+import type {IProvider} from './interface.js'
+import { readFilePath } from '../../lib/lwfs/lwfs.js'
+import { PackageClassNameKind } from './completionkind.js'
 
 
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')

@@ -1,7 +1,7 @@
-import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
-import {EOL} from 'os'
-import type { Logger } from '../logger'
-import { ExternalPromise } from '../../utils/externalpromise'
+import { ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
+import { EOL } from 'node:os'
+import type { Logger } from '../logger.js'
+import { ExternalPromise } from '../../utils/externalpromise.js'
 
 
 export class LinterUtil {

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { getNonce } from './getnonce'
+import { getNonce } from './getnonce.js'
 
 export function replaceWebviewPlaceholders(content: string, extensionRootUri: vscode.Uri, webview: vscode.Webview): string {
     const resourcesFolderUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionRootUri, 'resources'))

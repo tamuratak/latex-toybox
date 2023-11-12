@@ -1,16 +1,16 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import type {PanelRequest, PdfViewerState} from '../../../types/latex-toybox-protocol-types/index'
-import {escapeHtml, sleep} from '../../utils/utils'
-import type {PdfViewerManagerService} from './pdfviewermanager'
-import { getNonce } from '../../utils/getnonce'
-import * as lwfs from '../../lib/lwfs/lwfs'
-import { encodePathWithPrefix } from '../../utils/encodepdffilepath'
-import { EventBus } from '../eventbus'
-import { Logger } from '../logger'
-import { Server } from '../server'
-import { inspectCompact } from '../../utils/inspect'
+import type { PanelRequest, PdfViewerState } from 'latex-toybox-protocol-types'
+import { escapeHtml, sleep } from '../../utils/utils.js'
+import type { PdfViewerManagerService } from './pdfviewermanager.js'
+import { getNonce } from '../../utils/getnonce.js'
+import * as lwfs from '../../lib/lwfs/lwfs.js'
+import { encodePathWithPrefix } from '../../utils/encodepdffilepath.js'
+import { EventBus } from '../eventbus.js'
+import { Logger } from '../logger.js'
+import { Server } from '../server.js'
+import { inspectCompact } from '../../utils/inspect.js'
 
 
 export class PdfViewerPanel {

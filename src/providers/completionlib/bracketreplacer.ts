@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../utils/utensils'
-import { IContexAwareProvider } from './interface'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
-import { getPrevChar } from './utils/position'
-import { ContextAwareKind } from './completionkind'
+import { findNodeContactedWithPosition, toLuPos, toVscodePosition } from '../../utils/utensils.js'
+import { IContexAwareProvider } from './interface.js'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey.js'
+import { getPrevChar } from './utils/position.js'
+import { ContextAwareKind } from './completionkind.js'
 
 
 export class BracketReplacer implements IContexAwareProvider {

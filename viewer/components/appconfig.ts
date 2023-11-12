@@ -1,4 +1,4 @@
-import type { PdfViewerParams } from '../../types/latex-toybox-protocol-types/index'
+import type { PdfViewerParams } from 'latex-toybox-protocol-types'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isPrefersColorSchemeDark } from '../utils/utils.js'
