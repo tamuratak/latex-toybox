@@ -1,6 +1,6 @@
 --- ../tmp/pdfjs-4.0/web/viewer.html	2023-11-05 18:06:08
-+++ viewer/viewer.html	2023-11-06 15:06:17
-@@ -25,18 +25,25 @@
++++ viewer/viewer.html	2023-11-23 09:05:36
+@@ -25,15 +25,22 @@
      <meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
      <meta name="google" content="notranslate">
@@ -27,27 +27,8 @@
 +<script src="/out/viewer/latextoybox.js" type="module"></script>
    </head>
  
--  <body tabindex="1">
-+  <body tabindex="1" class="loadingInProgress">
-     <div id="outerContainer">
- 
-       <div id="sidebarContainer">
-@@ -237,6 +244,14 @@
-               </button>
-             </div>
- 
-+            <div class="horizontalToolbarSeparator spreadModeButtons"></div>
-+
-+            <button id="synctexOffButton" class="secondaryToolbarButton" title="Disable forward SyncTeX" tabindex="70">
-+              <input id="synctexOff" type="checkbox"> Stop SyncTeX
-+            </button>
-+            <button id="autoReloadOffButton" class="secondaryToolbarButton" title="Disable auto reload" tabindex="71">
-+               <input id="autoReloadOff" type="checkbox"> Stop Auto Reload
-+            </button>
-             <div class="horizontalToolbarSeparator"></div>
- 
-             <button id="documentProperties" class="secondaryToolbarButton" title="Document Properties…" tabindex="69" data-l10n-id="pdfjs-document-properties-button" aria-controls="documentPropertiesDialog">
-@@ -245,12 +260,19 @@
+   <body tabindex="1">
+@@ -245,7 +252,7 @@
            </div>
          </div>  <!-- secondaryToolbar -->
  
@@ -56,41 +37,3 @@
            <div id="toolbarContainer">
              <div id="toolbarViewer">
                <div id="toolbarViewerLeft">
-                 <button id="sidebarToggle" class="toolbarButton" title="Toggle Sidebar" tabindex="11" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-controls="sidebarContainer">
-                   <span data-l10n-id="pdfjs-toggle-sidebar-button-label">Toggle Sidebar</span>
-+                </button>
-+                <!-- History back button, useful in the embedded viewer -->
-+                <button class="toolbarButton findPrevious" title="Back" id="historyBack">
-+                  <span>Back</span>
-+                </button>
-+                <button class="toolbarButton findNext" title="Forward" id="historyForward">
-+                  <span>Forward</span>
-                 </button>
-                 <div class="toolbarButtonSpacer"></div>
-                 <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="pdfjs-findbar-button" aria-expanded="false" aria-controls="findbar">
-@@ -326,8 +348,17 @@
-                     <option title="" value="2" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 200 }'>200%</option>
-                     <option title="" value="3" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 300 }'>300%</option>
-                     <option title="" value="4" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 400 }'>400%</option>
-+                    <option id="trimOption" title="" disabled="disabled" hidden="true"> Trimming </option>
-                   </select>
-                 </span>
-+                <span id="trimSelectContainer" class="dropdownToolbarButton">
-+                  <select id="trimSelect" title="Trim" tabindex="23" >
-+                    <option title="" value="0.0" selected="selected" >No trim</option>
-+                    <option title="" value="0.05" >Trim 5%</option>
-+                    <option title="" value="0.10" >Trim 10%</option>
-+                    <option title="" value="0.15" >Trim 15%</option>
-+                  </select>
-+                </span>
-               </div>
-             </div>
-             <div id="loadingBar">
-@@ -341,6 +372,7 @@
- 
-         <div id="viewerContainer" tabindex="0">
-           <div id="viewer" class="pdfViewer"></div>
-+          <div id="synctex-indicator"></div>
-         </div>
-       </div> <!-- mainContainer -->
- 
