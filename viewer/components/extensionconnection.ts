@@ -1,4 +1,4 @@
-import type {ClientRequest, ServerResponse} from '../../types/latex-toybox-protocol-types/index'
+import type { ClientRequest, ServerResponse } from 'latex-toybox-protocol-types'
 import { isEmbedded } from '../utils/utils.js'
 import type { ILatexToyboxPdfViewer } from './interface.js'
 

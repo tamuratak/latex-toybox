@@ -1,9 +1,9 @@
-import * as path from 'path'
+import * as path from 'node:path'
 
-import { readFilePath, statPath } from '../lib/lwfs/lwfs'
-import type { EventBus } from './eventbus'
-import type { Manager } from './manager'
-import { isCacheLatest } from '../utils/utils'
+import { readFilePath, statPath } from '../lib/lwfs/lwfs.js'
+import type { EventBus } from './eventbus.js'
+import type { Manager } from './manager.js'
+import { isCacheLatest } from '../utils/utils.js'
 
 
 interface AuxStore {

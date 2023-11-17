@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
-import * as utils from '../../utils/utils'
-import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike'
-import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition'
-import { stripCommentsAndVerbatim } from '../../utils/strip'
+import * as utils from '../../utils/utils.js'
+import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike.js'
+import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition.js'
+import { stripCommentsAndVerbatim } from '../../utils/strip.js'
 
 export type TexMathEnv = {
     readonly texString: string,

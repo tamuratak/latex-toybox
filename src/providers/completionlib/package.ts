@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
-import type {IProvider} from './interface'
-import { readFilePath } from '../../lib/lwfs/lwfs'
-import { ExternalPromise } from '../../utils/externalpromise'
-import { PackageClassNameKind } from './completionkind'
+import type {IProvider} from './interface.js'
+import { readFilePath } from '../../lib/lwfs/lwfs.js'
+import { ExternalPromise } from '../../utils/externalpromise.js'
+import { PackageClassNameKind } from './completionkind.js'
 
 
 type DataPackagesJsonType = typeof import('../../../data/packagenames.json')

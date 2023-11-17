@@ -1,8 +1,8 @@
-import type {latexParser, bibtexParser} from 'latex-utensils'
-import * as path from 'path'
+import type { latexParser, bibtexParser } from 'latex-utensils'
+import * as path from 'node:path'
 import * as workerpool from 'workerpool'
-import type {Proxy} from 'workerpool'
-import type {IUtensilsParserWorker} from './utensilsparserlib/utensilsparser_worker'
+import type { Proxy } from 'workerpool'
+import type { IUtensilsParserWorker } from './utensilsparserlib/utensilsparser_worker.js'
 
 
 export class UtensilsParser {

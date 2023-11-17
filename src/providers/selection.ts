@@ -1,8 +1,8 @@
 import {latexParser} from 'latex-utensils'
 import * as vscode from 'vscode'
 
-import { LuPos, LuRange, toLuPos, toVscodeRange } from '../utils/utensils'
-import type { LatexAstManager } from '../components/astmanager'
+import { LuPos, LuRange, toLuPos, toVscodeRange } from '../utils/utensils.js'
+import type { LatexAstManager } from '../components/astmanager.js'
 
 
 export interface IContent {

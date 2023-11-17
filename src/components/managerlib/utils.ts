@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import * as os from 'os'
+import * as os from 'node:os'
 import * as micromatch from 'micromatch'
 
 

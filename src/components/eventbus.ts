@@ -1,8 +1,8 @@
 import type * as vscode from 'vscode'
-import type {PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
-import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter'
-import type { Logger } from './logger'
-import { inspectCompact } from '../utils/inspect'
+import type { PdfViewerState } from 'latex-toybox-protocol-types'
+import { AwaitableEventEmitter } from './eventbuslib/awaitableeventemitter.js'
+import type { Logger } from './logger.js'
+import { inspectCompact } from '../utils/inspect.js'
 
 export type EventName =
     'auxupdated' |

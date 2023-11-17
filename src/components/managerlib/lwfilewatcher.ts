@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
-import { toKey } from '../../utils/tokey'
+import * as path from 'node:path'
+import { toKey } from '../../utils/tokey.js'
 
 
 export class LwFileWatcher {

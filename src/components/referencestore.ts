@@ -1,5 +1,5 @@
 import type * as vscode from 'vscode'
-import { ReferenceUpdater } from './referencestorelib/referenceupdater'
+import { ReferenceUpdater } from './referencestorelib/referenceupdater.js'
 
 
 export class ReferenceStore {

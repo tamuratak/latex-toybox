@@ -1,13 +1,13 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { isNewCommand, NewCommand } from '../../utils/newcommand'
-import * as path from 'path'
+import { isNewCommand, NewCommand } from '../../utils/newcommand.js'
+import * as path from 'node:path'
 
-import { readFilePathGracefully } from '../../lib/lwfs/lwfs'
-import { getDirtyContent } from '../../utils/getdirtycontent'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
-import type { UtensilsParser } from '../utensilsparser'
+import { readFilePathGracefully } from '../../lib/lwfs/lwfs.js'
+import { getDirtyContent } from '../../utils/getdirtycontent.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
+import type { UtensilsParser } from '../utensilsparser.js'
 
 
 export class NewCommandFinder {

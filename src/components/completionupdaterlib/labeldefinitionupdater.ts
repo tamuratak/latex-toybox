@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { isNewCommand } from '../../utils/newcommand'
+import { isNewCommand } from '../../utils/newcommand.js'
 
-import type { LabelDefinitionElement } from '../../providers/completionlib/labeldefinition'
-import { toVscodeRange } from '../../utils/utensils'
-import type { Manager } from '../manager'
+import type { LabelDefinitionElement } from '../../providers/completionlib/labeldefinition.js'
+import { toVscodeRange } from '../../utils/utensils.js'
+import type { Manager } from '../manager.js'
 
 
 export class LabelDefinitionUpdater {

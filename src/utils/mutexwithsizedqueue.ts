@@ -1,4 +1,4 @@
-import { Mutex } from '../lib/await-semaphore'
+import { Mutex } from '../lib/await-semaphore/index.js'
 
 export class MutexWithSizedQueueError extends Error { }
 

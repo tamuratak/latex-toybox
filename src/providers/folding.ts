@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import type { Manager } from '../components/manager'
+import type { Manager } from '../components/manager.js'
 
 
 export class FoldingProvider implements vscode.FoldingRangeProvider {

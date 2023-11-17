@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import type { Manager } from './manager'
+import type { Manager } from './manager.js'
 
 
 export class LaTeXCommanderTreeView {

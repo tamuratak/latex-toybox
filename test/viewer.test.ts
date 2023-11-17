@@ -1,5 +1,5 @@
-import * as assert from 'assert'
-import * as path from 'path'
+import * as assert from 'node:assert'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
@@ -11,7 +11,7 @@ import {
     viewPdf,
     promisify,
     sleep
-} from './utils/ciutils'
+} from './utils/ciutils.js'
 
 suite('PDF Viewer test suite', () => {
 

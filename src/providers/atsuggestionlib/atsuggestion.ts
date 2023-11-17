@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
 
-import type { IProvider } from '../completionlib/interface'
-import { escapeRegExp } from '../../utils/utils'
-import { readFilePath } from '../../lib/lwfs/lwfs'
-import { CommandKind } from '../completionlib/completionkind'
+import type { IProvider } from '../completionlib/interface.js'
+import { escapeRegExp } from '../../utils/utils.js'
+import { readFilePath } from '../../lib/lwfs/lwfs.js'
+import { CommandKind } from '../completionlib/completionkind.js'
 
 
 export interface AtSuggestionItemEntry {

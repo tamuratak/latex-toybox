@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
-import type { StepCommand } from './builder'
-import { CompilerLogParser, LogEntry } from './compilerloglib/core'
-import type { Completer } from '../providers/completion'
-import type { Logger } from './logger'
-import type { Manager } from './manager'
+import type { StepCommand } from './builder.js'
+import { CompilerLogParser, LogEntry } from './compilerloglib/core.js'
+import type { Completer } from '../providers/completion.js'
+import type { Logger } from './logger.js'
+import type { Manager } from './manager.js'
 
 export class BuildStepLog {
     private buffer: string = ''

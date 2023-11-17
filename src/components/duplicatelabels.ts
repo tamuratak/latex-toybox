@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import type { EventBus } from './eventbus'
-import type { CompletionUpdater } from './completionupdater'
-import type { Logger } from './logger'
-import type { Manager } from './manager'
+import type { EventBus } from './eventbus.js'
+import type { CompletionUpdater } from './completionupdater.js'
+import type { Logger } from './logger.js'
+import type { Manager } from './manager.js'
 
 
 export class DuplicateLabels {

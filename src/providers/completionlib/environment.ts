@@ -1,15 +1,15 @@
 import * as vscode from 'vscode'
 
-import type {IProvider} from './interface'
-import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector} from './commandlib/commandlib'
-import {CmdEnvSuggestion, splitSignatureString} from './command'
-import * as lwfs from '../../lib/lwfs/lwfs'
-import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey'
-import type { Logger } from '../../components/logger'
-import type { Manager } from '../../components/manager'
-import type { Completer } from '../completion'
-import { EnvAsCmdKind, EnvKind } from './completionkind'
-import { inspectCompact } from '../../utils/inspect'
+import type {IProvider} from './interface.js'
+import {CommandNameDuplicationDetector, CommandSignatureDuplicationDetector} from './commandlib/commandlib.js'
+import {CmdEnvSuggestion, splitSignatureString} from './command.js'
+import * as lwfs from '../../lib/lwfs/lwfs.js'
+import { reverseCaseOfFirstCharacterAndConvertToHex } from './utils/sortkey.js'
+import type { Logger } from '../../components/logger.js'
+import type { Manager } from '../../components/manager.js'
+import type { Completer } from '../completion.js'
+import { EnvAsCmdKind, EnvKind } from './completionkind.js'
+import { inspectCompact } from '../../utils/inspect.js'
 
 
 type DataEnvsJsonType = typeof import('../../../data/environments.json')

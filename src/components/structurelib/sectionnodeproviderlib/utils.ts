@@ -1,4 +1,4 @@
-import { Section } from '../../structure'
+import { Section } from '../../structure.js'
 
 
 export function setLastLineOfEachSection(structure: Section[], lastLine: number) {

@@ -1,9 +1,9 @@
-import * as path from 'path'
-import * as process from 'process'
+import * as path from 'node:path'
+import * as process from 'node:process'
 import * as glob from 'glob'
 import * as tmpFile from 'tmp'
 import { runTests } from '@vscode/test-electron'
-import { getExtensionDevelopmentPath } from './utils/runnerutils'
+import { getExtensionDevelopmentPath } from './utils/runnerutils.js'
 
 
 async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer' | 'completion' | 'multiroot-ws' | 'unittest') {

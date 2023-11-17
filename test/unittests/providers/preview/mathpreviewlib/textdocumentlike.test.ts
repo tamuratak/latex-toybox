@@ -1,9 +1,9 @@
-import assert from 'assert'
-import * as path from 'path'
+import assert from 'node:assert'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
 
-import {runUnitTestWithFixture, getFixtureDir} from '../../../../utils/ciutils'
-import {ITextDocumentLike, TextDocumentLike} from '../../../../../src/components/mathpreviewlib/textdocumentlike'
+import {runUnitTestWithFixture, getFixtureDir} from '../../../../utils/ciutils.js'
+import {ITextDocumentLike, TextDocumentLike} from '../../../../../src/components/mathpreviewlib/textdocumentlike.js'
 
 suite('unit test suite: mathpreviewlib/textdocumentlike', () => {
 

@@ -1,4 +1,4 @@
-import { inspect } from 'util'
+import { inspect } from 'node:util'
 
 export function inspectReadable(obj: unknown): string {
     return inspect(obj, { compact: false, depth: null, breakLength: Infinity })

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
-import {readFileSync} from 'fs'
-import * as path from 'path'
+import { readFileSync } from 'node:fs'
+import * as path from 'node:path'
 
-import {replaceWebviewPlaceholders} from '../utils/webview'
-import { hasTexId } from '../utils/hastexid'
-import { Manager } from './manager'
-import { ExternalPromise } from '../utils/externalpromise'
+import { replaceWebviewPlaceholders } from '../utils/webview.js'
+import { hasTexId } from '../utils/hastexid.js'
+import { Manager } from './manager.js'
+import { ExternalPromise } from '../utils/externalpromise.js'
 
 
 type SnippetViewResult = RenderResult | {

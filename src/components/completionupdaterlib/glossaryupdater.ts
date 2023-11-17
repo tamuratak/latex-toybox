@@ -1,9 +1,9 @@
 import { latexParser } from 'latex-utensils'
 
-import { GlossarySuggestion, GlossaryType } from '../../providers/completionlib/glossary'
-import { toVscodePosition } from '../../utils/utensils'
-import { Manager } from '../manager'
-import { ReferenceKind } from '../../providers/completionlib/completionkind'
+import { GlossarySuggestion, GlossaryType } from '../../providers/completionlib/glossary.js'
+import { toVscodePosition } from '../../utils/utensils.js'
+import { Manager } from '../manager.js'
+import { ReferenceKind } from '../../providers/completionlib/completionkind.js'
 
 interface GlossaryEntry {
     readonly label: string | undefined,

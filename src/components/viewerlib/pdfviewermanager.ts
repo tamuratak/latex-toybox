@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
 import type ws from 'ws'
 
-import { toKey } from '../../utils/tokey'
-import type {Client} from './client'
-import type {PdfViewerPanel} from './pdfviewerpanel'
-import type { Manager } from '../manager'
+import { toKey } from '../../utils/tokey.js'
+import type { Client } from './client.js'
+import type { PdfViewerPanel } from './pdfviewerpanel.js'
+import type { Manager } from '../manager.js'
 
 
 export class PdfViewerManagerService {

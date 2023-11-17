@@ -1,16 +1,16 @@
-import * as http from 'http'
-import type {AddressInfo} from 'net'
+import * as http from 'node:http'
+import type { AddressInfo } from 'node:net'
 import ws from 'ws'
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
 
-import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath'
-import { readFileAsUint8Array } from '../lib/lwfs/lwfs'
-import { ExternalPromise } from '../utils/externalpromise'
-import type { Logger } from './logger'
-import type { Viewer } from './viewer'
-import { inspectCompact, inspectReadable } from '../utils/inspect'
+import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath.js'
+import { readFileAsUint8Array } from '../lib/lwfs/lwfs.js'
+import { ExternalPromise } from '../utils/externalpromise.js'
+import type { Logger } from './logger.js'
+import type { Viewer } from './viewer.js'
+import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 
 class WsServer extends ws.Server {
     private readonly validOrigin: string

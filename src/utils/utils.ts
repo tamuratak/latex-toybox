@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
+import * as path from 'node:path'
 
-import { existsPath } from '../lib/lwfs/lwfs'
+import { existsPath } from '../lib/lwfs/lwfs.js'
 
 
 export function sleep(ms: number) {

@@ -1,4 +1,4 @@
-import { Section, SectionKind } from '../../structure'
+import { Section, SectionKind } from '../../structure.js'
 
 /**
  * This function is responsible for building the hierarchy of a flat array

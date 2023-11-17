@@ -1,16 +1,16 @@
-import * as assert from 'assert'
-import * as path from 'path'
-import * as fs from 'fs'
-import {obtainLatexToybox, sleep} from './utils/ciutils'
-import {activate} from '../src/main'
+import * as assert from 'node:assert'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
+import {obtainLatexToybox, sleep} from './utils/ciutils.js'
+import {activate} from '../src/main.js'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,
     executeVscodeCommand,
     getFixtureDir, runTestWithFixture,
     waitGivenRootFile
-} from './utils/ciutils'
-import { toKey } from '../src/utils/tokey'
+} from './utils/ciutils.js'
+import { toKey } from '../src/utils/tokey.js'
 
 function getCompletionItems(extension: vscode.Extension<ReturnType<typeof activate>>, doc: vscode.TextDocument, pos: vscode.Position) {
     const token = new vscode.CancellationTokenSource().token

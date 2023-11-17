@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import type { Completer } from './completion'
-import type { ReferenceStore } from '../components/referencestore'
+import type { Completer } from './completion.js'
+import type { ReferenceStore } from '../components/referencestore.js'
 
 
 export class ReferenceProvider implements vscode.ReferenceProvider {

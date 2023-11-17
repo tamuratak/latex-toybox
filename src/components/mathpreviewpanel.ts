@@ -1,9 +1,9 @@
 import * as vscode from 'vscode'
-import * as path from 'path'
-import type {MathPreview, TexMathEnv} from './mathpreview'
-import {openWebviewPanel} from '../utils/webview'
-import { hasTexId } from '../utils/hastexid'
-import type { Logger } from './logger'
+import * as path from 'node:path'
+import type { MathPreview, TexMathEnv } from './mathpreview.js'
+import { openWebviewPanel } from '../utils/webview.js'
+import { hasTexId } from '../utils/hastexid.js'
+import type { Logger } from './logger.js'
 
 
 type UpdateEvent = {

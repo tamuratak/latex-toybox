@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 
-import {BibtexFormatConfig} from './bibtexformatterlib/bibtexutils'
-import { readFilePath } from '../lib/lwfs/lwfs'
-import { hasBibtexId } from '../utils/hastexid'
-import type { Logger } from '../components/logger'
-import type { Manager } from '../components/manager'
-import { BibtexSnippetKind } from './completionlib/completionkind'
+import {BibtexFormatConfig} from './bibtexformatterlib/bibtexutils.js'
+import { readFilePath } from '../lib/lwfs/lwfs.js'
+import { hasBibtexId } from '../utils/hastexid.js'
+import type { Logger } from '../components/logger.js'
+import type { Manager } from '../components/manager.js'
+import { BibtexSnippetKind } from './completionlib/completionkind.js'
 
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')

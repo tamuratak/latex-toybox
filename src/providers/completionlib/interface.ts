@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode'
-import { CmdEnvSuggestion } from './command'
-import type {CommandSignatureDuplicationDetector} from './commandlib/commandlib'
+import { CmdEnvSuggestion } from './command.js'
+import type {CommandSignatureDuplicationDetector} from './commandlib/commandlib.js'
 import { latexParser } from 'latex-utensils'
 
 export interface IProvider {

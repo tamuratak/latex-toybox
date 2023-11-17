@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { stripCommentsAndVerbatim } from '../utils/strip'
-import type { Logger } from './logger'
+import { stripCommentsAndVerbatim } from '../utils/strip.js'
+import type { Logger } from './logger.js'
 
 interface MatchSection {
     readonly level: string,

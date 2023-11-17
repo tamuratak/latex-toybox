@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { IContexAwareProvider } from './interface'
-import { ContextAwareKind } from './completionkind'
+import { IContexAwareProvider } from './interface.js'
+import { ContextAwareKind } from './completionkind.js'
 
 export class CommandReplacer implements IContexAwareProvider {
     readonly needsAst = false

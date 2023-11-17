@@ -1,9 +1,9 @@
-import * as assert from 'assert'
-import * as path from 'path'
-import { getFixtureDir, runUnitTestWithFixture } from '../../../utils/ciutils'
-import { FakeLogger } from '../../../utils/fakecomponents'
-import { SyncTexJs } from '../../../../src/components/locatorlib/synctex'
-import { inspect } from 'util'
+import * as assert from 'node:assert'
+import * as path from 'node:path'
+import { getFixtureDir, runUnitTestWithFixture } from '../../../utils/ciutils.js'
+import { FakeLogger } from '../../../utils/fakecomponents.js'
+import { SyncTexJs } from '../../../../src/components/locatorlib/synctex.js'
+import { inspect } from 'node:util'
 
 
 suite('unit test suite', () => {

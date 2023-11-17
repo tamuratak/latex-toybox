@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import * as utils from '../../utils/svg'
-import type { MathJaxPool } from './mathjaxpool'
-import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition'
-import type { TexMathEnv } from './texmathenvfinder'
-import type { MathPreviewUtils } from './mathpreviewutils'
-import type { Logger } from '../logger'
+import * as utils from '../../utils/svg.js'
+import type { MathJaxPool } from './mathjaxpool.js'
+import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition.js'
+import type { TexMathEnv } from './texmathenvfinder.js'
+import type { MathPreviewUtils } from './mathpreviewutils.js'
+import type { Logger } from '../logger.js'
 
 
 export class HoverPreviewOnRefProvider {

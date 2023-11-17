@@ -1,16 +1,16 @@
-import * as assert from 'assert'
-import * as fs from 'fs'
-import * as path from 'path'
+import * as assert from 'node:assert'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
-import * as os from 'os'
+import * as os from 'node:os'
 import {
     assertPdfIsGenerated,
     executeVscodeCommand,
     execCommandThenPick,
     getFixtureDir,
     runTestWithFixture
-} from './utils/ciutils'
-import {sleep} from './utils/ciutils'
+} from './utils/ciutils.js'
+import {sleep} from './utils/ciutils.js'
 
 suite('Build TeX files test suite', () => {
 

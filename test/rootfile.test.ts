@@ -1,5 +1,5 @@
-import * as assert from 'assert'
-import * as path from 'path'
+import * as assert from 'node:assert'
+import * as path from 'node:path'
 
 import * as vscode from 'vscode'
 
@@ -8,7 +8,7 @@ import {
     runTestWithFixture,
     sleep,
     obtainLatexToybox
-} from './utils/ciutils'
+} from './utils/ciutils.js'
 
 suite('RootFile test suite', () => {
 

@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { CiteSuggestion, Fields } from '../../providers/completionlib/citation'
-import type { Logger } from '../logger'
-import type { Manager } from '../manager'
-import { ReferenceKind } from '../../providers/completionlib/completionkind'
+import { CiteSuggestion, Fields } from '../../providers/completionlib/citation.js'
+import type { Logger } from '../logger.js'
+import type { Manager } from '../manager.js'
+import { ReferenceKind } from '../../providers/completionlib/completionkind.js'
 
 
 export class CitationUpdater {

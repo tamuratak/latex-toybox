@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import { toKey } from '../../utils/tokey'
-import type { LwFileWatcher } from './lwfilewatcher'
-import type { Logger } from '../logger'
-import type { Viewer } from '../viewer'
-import { sleep } from '../../utils/utils'
-import { inspectReadable } from '../../utils/inspect'
+import { toKey } from '../../utils/tokey.js'
+import type { LwFileWatcher } from './lwfilewatcher.js'
+import type { Logger } from '../logger.js'
+import type { Viewer } from '../viewer.js'
+import { sleep } from '../../utils/utils.js'
+import { inspectReadable } from '../../utils/inspect.js'
 
 
 export class PdfWatcher {

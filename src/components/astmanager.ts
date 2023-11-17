@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { readFile } from '../lib/lwfs/lwfs'
-import type { LatexAst, BibtexAst } from '../utils/utensils'
-import { AstStore } from './astmanagerlib/aststore'
-import type { UtensilsParser } from './utensilsparser'
+import { readFile } from '../lib/lwfs/lwfs.js'
+import type { LatexAst, BibtexAst } from '../utils/utensils.js'
+import { AstStore } from './astmanagerlib/aststore.js'
+import type { UtensilsParser } from './utensilsparser.js'
 
 
 /**

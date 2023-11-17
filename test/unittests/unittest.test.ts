@@ -1,10 +1,10 @@
-import * as assert from 'assert'
-import * as fs from 'fs'
-import * as path from 'path'
+import * as assert from 'node:assert'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import * as glob from 'glob'
 
-import { runUnitTestWithFixture } from '../utils/ciutils'
-import { getExtensionDevelopmentPath } from '../utils/runnerutils'
+import { runUnitTestWithFixture } from '../utils/ciutils.js'
+import { getExtensionDevelopmentPath } from '../utils/runnerutils.js'
 
 type EnvType = {
     name: string,

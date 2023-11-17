@@ -1,4 +1,4 @@
-import {latexParser, bibtexParser} from 'latex-utensils'
+import { latexParser, bibtexParser } from 'latex-utensils'
 import * as workerpool from 'workerpool'
 
 function parseLatex(s: string, options?: latexParser.ParserOptions): latexParser.LatexAst {

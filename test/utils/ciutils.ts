@@ -1,13 +1,13 @@
-import * as assert from 'assert'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as process from 'process'
+import * as assert from 'node:assert'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+import * as process from 'node:process'
 import * as vscode from 'vscode'
-import {sleep} from '../../src/utils/utils'
-import {activate} from '../../src/main'
-import type {EventName} from '../../src/components/eventbus'
-import type {PdfViewerState} from '../../types/latex-toybox-protocol-types/index'
-import { ExternalPromise } from '../../src/utils/externalpromise'
+import { sleep } from '../../src/utils/utils.js'
+import { activate } from '../../src/main.js'
+import type { EventName } from '../../src/components/eventbus.js'
+import type { PdfViewerState } from 'latex-toybox-protocol-types'
+import { ExternalPromise } from '../../src/utils/externalpromise.js'
 
 export {sleep}
 

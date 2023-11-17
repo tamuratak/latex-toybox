@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
-import { IContexAwareProvider } from './interface'
-import { toLuPos, toVscodePosition } from '../../utils/utensils'
-import { ContextAwareKind } from './completionkind'
+import { IContexAwareProvider } from './interface.js'
+import { toLuPos, toVscodePosition } from '../../utils/utensils.js'
+import { ContextAwareKind } from './completionkind.js'
 
 export class EnvCloser implements IContexAwareProvider {
     readonly needsAst = true

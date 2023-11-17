@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode'
 
-import type { Commander } from '../../commander'
+import type { Commander } from '../../commander.js'
 
 export class PdfViewerHookProvider implements vscode.CustomReadonlyEditorProvider {
 

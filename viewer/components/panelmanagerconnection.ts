@@ -1,4 +1,4 @@
-import type { PanelManagerResponse, PanelRequest, PdfViewerState } from '../../types/latex-toybox-protocol-types/index'
+import type { PanelManagerResponse, PanelRequest, PdfViewerState } from 'latex-toybox-protocol-types'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isTrustedOrigin } from '../utils/origin.js'
 import { isEmbedded, isPdfjsShortcut } from '../utils/utils.js'
