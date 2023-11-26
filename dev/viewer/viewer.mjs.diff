@@ -1,26 +1,6 @@
---- ../tmp/pdfjs-4.0/web/viewer.mjs	2023-11-05 18:06:24
-+++ viewer/viewer.mjs	2023-11-06 10:18:29
-@@ -2539,7 +2539,7 @@
-   PENDING: 3
- };
- const FIND_TIMEOUT = 250;
--const MATCH_SCROLL_OFFSET_TOP = -50;
-+const MATCH_SCROLL_OFFSET_TOP = -100;
- const MATCH_SCROLL_OFFSET_LEFT = -400;
- const CHARACTERS_TO_NORMALIZE = {
-   "\u2010": "-",
-\ No newline at end of file
-@@ -5136,7 +5136,7 @@
-       this.#dispatchEvent();
-       return;
-     }
--    this.switchView(view, true);
-+    this.switchView(view, false);
-     if (!this.isInitialEventDispatched) {
-       this.#dispatchEvent();
-     }
-\ No newline at end of file
-@@ -6948,7 +6948,7 @@
+--- ../tmp/pdfjs-4.0.269/web/viewer.mjs	2023-11-26 13:27:12
++++ viewer/viewer.mjs	2023-11-27 08:58:30
+@@ -1121,7 +1121,7 @@
        if (typeof console !== "undefined") {
          const locale = bundle.locales[0];
          const ids = Array.from(missingIds).join(", ");
@@ -30,17 +10,73 @@
      }
      if (!hasAtLeastOneBundle && typeof console !== "undefined") {
 \ No newline at end of file
-@@ -9089,7 +9089,7 @@
-     this.#annotationEditorMode = options.annotationEditorMode ?? AnnotationEditorType.NONE;
+@@ -2534,7 +2534,7 @@
+         title = url;
+       }
+     }
+-    this.setTitle(title);
++    // this.setTitle(title);
+   },
+   setTitle(title = this._title) {
+     this._title = title;
+\ No newline at end of file
+@@ -4974,11 +4974,11 @@
+ const GenericCom = {};
+ class GenericPreferences extends _preferences_js__WEBPACK_IMPORTED_MODULE_2__.BasePreferences {
+   async _writeToStorage(prefObj) {
+-    localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
++    // localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
+   }
+   async _readFromStorage(prefObj) {
+     return {
+-      prefs: JSON.parse(localStorage.getItem("pdfjs.preferences"))
++      prefs: undefined // JSON.parse(localStorage.getItem("pdfjs.preferences"))
+     };
+   }
+ }
+\ No newline at end of file
+@@ -6138,7 +6138,7 @@
+   PENDING: 3
+ };
+ const FIND_TIMEOUT = 250;
+-const MATCH_SCROLL_OFFSET_TOP = -50;
++const MATCH_SCROLL_OFFSET_TOP = -100;
+ const MATCH_SCROLL_OFFSET_LEFT = -400;
+ const CHARACTERS_TO_NORMALIZE = {
+   "\u2010": "-",
+\ No newline at end of file
+@@ -9604,6 +9604,9 @@
+ }
+ window.addEventListener("keydown", function (event) {
+   if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
++    if (window.parent !== window) {
++      return;
++    }
+     window.print();
+     event.preventDefault();
+     event.stopImmediatePropagation();
+\ No newline at end of file
+@@ -10224,7 +10227,7 @@
+       this.#dispatchEvent();
+       return;
+     }
+-    this.switchView(view, true);
++    this.switchView(view, false);
+     if (!this.isInitialEventDispatched) {
+       this.#dispatchEvent();
+     }
+\ No newline at end of file
+@@ -11123,7 +11126,7 @@
+     this.#annotationEditorMode = options.annotationEditorMode ?? pdfjs_lib__WEBPACK_IMPORTED_MODULE_0__.AnnotationEditorType.NONE;
      this.imageResourcesPath = options.imageResourcesPath || "";
      this.enablePrintAutoRotate = options.enablePrintAutoRotate || false;
 -    this.removePageBorders = options.removePageBorders || false;
 +    this.removePageBorders = options.removePageBorders || true;
      this.isOffscreenCanvasSupported = options.isOffscreenCanvasSupported ?? true;
      this.maxCanvasPixels = options.maxCanvasPixels;
-     this.l10n = options.l10n || NullL10n;
+     this.l10n = options.l10n || web_l10n_utils__WEBPACK_IMPORTED_MODULE_2__.NullL10n;
 \ No newline at end of file
-@@ -11034,10 +11034,10 @@
+@@ -14576,10 +14579,10 @@
    }
    async _writeToStorage() {
      const databaseStr = JSON.stringify(this.database);
@@ -54,44 +90,7 @@
    async set(name, val) {
      await this._initializedPromise;
 \ No newline at end of file
-@@ -11597,7 +11597,7 @@
-         title = url;
-       }
-     }
--    this.setTitle(title);
-+    // this.setTitle(title);
-   },
-   setTitle(title = this._title) {
-     this._title = title;
-\ No newline at end of file
-@@ -13630,11 +13630,11 @@
- const GenericCom = {};
- class GenericPreferences extends BasePreferences {
-   async _writeToStorage(prefObj) {
--    localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
-+    // localStorage.setItem("pdfjs.preferences", JSON.stringify(prefObj));
-   }
-   async _readFromStorage(prefObj) {
--    return {
--      prefs: JSON.parse(localStorage.getItem("pdfjs.preferences"))
-+    return  {
-+      prefs: undefined // JSON.parse(localStorage.getItem("pdfjs.preferences"))
-     };
-   }
- }
-\ No newline at end of file
-@@ -13884,6 +13884,9 @@
- }
- window.addEventListener("keydown", function (event) {
-   if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
-+    if (window.parent !== window) {
-+      return;
-+    }
-     window.print();
-     event.preventDefault();
-     event.stopImmediatePropagation();
-\ No newline at end of file
-@@ -14079,7 +14082,7 @@
+@@ -14783,7 +14786,7 @@
    try {
      parent.document.dispatchEvent(event);
    } catch (ex) {
@@ -99,5 +98,5 @@
 +    // console.error(`webviewerloaded: ${ex}`);
      document.dispatchEvent(event);
    }
-   PDFViewerApplication.run(config);
+   _app_js__WEBPACK_IMPORTED_MODULE_5__.PDFViewerApplication.run(config);
 \ No newline at end of file
