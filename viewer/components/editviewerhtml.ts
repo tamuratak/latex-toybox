@@ -1,0 +1,98 @@
+
+function editViewerHtml() {
+    createForwardBackwardButtons()
+    createCheckBoxes()
+    createTrimOption()
+    createTrimSelect()
+    createSynctexIndicator()
+}
+
+function createForwardBackwardButtons() {
+    const elements = html`
+    <button class="toolbarButton findPrevious" title="Back" id="historyBack">
+      <span>Back</span>
+    </button>
+    <button class="toolbarButton findNext" title="Forward" id="historyForward">
+      <span>Forward</span>
+    </button>
+    `
+    insertAfterEnd('sidebarToggle', elements)
+}
+
+function createCheckBoxes() {
+    const elements = html`
+    <div class="horizontalToolbarSeparator"></div>
+    <button id="synctexOffButton" class="secondaryToolbarButton" title="Disable forward SyncTeX" tabindex="70">
+        <input id="synctexOff" type="checkbox"> Stop SyncTeX
+    </button>
+    <button id="autoReloadOffButton" class="secondaryToolbarButton" title="Disable auto reload" tabindex="71">
+        <input id="autoReloadOff" type="checkbox"> Stop Auto Reload
+    </button>
+    `
+    insertAfterEnd('spreadModeButtons', elements)
+}
+
+function createTrimOption() {
+    const elements = html`
+    <option id="trimOption" title="" disabled="disabled" hidden="true"> Trimming </option>
+    `
+    appendChild('scaleSelect', elements)
+}
+
+function createTrimSelect() {
+    const elements = html`
+    <span id="trimSelectContainer" class="dropdownToolbarButton">
+        <select id="trimSelect" title="Trim" tabindex="23" >
+            <option title="" value="0.0" selected="selected" >No trim</option>
+            <option title="" value="0.05" >Trim 5%</option>
+            <option title="" value="0.10" >Trim 10%</option>
+            <option title="" value="0.15" >Trim 15%</option>
+        </select>
+    </span>
+    `
+    insertAfterEnd('scaleSelectContainer', elements)
+}
+
+function createSynctexIndicator() {
+    const elements = html`
+    <div id="synctex-indicator">
+    `
+    insertAfterEnd('viewer', elements)
+}
+
+function insertAfterEnd(targetId: string, elements: Iterable<Element>) {
+    const target = document.getElementById(targetId)
+    if (!target) {
+        throw new Error(`${targetId} not found`)
+    }
+    for (const element of Array.from(elements).reverse()) {
+        target.insertAdjacentElement('afterend', element)
+    }
+}
+
+function appendChild(targetId: string, elements: Iterable<Element>) {
+    const target = document.getElementById(targetId)
+    if (!target) {
+        throw new Error(`${targetId} not found`)
+    }
+    for (const element of elements) {
+        target.appendChild(element)
+    }
+}
+
+function html(strings: TemplateStringsArray, ...values: unknown[]) {
+    if (strings.length > 1 || values.length > 0) {
+        throw new Error('html() does not support template literals')
+    }
+    const htmlString = strings[0]
+    if (htmlString === undefined) {
+        return []
+    }
+    const div = document.createElement('div')
+    div.innerHTML = htmlString
+    const ret = div.children
+    div.remove()
+    return ret
+}
+
+editViewerHtml()

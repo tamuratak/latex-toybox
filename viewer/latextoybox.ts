@@ -1,3 +1,7 @@
+// @ts-expect-error
+const importPdfMjsPromise = import('/build/pdf.mjs')
+// Edit viewer.html
+import './components/editviewerhtml.js'
 import { ExtensionConnection } from './components/extensionconnection.js'
 import { SyncTex } from './components/synctex.js'
 import { PageTrimmer } from './components/pagetrimmer.js'
@@ -14,6 +18,7 @@ import { LwEventBus } from './components/lweventbus.js'
 import { PanelManagerConnection } from './components/panelmanagerconnection.js'
 import { VolatileConfig } from './components/volatileconfig.js'
 import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
+
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -157,8 +162,7 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
 }
 
 // Defines pdfjsLib globally.
-// @ts-expect-error
-await import('/build/pdf.mjs')
+await importPdfMjsPromise
 
 const extension = new LateXToyboxPdfViewer()
 await extension.waitSetupAppOptionsReady()

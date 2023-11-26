@@ -43,7 +43,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 <script src="/out/viewer/latextoybox.js" type="module"></script>
   </head>
 
-  <body tabindex="1">
+  <body tabindex="1" class="loadingInProgress">
     <div id="outerContainer">
 
       <div id="sidebarContainer">
@@ -244,6 +244,14 @@ See https://github.com/adobe-type-tools/cmap-resources
               </button>
             </div>
 
+            <div class="horizontalToolbarSeparator spreadModeButtons"></div>
+
+            <button id="synctexOffButton" class="secondaryToolbarButton" title="Disable forward SyncTeX" tabindex="70">
+              <input id="synctexOff" type="checkbox"> Stop SyncTeX
+            </button>
+            <button id="autoReloadOffButton" class="secondaryToolbarButton" title="Disable auto reload" tabindex="71">
+               <input id="autoReloadOff" type="checkbox"> Stop Auto Reload
+            </button>
             <div class="horizontalToolbarSeparator"></div>
 
             <button id="documentProperties" class="secondaryToolbarButton" title="Document Properties…" tabindex="69" data-l10n-id="pdfjs-document-properties-button" aria-controls="documentPropertiesDialog">
@@ -258,6 +266,13 @@ See https://github.com/adobe-type-tools/cmap-resources
               <div id="toolbarViewerLeft">
                 <button id="sidebarToggle" class="toolbarButton" title="Toggle Sidebar" tabindex="11" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-controls="sidebarContainer">
                   <span data-l10n-id="pdfjs-toggle-sidebar-button-label">Toggle Sidebar</span>
+                </button>
+                <!-- History back button, useful in the embedded viewer -->
+                <button class="toolbarButton findPrevious" title="Back" id="historyBack">
+                  <span>Back</span>
+                </button>
+                <button class="toolbarButton findNext" title="Forward" id="historyForward">
+                  <span>Forward</span>
                 </button>
                 <div class="toolbarButtonSpacer"></div>
                 <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="pdfjs-findbar-button" aria-expanded="false" aria-controls="findbar">
@@ -333,6 +348,15 @@ See https://github.com/adobe-type-tools/cmap-resources
                     <option title="" value="2" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 200 }'>200%</option>
                     <option title="" value="3" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 300 }'>300%</option>
                     <option title="" value="4" data-l10n-id="pdfjs-page-scale-percent" data-l10n-args='{ "scale": 400 }'>400%</option>
+                    <option id="trimOption" title="" disabled="disabled" hidden="true"> Trimming </option>
+                  </select>
+                </span>
+                <span id="trimSelectContainer" class="dropdownToolbarButton">
+                  <select id="trimSelect" title="Trim" tabindex="23" >
+                    <option title="" value="0.0" selected="selected" >No trim</option>
+                    <option title="" value="0.05" >Trim 5%</option>
+                    <option title="" value="0.10" >Trim 10%</option>
+                    <option title="" value="0.15" >Trim 15%</option>
                   </select>
                 </span>
               </div>
@@ -348,6 +372,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         <div id="viewerContainer" tabindex="0">
           <div id="viewer" class="pdfViewer"></div>
+          <div id="synctex-indicator"></div>
         </div>
       </div> <!-- mainContainer -->
 
