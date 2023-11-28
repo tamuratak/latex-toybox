@@ -1,2 +1,3 @@
-viewer/images/** linguist-vendored
-viewer/locale/** linguist-vendored
+/viewer/images/** linguist-vendored
+/viewer/locale/** linguist-vendored
+/viewer/viewer.css linguist-vendored
