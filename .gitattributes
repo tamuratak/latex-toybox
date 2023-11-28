@@ -1,1 +1,2 @@
-*.ftl linguist-detectable=false
+viewer/images/** linguist-vendored
+viewer/locale/** linguist-vendored
