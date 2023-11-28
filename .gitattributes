@@ -1,3 +1,5 @@
 /viewer/images/** linguist-vendored
 /viewer/locale/** linguist-vendored
 /viewer/viewer.css linguist-vendored
+/viewer/viewer.mjs linguist-vendored
+/viewer/viewer.html linguist-vendored
