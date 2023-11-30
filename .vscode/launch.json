@@ -29,7 +29,7 @@
                 "--log=tamuratak.latex-toybox:debug"
             ],
             "outFiles": [
-                "${workspaceFolder}/out/src/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ],
             "debugWebviews": true,
             "preLaunchTask": "task-watch-all"

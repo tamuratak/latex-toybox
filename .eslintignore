@@ -2,6 +2,7 @@ src/lib/await-semaphore/
 src/lib/synctexjs/
 viewer/viewer.js
 viewer/viewer.mjs
+dist/
 data/
 dev/
 icons/

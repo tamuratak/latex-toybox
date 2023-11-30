@@ -1,10 +1,6 @@
 .vscode/
 .vscode-test/
-out/data/
-out/dev/
-out/resources/
-out/snippets/
-out/test/
+out/
 test/
 src/
 samples/
@@ -29,8 +25,14 @@ __pycache__/
 **/*.map
 node_modules/**/*.d.ts
 
+node_modules/cross-spawn/
+node_modules/iconv-lite/
+node_modules/latex-utensils/
+node_modules/mathjax-full/
+node_modules/micromatch/
+node_modules/workerpool/
+node_modules/ws/
 node_modules/rimraf/
-node_modules/latex-utensils/node_modules/
 
 node_modules/pdfjs-dist/build/*.min.js
 node_modules/pdfjs-dist/build/*.min.mjs
@@ -40,13 +42,3 @@ node_modules/pdfjs-dist/lib/
 node_modules/pdfjs-dist/web/
 node_modules/pdfjs-dist/node_modules/canvas/
 node_modules/pdfjs-dist/node_modules/path2d-polyfill/
-
-node_modules/mathjax-full/components/
-node_modules/mathjax-full/es5/
-node_modules/mathjax-full/ts/
-node_modules/mathjax-full/js/output/chtml/
-node_modules/mathjax-full/js/input/asciimath/
-node_modules/mathjax-full/js/input/mathml/
-node_modules/mathjax-full/node_modules/esm/
-node_modules/mathjax-full/node_modules/mj-context-menu/
-node_modules/mathjax-full/node_modules/speech-rule-engine/
