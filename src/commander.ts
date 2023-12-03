@@ -39,10 +39,8 @@ async function quickPickRootFile(rootFile: string, localRootFile: string): Promi
         switch (selected.label) {
             case 'Default root file':
                 return rootFile
-                break
             case 'Subfiles package root file':
                 return localRootFile
-                break
             default:
                 return undefined
         }

@@ -179,7 +179,7 @@ export async function promisify(event: EventName): Promise<void> {
                 resultPromise.reject(new Error(message))
             }
         },
-        process.env.CI ? 30000 : 10000
+        process.env['CI'] ? 30000 : 10000
     )
     return resultPromise.promise
 }

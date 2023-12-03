@@ -172,19 +172,22 @@ export class Input extends AbstractInput {
             const baseConfig = vscode.workspace.getConfiguration('latex-toybox', vscode.Uri.file(currentFile)).get('intellisense.file.base')
             const baseDirCurrentFile = path.dirname(currentFile)
             switch (baseConfig) {
-                case 'root relative':
+                case 'root relative': {
                     baseDir = [rootDir]
                     break
-                case 'file relative':
+                }
+                case 'file relative': {
                     baseDir = [baseDirCurrentFile]
                     break
-                case 'both':
+                }
+                case 'both': {
                     if (baseDirCurrentFile !== rootDir) {
                         baseDir = [baseDirCurrentFile, rootDir]
                     } else {
                         baseDir = [rootDir]
                     }
                     break
+                }
                 default:
             }
         }

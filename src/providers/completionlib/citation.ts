@@ -99,17 +99,20 @@ export class Citation implements IProvider {
             // Compile the completion item label
             switch(label) {
                 case 'bibtex key':
-                default:
                     break
-                case 'title':
+                case 'title': {
                     if (citeSugg.fields.title) {
                         item.label = citeSugg.fields.title
                     }
                     break
-                case 'authors':
+                }
+                case 'authors': {
                     if (citeSugg.fields.author) {
                         item.label = citeSugg.fields.author
                     }
+                    break
+                }
+                default:
                     break
             }
             item.filterText = citeSugg.key + ' ' + citeSugg.fields.join(fields, false)

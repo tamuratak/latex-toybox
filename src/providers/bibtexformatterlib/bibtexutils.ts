@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import {bibtexParser} from 'latex-utensils'
+import { bibtexParser } from 'latex-utensils'
 
 import type { Logger } from '../../components/logger.js'
 

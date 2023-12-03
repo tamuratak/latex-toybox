@@ -84,9 +84,9 @@ export type PdfSyncObject = {
 }
 
 export class SyncTexJsError extends Error {
-  public name = 'SyncTexJsError'
+  public override name = 'SyncTexJsError'
 
-  toString() {
+  override toString() {
     return this.name + ': ' + this.message
   }
 
