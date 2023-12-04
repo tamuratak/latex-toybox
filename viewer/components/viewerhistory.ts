@@ -1,4 +1,4 @@
-import type {ILatexToyboxPdfViewer} from './interface.js'
+import type { ILatexToyboxPdfViewer } from './interface.js'
 
 // Static HTML elements
 const viewerContainerElement = document.getElementById('viewerContainer') as HTMLElement

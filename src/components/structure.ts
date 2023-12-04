@@ -21,8 +21,8 @@ export class Section extends vscode.TreeItem {
 
     constructor(
         public readonly kind: SectionKind,
-        public label: string,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public override label: string,
+        public override readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly depth: number,
         public readonly lineNumber: number,
         public lastLine: number,

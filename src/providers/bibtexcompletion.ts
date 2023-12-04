@@ -57,19 +57,22 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         let optEntriesFile: string = ''
         let entriesReplacements: {[key: string]: string[]} = {}
         switch (citationBackend) {
-            case 'bibtex':
+            case 'bibtex': {
                 entriesFile = `${this.extension.extensionRoot}/data/bibtex-entries.json`
                 optEntriesFile = `${this.extension.extensionRoot}/data/bibtex-optional-entries.json`
                 entriesReplacements = configuration.get('intellisense.bibtexJSON.replace') as {[key: string]: string[]}
                 break
-            case 'biblatex':
+            }
+            case 'biblatex': {
                 entriesFile = `${this.extension.extensionRoot}/data/biblatex-entries.json`
                 optEntriesFile = `${this.extension.extensionRoot}/data/biblatex-optional-entries.json`
                 entriesReplacements = configuration.get('intellisense.biblatexJSON.replace') as {[key: string]: string[]}
                 break
-            default:
+            }
+            default: {
                 this.extension.logger.info(`Unknown citation backend: ${citationBackend}`)
                 return
+            }
         }
         try {
             void this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)

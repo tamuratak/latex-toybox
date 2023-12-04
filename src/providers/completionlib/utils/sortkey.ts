@@ -1,4 +1,3 @@
-
 // Reverse case of first character and convert to character code
 export function reverseCaseOfFirstCharacterAndConvertToHex(label: string): string {
     return label.replace(/^[a-zA-Z]/, c => {

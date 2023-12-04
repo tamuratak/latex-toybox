@@ -284,7 +284,7 @@ export class Builder {
             this.extension.logger.error(`LaTeX fatal error: ${err.message}, ${stepLog.stderr}. PID: ${pid}.`)
             this.extension.logger.error(`Does the executable exist? $PATH: ${envVarsPATH}`)
             this.extension.logger.error(`Does the executable exist? $Path: ${envVarsPath}`)
-            this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
+            this.extension.logger.error(`The environment variable $SHELL: ${process.env['SHELL']}`)
             this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
             this.currentProcess = undefined
             resultPromise.reject(err)
@@ -297,7 +297,7 @@ export class Builder {
                     this.extension.logger.error(`Recipe returns with error: ${exitCode}/${signal}. PID: ${pid}. message: ${stepLog.stderr}.`)
                     this.extension.logger.error(`The environment variable $PATH: ${envVarsPATH}`)
                     this.extension.logger.error(`The environment variable $Path: ${envVarsPath}`)
-                    this.extension.logger.error(`The environment variable $SHELL: ${process.env.SHELL}`)
+                    this.extension.logger.error(`The environment variable $SHELL: ${process.env['SHELL']}`)
                     this.extension.statusbaritem.displayStatus('fail', 'Build failed.')
                     this.currentProcess = undefined
                     resultPromise.reject({exitCode, signal, pid})

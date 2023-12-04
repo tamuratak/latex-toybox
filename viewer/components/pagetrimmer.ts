@@ -149,7 +149,7 @@ function setObserverToTrim() {
         }
     })
     for (const page of viewerDivElement.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>) {
-        if (page.dataset.isObserved !== 'observed') {
+        if (page.dataset['isObserved'] !== 'observed') {
             observer.observe(page, { attributes: true, childList: true, attributeFilter: ['style'] })
             page.setAttribute('data-is-observed', 'observed')
         }

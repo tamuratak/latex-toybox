@@ -1,4 +1,4 @@
-import type {ILatexToyboxPdfViewer, IPDFViewerApplication} from './interface.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -89,7 +89,7 @@ export class SyncTex {
         const keybinding = this.reverseSynctexKeybinding
         const viewerDom = document.getElementById('viewer') as HTMLElement
         for (const pageDom of viewerDom.childNodes as NodeListOf<HTMLElement>) {
-            const page = Number(pageDom.dataset.pageNumber)
+            const page = Number(pageDom.dataset['pageNumber'])
             const viewerContainer = document.getElementById('viewerContainer') as HTMLElement
             switch (keybinding) {
                 case 'ctrl-click': {

@@ -5,7 +5,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as vscode from 'vscode'
 
-import {decodePathWithPrefix, pdfFilePrefix} from '../utils/encodepdffilepath.js'
+import { decodePathWithPrefix, pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import { readFileAsUint8Array } from '../lib/lwfs/lwfs.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import type { Logger } from './logger.js'
@@ -30,7 +30,7 @@ class WsServer extends ws.Server {
     // - https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#client_handshake_request
     // - https://github.com/websockets/ws/blob/master/doc/ws.md#servershouldhandlerequest
     //
-    shouldHandle(req: http.IncomingMessage): boolean {
+    override shouldHandle(req: http.IncomingMessage): boolean {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
             this.extension.logger.info(`[Server] Origin in WebSocket upgrade request is invalid: ${inspectReadable(req.headers)}`)

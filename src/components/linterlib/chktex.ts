@@ -108,24 +108,24 @@ export class ChkTeX implements ILinter {
     private async globalRcPath() {
         const rcPathArray: string[] = []
         if (os.platform() === 'win32') {
-            if (process.env.CHKTEXRC) {
-                rcPathArray.push(path.join(process.env.CHKTEXRC, 'chktexrc'))
+            if (process.env['CHKTEXRC']) {
+                rcPathArray.push(path.join(process.env['CHKTEXRC'], 'chktexrc'))
             }
-            if (process.env.CHKTEX_HOME) {
-                rcPathArray.push(path.join(process.env.CHKTEX_HOME, 'chktexrc'))
+            if (process.env['CHKTEX_HOME']) {
+                rcPathArray.push(path.join(process.env['CHKTEX_HOME'], 'chktexrc'))
             }
-            if (process.env.EMTEXDIR) {
-                rcPathArray.push(path.join(process.env.EMTEXDIR, 'data', 'chktexrc'))
+            if (process.env['EMTEXDIR']) {
+                rcPathArray.push(path.join(process.env['EMTEXDIR'], 'data', 'chktexrc'))
             }
         } else {
-            if (process.env.HOME) {
-                rcPathArray.push(path.join(process.env.HOME, '.chktexrc'))
+            if (process.env['HOME']) {
+                rcPathArray.push(path.join(process.env['HOME'], '.chktexrc'))
             }
-            if (process.env.LOGDIR) {
-                rcPathArray.push(path.join(process.env.LOGDIR, '.chktexrc'))
+            if (process.env['LOGDIR']) {
+                rcPathArray.push(path.join(process.env['LOGDIR'], '.chktexrc'))
             }
-            if (process.env.CHKTEXRC) {
-                rcPathArray.push(path.join(process.env.CHKTEXRC, '.chktexrc'))
+            if (process.env['CHKTEXRC']) {
+                rcPathArray.push(path.join(process.env['CHKTEXRC'], '.chktexrc'))
             }
         }
         for (const rcPath of rcPathArray) {

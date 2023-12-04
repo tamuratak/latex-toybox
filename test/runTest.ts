@@ -30,7 +30,7 @@ async function runTestsOnEachFixture(targetName: 'build' | 'rootfile' | 'viewer'
         const nodejsTimeout = setTimeout(() => {
             console.log('runTestsOnEachFixture: Time out')
             process.exit(1)
-        }, process.env.CI ? 600000 : 60000)
+        }, process.env['CI'] ? 600000 : 60000)
         await runTests({
             version: '1.84.1',
             extensionDevelopmentPath,
