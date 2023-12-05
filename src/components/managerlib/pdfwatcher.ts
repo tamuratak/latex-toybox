@@ -15,7 +15,7 @@ export class PdfWatcher {
     constructor(
         private readonly extension: {
             readonly logger: Logger,
-            readonly viewer: Viewer
+            readonly viewer: Viewer | undefined
         },
         watcher: LwFileWatcher
     ) {
@@ -40,7 +40,7 @@ export class PdfWatcher {
         const delay = configuration.get('view.pdf.reload.delay', 250)
         await sleep(delay)
         this.extension.logger.info(`PDF file watcher - file changed: ${pdfFileUri}`)
-        this.extension.viewer.refreshExistingViewer(undefined, pdfFileUri)
+        this.extension.viewer?.refreshExistingViewer(undefined, pdfFileUri)
     }
 
     private onPdfDeleted(pdfFileUri: vscode.Uri) {

@@ -3,6 +3,9 @@ import * as path from 'node:path'
 
 import { existsPath } from '../lib/lwfs/lwfs.js'
 
+export function isRunningOnWebWorker(): boolean {
+    return vscode.env.uiKind === vscode.UIKind.Web && !vscode.env.remoteName
+}
 
 export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms))

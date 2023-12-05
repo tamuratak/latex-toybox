@@ -170,61 +170,64 @@
       {
         "command": "latex-toybox.saveWithoutBuilding",
         "title": "Save without Building",
-        "category": "LaTeX Toybox"
+        "category": "LaTeX Toybox",
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.build",
         "title": "Build LaTeX project",
         "category": "LaTeX Toybox",
         "icon": "$(debug-start)",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.recipes",
         "title": "Build with recipe",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.view",
         "title": "View LaTeX PDF file",
         "category": "LaTeX Toybox",
         "icon": "$(open-preview)",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.tab",
         "title": "View LaTeX PDF file in VSCode tab",
-        "category": "LaTeX Toybox"
+        "category": "LaTeX Toybox",
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.viewInBrowser",
         "title": "View LaTeX PDF file in web browser",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.viewExternal",
         "title": "View LaTeX PDF file in external viewer",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.refresh-viewer",
         "title": "Refresh all LaTeX PDF viewers",
-        "category": "LaTeX Toybox"
+        "category": "LaTeX Toybox",
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.kill",
         "title": "Kill LaTeX compiler process",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.synctex",
         "title": "SyncTeX from cursor",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.citation",
@@ -236,7 +239,7 @@
         "command": "latex-toybox.compilerlog",
         "title": "View LaTeX compiler logs",
         "category": "LaTeX Toybox",
-        "enablement": "!virtualWorkspace"
+        "enablement": "!virtualWorkspace && !serverlessWebContext"
       },
       {
         "command": "latex-toybox.log",
@@ -246,12 +249,14 @@
       {
         "command": "latex-toybox.texdoc",
         "title": "Show package documentation",
-        "category": "LaTeX Toybox"
+        "category": "LaTeX Toybox",
+        "enablement": "!serverlessWebContext"
       },
       {
         "command": "latex-toybox.texdocUsepackages",
         "title": "Show package documentation actually used",
-        "category": "LaTeX Toybox"
+        "category": "LaTeX Toybox",
+        "enablement": "!serverlessWebContext"
       },
       {
         "command": "latex-toybox.promote-sectioning",
@@ -315,19 +320,19 @@
         "key": "ctrl+l alt+b",
         "mac": "cmd+l alt+b",
         "command": "latex-toybox.build",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "ctrl+l alt+v",
         "mac": "cmd+l alt+v",
         "command": "latex-toybox.view",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "ctrl+l alt+j",
         "mac": "cmd+l alt+j",
         "command": "latex-toybox.synctex",
-        "when": "editorTextFocus && editorLangId == 'latex' && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorTextFocus && editorLangId == 'latex' && config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "ctrl+alt+m",
@@ -339,19 +344,19 @@
         "key": "ctrl+alt+b",
         "mac": "cmd+alt+b",
         "command": "latex-toybox.build",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "ctrl+alt+v",
         "mac": "cmd+alt+v",
         "command": "latex-toybox.view",
-        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "ctrl+alt+j",
         "mac": "cmd+alt+j",
         "command": "latex-toybox.synctex",
-        "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
+        "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace && !serverlessWebContext"
       },
       {
         "key": "enter",
@@ -1619,24 +1624,24 @@
     "menus": {
       "editor/context": [
         {
-          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace",
+          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace && !serverlessWebContext",
           "command": "latex-toybox.build",
           "group": "navigation@100"
         },
         {
-          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace",
+          "when": "config.latex-toybox.showContextMenu && editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace && !serverlessWebContext",
           "command": "latex-toybox.synctex",
           "group": "navigation@101"
         }
       ],
       "editor/title": [
         {
-          "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace",
+          "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace && !serverlessWebContext",
           "command": "latex-toybox.view",
           "group": "navigation@2"
         },
         {
-          "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace",
+          "when": "editorLangId =~ /^latex$|^latex-expl3$/ && !virtualWorkspace && !serverlessWebContext",
           "command": "latex-toybox.build",
           "group": "navigation@1"
         }
@@ -1662,7 +1667,7 @@
         {
           "id": "latex-toybox-commands",
           "name": "Commands",
-          "when": "latex-toybox:enabled"
+          "when": "latex-toybox:enabled && !serverlessWebContext"
         },
         {
           "id": "latex-toybox-structure",
@@ -1689,7 +1694,7 @@
             "filenamePattern": "*.PDF"
           }
         ],
-        "priority": "default"
+        "priority": "option"
       }
     ]
   },

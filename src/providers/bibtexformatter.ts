@@ -6,7 +6,6 @@ import type {BibtexEntry} from './bibtexformatterlib/bibtexutils.js'
 import { toVscodeRange } from '../utils/utensils.js'
 import type { BibtexAstManager } from '../components/astmanager.js'
 import type { Logger } from '../components/logger.js'
-import type { LwStatusBarItem } from '../components/statusbaritem.js'
 
 
 export class BibtexFormatter {
@@ -17,8 +16,7 @@ export class BibtexFormatter {
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,
         readonly bibtexAstManager: BibtexAstManager,
-        readonly logger: Logger,
-        readonly statusbaritem: LwStatusBarItem
+        readonly logger: Logger
     }) {
         this.duplicatesDiagnostics = vscode.languages.createDiagnosticCollection('BibTeX')
         this.diags = []

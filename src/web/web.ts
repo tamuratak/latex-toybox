@@ -1,35 +1,26 @@
 import * as vscode from 'vscode'
-import * as process from 'node:process'
 
-import { Commander } from './commander.js'
-import { LaTeXCommanderTreeView } from './components/commander.js'
-import { Logger } from './components/logger.js'
-import { Manager } from './components/manager.js'
-import { Builder } from './components/builder.js'
-import { Viewer } from './components/viewer.js'
-import { Server } from './components/server.js'
-import { Locator } from './components/locator.js'
-import { Linter } from './components/linter.js'
-import { EnvPair } from './components/envpair.js'
-import { Section } from './components/section.js'
-import { UtensilsParser } from './components/utensilsparser.js'
-import { Configuration } from './components/configuration.js'
-import { EventBus } from './components/eventbus.js'
+import { Commander } from '../commander.js'
+import { Logger } from '../components/logger.js'
+import { Manager } from '../components/manager.js'
+import { EnvPair } from '../components/envpair.js'
+import { Section } from '../components/section.js'
+import { UtensilsParser } from '../components/utensilsparser.js'
+import { Configuration } from '../components/configuration.js'
+import { EventBus } from '../components/eventbus.js'
 
-import { Completer } from './providers/completion.js'
-import { DuplicateLabels } from './components/duplicatelabels.js'
-import { GraphicsPreview } from './components/graphicspreview.js'
-import { MathPreview } from './components/mathpreview.js'
-import { MathPreviewPanel } from './components/mathpreviewpanel.js'
-import { SnippetView } from './components/snippetview.js'
-import { ReferenceStore } from './components/referencestore.js'
-import { CompletionUpdater } from './components/completionupdater.js'
-import { LwStatusBarItem } from './components/statusbaritem.js'
-import { CompilerLog } from './components/compilerlog.js'
-import { BibtexAstManager, LatexAstManager } from './components/astmanager.js'
-import { AuxManager } from './components/auxmanager.js'
-import { registerProviders } from './registerproviders.js'
-import { StructureTreeView } from './components/structure.js'
+import { Completer } from '../providers/completion.js'
+import { DuplicateLabels } from '../components/duplicatelabels.js'
+import { GraphicsPreview } from '../components/graphicspreview.js'
+import { MathPreview } from '../components/mathpreview.js'
+import { MathPreviewPanel } from '../components/mathpreviewpanel.js'
+import { SnippetView } from '../components/snippetview.js'
+import { ReferenceStore } from '../components/referencestore.js'
+import { CompletionUpdater } from '../components/completionupdater.js'
+import { BibtexAstManager, LatexAstManager } from '../components/astmanager.js'
+import { AuxManager } from '../components/auxmanager.js'
+import { registerProvidersOnWeb } from './registerprovidersonweb.js'
+import { StructureTreeView } from '../components/structure.js'
 
 
 function conflictExtensionCheck() {
@@ -49,23 +40,9 @@ function registerLatexToyboxCommands(
 ) {
 
     extension.extensionContext.subscriptions.push(
-        vscode.commands.registerCommand('latex-toybox.saveWithoutBuilding', () => extension.commander.saveWithoutBuilding()),
-        vscode.commands.registerCommand('latex-toybox.build', () => extension.commander.build()),
-        vscode.commands.registerCommand('latex-toybox.recipes', (recipe: string | undefined) => extension.commander.recipes(recipe)),
-        vscode.commands.registerCommand('latex-toybox.view', (mode: 'tab' | 'browser' | 'external' | vscode.Uri | undefined) => extension.commander.view(mode)),
-        vscode.commands.registerCommand('latex-toybox.refresh-viewer', () => extension.commander.refresh()),
-        vscode.commands.registerCommand('latex-toybox.tab', () => extension.commander.view('tab')),
-        vscode.commands.registerCommand('latex-toybox.viewInBrowser', () => extension.commander.view('browser')),
-        vscode.commands.registerCommand('latex-toybox.viewExternal', () => extension.commander.view('external')),
-        vscode.commands.registerCommand('latex-toybox.kill', () => extension.commander.kill()),
-        vscode.commands.registerCommand('latex-toybox.synctex', () => extension.commander.synctex()),
-        vscode.commands.registerCommand('latex-toybox.texdoc', (pkg: string | undefined) => extension.commander.texdoc(pkg)),
-        vscode.commands.registerCommand('latex-toybox.texdocUsepackages', () => extension.commander.texdocUsepackages()),
-        vscode.commands.registerCommand('latex-toybox.synctexto', (line: number, filePath: string) => extension.commander.synctexonref(line, filePath)),
         vscode.commands.registerCommand('latex-toybox.activate', () => undefined),
         vscode.commands.registerCommand('latex-toybox.citation', () => extension.commander.citation()),
         vscode.commands.registerCommand('latex-toybox.log', () => extension.commander.log()),
-        vscode.commands.registerCommand('latex-toybox.compilerlog', () => extension.commander.log('compiler')),
         vscode.commands.registerCommand('latex-toybox.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
         vscode.commands.registerCommand('latex-toybox.navigate-envpair', () => extension.commander.navigateToEnvPair()),
         vscode.commands.registerCommand('latex-toybox.onEnterKey', () => extension.commander.onEnterKey()),
@@ -83,13 +60,7 @@ function registerLatexToyboxCommands(
 
 }
 
-function generateLatexToyboxApi(extension: Extension, structureViewer: StructureTreeView) {
-    return {
-        realExtension:  process.env['LATEXTOYBOX_CI'] ? {...extension, structureViewer} : undefined
-    }
-}
-
-let extensionToDispose: Extension | undefined
+let extensionToDispose: ExtensionOnWeb | undefined
 
 // We should clean up file watchers and wokerpool pools.
 // We have to call async dispose() through deactivate()
@@ -100,43 +71,34 @@ export function deactivate() {
     return extensionToDispose?.dispose()
 }
 
-export function activate(context: vscode.ExtensionContext): ReturnType<typeof generateLatexToyboxApi> {
-    const extension = new Extension(context)
+export function activate(context: vscode.ExtensionContext) {
+    const extension = new ExtensionOnWeb(context)
     extensionToDispose = extension
 
     registerLatexToyboxCommands(extension)
-    const structureViewer = new StructureTreeView(extension)
-    registerProviders(extension)
+    new StructureTreeView(extension)
+    registerProvidersOnWeb(extension)
 
     conflictExtensionCheck()
     void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', true)
 
-    return generateLatexToyboxApi(extension, structureViewer)
 }
 
-export class Extension {
+export class ExtensionOnWeb {
     readonly extensionContext: vscode.ExtensionContext
     readonly extensionRoot: string
     readonly logger: Logger
-    readonly statusbaritem: LwStatusBarItem
     readonly eventBus: EventBus
     readonly commander: Commander
     readonly configuration: Configuration
     readonly manager: Manager
-    readonly builder: Builder
-    readonly viewer: Viewer
-    readonly server: Server
-    readonly locator: Locator
-    readonly compilerLog: CompilerLog
     readonly utensilsParser: UtensilsParser
     readonly latexAstManager: LatexAstManager
     readonly bibtexAstManager: BibtexAstManager
     readonly completionUpdater: CompletionUpdater
     readonly completer: Completer
-    readonly linter: Linter
     readonly envPair: EnvPair
     readonly section: Section
-    readonly latexCommanderTreeView: LaTeXCommanderTreeView
     readonly snippetView: SnippetView
     readonly graphicsPreview: GraphicsPreview
     readonly mathPreview: MathPreview
@@ -156,22 +118,14 @@ export class Extension {
         this.configuration = new Configuration(this)
         this.referenceStore = new ReferenceStore(this)
         this.auxManager = new AuxManager(this)
-        this.builder = new Builder(this)
         this.completionUpdater = new CompletionUpdater(this)
 
-        this.compilerLog = new CompilerLog(this)
-        this.statusbaritem = new LwStatusBarItem(this)
-        this.commander = new Commander(this)
-        this.manager = new Manager(this)
-        this.viewer = new Viewer(this)
-        this.server = new Server(this)
-        this.locator = new Locator(this)
+        this.commander = new Commander({...this, builder: undefined, compilerLog: undefined, locator: undefined, viewer: undefined })
+        this.manager = new Manager({...this, viewer: undefined })
         this.completer = new Completer(this)
         this.duplicateLabels = new DuplicateLabels(this)
-        this.linter = new Linter(this)
         this.envPair = new EnvPair(this)
         this.section = new Section(this)
-        this.latexCommanderTreeView = new LaTeXCommanderTreeView(this)
         this.snippetView = new SnippetView(this)
         this.utensilsParser = new UtensilsParser()
         this.latexAstManager = new LatexAstManager(this)
@@ -190,12 +144,6 @@ export class Extension {
     private addLogFundamentals() {
         this.logger.info('Initializing LaTeX Toybox.')
         this.logger.info(`Extension root: ${this.extensionRoot}`)
-        this.logger.info(`$PATH: ${process.env['PATH']}`)
-        this.logger.info(`$SHELL: ${process.env['SHELL']}`)
-        this.logger.info(`$LANG: ${process.env['LANG']}`)
-        this.logger.info(`$LC_ALL: ${process.env['LC_ALL']}`)
-        this.logger.info(`process.platform: ${process.platform}`)
-        this.logger.info(`process.arch: ${process.arch}`)
         this.logger.info(`vscode.env.appName: ${vscode.env.appName}`)
         this.logger.info(`vscode.env.remoteName: ${vscode.env.remoteName}`)
         this.logger.info(`vscode.env.uiKind: ${vscode.env.uiKind}`)

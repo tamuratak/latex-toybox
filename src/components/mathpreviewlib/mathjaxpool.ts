@@ -4,6 +4,7 @@ import * as workerpool from 'workerpool'
 import type { Proxy } from 'workerpool'
 import type { IMathJaxWorker } from './mathjaxpool_worker.js'
 import type { SupportedExtension } from 'mathjax-full'
+import { isRunningOnWebWorker } from '../../utils/utils.js'
 
 const supportedExtensionList = [
     'amscd',
@@ -35,10 +36,14 @@ export class MathJaxPool {
     private readonly proxyPromise: workerpool.Promise<Proxy<IMathJaxWorker>>
 
     constructor() {
-        this.pool = workerpool.pool(
-            path.join(__dirname, 'mathjaxpool_worker.js'),
-            { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
-        )
+        if (isRunningOnWebWorker()) {
+            throw new Error('MathJaxPool cannot be used in a web worker.')
+        } else {
+            this.pool = workerpool.pool(
+                path.join(__dirname, 'mathjaxpool_worker.js'),
+                { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
+            )
+        }
         this.proxyPromise = this.pool.proxy<IMathJaxWorker>()
         void this.initializeExtensions()
     }

@@ -1,7 +1,18 @@
 import * as vscode from 'vscode'
-import * as fs from 'node:fs'
+import type * as fsType from 'node:fs'
 import { hasTexId } from '../../utils/hastexid.js'
+import { isRunningOnWebWorker } from '../../utils/utils.js'
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+let fs: typeof fsType = {
+    get promises() {
+        throw new Error('fs.promises is not available in browser')
+    }
+} as any
+if (!isRunningOnWebWorker()) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+    fs = require('node:fs') as typeof fsType
+}
 
 export function isLocalUri(uri: vscode.Uri): boolean {
     return uri.scheme === 'file'
@@ -83,7 +94,7 @@ export async function statPath(filePath: string): Promise<vscode.FileStat> {
 export async function readDir(fileUri: vscode.Uri): Promise<[string, vscode.FileType][]> {
     if (isLocalUri(fileUri)) {
         const result = await fs.promises.readdir(fileUri.fsPath, { withFileTypes: true })
-        const fileType = (entry: fs.Dirent) => entry.isFile() ? vscode.FileType.File : entry.isDirectory() ? vscode.FileType.Directory : entry.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown
+        const fileType = (entry: fsType.Dirent) => entry.isFile() ? vscode.FileType.File : entry.isDirectory() ? vscode.FileType.Directory : entry.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown
         return result.map(entry => [entry.name, fileType(entry)])
     } else {
         return vscode.workspace.fs.readDirectory(fileUri)

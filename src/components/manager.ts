@@ -121,7 +121,7 @@ export class Manager {
         readonly duplicateLabels: DuplicateLabels,
         readonly logger: Logger,
         readonly manager: Manager,
-        readonly viewer: Viewer
+        readonly viewer: Viewer | undefined
     }) {
 
         // Each watcher uses the same LwFileWatcher object, but they have slightly different APIs

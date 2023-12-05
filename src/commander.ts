@@ -52,14 +52,14 @@ export class Commander {
     private readonly _texdoc: TeXDoc
 
     constructor(private readonly extension: {
-        readonly builder: Builder,
+        readonly builder: Builder | undefined,
         readonly completer: Completer,
-        readonly compilerLog: CompilerLog,
+        readonly compilerLog: CompilerLog | undefined,
         readonly envPair: EnvPair,
-        readonly locator: Locator,
+        readonly locator: Locator | undefined,
         readonly mathPreviewPanel: MathPreviewPanel,
         readonly section: Section,
-        readonly viewer: Viewer
+        readonly viewer: Viewer | undefined
     } & ConstructorParameters<typeof TeXDoc>[0]) {
         this.extension = extension
         this._texdoc = new TeXDoc(extension)
@@ -93,7 +93,7 @@ export class Commander {
         }
         if (externalBuildCommand) {
             const pwd = path.dirname(rootFile ? rootFile : vscode.window.activeTextEditor.document.fileName)
-            return this.extension.builder.buildWithExternalCommand(externalBuildCommand, externalBuildArgs, pwd, rootFile)
+            return this.extension.builder?.buildWithExternalCommand(externalBuildCommand, externalBuildArgs, pwd, rootFile)
         }
         if (rootFile === undefined || languageId === undefined) {
             this.extension.logger.error('Cannot find LaTeX root file. See https://github.com/James-Yu/LaTeX-Workshop/wiki/Compile#the-root-file')
@@ -108,7 +108,7 @@ export class Commander {
             }
         }
         this.extension.logger.info(`Building root file: ${pickedRootFile}`)
-        return this.extension.builder.build(pickedRootFile, languageId, recipe)
+        return this.extension.builder?.build(pickedRootFile, languageId, recipe)
     }
 
     async revealOutputDir() {
@@ -177,23 +177,23 @@ export class Commander {
         const tabEditorGroup = configuration.get('view.pdf.tab.editorGroup') as string
         const viewer = typeof mode === 'string' ? mode : configuration.get<'tab' | 'browser' | 'external'>('view.pdf.viewer', 'tab')
         if (viewer === 'browser') {
-            return this.extension.viewer.openBrowser(pickedRootFile)
+            return this.extension.viewer?.openBrowser(pickedRootFile)
         } else if (viewer === 'tab') {
-            return this.extension.viewer.openTab(pickedRootFile, true, tabEditorGroup)
+            return this.extension.viewer?.openTab(pickedRootFile, true, tabEditorGroup)
         } else if (viewer === 'external') {
-            return this.extension.viewer.openExternal(pickedRootFile)
+            return this.extension.viewer?.openExternal(pickedRootFile)
         }
         return
     }
 
     refresh() {
         this.extension.logger.info('REFRESH command invoked.')
-        this.extension.viewer.refreshExistingViewer()
+        this.extension.viewer?.refreshExistingViewer()
     }
 
     kill() {
         this.extension.logger.info('KILL command invoked.')
-        this.extension.builder.kill()
+        this.extension.builder?.kill()
     }
 
     pdf(uri: vscode.Uri | undefined) {
@@ -201,7 +201,7 @@ export class Commander {
         if (uri === undefined || !uri.fsPath.endsWith('.pdf')) {
             return
         }
-        return this.extension.viewer.openPdfInTab(uri, 'current', false)
+        return this.extension.viewer?.openPdfInTab(uri, 'current', false)
     }
 
     synctex() {
@@ -218,7 +218,7 @@ export class Commander {
             } else if (this.extension.manager.rootFile !== undefined) {
                 pdfFile = this.extension.manager.tex2pdf(this.extension.manager.rootFile)
             }
-            return this.extension.locator.syncTeX(undefined, undefined, pdfFile)
+            return this.extension.locator?.syncTeX(undefined, undefined, pdfFile)
         } catch (e) {
             this.extension.logger.logError(e)
             throw e
@@ -231,7 +231,7 @@ export class Commander {
             this.extension.logger.info('Cannot start SyncTeX. The active editor is undefined, or the document is not a TeX document.')
             return
         }
-        return this.extension.locator.syncTeXOnRef({line, filePath})
+        return this.extension.locator?.syncTeXOnRef({line, filePath})
     }
 
     citation() {
@@ -242,7 +242,7 @@ export class Commander {
     log(compiler?: string) {
         this.extension.logger.info(`LOG command invoked: ${compiler || 'default'}`)
         if (compiler) {
-            this.extension.compilerLog.show()
+            this.extension.compilerLog?.show()
             return
         }
         this.extension.logger.showLog()

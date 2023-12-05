@@ -3,6 +3,7 @@ import * as path from 'node:path'
 import * as workerpool from 'workerpool'
 import type { Proxy } from 'workerpool'
 import type { IUtensilsParserWorker } from './utensilsparserlib/utensilsparser_worker.js'
+import { isRunningOnWebWorker } from '../utils/utils.js'
 
 
 export class UtensilsParser {
@@ -10,10 +11,14 @@ export class UtensilsParser {
     private readonly proxy: workerpool.Promise<Proxy<IUtensilsParserWorker>>
 
     constructor() {
-        this.pool = workerpool.pool(
-            path.join(__dirname, 'utensilsparserlib', 'utensilsparser_worker.js'),
-            { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
-        )
+        if (isRunningOnWebWorker()) {
+            throw new Error('UtensilsParser cannot be used in a web worker.')
+        } else {
+            this.pool = workerpool.pool(
+                path.join(__dirname, 'utensilsparserlib', 'utensilsparser_worker.js'),
+                { minWorkers: 1, maxWorkers: 1, workerType: 'thread' }
+            )
+        }
         this.proxy = this.pool.proxy<IUtensilsParserWorker>()
     }
 
