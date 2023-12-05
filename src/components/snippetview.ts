@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import { readFileSync } from 'node:fs'
-import * as path from 'node:path'
 
 import { replaceWebviewPlaceholders } from '../utils/webview.js'
 import { hasTexId } from '../utils/hastexid.js'
 import { Manager } from './manager.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
+import { readFile } from '../lib/lwfs/lwfs.js'
 
 
 type SnippetViewResult = RenderResult | {
@@ -87,7 +86,7 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
         return this.view
     }
 
-    public resolveWebviewView(webviewView: vscode.WebviewView) {
+    public async resolveWebviewView(webviewView: vscode.WebviewView) {
         this.view = webviewView
 
         webviewView.webview.options = {
@@ -98,8 +97,8 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
             this.view = undefined
         })
 
-        const webviewSourcePath = path.join(this.extension.extensionRoot, 'resources', 'snippetview', 'snippetview.html')
-        let webviewHtml = readFileSync(webviewSourcePath, { encoding: 'utf8' })
+        const webviewSourcePath = vscode.Uri.joinPath(this.extension.extensionContext.extensionUri, 'resources', 'snippetview', 'snippetview.html')
+        let webviewHtml = await readFile(webviewSourcePath)
         const extensionRootUri = vscode.Uri.file(this.extension.extensionRoot)
         webviewHtml = replaceWebviewPlaceholders(webviewHtml, extensionRootUri, this.view.webview)
         webviewView.webview.html = webviewHtml
