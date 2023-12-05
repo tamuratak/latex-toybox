@@ -1,5 +1,4 @@
 import * as vscode from 'vscode'
-import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as micromatch from 'micromatch'
 
@@ -7,7 +6,7 @@ import type { IProvider } from './interface.js'
 import { stripCommentsAndVerbatim } from '../../utils/strip.js'
 import type { Manager } from '../../components/manager.js'
 import type { Logger } from '../../components/logger.js'
-import { statPath } from '../../lib/lwfs/lwfs.js'
+import { readDir, statPath } from '../../lib/lwfs/lwfs.js'
 import { FileKind, FolderKind } from './completionkind.js'
 
 
@@ -45,9 +44,9 @@ abstract class AbstractInput implements IProvider {
      * @param files The list of files to filter
      * @param baseDir The base directory to resolve paths from
      */
-    private filterIgnoredFiles(document: vscode.TextDocument, files: string[], baseDir: string): string[] {
+    private filterIgnoredFiles(document: vscode.TextDocument, files: [string, vscode.FileType][], baseDir: string) {
         const excludeGlob = (Object.keys(vscode.workspace.getConfiguration('files', null).get('exclude') || {})).concat(vscode.workspace.getConfiguration('latex-toybox', document.uri).get('intellisense.file.exclude') || [] ).concat(ignoreFiles)
-        return files.filter(file => {
+        return files.filter(([file]) => {
             const filePath = path.resolve(baseDir, file)
             return !micromatch.isMatch(filePath, excludeGlob, {basename: true})
         })
@@ -111,10 +110,10 @@ abstract class AbstractInput implements IProvider {
                 dir = path.resolve(dir, currentFolder)
             }
             try {
-                let files = await fs.promises.readdir(dir)
+                let files = await readDir(vscode.Uri.file(dir))
                 files = this.filterIgnoredFiles(document, files, dir)
 
-                for (let file of files) {
+                for (let [file] of files) {
                     const filePath = path.resolve(dir, file)
                     if (dir === '/') {
                         // Keep the leading '/' to have an absolute path
