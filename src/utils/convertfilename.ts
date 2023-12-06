@@ -1,5 +1,6 @@
 import * as iconv from 'iconv-lite'
 import { existsPath } from '../lib/lwfs/lwfs.js'
+import * as xuserdefined from './xuserdefined.js'
 
 // https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
 export const iconvLiteSupportedEncodings = [
@@ -31,11 +32,11 @@ export async function convertFilenameEncoding(filePath: string) {
 }
 
 export class ConvertFilenameEncodingIterator implements IterableIterator<string> {
-    private readonly fileNameBuffer: Buffer
+    private readonly fileNameBuffer: Uint8Array
     private index = 0
 
     constructor(filePath: string) {
-        this.fileNameBuffer = Buffer.from(filePath, 'binary')
+        this.fileNameBuffer = xuserdefined.encode(filePath)
     }
 
     private computeNext() {
@@ -46,7 +47,7 @@ export class ConvertFilenameEncodingIterator implements IterableIterator<string>
                     return
                 }
                 this.index += 1
-                return iconv.decode(this.fileNameBuffer, enc)
+                return iconv.decode(this.fileNameBuffer as Buffer, enc)
             } catch (e) { }
         }
     }

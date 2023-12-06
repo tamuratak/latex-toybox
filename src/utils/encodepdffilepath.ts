@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import { decodeFromBase64Url, encodeToBase64Url } from './base64.js'
 
 /**
  * Prefix that server.ts uses to distiguish requests on pdf files from others.
@@ -9,25 +9,21 @@ import * as vscode from 'vscode'
 export const pdfFilePrefix = 'pdf..'
 
 /**
- * We encode the path with base64url after calling encodeURIComponent.
- * The reason not using base64url directly is that we are not sure that
- * encodeURIComponent, unescape, and btoa trick is valid on node.js.
+ * We encode the path with base64url.
  * - https://en.wikipedia.org/wiki/Base64#URL_applications
  * - https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/btoa#Unicode_strings
  */
 export function encodePath(url: string) {
-    const s = encodeURIComponent(url)
-    const b64 = Buffer.from(s).toString('base64')
-    const b64url = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+    const b64url = encodeToBase64Url(url)
     return b64url
 }
 
 export function decodePath(b64url: string) {
-    const tmp = b64url + '='.repeat((4 - b64url.length % 4) % 4)
-    const b64 = tmp.replace(/-/g, '+').replace(/_/g, '/')
-    const s = Buffer.from(b64, 'base64').toString()
-    return decodeURIComponent(s)
+    const ret = decodeFromBase64Url(b64url)
+    return ret
 }
+
+import * as vscode from 'vscode'
 
 export function encodePathWithPrefix(pdfFilePath: vscode.Uri) {
     return pdfFilePrefix + encodePath(pdfFilePath.toString(true))
