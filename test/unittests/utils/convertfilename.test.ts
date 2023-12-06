@@ -3,7 +3,7 @@ import { ConvertFilenameEncodingIterator, iconvLiteSupportedEncodings } from '..
 import { runUnitTestWithFixture } from '../../utils/ciutils.js'
 
 suite('unit test suite: utils/convertfilename.ts', () => {
-    runUnitTestWithFixture('fixture001', 'test runnerutils', () => {
+    runUnitTestWithFixture('fixture001', 'new ConvertFilenameEncodingIterator', () => {
         assert.strictEqual(
             Array.from(new ConvertFilenameEncodingIterator('/abc/test')).length,
             iconvLiteSupportedEncodings.length
