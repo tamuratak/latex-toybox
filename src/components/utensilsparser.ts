@@ -12,7 +12,12 @@ export class UtensilsParser {
 
     constructor() {
         if (isRunningOnWebWorker()) {
-            throw new Error('UtensilsParser cannot be used in a web worker.')
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+            const utensilsParserWorkerDataUrl = require('inline-worker:./utensilsparserlib/utensilsparser_worker.js') as string
+            this.pool = workerpool.pool(
+                utensilsParserWorkerDataUrl,
+                { minWorkers: 1, maxWorkers: 1, workerType: 'web' }
+            )
         } else {
             this.pool = workerpool.pool(
                 path.join(__dirname, 'utensilsparserlib', 'utensilsparser_worker.js'),

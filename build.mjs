@@ -1,5 +1,6 @@
 import * as esbuild from 'esbuild'
 import { polyfillNode } from "esbuild-plugin-polyfill-node";
+import { resolve } from "path";
 
 await esbuild.build({
     entryPoints: ['./src/web/web.ts'],
@@ -23,52 +24,6 @@ await esbuild.build({
         PluginInlineWorker()
 	],
 })
-
-await esbuild.build({
-    entryPoints: ['./src/components/mathpreviewlib/mathjaxpool_worker.ts'],
-    external: ['vscode', 'child_process', 'process', 'worker_threads'],
-    bundle: true,
-    minify: false,
-    outfile: './dist/mathjaxpool_worker.js',
-    platform: 'browser',
-    plugins: [
-		polyfillNode({
-            globals: {
-                buffer: false,
-                process: false
-            },
-            polyfills:{
-                child_process: false,
-                worker_threads: false,
-                process: false
-            }
-		}),
-	],
-  })
-
-await esbuild.build({
-    entryPoints: ['./src/components/utensilsparserlib/utensilsparser_worker.ts'],
-    external: ['vscode', 'child_process', 'process', 'worker_threads'],
-    bundle: true,
-    minify: false,
-    outfile: './dist/utensilsparser_worker.js',
-    platform: 'browser',
-    plugins: [
-		polyfillNode({
-            globals: {
-                buffer: false,
-                process: false
-            },
-            polyfills:{
-                child_process: false,
-                worker_threads: false,
-                process: false
-            }
-		}),
-	],
-})
-
-import { resolve } from "path";
 
 /**
  * https://gist.github.com/manzt/689e4937f5ae998c56af72efc9217ef0
