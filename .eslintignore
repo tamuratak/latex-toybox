@@ -4,6 +4,7 @@ viewer/viewer.js
 viewer/viewer.mjs
 data/
 dev/
+dist/
 icons/
 node_modules/
 out/

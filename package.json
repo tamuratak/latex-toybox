@@ -1732,6 +1732,7 @@
     "@vscode/test-electron": "2.3.8",
     "@vscode/vsce": "2.22.0",
     "esbuild": "0.19.8",
+    "esbuild-plugin-polyfill-node": "0.3.0",
     "eslint": "8.55.0",
     "glob": "10.3.10",
     "mocha": "10.2.0",
