@@ -3,6 +3,8 @@ import { polyfillNode } from "esbuild-plugin-polyfill-node";
 import { resolve } from "path";
 
 
+const watch = process.argv.includes('--watch') || process.argv.includes('-w')
+
 /**
  * @type {import('esbuild').BuildOptions}
  */
@@ -28,10 +30,8 @@ const config = {
         PluginInlineWorker()
 	],
     sourcemap:'external',
-    logLevel: 'verbose'
+    logLevel: watch ? 'info' : 'debug'
 }
-
-const watch = process.argv.includes('--watch') || process.argv.includes('-w')
 
 if (watch) {
     const context = await esbuild.context(config)

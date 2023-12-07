@@ -17,6 +17,19 @@
             "detail": "Watch ./src"
         },
         {
+            "label": "task-watch-web",
+            "type": "npm",
+            "script": "watch-web",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "never",
+                "group": "buildWatchers"
+            },
+            "group": "build",
+            "detail": "Watch for web"
+        },
+        {
             "label": "task-watch-viewer",
             "type": "npm",
             "script": "watch-viewer",
@@ -33,6 +46,7 @@
             "label": "task-watch-all",
             "dependsOn": [
                 "task-watch-src",
+                "task-watch-web",
                 "task-watch-viewer"
             ],
             "group": {
