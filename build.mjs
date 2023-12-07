@@ -10,7 +10,10 @@ await esbuild.build({
     platform: 'browser',
     plugins: [
 		polyfillNode({
-            globals: {},
+            globals: {
+                buffer: false,
+                process: false                
+            },
             polyfills:{
                 child_process: false,
                 worker_threads: false,
@@ -22,16 +25,21 @@ await esbuild.build({
 
 await esbuild.build({
     entryPoints: ['./src/components/mathpreviewlib/mathjaxpool_worker.ts'],
-    external: ['vscode', 'worker_threads'],
+    external: ['vscode', 'child_process', 'process', 'worker_threads'],
     bundle: true,
     minify: false,
     outfile: './dist/mathjaxpool_worker.js',
     platform: 'browser',
     plugins: [
 		polyfillNode({
-            globals: {},
+            globals: {
+                buffer: false,
+                process: false
+            },
             polyfills:{
-                worker_threads: false
+                child_process: false,
+                worker_threads: false,
+                process: false
             }
 		}),
 	],
@@ -39,16 +47,21 @@ await esbuild.build({
 
 await esbuild.build({
     entryPoints: ['./src/components/utensilsparserlib/utensilsparser_worker.ts'],
-    external: ['vscode', 'worker_threads'],
+    external: ['vscode', 'child_process', 'process', 'worker_threads'],
     bundle: true,
     minify: false,
     outfile: './dist/utensilsparser_worker.js',
     platform: 'browser',
     plugins: [
 		polyfillNode({
-            globals: {},
+            globals: {
+                buffer: false,
+                process: false
+            },
             polyfills:{
-                worker_threads: false
+                child_process: false,
+                worker_threads: false,
+                process: false
             }
 		}),
 	],
