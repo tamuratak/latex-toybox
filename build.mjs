@@ -2,7 +2,7 @@ import * as esbuild from 'esbuild'
 import { polyfillNode } from "esbuild-plugin-polyfill-node";
 
 await esbuild.build({
-    entryPoints: ['./out/src/web/web.js'],
+    entryPoints: ['./src/web/web.ts'],
     external: ['vscode', 'child_process', 'process', 'worker_threads'],
     bundle: true,
     minify: false,
