@@ -97,6 +97,7 @@ let extensionToDispose: Extension | undefined
 // - https://github.com/microsoft/vscode/issues/114688#issuecomment-768253918
 export function deactivate() {
     void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', false)
+    void vscode.commands.executeCommand('setContext', 'latex-toybox:web:enabled', false)
     return extensionToDispose?.dispose()
 }
 
@@ -110,6 +111,7 @@ export function activate(context: vscode.ExtensionContext): ReturnType<typeof ge
 
     conflictExtensionCheck()
     void vscode.commands.executeCommand('setContext', 'latex-toybox:enabled', true)
+    void vscode.commands.executeCommand('setContext', 'latex-toybox:web:enabled', true)
 
     return generateLatexToyboxApi(extension, structureViewer)
 }

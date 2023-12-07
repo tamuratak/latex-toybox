@@ -4,7 +4,8 @@ import * as workerpool from 'workerpool'
 import type { Proxy } from 'workerpool'
 import type { IMathJaxWorker } from './mathjaxpool_worker.js'
 import type { SupportedExtension } from 'mathjax-full'
-import { isRunningOnWebWorker } from '../../utils/utils.js'
+import { isRunningOnWebWorker } from '../../utils/web.js'
+
 
 const supportedExtensionList = [
     'amscd',
@@ -37,6 +38,12 @@ export class MathJaxPool {
 
     constructor() {
         if (isRunningOnWebWorker()) {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+            const mathjaxPoolWorkerDataUrl = require('inline-worker:./mathjaxpool_worker.js') as string
+            this.pool = workerpool.pool(
+                mathjaxPoolWorkerDataUrl,
+                { minWorkers: 1, maxWorkers: 1, workerType: 'web' }
+            )
             throw new Error('MathJaxPool cannot be used in a web worker.')
         } else {
             this.pool = workerpool.pool(

@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 import type * as fsType from 'node:fs'
 import { hasTexId } from '../../utils/hastexid.js'
-import { isRunningOnWebWorker } from '../../utils/utils.js'
+import { isRunningOnWebWorker } from '../../utils/web.js'
+
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 let fs: typeof fsType = {

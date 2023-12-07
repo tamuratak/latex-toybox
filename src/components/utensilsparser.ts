@@ -3,7 +3,7 @@ import * as path from 'node:path'
 import * as workerpool from 'workerpool'
 import type { Proxy } from 'workerpool'
 import type { IUtensilsParserWorker } from './utensilsparserlib/utensilsparser_worker.js'
-import { isRunningOnWebWorker } from '../utils/utils.js'
+import { isRunningOnWebWorker } from '../utils/web.js'
 
 
 export class UtensilsParser {
