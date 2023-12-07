@@ -1700,7 +1700,7 @@
   },
   "scripts": {
     "clean": "rimraf dist/ out/ .eslintcache",
-    "compile": "tsc -p tsconfig.json && tsc -p viewer/tsconfig.json",
+    "compile": "tsc -p tsconfig.json && tsc -p viewer/tsconfig.json && node build.mjs",
     "lint": "eslint --cache --ext .ts,.js .",
     "lint:fix": "eslint --fix --cache --ext .ts,.js .",
     "release": "npm run clean && npm run lint && npm run compile && vsce package",

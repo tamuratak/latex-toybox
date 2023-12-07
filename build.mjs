@@ -2,7 +2,11 @@ import * as esbuild from 'esbuild'
 import { polyfillNode } from "esbuild-plugin-polyfill-node";
 import { resolve } from "path";
 
-await esbuild.build({
+
+/**
+ * @type {import('esbuild').BuildOptions}
+ */
+const config = {
     entryPoints: ['./src/web/web.ts'],
     external: ['vscode', 'child_process', 'process', 'worker_threads'],
     bundle: true,
@@ -23,7 +27,18 @@ await esbuild.build({
 		}),
         PluginInlineWorker()
 	],
-})
+    sourcemap:'external',
+    logLevel: 'verbose'
+}
+
+const watch = process.argv.includes('--watch') || process.argv.includes('-w')
+
+if (watch) {
+    const context = await esbuild.context(config)
+    await context.watch()
+} else {
+    await esbuild.build(config)
+}
 
 /**
  * https://gist.github.com/manzt/689e4937f5ae998c56af72efc9217ef0
