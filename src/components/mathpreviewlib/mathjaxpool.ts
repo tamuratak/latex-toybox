@@ -44,7 +44,6 @@ export class MathJaxPool {
                 mathjaxPoolWorkerDataUrl,
                 { minWorkers: 1, maxWorkers: 1, workerType: 'web' }
             )
-            throw new Error('MathJaxPool cannot be used in a web worker.')
         } else {
             this.pool = workerpool.pool(
                 path.join(__dirname, 'mathjaxpool_worker.js'),
