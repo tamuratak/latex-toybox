@@ -66,7 +66,7 @@ export async function readFileGracefully(fileUri: vscode.Uri): Promise<string | 
 }
 
 export async function readFileAsUint8Array(fileUri: vscode.Uri): Promise<Uint8Array> {
-    if (isLocalUri(fileUri)) {
+    if (isLocalUri(fileUri) && !isRunningOnWebWorker()) {
         return fs.promises.readFile(fileUri.fsPath)
     } else {
         return vscode.workspace.fs.readFile(fileUri)
@@ -74,7 +74,7 @@ export async function readFileAsUint8Array(fileUri: vscode.Uri): Promise<Uint8Ar
 }
 
 export async function stat(fileUri: vscode.Uri): Promise<vscode.FileStat> {
-    if (isLocalUri(fileUri)) {
+    if (isLocalUri(fileUri) && !isRunningOnWebWorker()) {
         const st = await fs.promises.stat(fileUri.fsPath)
         return {
             type: st.isFile() ? vscode.FileType.File : st.isDirectory() ? vscode.FileType.Directory : st.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown,
@@ -93,7 +93,7 @@ export async function statPath(filePath: string): Promise<vscode.FileStat> {
 }
 
 export async function readDir(fileUri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-    if (isLocalUri(fileUri)) {
+    if (isLocalUri(fileUri) && !isRunningOnWebWorker()) {
         const result = await fs.promises.readdir(fileUri.fsPath, { withFileTypes: true })
         const fileType = (entry: fsType.Dirent) => entry.isFile() ? vscode.FileType.File : entry.isDirectory() ? vscode.FileType.Directory : entry.isSymbolicLink() ? vscode.FileType.SymbolicLink : vscode.FileType.Unknown
         return result.map(entry => [entry.name, fileType(entry)])
