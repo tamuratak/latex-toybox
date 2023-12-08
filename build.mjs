@@ -15,6 +15,7 @@ const config = {
     minify: false,
     outfile: './dist/main.js',
     platform: 'browser',
+    format: 'cjs',
     plugins: [
 		polyfillNode({
             globals: {

@@ -75,6 +75,7 @@ export function deactivate() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+    console.log('LaTeX Toybox activated.')
     const extension = new ExtensionOnWeb(context)
     extensionToDispose = extension
 
