@@ -43,10 +43,10 @@ if (watch) {
 /**
  * https://gist.github.com/manzt/689e4937f5ae998c56af72efc9217ef0
  *
- * @param {Pick<import('esbuild').BuildOptions, 'minify' | 'format' | 'plugins'>}
+ * @param {Pick<import('esbuild').BuildOptions, 'minify' | 'format' | 'plugins'>} opt
  * @return {import('esbuild').Plugin}
  */
-function PluginInlineWorker(opt = {}) {
+function PluginInlineWorker(opt) {
 	const namespace = "inline-worker";
 	const prefix = `${namespace}:`;
 	return {
