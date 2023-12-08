@@ -46,7 +46,6 @@
             "label": "task-watch-all",
             "dependsOn": [
                 "task-watch-src",
-                "task-watch-web",
                 "task-watch-viewer"
             ],
             "group": {
