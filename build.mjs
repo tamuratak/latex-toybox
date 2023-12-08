@@ -10,7 +10,7 @@ const watch = process.argv.includes('--watch') || process.argv.includes('-w')
  */
 const config = {
     entryPoints: ['./src/web/mainonweb.ts'],
-    external: ['vscode', 'child_process', 'process', 'worker_threads'],
+    external: ['vscode', 'child_process', 'worker_threads'],
     bundle: true,
     minify: false,
     outfile: './dist/main.js',
@@ -19,12 +19,11 @@ const config = {
 		polyfillNode({
             globals: {
                 buffer: false,
-                process: false                
+                process: true                
             },
             polyfills:{
                 child_process: false,
-                worker_threads: false,
-                process: false
+                worker_threads: false
             }
 		}),
         PluginInlineWorker()

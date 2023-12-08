@@ -123,7 +123,7 @@ export class ExtensionOnWeb {
         this.auxManager = new AuxManager(this)
         this.completionUpdater = new CompletionUpdater(this)
 
-        this.commander = new Commander({...this, builder: undefined, compilerLog: undefined, locator: undefined, viewer: undefined })
+        this.commander = new Commander({...this, builder: undefined, compilerLog: undefined, locator: undefined, viewer: undefined, texDoc: undefined })
         this.manager = new Manager({...this, viewer: undefined })
         this.completer = new Completer(this)
         this.duplicateLabels = new DuplicateLabels(this)

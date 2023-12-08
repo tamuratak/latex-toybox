@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 import * as path from 'node:path'
 
-import { TeXDoc } from './components/texdoc.js'
 import { hasTexId } from './utils/hastexid.js'
+import type { TeXDoc } from './components/texdoc.js'
 import type { Builder } from './components/builder.js'
 import type { Viewer } from './components/viewer.js'
 import type { Locator } from './components/locator.js'
@@ -49,7 +49,7 @@ async function quickPickRootFile(rootFile: string, localRootFile: string): Promi
 }
 
 export class Commander {
-    private readonly _texdoc: TeXDoc
+    private readonly _texdoc: TeXDoc | undefined
 
     constructor(private readonly extension: {
         readonly builder: Builder | undefined,
@@ -59,10 +59,11 @@ export class Commander {
         readonly locator: Locator | undefined,
         readonly mathPreviewPanel: MathPreviewPanel,
         readonly section: Section,
-        readonly viewer: Viewer | undefined
+        readonly viewer: Viewer | undefined,
+        readonly texDoc: TeXDoc | undefined
     } & ConstructorParameters<typeof TeXDoc>[0]) {
         this.extension = extension
-        this._texdoc = new TeXDoc(extension)
+        this._texdoc = extension.texDoc
     }
 
     /**
@@ -342,11 +343,11 @@ export class Commander {
     }
 
     texdoc(pkg?: string) {
-        return this._texdoc.texdoc(pkg)
+        return this._texdoc?.texdoc(pkg)
     }
 
     texdocUsepackages() {
-        this._texdoc.texdocUsepackages()
+        this._texdoc?.texdocUsepackages()
     }
 
     async saveWithoutBuilding() {

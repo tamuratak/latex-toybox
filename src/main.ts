@@ -30,6 +30,7 @@ import { BibtexAstManager, LatexAstManager } from './components/astmanager.js'
 import { AuxManager } from './components/auxmanager.js'
 import { registerProviders } from './registerproviders.js'
 import { StructureTreeView } from './components/structure.js'
+import { TeXDoc } from './components/texdoc.js'
 
 
 function conflictExtensionCheck() {
@@ -146,6 +147,7 @@ export class Extension {
     readonly duplicateLabels: DuplicateLabels
     readonly referenceStore: ReferenceStore
     readonly auxManager: AuxManager
+    readonly texDoc: TeXDoc
 
     constructor(context: vscode.ExtensionContext) {
         this.extensionContext = context
@@ -163,6 +165,7 @@ export class Extension {
 
         this.compilerLog = new CompilerLog(this)
         this.statusbaritem = new LwStatusBarItem(this)
+        this.texDoc = new TeXDoc(this)
         this.commander = new Commander(this)
         this.manager = new Manager(this)
         this.viewer = new Viewer(this)

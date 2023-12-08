@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 import * as path from 'node:path'
-import * as cs from 'cross-spawn'
 import * as utils from '../../utils/utils.js'
 
 import { existsPath } from '../../lib/lwfs/lwfs.js'
 import type { Logger } from '../logger.js'
 import type { Manager } from '../manager.js'
+import { isRunningOnWebWorker } from '../../utils/web.js'
 
 
 export class PathUtils {
@@ -73,6 +73,8 @@ export class PathUtils {
         const kpsewhich = vscode.workspace.getConfiguration('latex-toybox').get('kpsewhich.path') as string
         this.extension.logger.info(`Calling ${kpsewhich} to resolve file: ${bib}`)
         try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+            const cs = require('cross-spawn') as typeof import('cross-spawn')
             const kpsewhichReturn = cs.sync(kpsewhich, ['-format=.bib', bib])
             if (kpsewhichReturn.status === 0) {
                 const bibPath = kpsewhichReturn.stdout.toString().replace(/\r?\n/, '')
@@ -105,7 +107,7 @@ export class PathUtils {
 
         if (!bibPath) {
             this.extension.logger.info(`Cannot find .bib file: ${bib}`)
-            if (configuration.get('kpsewhich.enabled')) {
+            if (configuration.get('kpsewhich.enabled') && !isRunningOnWebWorker()) {
                 return this.kpsewhichBibPath(bib)
             } else {
                 return undefined
