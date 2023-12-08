@@ -29,7 +29,7 @@ const config = {
 		}),
         PluginInlineWorker()
 	],
-    sourcemap:'external',
+    sourcemap:'linked',
     logLevel: watch ? 'info' : 'debug'
 }
 
