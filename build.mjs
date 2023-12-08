@@ -9,11 +9,11 @@ const watch = process.argv.includes('--watch') || process.argv.includes('-w')
  * @type {import('esbuild').BuildOptions}
  */
 const config = {
-    entryPoints: ['./src/web/web.ts'],
+    entryPoints: ['./src/web/mainonweb.ts'],
     external: ['vscode', 'child_process', 'process', 'worker_threads'],
     bundle: true,
     minify: false,
-    outfile: './dist/web.js',
+    outfile: './dist/main.js',
     platform: 'browser',
     plugins: [
 		polyfillNode({
