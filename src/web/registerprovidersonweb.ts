@@ -19,7 +19,7 @@ import type { Commander } from '../commander.js'
 import type { SnippetView } from '../components/snippetview.js'
 import type { ReferenceStore } from '../components/referencestore.js'
 import type { AuxManager } from '../components/auxmanager.js'
-import { registerCommonProviders } from '../providersmanagerlib/common.js'
+import { registerCommonProviders } from '../registerproviderslib/common.js'
 
 
 export function registerProvidersOnWeb(
