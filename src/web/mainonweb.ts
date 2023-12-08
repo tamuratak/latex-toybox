@@ -1,4 +1,4 @@
-import '../utils/setupforweb.js'
+import './setupforweb.js'
 
 import * as vscode from 'vscode'
 
