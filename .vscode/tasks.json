@@ -20,7 +20,7 @@
             "label": "task-watch-web",
             "type": "npm",
             "script": "watch-web",
-            "problemMatcher": "$tsc-watch",
+            "problemMatcher": [],
             "isBackground": true,
             "presentation": {
                 "reveal": "never",
