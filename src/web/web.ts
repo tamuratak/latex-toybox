@@ -1,3 +1,5 @@
+import '../utils/setupforweb.js'
+
 import * as vscode from 'vscode'
 
 import { Commander } from '../commander.js'

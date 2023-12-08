@@ -1,5 +1,9 @@
-import * as vscode from 'vscode'
+let _isRunningOnWebWorker = false
 
-export function isRunningOnWebWorker(): boolean {
-    return vscode.env.uiKind === vscode.UIKind.Web && !vscode.env.remoteName
+export function setIsRunningOnWebWorker(value: boolean) {
+    _isRunningOnWebWorker = value
+}
+
+export function isRunningOnWebWorker() {
+    return _isRunningOnWebWorker
 }
