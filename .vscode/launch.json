@@ -35,6 +35,20 @@
             "preLaunchTask": "task-watch-all"
         },
         {
+            "name": "Run Web Extension in VS Code",
+            "type": "extensionHost",
+            "debugWebWorkerHost": true,
+            "request": "launch",
+            "args": [
+                    "--extensionDevelopmentPath=${workspaceFolder}",
+                    "--extensionDevelopmentKind=web"
+            ],
+            "outFiles": [
+                    "${workspaceFolder}/dist/**/*.js"
+            ],
+            "preLaunchTask": "task-watch-all"
+        },
+        {
             "name": "Run Extension With Sample",
             "type": "extensionHost",
             "request": "launch",
