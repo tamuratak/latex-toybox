@@ -31,7 +31,7 @@ const supportedExtensionList = [
 ]
 
 export class MathJaxPool {
-    private readonly pool: workerpool.WorkerPool
+    private readonly pool: workerpool.Pool
     private readonly proxyPromise: workerpool.Promise<Proxy<IMathJaxWorker>>
 
     constructor() {
