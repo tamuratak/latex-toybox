@@ -87,7 +87,7 @@ function PluginInlineWorker(opt) {
 				const base64 = Buffer.from(contents).toString("base64");
 				return {
 					loader: "js",
-					contents: `export default "data:application/javascript;base64,${base64}";`,
+					contents: `module.exports = "data:application/javascript;base64,${base64}";`,
 				};
 			});
 		},
