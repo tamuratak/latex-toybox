@@ -6,7 +6,7 @@ import type { IUtensilsParserWorker } from './utensilsparserlib/utensilsparser_w
 
 
 export class UtensilsParser {
-    private readonly pool: workerpool.WorkerPool
+    private readonly pool: workerpool.Pool
     private readonly proxy: workerpool.Promise<Proxy<IUtensilsParserWorker>>
 
     constructor() {
