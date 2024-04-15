@@ -39,12 +39,12 @@ See:
 ```mermaid
 flowchart LR
   subgraph VSCode["VS Code"]
-    PDFViewer["PDF viewer\n viewer/latexworkshop.ts"]
+    PDFViewer["PDF viewer\n viewer/latextoybox.ts"]
     SnippetView["Snippet View\n snippetview.js"] --- PDFRenderer["PDF thumbnail renderer\n pdfrenderer.js"]
     MathPreview["Math Preview Panel\n mathpreview.js"]
   end
   subgraph ExtensionHost["VS Code Extension Host"]
-    LW["LaTeX Workshop\n main.ts"]
+    LW["LaTeX Toybox\n main.ts"]
     LW --- Server["Server for PDF viewer \n(Files and WebSocket)\n server.ts "];
     LW --- ParserPool["Parser pool\n syntax.ts"]
     LW --- MathJaxPool["MathJax pool\n mathjaxpool.ts"]
@@ -52,12 +52,12 @@ flowchart LR
   PDFViewer <--> Server
   Server <--> Browser
   subgraph Browser
-    PDFViewerB["PDF viewer\n viewer/latexworkshop.ts"]
+    PDFViewerB["PDF viewer\n viewer/latextoybox.ts"]
   end
   ParserPool --> ParserWorkers["parser workers\n syntax_worker.ts"]
   MathJaxPool --> MathJaxWorkers["MathJax workers\n mathjaxpool_worker.ts "]
-  click PDFViewer "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latexworkshop.ts"
-  click PDFViewerB "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latexworkshop.ts"
+  click PDFViewer "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latextoybox.ts"
+  click PDFViewerB "https://github.com/Tamuratak/latex-toybox/blob/master/viewer/latextoybox.ts"
   click SnippetView "https://github.com/Tamuratak/latex-toybox/blob/master/resources/snippetview/snippetview.js"
   click PDFRenderer "https://github.com/Tamuratak/latex-toybox/blob/master/resources/snippetview/pdfrenderer.js"
   click MathPreview "https://github.com/Tamuratak/latex-toybox/blob/master/resources/mathpreviewpanel/mathpreview.js"
