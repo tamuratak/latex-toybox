@@ -1711,25 +1711,25 @@
     "micromatch": "4.0.5",
     "pdfjs-dist": "4.1.392",
     "workerpool": "9.1.1",
-    "ws": "8.16.0"
+    "ws": "8.17.0"
   },
   "devDependencies": {
     "@types/cross-spawn": "6.0.6",
-    "@types/micromatch": "4.0.6",
+    "@types/micromatch": "4.0.7",
     "@types/mocha": "10.0.6",
     "@types/node": "18.15.3",
     "@types/tmp": "0.2.6",
     "@types/vscode": "1.88.0",
     "@types/ws": "8.5.10",
-    "@typescript-eslint/eslint-plugin": "7.6.0",
-    "@typescript-eslint/parser": "7.6.0",
+    "@typescript-eslint/eslint-plugin": "7.8.0",
+    "@typescript-eslint/parser": "7.8.0",
     "@vscode/test-electron": "2.3.9",
-    "@vscode/vsce": "2.24.0",
+    "@vscode/vsce": "2.26.0",
     "eslint": "8.57.0",
     "glob": "10.3.10",
-    "mocha": "10.2.0",
+    "mocha": "10.4.0",
     "rimraf": "3.0.2",
-    "tmp": "0.2.1",
+    "tmp": "0.2.3",
     "typescript": "5.4.5"
   }
 }
