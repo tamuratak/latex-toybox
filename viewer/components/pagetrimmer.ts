@@ -112,8 +112,9 @@ function trimPage(page: HTMLElement) {
     }
     // This hides the left part of each element on the page.
     page.style.overflow = 'hidden'
+    const canvasWidth = canvas.style.width.replace('px', '')
     // Move each element on the page slightly to the left.
-    const offsetX = - Number(canvas.offsetWidth) * (1 - 1 / trimScale) / 2
+    const offsetX = - Number(canvasWidth) * (1 - 1 / trimScale) / 2
     canvas.style.left = offsetX + 'px'
     canvas.style.position = 'relative'
     if (textLayer) {
