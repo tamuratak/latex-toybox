@@ -1240,5 +1240,21 @@
   "displaystyle": {
     "command": "displaystyle",
     "snippet": "displaystyle"
+  },
+  "quad": {
+    "command": "quad",
+    "snippet": "quad"
+  },
+  "qquad": {
+    "command": "qquad",
+    "snippet": "qquad"
+  },
+  "phantom{}": {
+    "command": "phantom{text}",
+    "snippet": "phantom{${1:text}}"
+  },
+  "vphantom{}": {
+    "command": "vphantom{text}",
+    "snippet": "vphantom{${1:text}}"
   }
 }
