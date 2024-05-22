@@ -12,6 +12,7 @@
     -webkit-mask-size: 100% 20000px;
     -webkit-mask-position: left bottom;
     transition: mask-position 0.8s cubic-bezier(.23,.96,.57,.99), -webkit-mask-position 0.8s cubic-bezier(.23,.96,.57,.99);
+    scrollbar-color: var(--vscode-scrollbarSlider-background) var(--vscode-sideBar-background);
 }
 
 #contentMain:hover {
