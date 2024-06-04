@@ -8,6 +8,8 @@ function initializeDecoder() {
     }
 }
 
+// https://encoding.spec.whatwg.org/#x-user-defined
+// https://en.wikipedia.org/wiki/Character_encodings_in_HTML#cite_note-34
 export function decode(bytes: Uint8Array) {
     if (decoder) {
         return decoder.decode(bytes)
