@@ -4,7 +4,7 @@
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
         "lib": [
-            "es2021", "dom", "dom.iterable"
+            "es2022", "dom", "dom.iterable"
         ],
         "module": "es2022",
         "noFallthroughCasesInSwitch": true,
@@ -17,7 +17,7 @@
         "outDir": "../out/viewer",
         "sourceMap": true,
         "strict": true,
-        "target": "es2021",
+        "target": "es2022",
         "typeRoots": [],
         "baseUrl": "./",
         "paths": {
