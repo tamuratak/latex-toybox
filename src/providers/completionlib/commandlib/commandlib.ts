@@ -31,27 +31,15 @@ export class CommandNameDuplicationDetector {
         this.cmdSignatureList = new Set<string>(suggestions.map(s => s.name()))
     }
 
-    add(cmd: CmdEnvSuggestion): void
-    add(cmdName: string): void
-    add(cmd: any): void {
-        if (cmd instanceof CmdEnvSuggestion) {
-            this.cmdSignatureList.add(cmd.name())
-        } else if (typeof(cmd) === 'string') {
-            this.cmdSignatureList.add(cmd)
-        } else {
-            throw new Error('Unaccepted argument type')
-        }
+    add(cmd: CmdEnvSuggestion) {
+        this.cmdSignatureList.add(cmd.name())
     }
 
-    has(cmd: CmdEnvSuggestion): boolean
-    has(cmd: string): boolean
-    has(cmd: any): boolean {
+    has(cmd: CmdEnvSuggestion | string): boolean {
         if (cmd instanceof CmdEnvSuggestion) {
             return this.cmdSignatureList.has(cmd.name())
-        } else if (typeof(cmd) === 'string') {
-            return this.cmdSignatureList.has(cmd)
         } else {
-            throw new Error('Unaccepted argument type')
+            return this.cmdSignatureList.has(cmd)
         }
     }
 }

@@ -1,14 +1,15 @@
 import * as vscode from 'vscode'
 import { latexParser } from 'latex-utensils'
 import { CmdEnvSuggestion } from '../../../providers/completionlib/command.js'
-import { CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completionlib/commandlib/commandlib.js'
+import { type CommandNameDuplicationDetector, CommandSignatureDuplicationDetector, isTriggerSuggestNeeded } from '../../../providers/completionlib/commandlib/commandlib.js'
 import type { Completer } from '../../../providers/completion.js'
 import type { Manager } from '../../manager.js'
 import { CommandKind } from '../../../providers/completionlib/completionkind.js'
+import { getArgsFromNode, getDefCommandFromNode, getNewComanndFromNode, getTabStopsFromNode } from './commandfinderlib/commandfinderlib.js'
 
 
 export class CommandFinder {
-    definedCmds = new Map<string, {file: string, location: vscode.Location}>()
+    definedCmds = new Map<string, { file: string, location: vscode.Location }>()
 
     constructor(private readonly extension: {
         readonly completer: Completer,
@@ -26,122 +27,46 @@ export class CommandFinder {
     private getCmdFromNode(file: string, node: latexParser.Node, commandNameDuplicationDetector: CommandNameDuplicationDetector): CmdEnvSuggestion[] {
         const cmds: CmdEnvSuggestion[] = []
         if (latexParser.isDefCommand(node)) {
-           const name = node.token.slice(1)
+            const cmd = getDefCommandFromNode(node, commandNameDuplicationDetector)
+            if (cmd !== undefined) {
+                cmds.push(cmd)
+                commandNameDuplicationDetector.add(cmd)
+            }
+        } else if (latexParser.isCommand(node)) {
+            const name = node.name
             if (!commandNameDuplicationDetector.has(name)) {
                 const documentation = '`' + name + '`'
-                const insertText = new vscode.SnippetString(name + this.getTabStopsFromNode(node))
-                const filterText = name
+                const insertText = new vscode.SnippetString(name + getTabStopsFromNode(node))
                 let command: vscode.Command | undefined
                 if (isTriggerSuggestNeeded(name)) {
                     command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
                 }
                 const cmd = new CmdEnvSuggestion(
                     `\\${name}`,
-                    '',
-                    {name, args: this.getArgsFromNode(node)},
+                    this.whichPackageProvidesCommand(name),
+                    { name, args: getArgsFromNode(node) },
                     CommandKind,
-                    {documentation, insertText, filterText, command}
+                    { documentation, insertText, command }
                 )
                 cmds.push(cmd)
-                commandNameDuplicationDetector.add(name)
+                commandNameDuplicationDetector.add(cmd)
             }
-        } else if (latexParser.isCommand(node)) {
-            if (!commandNameDuplicationDetector.has(node.name)) {
-                const documentation = '`' + node.name + '`'
-                const insertText = new vscode.SnippetString(node.name + this.getTabStopsFromNode(node))
-                let command: vscode.Command | undefined
-                if (isTriggerSuggestNeeded(node.name)) {
-                    command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
-                }
-                const cmd = new CmdEnvSuggestion(
-                    `\\${node.name}`,
-                    this.whichPackageProvidesCommand(node.name),
-                    { name: node.name, args: this.getArgsFromNode(node) },
-                    CommandKind,
-                    {documentation, insertText, command}
-                )
+            const cmd = getNewComanndFromNode(node, commandNameDuplicationDetector)
+            if (cmd !== undefined) {
                 cmds.push(cmd)
-                commandNameDuplicationDetector.add(node.name)
-            }
-            if (['newcommand', 'renewcommand', 'providecommand', 'DeclareMathOperator', 'DeclarePairedDelimiter', 'DeclarePairedDelimiterX', 'DeclarePairedDelimiterXPP'].includes(node.name.replace(/\*$/, '')) &&
-                Array.isArray(node.args) && node.args.length > 0) {
-                const label = (node.args[0].content[0] as latexParser.Command).name
-                let tabStops = ''
-                let args = ''
-                if (latexParser.isOptionalArg(node.args[1])) {
-                    const numArgs = parseInt((node.args[1].content[0] as latexParser.TextString).content)
-                    for (let i = 1; i <= numArgs; ++i) {
-                        tabStops += '{${' + i + '}}'
-                        args += '{}'
-                    }
-                }
-                if (!commandNameDuplicationDetector.has(label)) {
-                    const documentation = '`' + label + '`'
-                    const insertText = new vscode.SnippetString(label + tabStops)
-                    const filterText = label
-                    let command: vscode.Command | undefined
-                    if (isTriggerSuggestNeeded(label)) {
-                        command = { title: 'Post-Action', command: 'editor.action.triggerSuggest' }
-                    }
-                    const cmd = new CmdEnvSuggestion(
-                        `\\${label}`,
-                        'user-defined',
-                        {name: label, args},
-                        CommandKind,
-                        {documentation, insertText, filterText, command}
-                    )
-                    cmds.push(cmd)
-                    this.definedCmds.set(label, {
-                        file,
-                        location: new vscode.Location(
-                            vscode.Uri.file(file),
-                            new vscode.Position(node.location.start.line - 1, node.location.start.column))
-                    })
-                    commandNameDuplicationDetector.add(label)
-                }
+                this.definedCmds.set(cmd.label, {
+                    file,
+                    location: new vscode.Location(
+                        vscode.Uri.file(file),
+                        new vscode.Position(node.location.start.line - 1, node.location.start.column))
+                })
+                commandNameDuplicationDetector.add(cmd)
             }
         }
         if (latexParser.hasContentArray(node)) {
             return cmds.concat(this.getCmdFromNodeArray(file, node.content, commandNameDuplicationDetector))
         }
         return cmds
-    }
-
-    private getArgsHelperFromNode(node: latexParser.Node, helper: (i: number) => string): string {
-        let args = ''
-        if (!('args' in node)) {
-            return args
-        }
-        let index = 0
-        if (latexParser.isCommand(node)) {
-            node.args.forEach(arg => {
-                ++index
-                if (latexParser.isOptionalArg(arg)) {
-                    args += '[' + helper(index) + ']'
-                } else {
-                    args += '{' + helper(index) + '}'
-                }
-            })
-            return args
-        }
-        if (latexParser.isDefCommand(node)) {
-            node.args.forEach(arg => {
-                ++index
-                if (latexParser.isCommandParameter(arg)) {
-                    args += '{' + helper(index) + '}'
-                }
-            })
-            return args
-        }
-        return args
-    }
-
-    private getTabStopsFromNode(node: latexParser.Node): string {
-        return this.getArgsHelperFromNode(node, (i: number) => { return '${' + i + '}' })
-    }
-
-    private getArgsFromNode(node: latexParser.Node): string {
-        return this.getArgsHelperFromNode(node, (_: number) => { return '' })
     }
 
     /**
@@ -163,8 +88,8 @@ export class CommandFinder {
                         const label = cmd.label.slice(1)
                         if (label.startsWith(cmdName) &&
                             ((label.length === cmdName.length) ||
-                            (label.charAt(cmdName.length) === '[') ||
-                            (label.charAt(cmdName.length) === '{'))) {
+                                (label.charAt(cmdName.length) === '[') ||
+                                (label.charAt(cmdName.length) === '{'))) {
                             return pkg
                         }
                     }
