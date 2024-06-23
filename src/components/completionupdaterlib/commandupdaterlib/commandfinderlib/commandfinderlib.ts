@@ -4,8 +4,10 @@ import { CmdEnvSuggestion } from '../../../../providers/completionlib/command.js
 import { type CommandNameDuplicationDetector, isTriggerSuggestNeeded } from '../../../../providers/completionlib/commandlib/commandlib.js'
 import { CommandKind } from '../../../../providers/completionlib/completionkind.js'
 
+
 export function getNewComanndFromNode(node: latexParser.Command, commandNameDuplicationDetector: CommandNameDuplicationDetector) {
-    if (['newcommand', 'renewcommand', 'providecommand', 'DeclareMathOperator', 'DeclarePairedDelimiter', 'DeclarePairedDelimiterX', 'DeclarePairedDelimiterXPP'].includes(node.name.replace(/\*$/, '')) && Array.isArray(node.args) && node.args.length > 0) {
+    const newCommands = ['newcommand', 'renewcommand', 'providecommand', 'DeclareMathOperator', 'DeclarePairedDelimiter', 'DeclarePairedDelimiterX', 'DeclarePairedDelimiterXPP']
+    if (newCommands.includes(node.name.replace(/\*$/, '')) && Array.isArray(node.args) && node.args.length > 0) {
         const firstArg = node.args[0].content[0]
         const name = latexParser.isCommand(firstArg) ? firstArg.name : undefined
         if (name === undefined) {
