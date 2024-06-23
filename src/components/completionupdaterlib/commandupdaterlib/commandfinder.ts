@@ -5,7 +5,7 @@ import { type CommandNameDuplicationDetector, CommandSignatureDuplicationDetecto
 import type { Completer } from '../../../providers/completion.js'
 import type { Manager } from '../../manager.js'
 import { CommandKind } from '../../../providers/completionlib/completionkind.js'
-import { getArgsFromNode, getDefCommandFromNode, getNewComanndFromNode, getTabStopsFromNode } from './commandfinderlib/commandfinderlib.js'
+import { getArgsFromNode, getDefCommandFromNode, getNewCommandFromNode, getTabStopsFromNode } from './commandfinderlib/commandfinderlib.js'
 
 
 export class CommandFinder {
@@ -51,7 +51,7 @@ export class CommandFinder {
                 cmds.push(cmd)
                 commandNameDuplicationDetector.add(cmd)
             }
-            const cmd = getNewComanndFromNode(node, commandNameDuplicationDetector)
+            const cmd = getNewCommandFromNode(node, commandNameDuplicationDetector)
             if (cmd !== undefined) {
                 cmds.push(cmd)
                 this.definedCmds.set(cmd.label, {

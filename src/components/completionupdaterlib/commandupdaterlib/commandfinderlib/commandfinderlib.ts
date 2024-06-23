@@ -5,7 +5,7 @@ import { type CommandNameDuplicationDetector, isTriggerSuggestNeeded } from '../
 import { CommandKind } from '../../../../providers/completionlib/completionkind.js'
 
 
-export function getNewComanndFromNode(node: latexParser.Command, commandNameDuplicationDetector: CommandNameDuplicationDetector) {
+export function getNewCommandFromNode(node: latexParser.Command, commandNameDuplicationDetector: CommandNameDuplicationDetector) {
     const newCommands = ['newcommand', 'renewcommand', 'providecommand', 'DeclareMathOperator', 'DeclarePairedDelimiter', 'DeclarePairedDelimiterX', 'DeclarePairedDelimiterXPP']
     if (newCommands.includes(node.name.replace(/\*$/, '')) && Array.isArray(node.args) && node.args.length > 0) {
         const firstArg = node.args[0].content[0]
