@@ -59,9 +59,10 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
     declare readonly filterText?: string
     declare insertText?: string | vscode.SnippetString
     declare readonly sortText?: string
-    override readonly label: string
+    declare readonly label: string
     readonly package: string
-    readonly signature: CmdSignature
+    /** Used for command duplicate detection. */
+    private readonly signature: CmdSignature
 
     constructor(
         label: string,
@@ -78,7 +79,6 @@ export class CmdEnvSuggestion extends vscode.CompletionItem implements ILwComple
         }
     ) {
         super(label, kind)
-        this.label = label
         this.package = pkg
         this.signature = signature
         if (args.command) {
