@@ -1,6 +1,7 @@
 import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
+import { ScrollMode } from './enums.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -25,6 +26,9 @@ export class ViewerLoading {
         }
         if (state.spreadMode !== undefined) {
             PDFViewerApplication.pdfViewer.spreadMode = state.spreadMode
+        }
+        if (state.page !== undefined && PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE){
+            PDFViewerApplication.page = state.page
         }
         if (state.scrollTop !== undefined) {
             (document.getElementById('viewerContainer') as HTMLElement).scrollTop = state.scrollTop
@@ -71,6 +75,7 @@ export class ViewerLoading {
             return
         }
         const pack = {
+            page: PDFViewerApplication.page,
             scale: PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
@@ -92,6 +97,9 @@ export class ViewerLoading {
         this.lwApp.lwEventBus.onPagesInit(() => {
             PDFViewerApplication.pdfViewer.currentScaleValue = pack.scale
             PDFViewerApplication.pdfViewer.scrollMode = pack.scrollMode
+            if (pack.scrollMode === ScrollMode.PAGE) {
+                PDFViewerApplication.page = pack.page
+            }
             PDFViewerApplication.pdfViewer.spreadMode = pack.spreadMode;
             (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
             (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft

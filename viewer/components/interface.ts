@@ -2,6 +2,7 @@ import type { ClientRequest, PanelRequest, PdfViewerState } from 'latex-toybox-p
 import type { SyncTex } from './synctex.js'
 import type { ViewerHistory } from './viewerhistory.js'
 import type { ViewerLoading } from './viewerloading.js'
+import { ScrollMode, SpreadMode } from './enums.js'
 
 
 export interface IDisposable {
@@ -47,7 +48,7 @@ export type PdfjsEventName
     | 'zoomreset'
     | 'scrollmodechanged'
     | 'spreadmodechanged'
-    | 'pagenumberchanged'
+    | 'pagechanging'
 
 type PageView = {
     viewport: {
@@ -68,12 +69,13 @@ export interface IPDFViewerApplication {
     },
     initializedPromise: Promise<void>,
     isViewerEmbedded: boolean,
+    page: number,
     pdfViewer: {
         currentScale: number,
         currentScaleValue: string,
         getPageView: (index: number) => PageView,
-        scrollMode: number,
-        spreadMode: number
+        scrollMode: ScrollMode,
+        spreadMode: SpreadMode
     },
     pdfCursorTools: {
         _handTool: {

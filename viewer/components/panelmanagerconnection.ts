@@ -121,7 +121,7 @@ export class PanelManagerConnection {
         window.addEventListener('scroll', () => {
             this.sendCurrentState()
         }, true)
-        const events: PdfjsEventName[] = ['scroll', 'scalechanged', 'zoomin', 'zoomout', 'zoomreset', 'scrollmodechanged', 'spreadmodechanged', 'pagenumberchanged']
+        const events: PdfjsEventName[] = ['scroll', 'scalechanged', 'zoomin', 'zoomout', 'zoomreset', 'scrollmodechanged', 'spreadmodechanged', 'pagechanging']
         for (const ev of events) {
             PDFViewerApplication.eventBus.on(ev, () => {
                 this.sendCurrentState()
