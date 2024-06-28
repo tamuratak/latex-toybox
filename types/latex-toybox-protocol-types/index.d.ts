@@ -95,6 +95,7 @@ export type PdfViewerState = {
     scrollTop?: number,
     scrollLeft?: number,
     trim?: number,
+    page?: number,
     scrollMode?: number,
     spreadMode?: number,
     synctexEnabled?: boolean,

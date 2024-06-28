@@ -1,4 +1,5 @@
-import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
+import { ScrollMode } from './enums.js'
+import { type ILatexToyboxPdfViewer, type IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -25,22 +26,26 @@ export class SyncTex {
         // https://github.com/James-Yu/LaTeX-Workshop/pull/417
         const container = document.getElementById('viewerContainer') as HTMLElement
         const pos = PDFViewerApplication.pdfViewer.getPageView(position.page - 1).viewport.convertToViewportPoint(position.x, position.y)
-        const page = document.getElementsByClassName('page')[position.page - 1] as HTMLElement
-        const maxScrollX = window.innerWidth * 0.9
-        const minScrollX = window.innerWidth * 0.1
+        let page: HTMLElement
+        if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
+            page = document.getElementsByClassName('page')[0] as HTMLElement
+        } else {
+            page = document.getElementsByClassName('page')[position.page - 1] as HTMLElement
+        }
         let scrollX = page.offsetLeft + pos[0]
-        scrollX = Math.min(scrollX, maxScrollX)
-        scrollX = Math.max(scrollX, minScrollX)
         const scrollY = page.offsetTop + page.offsetHeight - pos[1]
-
         // set positions before and after SyncTeX to viewerHistory
         this.lwApp.viewerHistory.pushCurrentPositionToHistory()
-        if (PDFViewerApplication.pdfViewer.scrollMode === 1) {
-            // horizontal scrolling
-            container.scrollLeft = page.offsetLeft
-        } else {
-            // vertical scrolling
+        if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
+            const maxScrollX = window.innerWidth * 0.9
+            const minScrollX = window.innerWidth * 0.1
+            scrollX = Math.min(scrollX, maxScrollX)
+            scrollX = Math.max(scrollX, minScrollX)
             container.scrollTop = scrollY - document.body.offsetHeight * 0.4
+        } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
+            container.scrollLeft = page.offsetLeft
+        } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
+            PDFViewerApplication.page = position.page
         }
         this.lwApp.viewerHistory.pushCurrentPositionToHistory()
 
@@ -66,7 +71,7 @@ export class SyncTex {
         let textBeforeSelection = ''
         let textAfterSelection = ''
         // workaround for https://github.com/James-Yu/LaTeX-Workshop/issues/1314
-        if(selection && selection.anchorNode && selection.anchorNode.nodeName === '#text'){
+        if (selection && selection.anchorNode && selection.anchorNode.nodeName === '#text') {
             const text = selection.anchorNode.textContent
             if (text) {
                 textBeforeSelection = text.substring(0, selection.anchorOffset)
@@ -81,8 +86,8 @@ export class SyncTex {
             const offsetLeft = m ? Number(m[1]) : 0
             left += offsetLeft
         }
-        const pos = PDFViewerApplication.pdfViewer.getPageView(page-1).getPagePoint(left, canvasDom.offsetHeight - top)
-        this.lwApp.send({type: 'reverse_synctex', pdfFileUri: this.lwApp.pdfFileUri, pos, page, textBeforeSelection, textAfterSelection})
+        const pos = PDFViewerApplication.pdfViewer.getPageView(page - 1).getPagePoint(left, canvasDom.offsetHeight - top)
+        this.lwApp.send({ type: 'reverse_synctex', pdfFileUri: this.lwApp.pdfFileUri, pos, page, textBeforeSelection, textAfterSelection })
     }
 
     registerListenerOnEachPage() {

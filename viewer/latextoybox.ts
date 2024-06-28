@@ -102,6 +102,7 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
     getPdfViewerState(): PdfViewerState {
         const pack: PdfViewerState = {
             pdfFileUri: this.pdfFileUri,
+            page: PDFViewerApplication.page,
             scale: this.pageTrimmer.originalPdfViewerCurrentScaleValue || PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
