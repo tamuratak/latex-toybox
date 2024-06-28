@@ -1,4 +1,8 @@
-import type { ILatexToyboxPdfViewer } from './interface.js'
+import { debugPrint } from '../utils/debug.js'
+import { ScrollMode } from './enums.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
+
+declare const PDFViewerApplication: IPDFViewerApplication
 
 // Static HTML elements
 const viewerContainerElement = document.getElementById('viewerContainer') as HTMLElement
@@ -6,10 +10,52 @@ const sidebarContainerElement = document.getElementById('sidebarContainer') as H
 const historyBackElement = document.getElementById('historyBack') as HTMLElement
 const historyForwardElement = document.getElementById('historyForward') as HTMLElement
 
-
 type HistoryEntry = {
-    readonly scroll: number
+    readonly scroll: number,
+    readonly page: number,
+    readonly scrollMode: ScrollMode
 }
+
+function isEntryEqual(a: HistoryEntry, b: HistoryEntry) {
+    if (a.scrollMode === b.scrollMode) {
+        if (a.scrollMode === ScrollMode.PAGE) {
+            return a.page === b.page
+        } else {
+            return a.scroll === b.scroll
+        }
+    } else {
+        return a.page === b.page
+    }
+}
+
+function getCurrentPosition(): HistoryEntry {
+    const page = PDFViewerApplication.page
+    const scrollMode = PDFViewerApplication.pdfViewer.scrollMode
+    if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
+        const scroll = viewerContainerElement.scrollTop
+        return { scroll, page, scrollMode }
+    } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
+        const scroll = viewerContainerElement.scrollLeft
+        return { scroll, page, scrollMode }
+    } else {
+        return { scroll: 0, page, scrollMode }
+    }
+}
+
+function setScroll(entry: HistoryEntry) {
+    if (PDFViewerApplication.pdfViewer.scrollMode === entry.scrollMode) {
+        if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
+            viewerContainerElement.scrollTop = entry.scroll
+        } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
+            viewerContainerElement.scrollLeft = entry.scroll
+        } else {
+            PDFViewerApplication.page = entry.page
+        }
+    } else {
+        PDFViewerApplication.page = entry.page
+    }
+}
+
 
 export class ViewerHistory {
     private history: HistoryEntry[] = []
@@ -33,7 +79,7 @@ export class ViewerHistory {
         const setHistory = () => {
             // set positions before and after clicking to viewerHistory
             this.lwApp.viewerHistory.pushCurrentPositionToHistory()
-            setTimeout(() => {this.lwApp.viewerHistory.pushCurrentPositionToHistory()}, 500)
+            setTimeout(() => { this.lwApp.viewerHistory.pushCurrentPositionToHistory() }, 500)
         }
 
         viewerContainerElement.addEventListener('click', setHistory)
@@ -71,30 +117,29 @@ export class ViewerHistory {
 
     pushCurrentPositionToHistory() {
         this.scrollPositionWhenGoingBack = undefined
-        const scroll = viewerContainerElement.scrollTop
+        const entry = getCurrentPosition()
         if (this.history.length === 0) {
-            this.history.push({scroll})
+            this.history.push(entry)
             this.currentPrevIndex = 0
             return
-        }
-
-        if (this.currentPrevIndex === 'historyIsEmpty') {
+        } else if (this.currentPrevIndex === 'historyIsEmpty') {
             console.log('this.currentIndex === historyIsEmpty never happens here.')
             return
-        }
-
-        const curScroll = this.historyAt(this.currentPrevIndex).scroll
-        if (curScroll !== scroll) {
-            this.history = this.history.slice(0, this.currentPrevIndex + 1)
-            this.history.push({scroll})
-            if (this.length() > 30) {
-                this.history = this.history.slice(this.length() - 30)
+        } else {
+            const curEntry = this.historyAt(this.currentPrevIndex)
+            if (!isEntryEqual(curEntry, entry)) {
+                this.history = this.history.slice(0, this.currentPrevIndex + 1)
+                this.history.push(entry)
+                if (this.length() > 30) {
+                    this.history = this.history.slice(this.length() - 30)
+                }
+                this.currentPrevIndex = this.lastIndex()
             }
-            this.currentPrevIndex = this.lastIndex()
         }
     }
 
     back() {
+        debugPrint(this.history)
         if (this.length() === 0) {
             return
         }
@@ -102,26 +147,28 @@ export class ViewerHistory {
         if (cur === 'historyIsEmpty') {
             return
         }
-        const prevScroll = this.historyAt(cur).scroll
+        const prevHistory = this.historyAt(cur)
+        const prevScroll = prevHistory.scroll
         if (this.currentPrevIndex === this.lastIndex() && prevScroll !== viewerContainerElement.scrollTop) {
             // We have to store the current scroll position, because
             // the viewer should go back to it when users click the last Forward button.
             this.scrollPositionWhenGoingBack = viewerContainerElement.scrollTop
         }
-        if (prevScroll !== viewerContainerElement.scrollTop) {
-            viewerContainerElement.scrollTop = prevScroll
+        if (!isEntryEqual(prevHistory, getCurrentPosition())) {
+            setScroll(prevHistory)
         } else {
             if (cur <= 0) {
                 return
             }
             const newIndex = cur - 1
-            const scrl = this.historyAt(newIndex).scroll
+            const entry = this.historyAt(newIndex)
             this.currentPrevIndex = newIndex
-            viewerContainerElement.scrollTop = scrl
+            setScroll(entry)
         }
     }
 
     forward() {
+        debugPrint(this.history)
         if (this.currentPrevIndex === this.lastIndex()) {
             if (this.scrollPositionWhenGoingBack !== undefined) {
                 viewerContainerElement.scrollTop = this.scrollPositionWhenGoingBack
@@ -134,18 +181,18 @@ export class ViewerHistory {
             return
         }
         let newIndex = cur + 1
-        const nextScroll = this.historyAt(newIndex).scroll
-        if (nextScroll !== viewerContainerElement.scrollTop) {
+        const nextEntry = this.historyAt(newIndex)
+        if (!isEntryEqual(nextEntry, getCurrentPosition())) {
             this.currentPrevIndex = newIndex
-            viewerContainerElement.scrollTop = nextScroll
+            setScroll(nextEntry)
         } else {
             newIndex = cur + 2
             if (newIndex >= this.history.length) {
                 return
             }
-            const scrl = this.historyAt(newIndex).scroll
+            const entry = this.historyAt(newIndex)
             this.currentPrevIndex = newIndex
-            viewerContainerElement.scrollTop = scrl
+            setScroll(entry)
         }
     }
 

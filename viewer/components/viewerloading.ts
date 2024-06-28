@@ -97,12 +97,13 @@ export class ViewerLoading {
         this.lwApp.lwEventBus.onPagesInit(() => {
             PDFViewerApplication.pdfViewer.currentScaleValue = pack.scale
             PDFViewerApplication.pdfViewer.scrollMode = pack.scrollMode
+            PDFViewerApplication.pdfViewer.spreadMode = pack.spreadMode
             if (pack.scrollMode === ScrollMode.PAGE) {
                 PDFViewerApplication.page = pack.page
+            } else {
+                (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
+                (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
             }
-            PDFViewerApplication.pdfViewer.spreadMode = pack.spreadMode;
-            (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
-            (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
         }, {once: true})
         // The height of each page can change after a `pagesinit` event.
         // We have to set scrollTop on a `pagesloaded` event for that case.
