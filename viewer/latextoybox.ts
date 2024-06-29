@@ -4,7 +4,7 @@ const importPdfMjsPromise = import('/build/pdf.mjs')
 import './components/editviewerhtml.js'
 import { ExtensionConnection } from './components/extensionconnection.js'
 import { SyncTex } from './components/synctex.js'
-import { PageTrimmer } from './components/pagetrimmer.js'
+import { getOriginalPdfViewerCurrentScaleValue } from './components/pagetrimmer.js'
 import * as utils from './utils/utils.js'
 import { isEmbedded } from './utils/utils.js'
 import { ViewerHistory } from './components/viewerhistory.js'
@@ -28,7 +28,6 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
     readonly encodedPdfFilePath: string
     readonly pdfFileUri: string
 
-    readonly pageTrimmer: PageTrimmer
     readonly synctex: SyncTex
     readonly viewerHistory: ViewerHistory
     readonly appConfig: AppConfig
@@ -60,7 +59,6 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
 
         this.viewerHistory = new ViewerHistory(this)
         this.synctex = new SyncTex(this)
-        this.pageTrimmer = new PageTrimmer(this)
         this.appConfig = new AppConfig(this)
         this.keybinding = new Keybinding(this)
         this.viewerLoading = new ViewerLoading(this)
@@ -103,7 +101,7 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
         const pack: PdfViewerState = {
             pdfFileUri: this.pdfFileUri,
             page: PDFViewerApplication.page,
-            scale: this.pageTrimmer.originalPdfViewerCurrentScaleValue || PDFViewerApplication.pdfViewer.currentScaleValue,
+            scale: getOriginalPdfViewerCurrentScaleValue() || PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
             scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,

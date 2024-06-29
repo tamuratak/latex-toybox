@@ -1,7 +1,6 @@
-import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
+import type { IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
-
 
 let pdfViewerCurrentScale: number | undefined
 let originalSelectedIndex: number | undefined
@@ -10,22 +9,61 @@ let originalPdfViewerCurrentScaleValue: string | undefined
 
 // Static HTML elements
 const trimSelectElement = document.getElementById('trimSelect') as HTMLSelectElement
-
 const scaleSelectElement = document.getElementById('scaleSelect') as HTMLSelectElement
 // an option in the scaleSelect element
 const trimOptionElement = document.getElementById('trimOption') as HTMLOptionElement
-
 const viewerDivElement = document.getElementById('viewer') as HTMLElement
 
+const trimRule005StyleSheet = document.createElement('style')
+const trimRule010StyleSheet = document.createElement('style')
+const trimRule015StyleSheet = document.createElement('style')
+
+const trimValueAndSheet: [number, HTMLStyleElement][] = [[0.05, trimRule005StyleSheet], [0.10, trimRule010StyleSheet], [0.15, trimRule015StyleSheet]]
+trimValueAndSheet.forEach(([trimValue, sheet]) => {
+    document.head.appendChild(sheet)
+    const left = -100 * trimValue
+    sheet.textContent = `
+.page canvas {
+    left: ${left}%;
+    position: relative;
+}
+.page .textLayer {
+    left: ${left}%;
+}
+.page .annotationLayer {
+    left: ${left}%;
+}
+`
+    sheet.disabled = true
+})
+
+function disableAllTrimRuleStylesheets() {
+    trimRule005StyleSheet.disabled = true
+    trimRule010StyleSheet.disabled = true
+    trimRule015StyleSheet.disabled = true
+}
+
+function enableTrimRuleStylesheet(trimSelectedIndex: number) {
+    disableAllTrimRuleStylesheets()
+    if (trimSelectedIndex === 1) {
+        trimRule005StyleSheet.disabled = false
+    } else if (trimSelectedIndex === 2) {
+        trimRule010StyleSheet.disabled = false
+    } else if (trimSelectedIndex === 3) {
+        trimRule015StyleSheet.disabled = false
+    }
+}
+
 function getTrimScale() {
-    if (trimSelectElement.selectedIndex <= 0) {
+    const trimSelectedIndex = trimSelectElement.selectedIndex
+    if (trimSelectedIndex <= 0) {
         return 1.0
     }
-    const trimValue = trimSelectElement.options[trimSelectElement.selectedIndex]?.value
+    const trimValue = trimValueAndSheet[trimSelectedIndex - 1]?.[0]
     if (trimValue === undefined) {
-        throw new Error('trimValue is undefined')
+        throw new Error('trimValue is undefined. never happen.')
     }
-    return 1.0 / (1 - 2 * Number(trimValue))
+    return 1.0 / (1 - 2 * trimValue)
 }
 
 /**
@@ -57,9 +95,9 @@ trimSelectElement.addEventListener('change', () => {
                 scaleSelectElement.selectedIndex = originalSelectedIndex
             }
         }
-        // Dispatch the change event, which resizes each page, which triggers MutationObserver on each page,
-        // then resetTrim() will be called on each page.
+        // Dispatch the change event, which resizes each page.
         scaleSelectElement.dispatchEvent(changeEvent)
+        disableAllTrimRuleStylesheets()
         pdfViewerCurrentScale = undefined
         originalSelectedIndex = undefined
         originalPdfViewerCurrentScaleValue = undefined
@@ -82,80 +120,10 @@ trimSelectElement.addEventListener('change', () => {
         // Set the calculated scale to scaleSelectElement through trimOptionElement.
         trimOptionElement.value = (pdfViewerCurrentScale * trimScale).toString()
         trimOptionElement.selected = true
-        // Dispatch the change event, which resizes each page, which triggers MutationObserver on each page,
-        // then trimPage() will be called on each page.
+        enableTrimRuleStylesheet(trimSelectElement.selectedIndex)
         scaleSelectElement.dispatchEvent(changeEvent)
     }
 })
-
-function resetTrim(page: HTMLElement) {
-    // Since canvas element on the page is recreated when the page is resized,
-    // we don't have to reset the properties of the canvas element.
-    page.style.overflow = ''
-    const textLayer = page.getElementsByClassName('textLayer')[0] as HTMLElement
-    const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
-    if (textLayer && textLayer.style) {
-        textLayer.style.left = ''
-    }
-    if (annotationLayer && annotationLayer.style) {
-        annotationLayer.style.left = ''
-    }
-}
-
-function trimPage(page: HTMLElement) {
-    const trimScale = getTrimScale()
-    const textLayer = page.getElementsByClassName('textLayer')[0] as HTMLElement
-    const annotationLayer = page.getElementsByClassName('annotationLayer')[0] as HTMLElement
-    const canvas = page.getElementsByTagName('canvas')[0]
-    if (!canvas) {
-        return
-    }
-    // This hides the left part of each element on the page.
-    page.style.overflow = 'hidden'
-    const canvasWidth = canvas.style.width.replace('px', '')
-    // Move each element on the page slightly to the left.
-    const offsetX = - Number(canvasWidth) * (1 - 1 / trimScale) / 2
-    canvas.style.left = offsetX + 'px'
-    canvas.style.position = 'relative'
-    if (textLayer) {
-        if (textLayer.style) {
-            textLayer.style.left = offsetX + 'px'
-        } else {
-            (textLayer.style as any) = `offset: ${offsetX}px;`
-        }
-    }
-    if (annotationLayer) {
-        if (annotationLayer.style) {
-            annotationLayer.style.left = offsetX + 'px'
-        } else {
-            (annotationLayer.style as any) = `offset: ${offsetX}px;`
-        }
-    }
-}
-
-function setObserverToTrim() {
-    const observer = new MutationObserver(records => {
-        if (trimSelectElement.selectedIndex <= 0) {
-            // Undo trim
-            records.forEach(record => {
-                const page = record.target as HTMLElement
-                resetTrim(page)
-            })
-        } else {
-            // Do trim
-            records.forEach(record => {
-                const page = record.target as HTMLElement
-                trimPage(page)
-            })
-        }
-    })
-    for (const page of viewerDivElement.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>) {
-        if (page.dataset['isObserved'] !== 'observed') {
-            observer.observe(page, { attributes: true, childList: true, attributeFilter: ['style'] })
-            page.setAttribute('data-is-observed', 'observed')
-        }
-    }
-}
 
 // We have to recalculate scale and left offset for trim mode on each resize event.
 window.addEventListener('resize', () => {
@@ -170,29 +138,6 @@ window.addEventListener('resize', () => {
     trimSelectElement.dispatchEvent(changeEvent)
 })
 
-export class PageTrimmer {
-    private readonly lwApp: ILatexToyboxPdfViewer
-
-    constructor(lwApp: ILatexToyboxPdfViewer) {
-        this.lwApp = lwApp
-        // Set observers after a pdf file is loaded in the first time.
-        this.lwApp.lwEventBus.onPagesLoaded(setObserverToTrim, { once: true })
-        // Skip the first loading
-        this.lwApp.lwEventBus.onPagesInit(() => {
-            // Set observers each time a pdf file is refresed.
-            this.lwApp.lwEventBus.onPagesInit(setObserverToTrim)
-        }, { once: true })
-
-        this.lwApp.lwEventBus.onPagesLoaded(() => {
-            if (trimSelectElement.selectedIndex > 0) {
-                for (const page of viewerDivElement.getElementsByClassName('page') as HTMLCollectionOf<HTMLElement>) {
-                    trimPage(page)
-                }
-            }
-        })
-    }
-
-    get originalPdfViewerCurrentScaleValue() {
-        return originalPdfViewerCurrentScaleValue
-    }
+export function getOriginalPdfViewerCurrentScaleValue() {
+    return originalPdfViewerCurrentScaleValue
 }
