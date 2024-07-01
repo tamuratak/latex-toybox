@@ -2,7 +2,7 @@ import type { ClientRequest, PanelRequest, PdfViewerState } from 'latex-toybox-p
 import type { SyncTex } from './synctex.js'
 import type { ViewerHistory } from './viewerhistory.js'
 import type { ViewerLoading } from './viewerloading.js'
-import { ScrollMode, SpreadMode } from './enums.js'
+import { RenderingStates, ScrollMode, SpreadMode } from './enums.js'
 
 
 export interface IDisposable {
@@ -34,7 +34,8 @@ export interface ILatexToyboxPdfViewer {
 export interface ILwEventBus {
     onDidStartPdfViewer(cb: () => unknown): IDisposable,
     onPagesInit(cb: () => unknown, option?: {once: boolean}): IDisposable,
-    onPagesLoaded(cb: () => unknown, option?: {once: boolean}): IDisposable
+    onPagesLoaded(cb: () => unknown, option?: {once: boolean}): IDisposable,
+    onPageRendered(cb: () => unknown, option?: {once: boolean}): IDisposable
 }
 
 export type PdfjsEventName
@@ -49,12 +50,23 @@ export type PdfjsEventName
     | 'scrollmodechanged'
     | 'spreadmodechanged'
     | 'pagechanging'
+    | 'pagerendered'
 
-type PageView = {
+interface IPageView {
     viewport: {
         convertToViewportPoint(x: number, y: number): [number, number]
     },
-    getPagePoint(x: number, y: number): [number, number]
+    getPagePoint(x: number, y: number): [number, number],
+    get renderingState(): RenderingStates
+}
+
+interface IPDFViewer {
+    currentScale: number,
+    currentScaleValue: string,
+    getPageView(index: number): IPageView,
+    getCachedPageViews(): Set<IPageView>,
+    scrollMode: ScrollMode,
+    spreadMode: SpreadMode
 }
 
 export interface IPDFViewerApplication {
@@ -70,13 +82,7 @@ export interface IPDFViewerApplication {
     initializedPromise: Promise<void>,
     isViewerEmbedded: boolean,
     page: number,
-    pdfViewer: {
-        currentScale: number,
-        currentScaleValue: string,
-        getPageView: (index: number) => PageView,
-        scrollMode: ScrollMode,
-        spreadMode: SpreadMode
-    },
+    pdfViewer: IPDFViewer,
     pdfCursorTools: {
         _handTool: {
             activate(): void,

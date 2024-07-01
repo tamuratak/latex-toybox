@@ -30,6 +30,10 @@ https://user-images.githubusercontent.com/10665499/225462508-0f7d70e6-8ffe-4457-
 
 https://user-images.githubusercontent.com/10665499/225464584-1b9c5479-ce6a-4a56-a205-0b09a9c2cfc7.mov
 
+## True Flicker-free reloading
+
+By displaying a copy of each page over the original while reloading the PDF viewer, we achieve a truly flicker-free reload.
+
 ## Removed features
 
 To streamline maintenance and enhance security measures, I removed some features from LaTeX Workshop:

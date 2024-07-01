@@ -1,7 +1,9 @@
 import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
-import { ScrollMode } from './enums.js'
+import { RenderingStates, ScrollMode } from './enums.js'
+import { debugPrint } from '../utils/debug.js'
+import { isTrimEnabled } from './pagetrimmer.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -90,9 +92,18 @@ export class ViewerLoading {
         // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
         PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
+        const imgMaskArray = this.makeImgMasksForAllVisiblePages()
         void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
             // reset the document title to the original value to avoid duplication
             document.title = this.lwApp.documentTitle
+        })
+        const disposable = this.lwApp.lwEventBus.onPageRendered(() => {
+            if (isAllVisiblePagesRendered()) {
+                disposable.dispose()
+                for (const img of imgMaskArray) {
+                    img.remove()
+                }
+            }
         })
         this.lwApp.lwEventBus.onPagesInit(() => {
             PDFViewerApplication.pdfViewer.currentScaleValue = pack.scale
@@ -116,4 +127,53 @@ export class ViewerLoading {
         }, {once: true})
     }
 
+    makeImgMasksForAllVisiblePages() {
+        const maskImgArray: HTMLImageElement[] = []
+        const viewerContainer = document.getElementById('viewerContainer')
+        const viewer = document.getElementById('viewer')
+        if (!viewerContainer || !viewer) {
+            return maskImgArray
+        }
+        const pageCollection = viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLDivElement>
+        if (!pageCollection) {
+            return maskImgArray
+        }
+        for (const page of pageCollection) {
+            const canvas = page.getElementsByTagName('canvas')[0]
+            if (!canvas) {
+                continue
+            }
+            debugPrint('canvas')
+            debugPrint({offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft})
+            debugPrint('page')
+            debugPrint({offsetTop: page.offsetTop, offetLeft: page.offsetLeft})
+            const img = new Image()
+            maskImgArray.push(img)
+            img.src = canvas.toDataURL() ?? ''
+            img.style.zIndex = '10'
+            img.style.position = 'absolute'
+            img.style.top = page.offsetTop + 'px'
+            if (isTrimEnabled()) {
+                img.style.left = canvas.offsetLeft + 'px'
+            } else {
+                img.style.left = page.offsetLeft + 'px'
+            }
+            img.style.margin = '0'
+            img.style.padding = '0'
+            img.style.border = 'none'
+            img.style.outline = 'none'
+            img.style.width = (canvas.clientWidth ?? 0) + 'px'
+            img.style.height = (canvas.clientHeight ?? 0) + 'px'
+            viewerContainer.appendChild(img)
+        }
+        return maskImgArray
+    }
+
+}
+
+export function isAllVisiblePagesRendered(): boolean {
+    const pageViews = PDFViewerApplication.pdfViewer.getCachedPageViews()
+    debugPrint('rendering state')
+    debugPrint(Array.from(pageViews).map(view => view.renderingState))
+    return Array.from(pageViews).every((view) => [RenderingStates.FINISHED, RenderingStates.PAUSED].includes(view.renderingState))
 }
