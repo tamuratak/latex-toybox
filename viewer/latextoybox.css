@@ -70,6 +70,14 @@ html[dir='rtl'] .findbar {
     }
 }
 
+/**
+ * Remove the masks after the PDF document rendered with a transition animation.
+ */
+.removeMask {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
 #historyBack::before {
     -webkit-mask-image: var(--findbarButton-previous-icon);
     mask-image: var(--findbarButton-previous-icon);
