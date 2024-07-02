@@ -66,7 +66,8 @@ interface IPDFViewer {
     getPageView(index: number): IPageView,
     getCachedPageViews(): Set<IPageView>,
     scrollMode: ScrollMode,
-    spreadMode: SpreadMode
+    spreadMode: SpreadMode,
+    _getVisiblePages(): { first: number, last: number, views: { id: number, x: number, y: number, view: IPageView, percent: number }[], ids: Set<number> }
 }
 
 export interface IPDFViewerApplication {

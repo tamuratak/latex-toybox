@@ -148,6 +148,8 @@ export class ViewerLoading {
             debugPrint('page')
             debugPrint({offsetTop: page.offsetTop, offetLeft: page.offsetLeft})
             const img = new Image()
+            img.style.display = 'none'
+            img.style.overflow = 'hidden'
             maskImgArray.push(img)
             img.src = canvas.toDataURL() ?? ''
             img.style.zIndex = '10'
@@ -165,6 +167,7 @@ export class ViewerLoading {
             img.style.width = (canvas.clientWidth ?? 0) + 'px'
             img.style.height = (canvas.clientHeight ?? 0) + 'px'
             viewerContainer.appendChild(img)
+            img.style.display = 'inherit'
         }
         return maskImgArray
     }
@@ -172,8 +175,10 @@ export class ViewerLoading {
 }
 
 export function isAllVisiblePagesRendered(): boolean {
-    const pageViews = PDFViewerApplication.pdfViewer.getCachedPageViews()
-    debugPrint('rendering state')
-    debugPrint(Array.from(pageViews).map(view => view.renderingState))
-    return Array.from(pageViews).every((view) => [RenderingStates.FINISHED, RenderingStates.PAUSED].includes(view.renderingState))
+    const pageViews = PDFViewerApplication.pdfViewer._getVisiblePages()
+    debugPrint('pageViews')
+    debugPrint(pageViews.ids)
+    debugPrint('renderingState')
+    debugPrint(pageViews.views.map(view => view.view.renderingState))
+    return pageViews.views.every(view => view.view.renderingState === RenderingStates.FINISHED)
 }
