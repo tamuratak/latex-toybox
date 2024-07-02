@@ -29,7 +29,7 @@ export class ViewerLoading {
         if (state.spreadMode !== undefined) {
             PDFViewerApplication.pdfViewer.spreadMode = state.spreadMode
         }
-        if (state.page !== undefined && PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE){
+        if (state.page !== undefined && PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
             PDFViewerApplication.page = state.page
         }
         if (state.scrollTop !== undefined) {
@@ -92,7 +92,7 @@ export class ViewerLoading {
         // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
         PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
-        const imgMaskArray = this.makeImgMasksForAllVisiblePages()
+        const maskArray = makeMasksForAllVisiblePages()
         void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
             // reset the document title to the original value to avoid duplication
             document.title = this.lwApp.documentTitle
@@ -100,8 +100,8 @@ export class ViewerLoading {
         const disposable = this.lwApp.lwEventBus.onPageRendered(() => {
             if (isAllVisiblePagesRendered()) {
                 disposable.dispose()
-                for (const img of imgMaskArray) {
-                    img.remove()
+                for (const mask of maskArray) {
+                    mask.remove()
                 }
             }
         })
@@ -115,63 +115,71 @@ export class ViewerLoading {
                 (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
                 (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
             }
-        }, {once: true})
+        }, { once: true })
         // The height of each page can change after a `pagesinit` event.
         // We have to set scrollTop on a `pagesloaded` event for that case.
         this.lwApp.lwEventBus.onPagesLoaded(() => {
             (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
             (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
-        }, {once: true})
+        }, { once: true })
         this.lwApp.lwEventBus.onPagesLoaded(() => {
-            this.lwApp.send({type:'loaded', pdfFileUri: this.lwApp.pdfFileUri})
-        }, {once: true})
+            this.lwApp.send({ type: 'loaded', pdfFileUri: this.lwApp.pdfFileUri })
+        }, { once: true })
     }
 
-    makeImgMasksForAllVisiblePages() {
-        const maskImgArray: HTMLImageElement[] = []
-        const viewerContainer = document.getElementById('viewerContainer')
-        const viewer = document.getElementById('viewer')
-        if (!viewerContainer || !viewer) {
-            return maskImgArray
-        }
-        const pageCollection = viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLDivElement>
-        if (!pageCollection) {
-            return maskImgArray
-        }
-        for (const page of pageCollection) {
-            const canvas = page.getElementsByTagName('canvas')[0]
-            if (!canvas) {
-                continue
-            }
-            debugPrint('canvas')
-            debugPrint({offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft})
-            debugPrint('page')
-            debugPrint({offsetTop: page.offsetTop, offetLeft: page.offsetLeft})
-            const img = new Image()
-            img.style.display = 'none'
-            img.style.overflow = 'hidden'
-            maskImgArray.push(img)
-            img.src = canvas.toDataURL() ?? ''
-            img.style.zIndex = '10'
-            img.style.position = 'absolute'
-            img.style.top = page.offsetTop + 'px'
-            if (isTrimEnabled()) {
-                img.style.left = canvas.offsetLeft + 'px'
-            } else {
-                img.style.left = page.offsetLeft + 'px'
-            }
-            img.style.margin = '0'
-            img.style.padding = '0'
-            img.style.border = 'none'
-            img.style.outline = 'none'
-            img.style.width = (canvas.clientWidth ?? 0) + 'px'
-            img.style.height = (canvas.clientHeight ?? 0) + 'px'
-            viewerContainer.appendChild(img)
-            img.style.display = 'inherit'
-        }
-        return maskImgArray
-    }
+}
 
+function makeMasksForAllVisiblePages() {
+    const maskArray: HTMLDivElement[] = []
+    const viewerContainer = document.getElementById('viewerContainer')
+    const viewer = document.getElementById('viewer')
+    if (!viewerContainer || !viewer) {
+        return maskArray
+    }
+    const pageCollection = viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLDivElement>
+    if (!pageCollection) {
+        return maskArray
+    }
+    for (const page of pageCollection) {
+        const canvas = page.getElementsByTagName('canvas')[0]
+        if (!canvas) {
+            continue
+        }
+        debugPrint('canvas')
+        debugPrint({ offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft })
+        debugPrint('page')
+        debugPrint({ offsetTop: page.offsetTop, offetLeft: page.offsetLeft })
+        const div = document.createElement('div')
+        maskArray.push(div)
+        div.style.padding = '0'
+        div.style.margin = '0'
+        div.style.border = 'none'
+        div.style.outline = 'none'
+        div.style.overflow = 'hidden'
+        div.style.display = 'none'
+        div.style.position = 'absolute'
+        div.style.top = page.offsetTop + 'px'
+        div.style.zIndex = '10'
+        div.style.width = Math.min(viewer.clientWidth, page.clientWidth) + 'px'
+        const img = new Image()
+        img.src = canvas.toDataURL() ?? ''
+        img.style.position = 'relative'
+        if (isTrimEnabled()) {
+            img.style.left = canvas.offsetLeft + 'px'
+        } else {
+            div.style.left = page.offsetLeft + 'px'
+        }
+        img.style.margin = '0'
+        img.style.padding = '0'
+        img.style.border = 'none'
+        img.style.outline = 'none'
+        img.style.width = canvas.clientWidth + 'px'
+        img.style.height = canvas.clientHeight + 'px'
+        div.appendChild(img)
+        viewerContainer.appendChild(div)
+        div.style.display = 'inherit'
+    }
+    return maskArray
 }
 
 export function isAllVisiblePagesRendered(): boolean {
