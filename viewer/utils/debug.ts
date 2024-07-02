@@ -6,6 +6,8 @@ export function debugPrint(arg: any) {
     }
     if (typeof arg === 'string') {
         console.log(arg)
+    } else if (arg instanceof Set) {
+        debugPrint(Array.from(arg))
     } else {
         console.log(JSON.stringify(arg))
     }
