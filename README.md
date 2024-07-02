@@ -33,6 +33,11 @@ https://user-images.githubusercontent.com/10665499/225464584-1b9c5479-ce6a-4a56-
 ## True Flicker-free reloading
 
 By displaying a copy of each page over the original while reloading the PDF viewer, we achieve a truly flicker-free reload.
+Additionally, the PDF viewer reloads with a smooth transition effect.
+
+https://github.com/tamuratak/latex-toybox/assets/10665499/e2df184b-ae95-416f-9576-d567de91bec4
+
+
 
 ## Removed features
 
