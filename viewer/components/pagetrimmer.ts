@@ -141,3 +141,7 @@ window.addEventListener('resize', () => {
 export function getOriginalPdfViewerCurrentScaleValue() {
     return originalPdfViewerCurrentScaleValue
 }
+
+export function isTrimEnabled() {
+    return trimSelectElement.selectedIndex > 0
+}

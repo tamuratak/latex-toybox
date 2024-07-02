@@ -61,4 +61,17 @@ export class LwEventBus implements ILwEventBus {
         return { dispose: () => PDFViewerApplication.eventBus.off(pagesLoadedEvent, cb0) }
     }
 
+    onPageRendered(cb: () => unknown, option?: {once: boolean}): IDisposable {
+        const pageRenderedEvent = 'pagerendered'
+        const cb0 = () => {
+            cb()
+            if (option?.once) {
+                PDFViewerApplication.eventBus.off(pageRenderedEvent, cb0)
+            }
+        }
+        void this.getEventBus().then(eventBus => {
+            eventBus.on(pageRenderedEvent, cb0)
+        })
+        return { dispose: () => PDFViewerApplication.eventBus.off(pageRenderedEvent, cb0) }
+    }
 }

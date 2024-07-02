@@ -12,3 +12,10 @@ export enum SpreadMode {
     ODD = 1,
     EVEN = 2,
 }
+
+export enum RenderingStates {
+    INITIAL = 0,
+    RUNNING = 1,
+    PAUSED = 2,
+    FINISHED = 3,
+}
