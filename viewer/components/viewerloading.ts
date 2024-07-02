@@ -100,9 +100,15 @@ export class ViewerLoading {
         const disposable = this.lwApp.lwEventBus.onPageRendered(() => {
             if (isAllVisiblePagesRendered()) {
                 disposable.dispose()
+                // Remove the maskt with a transition effect.
                 for (const mask of maskArray) {
-                    mask.remove()
+                    mask.className = 'removeMask'
                 }
+                setTimeout(() => {
+                    for (const mask of maskArray) {
+                        mask.remove()
+                    }
+                }, 2000)
             }
         })
         this.lwApp.lwEventBus.onPagesInit(() => {
@@ -129,6 +135,9 @@ export class ViewerLoading {
 
 }
 
+/**
+ * Mask all visible pages with their rendered images to prevent flickering.
+ */
 function makeMasksForAllVisiblePages() {
     const maskArray: HTMLDivElement[] = []
     const viewerContainer = document.getElementById('viewerContainer')
