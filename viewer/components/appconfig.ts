@@ -33,7 +33,6 @@ export class AppConfig {
     }
 
     async setupAppOptions() {
-        const workerPort = new Worker('/build/pdf.worker.mjs', { type: 'module' })
         const params = await this.paramsPromise
         const color = isPrefersColorSchemeDark() ? params.color.dark : params.color.light
         const options = {
@@ -43,7 +42,6 @@ export class AppConfig {
             cMapUrl: '/cmaps/',
             sidebarViewOnLoad: 0,
             standardFontDataUrl: '/standard_fonts/',
-            workerPort,
             workerSrc: '/build/pdf.worker.mjs',
             forcePageColors: true,
             ...color
