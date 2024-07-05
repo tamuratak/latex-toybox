@@ -53,9 +53,12 @@ export type PdfjsEventName
     | 'pagerendered'
 
 interface IPageView {
-    viewport: {
+    readonly viewport: {
         convertToViewportPoint(x: number, y: number): [number, number]
     },
+    readonly canvas: HTMLCanvasElement | undefined,
+    /** class="page" */
+    readonly div: HTMLDivElement,
     getPagePoint(x: number, y: number): [number, number],
     get renderingState(): RenderingStates
 }
@@ -64,39 +67,38 @@ interface IPDFViewer {
     currentScale: number,
     currentScaleValue: string,
     getPageView(index: number): IPageView,
-    getCachedPageViews(): Set<IPageView>,
     scrollMode: ScrollMode,
     spreadMode: SpreadMode,
     _getVisiblePages(): { first: number, last: number, views: { id: number, x: number, y: number, view: IPageView, percent: number }[], ids: Set<number> }
 }
 
 export interface IPDFViewerApplication {
-    eventBus: {
-        on: (eventName: PdfjsEventName, listener: () => void) => void,
-        off: (eventName: PdfjsEventName, listener: () => void) => void,
-        dispatch: (eventName: string) => void
+    readonly eventBus: {
+        on(eventName: PdfjsEventName, listener: () => void): void,
+        off(eventName: PdfjsEventName, listener: () => void): void,
+        dispatch(eventName: string): void
     },
-    findBar: {
+    readonly findBar: {
         opened: boolean,
         open(): void
     },
-    initializedPromise: Promise<void>,
-    isViewerEmbedded: boolean,
-    page: number,
-    pdfViewer: IPDFViewer,
-    pdfCursorTools: {
+    readonly initializedPromise: Promise<void>,
+    readonly isViewerEmbedded: boolean,
+    readonly pdfViewer: IPDFViewer,
+    readonly pdfCursorTools: {
         _handTool: {
             activate(): void,
             deactivate(): void
         }
     },
-    pdfSidebar: {
+    readonly pdfSidebar: {
         isOpen: boolean
     },
-    secondaryToolbar: {
-        close: () => void,
+    readonly secondaryToolbar: {
+        close(): void,
         isOpen: boolean
     },
+    page: number,
     open(arg: { url: string }): Promise<void>
 }
 

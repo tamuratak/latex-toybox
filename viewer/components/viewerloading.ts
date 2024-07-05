@@ -3,7 +3,6 @@ import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { RenderingStates, ScrollMode } from './enums.js'
 import { debugPrint } from '../utils/debug.js'
-import { isTrimEnabled } from './pagetrimmer.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -102,7 +101,7 @@ export class ViewerLoading {
                 disposable.dispose()
                 // Remove the maskt with a transition effect.
                 for (const mask of maskArray) {
-                    mask.className = 'removeMask'
+                    mask.classList.add('removeMask')
                 }
                 setTimeout(() => {
                     for (const mask of maskArray) {
@@ -145,12 +144,10 @@ function makeMasksForAllVisiblePages() {
     if (!viewerContainer || !viewer) {
         return maskArray
     }
-    const pageCollection = viewer.getElementsByClassName('page') as HTMLCollectionOf<HTMLDivElement>
-    if (!pageCollection) {
-        return maskArray
-    }
-    for (const page of pageCollection) {
-        const canvas = page.getElementsByTagName('canvas')[0]
+    const visiblePages = PDFViewerApplication.pdfViewer._getVisiblePages()
+    for (const visiblePage of visiblePages.views) {
+        const page = visiblePage.view.div
+        const canvas = visiblePage.view.canvas
         if (!canvas) {
             continue
         }
@@ -159,29 +156,16 @@ function makeMasksForAllVisiblePages() {
         debugPrint('page')
         debugPrint({ offsetTop: page.offsetTop, offetLeft: page.offsetLeft })
         const div = document.createElement('div')
+        div.className = 'divMask'
         maskArray.push(div)
-        div.style.padding = '0'
-        div.style.margin = '0'
-        div.style.border = 'none'
-        div.style.outline = 'none'
-        div.style.overflow = 'hidden'
         div.style.display = 'none'
-        div.style.position = 'absolute'
         div.style.top = page.offsetTop + 'px'
-        div.style.zIndex = '10'
+        div.style.left = page.offsetLeft + 'px'
         div.style.width = Math.min(viewer.clientWidth, page.clientWidth) + 'px'
+        div.style.height = page.clientHeight + 'px'
         const img = new Image()
         img.src = canvas.toDataURL() ?? ''
-        img.style.position = 'relative'
-        if (isTrimEnabled()) {
-            img.style.left = canvas.offsetLeft + 'px'
-        } else {
-            div.style.left = page.offsetLeft + 'px'
-        }
-        img.style.margin = '0'
-        img.style.padding = '0'
-        img.style.border = 'none'
-        img.style.outline = 'none'
+        img.style.left = canvas.offsetLeft + 'px'
         img.style.width = canvas.clientWidth + 'px'
         img.style.height = canvas.clientHeight + 'px'
         div.appendChild(img)
