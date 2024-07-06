@@ -12,7 +12,7 @@
                 "--log=tamuratak.latex-toybox:debug"
             ],
             "outFiles": [
-                "${workspaceFolder}/out/src/**/*.js"
+                "${workspaceFolder}/out/**/*.js"
             ],
             "debugWebviews": true,
             "preLaunchTask": "task-watch-all"
@@ -27,7 +27,7 @@
                 "${workspaceFolder}/samples/sample"
             ],
             "outFiles": [
-                "${workspaceFolder}/out/src/**/*.js"
+                "${workspaceFolder}/out/**/*.js"
             ],
             "preLaunchTask": "task-watch-all"
         },
