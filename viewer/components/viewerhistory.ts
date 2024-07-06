@@ -139,6 +139,7 @@ export class ViewerHistory {
     }
 
     back() {
+        debugPrint('history')
         debugPrint(this.history)
         if (this.length() === 0) {
             return
@@ -168,6 +169,7 @@ export class ViewerHistory {
     }
 
     forward() {
+        debugPrint('history')
         debugPrint(this.history)
         if (this.currentPrevIndex === this.lastIndex()) {
             if (this.scrollPositionWhenGoingBack !== undefined) {

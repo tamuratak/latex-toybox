@@ -151,10 +151,6 @@ function makeMasksForAllVisiblePages() {
         if (!canvas) {
             continue
         }
-        debugPrint('canvas')
-        debugPrint({ offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft })
-        debugPrint('page')
-        debugPrint({ offsetTop: page.offsetTop, offetLeft: page.offsetLeft })
         const div = document.createElement('div')
         div.className = 'divMask'
         maskArray.push(div)
@@ -171,6 +167,14 @@ function makeMasksForAllVisiblePages() {
         div.appendChild(img)
         viewerContainer.appendChild(div)
         div.style.display = 'inherit'
+        debugPrint('page')
+        debugPrint({ offsetTop: page.offsetTop, offetLeft: page.offsetLeft, width: page.clientWidth, height: page.clientHeight})
+        debugPrint('canvas')
+        debugPrint({ offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft, width: canvas.clientWidth, height: canvas.clientHeight})
+        debugPrint('div')
+        debugPrint({ offsetTop: div.offsetTop, offetLeft: div.offsetLeft, width: div.clientWidth, height: div.clientHeight})
+        debugPrint('img')
+        debugPrint({ offsetTop: img.offsetTop, offetLeft: img.offsetLeft, width: img.clientWidth, height: img.clientHeight})
     }
     return maskArray
 }
