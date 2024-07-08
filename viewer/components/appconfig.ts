@@ -40,10 +40,10 @@ export class AppConfig {
             annotationEditorMode: -1,
             disablePreferences: true,
             enableScripting: false,
-            cMapUrl: '/cmaps/',
+            cMapUrl: '/node_modules/pdfjs-dist/cmaps/',
             sidebarViewOnLoad: 0,
-            standardFontDataUrl: '/standard_fonts/',
-            workerSrc: '/build/pdf.worker.mjs',
+            standardFontDataUrl: '/node_modules/pdfjs-dist/standard_fonts/',
+            workerSrc: '/node_modules/pdfjs-dist/build/pdf.worker.mjs',
             forcePageColors: true,
             ...color
         }

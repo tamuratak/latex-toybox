@@ -1,7 +1,6 @@
 import * as http from 'node:http'
 import type { AddressInfo } from 'node:net'
 import ws from 'ws'
-import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as vscode from 'vscode'
 
@@ -201,24 +200,22 @@ export class Server {
             this.sendOkResponse(response, content, 'application/json')
             return
         } else {
-            let root: string
-            if (request.url.startsWith('/build/') || request.url.startsWith('/cmaps/') || request.url.startsWith('/standard_fonts/')) {
-                root = path.resolve(`${this.extension.extensionRoot}/node_modules/pdfjs-dist`)
-            } else if (request.url.startsWith('/out/viewer/') || request.url.startsWith('/viewer/')) {
-                // For requests to /out/viewer/*.js and requests to /viewer/*.ts.
-                // The latter is for debugging with sourcemap.
-                root = path.resolve(this.extension.extensionRoot)
-            } else {
-                root = path.resolve(`${this.extension.extensionRoot}/viewer`)
-            }
             //
             // Prevent directory traversal attack.
             // - https://en.wikipedia.org/wiki/Directory_traversal_attack
             //
-            const reqFileName = path.posix.resolve('/', request.url.split('?')[0])
-            const fileName = path.resolve(root, '.' + reqFileName)
+            const reqPath = path.posix.resolve('/', request.url.split('?')[0])
+            const extensionRootUri = this.extension.extensionContext.extensionUri
+            let root: vscode.Uri
+            // /viewer/**/*.ts are requested from sourcemaps.
+            if (reqPath.startsWith('/out/viewer/') || reqPath.startsWith('/viewer/') || reqPath.startsWith('/node_modules/pdfjs-dist/')) {
+                root = extensionRootUri
+            } else {
+                root = vscode.Uri.joinPath(extensionRootUri, '/viewer')
+            }
+            const fileName = vscode.Uri.joinPath(root, '.', reqPath)
             let contentType: string
-            switch (path.extname(fileName)) {
+            switch (path.extname(fileName.path)) {
                 case '.html': {
                     contentType = 'text/html'
                     break
@@ -261,22 +258,26 @@ export class Server {
                     break
                 }
             }
-            fs.readFile(fileName, (err, content) => {
-                if (err) {
-                    if (err.code === 'ENOENT') {
+            try {
+                const content = await readFileAsUint8Array(fileName)
+                if (request.url?.startsWith('/viewer.html')) {
+                    this.sendOkResponse(response, content, contentType, { isVeiewerHtml: true })
+                } else {
+                    this.sendOkResponse(response, content, contentType)
+                }
+            } catch (err: unknown) {
+                if (err instanceof vscode.FileSystemError || err instanceof Error) {
+                    const code = (err as any)?.code as unknown
+                    if (code === 'FileNotFound' || code === 'ENOENT') {
                         response.writeHead(404)
                     } else {
                         response.writeHead(500)
                     }
                     response.end()
                 } else {
-                    if (request.url?.startsWith('/viewer.html')) {
-                        this.sendOkResponse(response, content, contentType, { isVeiewerHtml: true })
-                    } else {
-                        this.sendOkResponse(response, content, contentType)
-                    }
+                    throw err
                 }
-            })
+            }
         }
     }
 }

@@ -29,18 +29,6 @@ We cannot use Node.js API and VS Code API in `latextoybox.ts` since it is execut
 
 Mozilla [asks](https://mozilla.github.io/pdf.js/getting_started/) web developers to reskin `viewer.html` because Firefox users would think bugs of the viewer on the web site are ones of Firefox and would report them to the PDF.js team. See [link](https://github.com/mozilla/pdf.js/issues/5609). Our usage does not cause such a problem.
 
-## PDFWorker
-
-By default, PDFWorker is recreated every time reloading a PDF file. By setting `workerPort`,
-we can reuse the PDFWorker:
-``` javascript
-  workerPort: {
-    value: new Worker('/build/pdf.worker.js'),
-    kind: OptionKind.WORKER
-  },
-```
-See [mozilla/pdf.js/pull/8107](https://github.com/mozilla/pdf.js/pull/8107) for the details of the setting.
-
 ## Architecture
 
 ```mermaid
