@@ -2,7 +2,7 @@ import type { ClientRequest, PanelRequest, PdfViewerState } from 'latex-toybox-p
 import type { SyncTex } from './synctex.js'
 import type { ViewerHistory } from './viewerhistory.js'
 import type { ViewerLoading } from './viewerloading.js'
-import { RenderingStates, ScrollMode, SpreadMode } from './enums.js'
+import type { RenderingStates, ScrollMode, SpreadMode } from './constants.js'
 
 
 export interface IDisposable {

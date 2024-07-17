@@ -18,6 +18,7 @@ import { LwEventBus } from './components/lweventbus.js'
 import { PanelManagerConnection } from './components/panelmanagerconnection.js'
 import { VolatileConfig } from './components/volatileconfig.js'
 import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
+import { trimSelectElement, viewerContainer } from './components/constants.js'
 
 
 declare const PDFViewerApplication: IPDFViewerApplication
@@ -104,9 +105,9 @@ class LateXToyboxPdfViewer implements ILatexToyboxPdfViewer {
             scale: getOriginalPdfViewerCurrentScaleValue() || PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
-            scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,
-            scrollLeft: (document.getElementById('viewerContainer') as HTMLElement).scrollLeft,
-            trim: (document.getElementById('trimSelect') as HTMLSelectElement).selectedIndex,
+            scrollTop: viewerContainer.scrollTop,
+            scrollLeft: viewerContainer.scrollLeft,
+            trim: trimSelectElement.selectedIndex,
             synctexEnabled: this.synctexEnabled,
             autoReloadEnabled: this.autoReloadEnabled
         }

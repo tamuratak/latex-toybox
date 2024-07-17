@@ -1,11 +1,10 @@
 import { debugPrint } from '../utils/debug.js'
-import { ScrollMode } from './enums.js'
+import { viewerContainer, ScrollMode } from './constants.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
 // Static HTML elements
-const viewerContainerElement = document.getElementById('viewerContainer') as HTMLElement
 const sidebarContainerElement = document.getElementById('sidebarContainer') as HTMLElement
 const historyBackElement = document.getElementById('historyBack') as HTMLElement
 const historyForwardElement = document.getElementById('historyForward') as HTMLElement
@@ -32,10 +31,10 @@ function getCurrentPosition(): HistoryEntry {
     const page = PDFViewerApplication.page
     const scrollMode = PDFViewerApplication.pdfViewer.scrollMode
     if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
-        const scroll = viewerContainerElement.scrollTop
+        const scroll = viewerContainer.scrollTop
         return { scroll, page, scrollMode }
     } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
-        const scroll = viewerContainerElement.scrollLeft
+        const scroll = viewerContainer.scrollLeft
         return { scroll, page, scrollMode }
     } else {
         return { scroll: 0, page, scrollMode }
@@ -45,9 +44,9 @@ function getCurrentPosition(): HistoryEntry {
 function setScroll(entry: HistoryEntry) {
     if (PDFViewerApplication.pdfViewer.scrollMode === entry.scrollMode) {
         if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
-            viewerContainerElement.scrollTop = entry.scroll
+            viewerContainer.scrollTop = entry.scroll
         } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
-            viewerContainerElement.scrollLeft = entry.scroll
+            viewerContainer.scrollLeft = entry.scroll
         } else {
             PDFViewerApplication.page = entry.page
         }
@@ -82,7 +81,7 @@ export class ViewerHistory {
             setTimeout(() => { this.lwApp.viewerHistory.pushCurrentPositionToHistory() }, 500)
         }
 
-        viewerContainerElement.addEventListener('click', setHistory)
+        viewerContainer.addEventListener('click', setHistory)
         sidebarContainerElement.addEventListener('click', setHistory)
 
         // back button (mostly useful for the embedded viewer)
@@ -150,10 +149,10 @@ export class ViewerHistory {
         }
         const prevHistory = this.historyAt(cur)
         const prevScroll = prevHistory.scroll
-        if (this.currentPrevIndex === this.lastIndex() && prevScroll !== viewerContainerElement.scrollTop) {
+        if (this.currentPrevIndex === this.lastIndex() && prevScroll !== viewerContainer.scrollTop) {
             // We have to store the current scroll position, because
             // the viewer should go back to it when users click the last Forward button.
-            this.scrollPositionWhenGoingBack = viewerContainerElement.scrollTop
+            this.scrollPositionWhenGoingBack = viewerContainer.scrollTop
         }
         if (!isEntryEqual(prevHistory, getCurrentPosition())) {
             setScroll(prevHistory)
@@ -173,7 +172,7 @@ export class ViewerHistory {
         debugPrint(this.history)
         if (this.currentPrevIndex === this.lastIndex()) {
             if (this.scrollPositionWhenGoingBack !== undefined) {
-                viewerContainerElement.scrollTop = this.scrollPositionWhenGoingBack
+                viewerContainer.scrollTop = this.scrollPositionWhenGoingBack
                 this.scrollPositionWhenGoingBack = undefined
             }
             return

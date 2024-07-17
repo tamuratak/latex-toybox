@@ -1,5 +1,6 @@
-import { ScrollMode } from './enums.js'
-import { type ILatexToyboxPdfViewer, type IPDFViewerApplication } from './interface.js'
+import { viewerContainer, viewerDom, ScrollMode } from './constants.js'
+import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
+import { isTrimEnabled } from './pagetrimmer.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 
@@ -24,7 +25,6 @@ export class SyncTex {
         }
         // use the offsetTop of the actual page, much more accurate than multiplying the offsetHeight of the first page
         // https://github.com/James-Yu/LaTeX-Workshop/pull/417
-        const container = document.getElementById('viewerContainer') as HTMLElement
         const pos = PDFViewerApplication.pdfViewer.getPageView(position.page - 1).viewport.convertToViewportPoint(position.x, position.y)
         let page: HTMLElement
         if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
@@ -41,9 +41,9 @@ export class SyncTex {
             const minScrollX = window.innerWidth * 0.1
             scrollX = Math.min(scrollX, maxScrollX)
             scrollX = Math.max(scrollX, minScrollX)
-            container.scrollTop = scrollY - document.body.offsetHeight * 0.4
+            viewerContainer.scrollTop = scrollY - document.body.offsetHeight * 0.4
         } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.HORIZONTAL) {
-            container.scrollLeft = page.offsetLeft
+            viewerContainer.scrollLeft = page.offsetLeft
         } else if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
             PDFViewerApplication.page = position.page
         }
@@ -62,7 +62,7 @@ export class SyncTex {
         })
     }
 
-    private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement, viewerContainer: HTMLElement) {
+    private reverseSynctex(mouseEvent: MouseEvent, page: number, pageDom: HTMLElement) {
         const canvasDom = pageDom.getElementsByTagName('canvas')[0]
         if (!canvasDom) {
             throw new Error('Cannot find canvas element.')
@@ -78,10 +78,9 @@ export class SyncTex {
                 textAfterSelection = text.substring(selection.anchorOffset)
             }
         }
-        const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
         let left = mouseEvent.pageX - pageDom.offsetLeft + viewerContainer.scrollLeft
         const top = mouseEvent.pageY - pageDom.offsetTop + viewerContainer.scrollTop
-        if (trimSelect.selectedIndex > 0) {
+        if (isTrimEnabled()) {
             const m = canvasDom.style.left.match(/-(.*)px/)
             const offsetLeft = m ? Number(m[1]) : 0
             left += offsetLeft
@@ -92,23 +91,21 @@ export class SyncTex {
 
     registerListenerOnEachPage() {
         const keybinding = this.reverseSynctexKeybinding
-        const viewerDom = document.getElementById('viewer') as HTMLElement
         for (const pageDom of viewerDom.childNodes as NodeListOf<HTMLElement>) {
             const page = Number(pageDom.dataset['pageNumber'])
-            const viewerContainer = document.getElementById('viewerContainer') as HTMLElement
             switch (keybinding) {
                 case 'ctrl-click': {
                     pageDom.onclick = (e) => {
                         if (!(e.ctrlKey || e.metaKey)) {
                             return
                         }
-                        this.reverseSynctex(e, page, pageDom, viewerContainer)
+                        this.reverseSynctex(e, page, pageDom)
                     }
                     break
                 }
                 case 'double-click': {
                     pageDom.ondblclick = (e) => {
-                        this.reverseSynctex(e, page, pageDom, viewerContainer)
+                        this.reverseSynctex(e, page, pageDom)
                     }
                     break
                 }

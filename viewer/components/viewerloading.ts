@@ -1,12 +1,11 @@
 import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
-import { RenderingStates, ScrollMode } from './enums.js'
 import { debugPrint } from '../utils/debug.js'
+import { trimSelectElement, viewerContainer, viewerDom, RenderingStates, ScrollMode } from './constants.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
-
 
 export class ViewerLoading {
     private readonly lwApp: ILatexToyboxPdfViewer
@@ -32,10 +31,10 @@ export class ViewerLoading {
             PDFViewerApplication.page = state.page
         }
         if (state.scrollTop !== undefined) {
-            (document.getElementById('viewerContainer') as HTMLElement).scrollTop = state.scrollTop
+            viewerContainer.scrollTop = state.scrollTop
         }
         if (state.scrollLeft !== undefined) {
-            (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = state.scrollLeft
+            viewerContainer.scrollLeft = state.scrollLeft
         }
         if (state.synctexEnabled !== undefined) {
             this.lwApp.setSynctex(state.synctexEnabled)
@@ -44,7 +43,6 @@ export class ViewerLoading {
             this.lwApp.setAutoReload(state.autoReloadEnabled)
         }
         if (state.trim !== undefined) {
-            const trimSelect = document.getElementById('trimSelect') as HTMLSelectElement
             const ev = new Event('change')
             // We have to wait for currentScaleValue set above to be effected
             // especially for cases of non-number scales.
@@ -53,8 +51,8 @@ export class ViewerLoading {
                 if (state.trim === undefined) {
                     return
                 }
-                trimSelect.selectedIndex = state.trim
-                trimSelect.dispatchEvent(ev)
+                trimSelectElement.selectedIndex = state.trim
+                trimSelectElement.dispatchEvent(ev)
                 // By setting the scale, the callbacks of trimming pages are invoked.
                 // However, given "auto" and other non-number scales, the scale will be
                 // unnecessarily recalculated, which we must avoid.
@@ -62,7 +60,7 @@ export class ViewerLoading {
                     PDFViewerApplication.pdfViewer.currentScaleValue = state.scale
                 }
                 if (state.scrollTop !== undefined) {
-                    (document.getElementById('viewerContainer') as HTMLElement).scrollTop = state.scrollTop
+                    viewerContainer.scrollTop = state.scrollTop
                 }
                 this.lwApp.sendCurrentStateToPanelManager()
             })
@@ -80,8 +78,8 @@ export class ViewerLoading {
             scale: PDFViewerApplication.pdfViewer.currentScaleValue,
             scrollMode: PDFViewerApplication.pdfViewer.scrollMode,
             spreadMode: PDFViewerApplication.pdfViewer.spreadMode,
-            scrollTop: (document.getElementById('viewerContainer') as HTMLElement).scrollTop,
-            scrollLeft: (document.getElementById('viewerContainer') as HTMLElement).scrollLeft
+            scrollTop: viewerContainer.scrollTop,
+            scrollLeft: viewerContainer.scrollLeft
         }
 
         // Note: without showPreviousViewOnLoad = false restoring the position after the refresh will fail if
@@ -117,15 +115,15 @@ export class ViewerLoading {
             if (pack.scrollMode === ScrollMode.PAGE) {
                 PDFViewerApplication.page = pack.page
             } else {
-                (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
-                (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
+                viewerContainer.scrollTop = pack.scrollTop
+                viewerContainer.scrollLeft = pack.scrollLeft
             }
         }, { once: true })
         // The height of each page can change after a `pagesinit` event.
         // We have to set scrollTop on a `pagesloaded` event for that case.
         this.lwApp.lwEventBus.onPagesLoaded(() => {
-            (document.getElementById('viewerContainer') as HTMLElement).scrollTop = pack.scrollTop;
-            (document.getElementById('viewerContainer') as HTMLElement).scrollLeft = pack.scrollLeft
+            viewerContainer.scrollTop = pack.scrollTop
+            viewerContainer.scrollLeft = pack.scrollLeft
         }, { once: true })
         this.lwApp.lwEventBus.onPagesLoaded(() => {
             this.lwApp.send({ type: 'loaded', pdfFileUri: this.lwApp.pdfFileUri })
@@ -139,9 +137,7 @@ export class ViewerLoading {
  */
 function makeMasksForAllVisiblePages() {
     const maskArray: HTMLDivElement[] = []
-    const viewerContainer = document.getElementById('viewerContainer')
-    const viewer = document.getElementById('viewer')
-    if (!viewerContainer || !viewer) {
+    if (!viewerContainer || !viewerDom) {
         return maskArray
     }
     const visiblePages = PDFViewerApplication.pdfViewer._getVisiblePages()
@@ -157,7 +153,7 @@ function makeMasksForAllVisiblePages() {
         div.style.display = 'none'
         div.style.top = page.offsetTop + 'px'
         div.style.left = page.offsetLeft + 'px'
-        div.style.width = Math.min(viewer.clientWidth, page.clientWidth) + 'px'
+        div.style.width = Math.min(viewerDom.clientWidth, page.clientWidth) + 'px'
         div.style.height = page.clientHeight + 'px'
         const img = new Image()
         img.src = canvas.toDataURL() ?? ''
