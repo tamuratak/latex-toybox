@@ -43,10 +43,10 @@ function createTrimSelect() {
     const elements = html`
     <span id="trimSelectContainer" class="dropdownToolbarButton">
         <select id="trimSelect" title="Trim" tabindex="23" >
-            <option title="" value="0.0" selected="selected" >No trim</option>
-            <option title="" value="0.05" >Trim 5%</option>
-            <option title="" value="0.10" >Trim 10%</option>
-            <option title="" value="0.15" >Trim 15%</option>
+            <option selected="selected" >No trim</option>
+            <option>Trim 5%</option>
+            <option>Trim 10%</option>
+            <option>Trim 15%</option>
         </select>
     </span>
     `

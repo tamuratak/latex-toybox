@@ -2,6 +2,7 @@ import type { PdfViewerParams } from 'latex-toybox-protocol-types'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isPrefersColorSchemeDark } from '../utils/utils.js'
+import { viewerContainer } from './constants.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -64,18 +65,18 @@ export class AppConfig {
             const { brightness, grayscale, hueRotate, invert, sepia } = params.invertMode
             const filter = `invert(${invert * 100}%) hue-rotate(${hueRotate}deg) grayscale(${grayscale}) sepia(${sepia}) brightness(${brightness})`
             if (isPrefersColorSchemeDark()) {
-                (document.querySelector('#viewerContainer') as HTMLHtmlElement).style.filter = filter;
-                (document.querySelector('#thumbnailView') as HTMLHtmlElement).style.filter = filter;
-                (document.querySelector('#sidebarContent') as HTMLHtmlElement).style.background = 'var(--body-bg-color)'
+                viewerContainer.style.filter = filter;
+                (document.getElementById('thumbnailView') as HTMLElement).style.filter = filter;
+                (document.getElementById('sidebarContent') as HTMLElement).style.background = 'var(--body-bg-color)'
             } else {
-                (document.querySelector('html') as HTMLHtmlElement).style.filter = filter;
-                (document.querySelector('html') as HTMLHtmlElement).style.background = 'white'
+                document.documentElement.style.filter = filter
+                document.documentElement.style.background = 'white'
             }
         }
         if (isPrefersColorSchemeDark()) {
-            (document.querySelector('#viewerContainer') as HTMLElement).style.background = params.color.dark.backgroundColor
+            viewerContainer.style.background = params.color.dark.backgroundColor
         } else {
-            (document.querySelector('#viewerContainer') as HTMLElement).style.background = params.color.light.backgroundColor
+            viewerContainer.style.background = params.color.light.backgroundColor
         }
 
         if (params.keybindings) {
