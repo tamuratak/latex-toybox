@@ -3,6 +3,8 @@ export const viewerDom = document.getElementById('viewer') as HTMLElement
 export const viewerContainer = document.getElementById('viewerContainer') as HTMLElement
 export const trimSelectElement = document.getElementById('trimSelect') as HTMLSelectElement
 
+// https://github.com/mozilla/pdf.js/blob/master/src/shared/util.js
+// https://github.com/mozilla/pdf.js/blob/master/web/ui_utils.js
 
 export enum ScrollMode {
     UNKNOWN = -1,
@@ -32,4 +34,13 @@ export enum ScaleMode {
     PAGE_FIT = 2,
     PAGE_WIDTH = 3,
     CUSTOM = 4,
+}
+
+export enum AnnotationEditorMode {
+    DISABLE = -1,
+    NONE = 0,
+    FREETEXT = 3,
+    HIGHLIGHT = 9,
+    STAMP = 13,
+    INK = 15,
 }
