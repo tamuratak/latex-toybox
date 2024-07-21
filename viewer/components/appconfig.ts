@@ -2,7 +2,7 @@ import type { PdfViewerParams } from 'latex-toybox-protocol-types'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { isPrefersColorSchemeDark } from '../utils/utils.js'
-import { viewerContainer } from './constants.js'
+import { AnnotationEditorMode, viewerContainer } from './constants.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -37,7 +37,7 @@ export class AppConfig {
         const params = await this.paramsPromise
         const color = isPrefersColorSchemeDark() ? params.color.dark : params.color.light
         const options = {
-            annotationEditorMode: -1,
+            annotationEditorMode: AnnotationEditorMode.DISABLE,
             disablePreferences: true,
             enableScripting: false,
             cMapUrl: '/node_modules/pdfjs-dist/cmaps/',
