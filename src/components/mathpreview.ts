@@ -85,7 +85,7 @@ export class MathPreview {
                 const newCommands = await this.findProjectNewCommand(ctoken)
                 return await this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
             }
-        } catch (e) {
+        } catch (_) {
             // ignore
         }
         const md = '```latex\n' + labelDef.documentation + '\n```\n'

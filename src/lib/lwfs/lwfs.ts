@@ -35,7 +35,7 @@ export async function readFilePath(filePath: string): Promise<string> {
 export async function readFilePathGracefully(filepath: string): Promise<string | undefined> {
     try {
         return await readFilePath(filepath)
-    } catch (err) {
+    } catch (_) {
         return undefined
     }
 }
@@ -48,7 +48,7 @@ export async function readFile(fileUri: vscode.Uri): Promise<string> {
 export async function readFileGracefully(fileUri: vscode.Uri): Promise<string | undefined> {
     try {
         return await readFile(fileUri)
-    } catch (err) {
+    } catch (_) {
         return undefined
     }
 }

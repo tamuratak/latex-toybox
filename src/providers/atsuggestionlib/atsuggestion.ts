@@ -41,9 +41,9 @@ export class AtSuggestion implements IProvider {
 
     private async initialize() {
         const content = await readFilePath(`${this.extension.extensionRoot}/data/at-suggestions.json`)
-        const suggestions: {[key: string]: AtSuggestionItemEntry} = JSON.parse(content) as DataAtSuggestionJsonType
+        const suggestions: Record<string, AtSuggestionItemEntry> = JSON.parse(content) as DataAtSuggestionJsonType
 
-        const suggestionReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.atSuggestionJSON.replace') as {[key: string]: string}
+        const suggestionReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.atSuggestionJSON.replace') as Record<string, string>
         this.suggestions.length = 0
         Object.keys(suggestionReplacements).forEach(prefix => {
             const body = suggestionReplacements[prefix]

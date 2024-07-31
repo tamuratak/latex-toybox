@@ -6,14 +6,14 @@ import * as glob from 'glob'
 import { runUnitTestWithFixture } from '../utils/ciutils.js'
 import { getExtensionDevelopmentPath } from '../utils/runnerutils.js'
 
-type EnvType = {
+interface EnvType {
     name: string,
     snippet?: string,
     detail?: string,
     package?: string
 }
 
-type CmdType = {
+interface CmdType {
     command: string,
     snippet?: string,
     documentation?: string,
@@ -44,7 +44,7 @@ suite('unit test suite', () => {
     runUnitTestWithFixture('fixture001', 'check default environment .json completion file', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const file = `${extensionRoot}/data/environments.json`
-        const envs = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as {[key: string]: EnvType}
+        const envs = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as Record<string, EnvType>
         assert.notStrictEqual(Object.keys(envs).length, 0)
         Object.keys(envs).forEach(name => {
             assertDictKeyNames(
@@ -60,7 +60,7 @@ suite('unit test suite', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const files = glob.sync('data/packages/*_env.json', {cwd: extensionRoot})
         files.forEach(file => {
-            const envs = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as {[key: string]: EnvType}
+            const envs = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as Record<string, EnvType>
             assert.notStrictEqual(Object.keys(envs).length, 0)
             Object.keys(envs).forEach(name => {
                 assertDictKeyNames(
@@ -76,7 +76,7 @@ suite('unit test suite', () => {
     runUnitTestWithFixture('fixture001', 'check default commands .json completion file', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const file = `${extensionRoot}/data/commands.json`
-        const cmds = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as {[key: string]: CmdType}
+        const cmds = JSON.parse(fs.readFileSync(file, {encoding: 'utf8'})) as Record<string, CmdType>
         assert.notStrictEqual(Object.keys(cmds).length, 0)
         Object.keys(cmds).forEach(name => {
             assertDictKeyNames(
@@ -92,7 +92,7 @@ suite('unit test suite', () => {
         const extensionRoot = getExtensionDevelopmentPath()
         const files = glob.sync('data/packages/*_cmd.json', {cwd: extensionRoot})
         files.forEach(file => {
-            const cmds = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as {[key: string]: CmdType}
+            const cmds = JSON.parse(fs.readFileSync(path.join(extensionRoot, file), {encoding: 'utf8'})) as Record<string, CmdType>
             assert.notStrictEqual(Object.keys(cmds).length, 0)
             Object.keys(cmds).forEach(name => {
                 assertDictKeyNames(

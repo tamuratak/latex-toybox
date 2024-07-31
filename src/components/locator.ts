@@ -14,13 +14,13 @@ import type { Viewer } from './viewer.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { inspectCompact } from '../utils/inspect.js'
 
-export type SyncTeXRecordForward = {
+export interface SyncTeXRecordForward {
     page: number,
     x: number,
     y: number
 }
 
-export type SyncTeXRecordBackward = {
+export interface SyncTeXRecordBackward {
     input: string,
     line: number,
     column: number
@@ -381,7 +381,7 @@ export class Locator {
     }
 
     private getColumnBySurroundingText(line: string, textBeforeSelectionFull: string, textAfterSelectionFull: string) {
-        let previousColumnMatches = Object.create(null) as { [k: string]: number }
+        let previousColumnMatches = Object.create(null) as Record<string, number>
 
         for (let length = 5; length <= Math.max(textBeforeSelectionFull.length, textAfterSelectionFull.length); length++) {
             const columns: number[] = []
@@ -397,7 +397,7 @@ export class Locator {
             }
 
             // Get number or occurrences for each column
-            const columnMatches = Object.create(null) as { [k: string]: number }
+            const columnMatches = Object.create(null) as Record<string, number>
             columns.forEach(column => columnMatches[column] = (columnMatches[column] || 0) + 1)
             const values = Object.values(columnMatches).sort()
 

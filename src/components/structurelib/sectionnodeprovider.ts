@@ -27,7 +27,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
     // The correspondance of section types and depths. Start from zero is
     // the top-most section (e.g., chapter). -1 is reserved for non-section
     // commands.
-    private readonly LaTeXSectionDepths: {[cmd: string]: number} = {}
+    private readonly LaTeXSectionDepths: Record<string, number> = {}
 
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,

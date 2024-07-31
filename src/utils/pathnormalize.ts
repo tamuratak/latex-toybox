@@ -16,7 +16,7 @@ export async function isSameRealPath(filePathA: string, filePathB: string): Prom
         const a = normalize(await fs.promises.realpath(path.normalize(filePathA)))
         const b = normalize(await fs.promises.realpath(path.normalize(filePathB)))
         return a === b
-    } catch (e) {
+    } catch (_) {
         return false
     }
 }

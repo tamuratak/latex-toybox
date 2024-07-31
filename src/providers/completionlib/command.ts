@@ -173,7 +173,7 @@ export class Command implements IProvider, ICommand {
                 if (filePathUri !== undefined) {
                     try {
                         const content = await lwfs.readFile(filePathUri)
-                        const cmds = JSON.parse(content) as {[key: string]: CmdItemEntry}
+                        const cmds = JSON.parse(content) as Record<string, CmdItemEntry>
                         Object.keys(cmds).forEach(key => {
                             if (isCmdItemEntry(cmds[key])) {
                                 pkgEntry.push(this.entryCmdToCompletion(key, cmds[key]))
@@ -192,15 +192,15 @@ export class Command implements IProvider, ICommand {
         }
         if (configuration.get('intellisense.unimathsymbols.enabled')) {
             const content = await lwfs.readFilePath(`${this.extension.extensionRoot}/data/unimathsymbols.json`)
-            const symbols: { [key: string]: CmdItemEntry } = JSON.parse(content) as DataUnimathSymbolsJsonType
+            const symbols: Record<string, CmdItemEntry> = JSON.parse(content) as DataUnimathSymbolsJsonType
             Object.keys(symbols).forEach(key => {
                 this.defaultSymbols.push(this.entryCmdToCompletion(key, symbols[key]))
             })
         }
     }
 
-    initialize(defaultCmds: {[key: string]: CmdItemEntry}) {
-        const snippetReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.commandsJSON.replace') as {[key: string]: string}
+    initialize(defaultCmds: Record<string, CmdItemEntry>) {
+        const snippetReplacements = vscode.workspace.getConfiguration('latex-toybox').get('intellisense.commandsJSON.replace') as Record<string, string>
 
         // Initialize default commands and `latex-mathsymbols`
         Object.keys(defaultCmds).forEach(key => {

@@ -7,7 +7,7 @@ import { PackageClassNameKind } from './completionkind.js'
 
 type DataClassnamesJsonType = typeof import('../../../data/classnames.json')
 
-type ClassItemEntry = {
+interface ClassItemEntry {
     readonly command: string,
     readonly detail: string,
     readonly documentation: string
@@ -25,11 +25,11 @@ export class DocumentClass implements IProvider {
 
     private async load() {
         const content = await readFilePath(`${this.extension.extensionRoot}/data/classnames.json`)
-        const allClasses: {[key: string]: ClassItemEntry} = JSON.parse(content) as DataClassnamesJsonType
+        const allClasses: Record<string, ClassItemEntry> = JSON.parse(content) as DataClassnamesJsonType
         this.initialize(allClasses)
     }
 
-    private initialize(classes: {[key: string]: ClassItemEntry}) {
+    private initialize(classes: Record<string, ClassItemEntry>) {
         Object.keys(classes).forEach(key => {
             const item = classes[key]
             const cl = new vscode.CompletionItem(item.command, PackageClassNameKind)

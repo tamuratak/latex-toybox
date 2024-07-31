@@ -42,8 +42,8 @@ export class PathUtils {
     }
 
     parseFlsContent(content: string, rootDir: string): {input: string[], output: string[]} {
-        const inputFiles: Set<string> = new Set()
-        const outputFiles: Set<string> = new Set()
+        const inputFiles = new Set<string>()
+        const outputFiles = new Set<string>()
         const regex = /^(?:(INPUT)\s*(.*))|(?:(OUTPUT)\s*(.*))$/gm
         // regex groups
         // #1: an INPUT entry --> #2 input file path

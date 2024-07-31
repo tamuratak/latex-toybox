@@ -12,7 +12,7 @@ type SnippetViewResult = RenderResult | {
     snippet: string
 }
 
-type RenderResult = {
+interface RenderResult {
     type: 'png',
     uri: string,
     data: string | undefined

@@ -16,9 +16,7 @@ import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 
 const maxPrintLine = '10000'
 
-interface ProcessEnv {
-    [key: string]: string | undefined
-}
+type ProcessEnv = Record<string, string | undefined>;
 
 export interface StepCommand {
     readonly name: string,

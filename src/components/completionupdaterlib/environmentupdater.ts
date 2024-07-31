@@ -26,8 +26,8 @@ export class EnvironmentUpdater {
     // This function will return all environments in a node array, including sub-nodes
     private getEnvFromNodeArray(nodes: latexParser.Node[], lines: string[], memo: Set<string>): CmdEnvSuggestion[] {
         let envs: CmdEnvSuggestion[] = []
-        for (let index = 0; index < nodes.length; ++index) {
-            envs = envs.concat(this.getEnvFromNode(nodes[index], lines, memo))
+        for (const node of nodes) {
+            envs = envs.concat(this.getEnvFromNode(node, lines, memo))
         }
         return envs
     }

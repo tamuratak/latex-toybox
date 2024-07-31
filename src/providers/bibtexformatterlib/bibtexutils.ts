@@ -174,17 +174,17 @@ export class BibtexUtils {
         let fieldB: string = ''
 
         if (bibtexParser.isEntry(a)) {
-            for(let i = 0; i < a.content.length; i++) {
-                if (a.content[i].name === fieldName) {
-                    fieldA = this.fieldToString(a.content[i].value, '')
+            for(const elm of a.content) {
+                if (elm.name === fieldName) {
+                    fieldA = this.fieldToString(elm.value, '')
                     break
                 }
             }
         }
         if (bibtexParser.isEntry(b)) {
-            for(let i = 0; i < b.content.length; i++) {
-                if (b.content[i].name === fieldName) {
-                    fieldB = this.fieldToString(b.content[i].value, '')
+            for(const elm of b.content) {
+                if (elm.name === fieldName) {
+                    fieldB = this.fieldToString(elm.value, '')
                     break
                 }
             }

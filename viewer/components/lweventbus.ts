@@ -7,7 +7,7 @@ export class LwEventBus implements ILwEventBus {
     // The 'webviewerloaded' event is fired just before the initialization of PDF.js.
     // - https://github.com/mozilla/pdf.js/wiki/Third-party-viewer-usage#initialization-promise
     // - https://github.com/mozilla/pdf.js/pull/10318
-    private readonly webViewerLoaded: Promise<void> = new Promise((resolve) => {
+    private readonly webViewerLoaded = new Promise<void>((resolve) => {
         document.addEventListener('webviewerloaded', () => resolve() )
     })
 

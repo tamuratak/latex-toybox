@@ -6,7 +6,7 @@ import { hasTexId } from '../utils/hastexid.js'
 import type { Logger } from './logger.js'
 
 
-type UpdateEvent = {
+interface UpdateEvent {
     type: 'selection',
     event: vscode.TextEditorSelectionChangeEvent
 }

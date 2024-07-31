@@ -7,7 +7,7 @@ declare const PDFViewerApplication: IPDFViewerApplication
 
 export class SyncTex {
     private readonly lwApp: ILatexToyboxPdfViewer
-    reverseSynctexKeybinding: string = 'ctrl-click'
+    reverseSynctexKeybinding = 'ctrl-click'
 
     constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp

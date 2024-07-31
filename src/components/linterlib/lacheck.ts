@@ -103,7 +103,7 @@ export class LaCheck implements ILinter {
     }
 
     private async showLinterDiagnostics(linterLog: LaCheckLogEntry[]) {
-        const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
+        const diagsCollection = Object.create(null) as Record<string, vscode.Diagnostic[]>
         for (const item of linterLog) {
             const range = new vscode.Range(
                 new vscode.Position(item.line - 1, 0),
