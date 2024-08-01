@@ -61,7 +61,7 @@ export class Environment implements IProvider {
     private async load() {
         const packageDirUri = vscode.Uri.file(`${this.extension.extensionRoot}/data/packages/`)
         const files = await vscode.workspace.fs.readDirectory(packageDirUri)
-        const pkgAndEnvs: { pkg: string, envs: { [key: string]: EnvItemEntry } }[] = []
+        const pkgAndEnvs: { pkg: string, envs: Record<string, EnvItemEntry> }[] = []
         for (const file of files) {
             const fileName = file[0]
             const match = /(.*)_env.json/.exec(fileName)
@@ -70,7 +70,7 @@ export class Environment implements IProvider {
                 const filePathUri = vscode.Uri.joinPath(packageDirUri, fileName)
                 try {
                     const content = await lwfs.readFile(filePathUri)
-                    const envs: {[key: string]: EnvItemEntry} = JSON.parse(content) as DataEnvsJsonType
+                    const envs: Record<string, EnvItemEntry> = JSON.parse(content) as DataEnvsJsonType
                     Object.keys(envs).forEach(key => {
                         if (! isEnvItemEntry(envs[key])) {
                             this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
@@ -79,7 +79,7 @@ export class Environment implements IProvider {
                         }
                     })
                     pkgAndEnvs.push({pkg, envs})
-                } catch (e) {
+                } catch (_) {
                     this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
                 }
             }
@@ -103,7 +103,7 @@ export class Environment implements IProvider {
 
     }
 
-    initialize(envs: {[key: string]: EnvItemEntry}) {
+    initialize(envs: Record<string, EnvItemEntry>) {
         this.defaultEnvsAsCommand = []
         this.defaultEnvsForBegin = []
         this.defaultEnvsAsName = []

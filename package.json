@@ -827,7 +827,6 @@
           ],
           "markdownDescription": "Rebroadcasting KeyboardEvent on the internal viewers. If keyboard shortcuts on the internal viewer do not work well, change this setting."
         },
-
         "latex-toybox.view.pdf.zoom": {
           "scope": "window",
           "type": "string",
@@ -1696,8 +1695,8 @@
   "scripts": {
     "clean": "rimraf out/ .eslintcache",
     "compile": "tsc -p tsconfig.json && tsc -p viewer/tsconfig.json",
-    "lint": "eslint --cache --ext .ts,.js .",
-    "lint:fix": "eslint --fix --cache --ext .ts,.js .",
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --fix --cache .",
     "release": "npm run clean && npm run lint && npm run compile && vsce package",
     "test": "node ./out/test/runTest.js",
     "watch-src": "tsc -watch -p tsconfig.json",
@@ -1714,22 +1713,23 @@
     "ws": "8.18.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.8.0",
     "@types/cross-spawn": "6.0.6",
+    "@types/eslint__js": "8.42.3",
     "@types/micromatch": "4.0.9",
     "@types/mocha": "10.0.7",
     "@types/node": "~20.9",
     "@types/tmp": "0.2.6",
     "@types/vscode": "1.90.0",
     "@types/ws": "8.5.11",
-    "@typescript-eslint/eslint-plugin": "7.16.1",
-    "@typescript-eslint/parser": "7.16.1",
     "@vscode/test-electron": "2.4.1",
     "@vscode/vsce": "2.31.1",
-    "eslint": "8.57.0",
+    "eslint": "9.8.0",
     "glob": "11.0.0",
-    "mocha": "10.6.0",
+    "mocha": "10.7.0",
     "rimraf": "3.0.2",
     "tmp": "0.2.3",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4",
+    "typescript-eslint": "8.0.0"
   }
 }

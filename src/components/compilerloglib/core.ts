@@ -27,7 +27,7 @@ const texifyLogLatex = /^running\s(pdf|lua|xe)?latex/
 
 const bibtexPattern = /^This is BibTeX, Version.*$/m
 
-const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
+const DIAGNOSTIC_SEVERITY: Record<string, vscode.DiagnosticSeverity> = {
     'typesetting': vscode.DiagnosticSeverity.Information,
     'warning': vscode.DiagnosticSeverity.Warning,
     'error': vscode.DiagnosticSeverity.Error,
@@ -165,7 +165,7 @@ export class CompilerLogParser {
     async showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string) {
         compilerDiagnostics.clear()
         const newBuildLog = this.tweakLogEntries(buildLog)
-        const diagsCollection = Object.create(null) as { [key: string]: vscode.Diagnostic[] }
+        const diagsCollection = Object.create(null) as Record<string, vscode.Diagnostic[]>
         for (const item of newBuildLog) {
             let startChar = 0
             let endChar = 65535

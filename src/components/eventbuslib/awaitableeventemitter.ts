@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
  * A simple EventEmitter implementation using Set.
  */
 export class AwaitableEventEmitter<T, Name extends string> {
-    private readonly cbSet: Set<(arg: T) => unknown> = new Set()
+    private readonly cbSet = new Set<(arg: T) => unknown>()
 
     constructor(readonly eventName: Name) {}
 

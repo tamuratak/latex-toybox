@@ -1,7 +1,7 @@
 import {latexParser} from 'latex-utensils'
 
 
-export type NewCommand = {
+export interface NewCommand {
     kind: 'command',
     name: 'renewcommand|newcommand|providecommand|DeclareMathOperator|renewcommand*|newcommand*|providecommand*|DeclareMathOperator*',
     args: (latexParser.OptionalArg | latexParser.Group)[],
@@ -16,7 +16,7 @@ export function isNewCommand(node: latexParser.Node | undefined): node is NewCom
     return false
 }
 
-export type NewEnvironment = {
+export interface NewEnvironment {
     kind: 'command',
     name: 'renewenvironment|newenvironment|renewenvironment*|newenvironment*',
     args: (latexParser.OptionalArg | latexParser.Group)[],

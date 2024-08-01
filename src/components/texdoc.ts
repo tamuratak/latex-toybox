@@ -70,7 +70,7 @@ export class TeXDoc {
     }
 
     texdocUsepackages() {
-        const names: Set<string> = new Set()
+        const names = new Set<string>()
         for (const tex of this.extension.manager.getIncludedTeX()) {
             const content = this.extension.manager.getCachedContent(tex)
             const pkgs = content && content.element.package

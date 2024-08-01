@@ -22,7 +22,7 @@ interface ChkTeXLogEntry {
     readonly text: string
 }
 
-const DIAGNOSTIC_SEVERITY: { [key: string]: vscode.DiagnosticSeverity } = {
+const DIAGNOSTIC_SEVERITY: Record<string, vscode.DiagnosticSeverity> = {
     'typesetting': vscode.DiagnosticSeverity.Information,
     'warning': vscode.DiagnosticSeverity.Warning,
     'error': vscode.DiagnosticSeverity.Error,

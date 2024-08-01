@@ -9,13 +9,13 @@ const sidebarContainerElement = document.getElementById('sidebarContainer') as H
 const historyBackElement = document.getElementById('historyBack') as HTMLElement
 const historyForwardElement = document.getElementById('historyForward') as HTMLElement
 
-type HistoryEntry = {
+interface IHistoryEntry {
     readonly scroll: number,
     readonly page: number,
     readonly scrollMode: ScrollMode
 }
 
-function isEntryEqual(a: HistoryEntry, b: HistoryEntry) {
+function isEntryEqual(a: IHistoryEntry, b: IHistoryEntry) {
     if (a.scrollMode === b.scrollMode) {
         if (a.scrollMode === ScrollMode.PAGE) {
             return a.page === b.page
@@ -27,7 +27,7 @@ function isEntryEqual(a: HistoryEntry, b: HistoryEntry) {
     }
 }
 
-function getCurrentPosition(): HistoryEntry {
+function getCurrentPosition(): IHistoryEntry {
     const page = PDFViewerApplication.page
     const scrollMode = PDFViewerApplication.pdfViewer.scrollMode
     if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
@@ -41,7 +41,7 @@ function getCurrentPosition(): HistoryEntry {
     }
 }
 
-function setScroll(entry: HistoryEntry) {
+function setScroll(entry: IHistoryEntry) {
     if (PDFViewerApplication.pdfViewer.scrollMode === entry.scrollMode) {
         if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.VERTICAL) {
             viewerContainer.scrollTop = entry.scroll
@@ -57,7 +57,7 @@ function setScroll(entry: HistoryEntry) {
 
 
 export class ViewerHistory {
-    private history: HistoryEntry[] = []
+    private history: IHistoryEntry[] = []
     /**
      * Index, at which a previous position is stored. When the Back button is clicked,
      * the viewer scrolls to the position.

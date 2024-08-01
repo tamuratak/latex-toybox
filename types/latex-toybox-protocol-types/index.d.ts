@@ -9,7 +9,7 @@ export type ServerResponse = {
     }
 }
 
-export type PdfViewerParams = {
+export interface PdfViewerParams {
     scale: string,
     trim: number,
     scrollMode: number,
@@ -81,13 +81,13 @@ export type PanelRequest = {
     text: string
 } | {
     type: 'keyboard_event',
-    event: any
+    event: unknown
 } | {
     type: 'state',
     state: PdfViewerState
 }
 
-export type PdfViewerState = {
+export interface PdfViewerState {
     kind?: 'not_stored',
     path?: string,
     pdfFileUri?: string,

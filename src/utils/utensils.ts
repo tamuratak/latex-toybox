@@ -96,7 +96,7 @@ export function convertPositionToOffset(position: Position, doc: string): number
     return sum + position.character
 }
 
-export type PrevNextNodes = {
+export interface PrevNextNodes {
     readonly prev: latexParser.Node | undefined,
     readonly next: latexParser.Node | undefined
 }

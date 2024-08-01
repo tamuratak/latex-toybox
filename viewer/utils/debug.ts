@@ -1,6 +1,6 @@
 export const DEBUG = false
 
-export function debugPrint(arg: any) {
+export function debugPrint(arg: unknown) {
     if (!DEBUG) {
         return
     }

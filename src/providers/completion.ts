@@ -93,9 +93,9 @@ export class Completer implements vscode.CompletionItemProvider {
         const defaultEnvs = await readFilePath(`${this.extension.extensionRoot}/data/environments.json`)
         const defaultCommands = await readFilePath(`${this.extension.extensionRoot}/data/commands.json`)
         const defaultLaTeXMathSymbols = await readFilePath(`${this.extension.extensionRoot}/data/packages/latex-mathsymbols_cmd.json`)
-        const env: { [key: string]: EnvItemEntry } = JSON.parse(defaultEnvs) as DataEnvsJsonType
+        const env: Record<string, EnvItemEntry> = JSON.parse(defaultEnvs) as DataEnvsJsonType
         const cmds = JSON.parse(defaultCommands) as DataCmdsJsonType
-        const maths: { [key: string]: CmdItemEntry } = JSON.parse(defaultLaTeXMathSymbols) as DataLatexMathSymbolsJsonType
+        const maths: Record<string, CmdItemEntry> = JSON.parse(defaultLaTeXMathSymbols) as DataLatexMathSymbolsJsonType
         for (const key of Object.keys(maths)) {
             if (key.match(/\{.*?\}/)) {
                 const ent = maths[key]

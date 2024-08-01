@@ -9,8 +9,8 @@ interface MatchSection {
 
 export class Section {
     private readonly levels: string[] = ['part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph']
-    private readonly upperLevels = Object.create(null) as {[key: string]: string}
-    private readonly lowerLevels = Object.create(null) as {[key: string]: string}
+    private readonly upperLevels = Object.create(null) as Record<string, string>
+    private readonly lowerLevels = Object.create(null) as Record<string, string>
 
     constructor(private readonly extension: {
         readonly logger: Logger

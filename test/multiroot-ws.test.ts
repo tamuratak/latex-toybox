@@ -2,7 +2,7 @@ import * as assert from 'node:assert'
 import * as path from 'node:path'
 import * as fs from 'node:fs'
 import {obtainLatexToybox, sleep} from './utils/ciutils.js'
-import {activate} from '../src/main.js'
+import type {activate} from '../src/main.js'
 import * as vscode from 'vscode'
 import {
     assertPdfIsGenerated,

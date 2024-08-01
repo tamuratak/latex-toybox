@@ -14,7 +14,7 @@ type DataBibtexOptionalJsonType = typeof import('../../data/bibtex-optional-entr
 export class BibtexCompleter implements vscode.CompletionItemProvider {
     private scope: vscode.ConfigurationScope | undefined = undefined
     private readonly entryItems: vscode.CompletionItem[] = []
-    private readonly optFieldItems = Object.create(null) as { [key: string]: vscode.CompletionItem[] }
+    private readonly optFieldItems = Object.create(null) as Record<string, vscode.CompletionItem[]>
     private readonly bibtexFormatConfig: BibtexFormatConfig
 
     constructor(private readonly extension: {
@@ -55,18 +55,18 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         const citationBackend = configuration.get('intellisense.citation.backend')
         let entriesFile: string = ''
         let optEntriesFile: string = ''
-        let entriesReplacements: {[key: string]: string[]} = {}
+        let entriesReplacements: Record<string, string[]> = {}
         switch (citationBackend) {
             case 'bibtex': {
                 entriesFile = `${this.extension.extensionRoot}/data/bibtex-entries.json`
                 optEntriesFile = `${this.extension.extensionRoot}/data/bibtex-optional-entries.json`
-                entriesReplacements = configuration.get('intellisense.bibtexJSON.replace') as {[key: string]: string[]}
+                entriesReplacements = configuration.get('intellisense.bibtexJSON.replace') as Record<string, string[]>
                 break
             }
             case 'biblatex': {
                 entriesFile = `${this.extension.extensionRoot}/data/biblatex-entries.json`
                 optEntriesFile = `${this.extension.extensionRoot}/data/biblatex-optional-entries.json`
-                entriesReplacements = configuration.get('intellisense.biblatexJSON.replace') as {[key: string]: string[]}
+                entriesReplacements = configuration.get('intellisense.biblatexJSON.replace') as Record<string, string[]>
                 break
             }
             default: {
@@ -81,13 +81,13 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         }
     }
 
-    private async loadDefaultItems(entriesFile: string, optEntriesFile: string, entriesReplacements: {[key: string]: string[]}) {
+    private async loadDefaultItems(entriesFile: string, optEntriesFile: string, entriesReplacements: Record<string, string[]>) {
         const entriesContent = await readFilePath(entriesFile)
-        const entries: { [key: string]: string[] } = JSON.parse(entriesContent) as DataBibtexJsonType
+        const entries: Record<string, string[]> = JSON.parse(entriesContent) as DataBibtexJsonType
         const optFieldsContent = await readFilePath(optEntriesFile)
-        const optFields: { [key: string]: string[] } = JSON.parse(optFieldsContent) as DataBibtexOptionalJsonType
+        const optFields: Record<string, string[]> = JSON.parse(optFieldsContent) as DataBibtexOptionalJsonType
 
-        const maxLengths: {[key: string]: number} = this.computeMaxLengths(entries, optFields)
+        const maxLengths: Record<string, number> = this.computeMaxLengths(entries, optFields)
         const entriesList: string[] = []
         this.entryItems.length = 0
         Object.keys(entries).forEach(entry => {
@@ -106,8 +106,8 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         })
     }
 
-    private computeMaxLengths(entries: {[key: string]: string[]}, optFields: {[key: string]: string[]}): {[key: string]: number} {
-        const maxLengths = Object.create(null) as { [key: string]: number }
+    private computeMaxLengths(entries: Record<string, string[]>, optFields: Record<string, string[]>): Record<string, number> {
+        const maxLengths = Object.create(null) as Record<string, number>
         Object.keys(entries).forEach(key => {
             let maxFieldLength = 0
             entries[key].forEach(field => {
@@ -123,7 +123,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         return maxLengths
     }
 
-    private entryToCompletion(itemName: string, itemFields: string[], config: BibtexFormatConfig, maxLengths: {[key: string]: number}): vscode.CompletionItem {
+    private entryToCompletion(itemName: string, itemFields: string[], config: BibtexFormatConfig, maxLengths: Record<string, number>): vscode.CompletionItem {
         const suggestion: vscode.CompletionItem = new vscode.CompletionItem(itemName, BibtexSnippetKind)
         suggestion.detail = itemName
         suggestion.documentation = `Add a @${itemName} entry`
@@ -143,7 +143,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         return suggestion
     }
 
-    private fieldsToCompletion(itemName: string, fields: string[], config: BibtexFormatConfig, maxLengths: {[key: string]: number}): vscode.CompletionItem[] {
+    private fieldsToCompletion(itemName: string, fields: string[], config: BibtexFormatConfig, maxLengths: Record<string, number>): vscode.CompletionItem[] {
         const suggestions: vscode.CompletionItem[] = []
         fields.forEach(field => {
             const suggestion: vscode.CompletionItem = new vscode.CompletionItem(field, BibtexSnippetKind)

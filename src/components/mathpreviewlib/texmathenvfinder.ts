@@ -5,7 +5,7 @@ import { type ITextDocumentLike, TextDocumentLike } from './textdocumentlike.js'
 import type { LabelDefinitionEntry } from '../../providers/completionlib/labeldefinition.js'
 import { stripCommentsAndVerbatim } from '../../utils/strip.js'
 
-export type TexMathEnv = {
+export interface TexMathEnv {
     readonly texString: string,
     readonly envname: string,
     readonly range: vscode.Range

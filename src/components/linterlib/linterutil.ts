@@ -5,7 +5,7 @@ import { ExternalPromise } from '../../utils/externalpromise.js'
 
 
 export class LinterUtil {
-    readonly #currentProcesses = Object.create(null) as { [linterId: string]: ChildProcessWithoutNullStreams }
+    readonly #currentProcesses = Object.create(null) as Record<string, ChildProcessWithoutNullStreams>
 
     constructor(private readonly extension: {
         readonly logger: Logger

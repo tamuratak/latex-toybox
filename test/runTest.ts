@@ -61,7 +61,7 @@ async function main() {
         await runTestsOnEachFixture('completion')
         await runTestsOnEachFixture('multiroot-ws')
         await runTestsOnEachFixture('unittest')
-    } catch (err) {
+    } catch (_) {
         console.error('Failed to run tests')
         process.exit(1)
     }

@@ -3,7 +3,7 @@ const decoder = initializeDecoder()
 function initializeDecoder() {
     try {
         return new TextDecoder('x-user-defined')
-    } catch (e) {
+    } catch (_) {
         return
     }
 }

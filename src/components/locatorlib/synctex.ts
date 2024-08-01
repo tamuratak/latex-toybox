@@ -165,7 +165,7 @@ export class SyncTexJs {
         return { page: blocks1[0].page, x: c1.left + pdfSyncObject.offset.x, y: bottom + pdfSyncObject.offset.y }
     }
 
-    private getBlocks(linePageBlocks: { [inputLineNum: number]: { [pageNum: number]: Block[] } }, lineNum: number ): Block[] {
+    private getBlocks(linePageBlocks: Record<number, Record<number, Block[]>>, lineNum: number ): Block[] {
         const pageBlocks = linePageBlocks[lineNum]
         const pageNums = Object.keys(pageBlocks)
         if (pageNums.length === 0) {

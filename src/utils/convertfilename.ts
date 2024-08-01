@@ -48,7 +48,7 @@ export class ConvertFilenameEncodingIterator implements IterableIterator<string>
                 }
                 this.index += 1
                 return iconv.decode(this.fileNameBuffer as Buffer, enc)
-            } catch (e) { }
+            } catch (_) { }
         }
     }
 

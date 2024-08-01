@@ -65,6 +65,7 @@ function getMinWidth(svgHtml: string): number | undefined {
 const workers = {loadExtensions, typeset}
 
 // workerpool passes the resolved value of Promise, not Promise.
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type IMathJaxWorker = {
     loadExtensions: (...args: Parameters<typeof loadExtensions>) => void,
     typeset: (...args: Parameters<typeof typeset>) => string

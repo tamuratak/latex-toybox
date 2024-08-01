@@ -141,7 +141,7 @@ abstract class AbstractInput implements IProvider {
                         suggestions.push(item)
                     }
                 }
-            } catch (error) {}
+            } catch (_) {}
         }
         return suggestions
     }

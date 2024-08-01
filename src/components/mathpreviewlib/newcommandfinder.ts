@@ -104,7 +104,7 @@ export class NewCommandFinder {
                 }
             }
             return commands
-        } catch (e) {
+        } catch (_) {
             return []
         }
     }

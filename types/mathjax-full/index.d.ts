@@ -41,7 +41,7 @@ export type SupportedExtension =
     'upgreek' |
     'verb'
 
-export type TexOption = {
+export interface TexOption {
     packages?: readonly SupportedExtension[],
     inlineMath?: readonly [string, string][],
     displayMath?: readonly [string, string][],
@@ -59,13 +59,13 @@ export type TexOption = {
     formatError?: (jax: TeX<LiteElement, LiteText, LiteDocument>, message: TexError) => unknown
 }
 
-export type SvgOption = {
+export interface SvgOption {
     scale?: number,
     minScale?: number,
     mtextInheritFont?: boolean,
     merrorInheritFont?: boolean,
     mathmlSpacing?: boolean,
-    skipAttributes?: readonly { [attrname: string]: boolean },
+    skipAttributes?: readonly Record<string, boolean>,
     exFactor?: number,
     displayAlign?: 'left' | 'center' | 'right',
     displayIndent?: number,
@@ -73,7 +73,7 @@ export type SvgOption = {
     internalSpeechTitles?: boolean
 }
 
-export type ConvertOption = {
+export interface ConvertOption {
     display?: boolean,
     em?: number,
     ex?: number,

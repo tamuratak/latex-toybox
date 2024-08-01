@@ -1,6 +1,6 @@
 function promiseTriplet<T>() {
-    let resolve: ((value: T | PromiseLike<T>) => void) = () => {}
-    let reject: ((reason?: any) => void) = () => {}
+    let resolve: ((value: T | PromiseLike<T>) => void) = () => { /* nothing to do */ }
+    let reject: ((reason?: unknown) => void) = () => { /* nothing to do */ }
     const promise = new Promise<T>((r, rej) => {
         resolve = r
         reject = rej
@@ -25,7 +25,7 @@ export class ExternalPromise<T> {
         this.promiseTriplet.resolve(value)
     }
 
-    reject(reason?: any) {
+    reject(reason?: unknown) {
         if (this.#isResolved) {
             return
         }
