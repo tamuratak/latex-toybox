@@ -8,24 +8,24 @@ export default tseslint.config(
             "src/lib/synctexjs/",
             "viewer/viewer.js",
             "viewer/viewer.mjs",
-            "**/data/",
-            "**/dev/",
-            "**/icons/",
-            "**/node_modules/",
-            "**/out/",
-            "**/resources/",
-            "**/samples/",
-            "**/syntax/",
-            "**/.idea/",
-            "**/__pycache__/",
-            "**/.mypy_cache/",
-            "**/.pytest_cache/",
-            "**/.venv/",
-            "**/.vscode/",
-            "**/.vscode-test/",
-            "**/.git/",
-            "**/.github/",
-            "**/.devcontainer/",
+            "data/",
+            "dev/",
+            "icons/",
+            "node_modules/",
+            "out/",
+            "resources/",
+            "samples/",
+            "syntax/",
+            ".idea/",
+            "__pycache__/",
+            ".mypy_cache/",
+            ".pytest_cache/",
+            ".venv/",
+            ".vscode/",
+            ".vscode-test/",
+            ".git/",
+            ".github/",
+            ".devcontainer/",
         ],
     },
     eslint.configs.recommended,
@@ -37,17 +37,14 @@ export default tseslint.config(
             "test/**/*.ts",
             "dev/**/*.ts"
         ],
-
         languageOptions: {
             parser: tseslint.parser,
             ecmaVersion: 2018,
             sourceType: "commonjs",
-
             parserOptions: {
                 project: "./tsconfig.eslint.json",
             },
         },
-
         rules: {
             "@typescript-eslint/explicit-module-boundary-types": "off",
             "@typescript-eslint/no-explicit-any": "off",
@@ -56,7 +53,6 @@ export default tseslint.config(
             "@typescript-eslint/no-parameter-properties": "off",
             "@typescript-eslint/no-use-before-define": "off",
             "@typescript-eslint/prefer-interface": "off",
-
             "@typescript-eslint/naming-convention": ["error", {
                 selector: "default",
                 format: ["camelCase", "PascalCase", "UPPER_CASE"],
@@ -74,25 +70,20 @@ export default tseslint.config(
                     selector: "objectLiteralProperty",
                     format: null,
                 }],
-
             "@typescript-eslint/consistent-type-assertions": ["error", {
                 assertionStyle: "as",
                 objectLiteralTypeAssertions: "never",
             }],
-
             "@typescript-eslint/no-empty-interface": ["error", {
                 allowSingleExtends: true,
             }],
-
             "@typescript-eslint/no-floating-promises": "error",
             "@typescript-eslint/no-invalid-void-type": "error",
-
             "@typescript-eslint/no-misused-promises": ["error", {
                 checksVoidReturn: {
                     arguments: false,
                 },
             }],
-
             "no-shadow": "off",
             "@typescript-eslint/no-shadow": "error",
             "@typescript-eslint/no-unsafe-argument": "error",
@@ -102,7 +93,6 @@ export default tseslint.config(
             "no-unused-expressions": "off",
             "@typescript-eslint/no-unused-expressions": "error",
             "no-unused-vars": "off",
-
             "@typescript-eslint/no-unused-vars": [
                 "error",
                 {
@@ -123,47 +113,37 @@ export default tseslint.config(
             "require-await": "off",
             "@typescript-eslint/require-await": "error",
             "@typescript-eslint/unbound-method": "error",
-            curly: "error",
+            "curly": "error",
             "default-case": "error",
             "eol-last": "error",
-            eqeqeq: ["error", "always"],
+            "eqeqeq": ["error", "always"],
             "func-call-spacing": ["error", "never"],
             "no-caller": "error",
-
             "no-constant-condition": ["error", {
                 checkLoops: false,
             }],
-
             "no-eval": "error",
             "no-invalid-this": "error",
             "no-multiple-empty-lines": "error",
-
             "no-multi-spaces": ["error", {
                 ignoreEOLComments: true,
             }],
-
             "no-new-wrappers": "error",
             "no-trailing-spaces": "error",
-
             "no-empty": ["error", {
                 allowEmptyCatch: true,
             }],
-
             "object-shorthand": "error",
-
             "one-var": ["error", {
                 initialized: "never",
                 uninitialized: "never",
             }],
-
             "prefer-arrow-callback": ["error", {
                 allowUnboundThis: false,
             }],
-
-            quotes: ["error", "single", {
+            "quotes": ["error", "single", {
                 avoidEscape: true,
             }],
-
             "space-before-function-paren": ["error", {
                 anonymous: "always",
                 named: "never",
@@ -176,19 +156,16 @@ export default tseslint.config(
         languageOptions: {
             ecmaVersion: 2018,
             sourceType: "script",
-
             parserOptions: {
                 project: "./tsconfig.eslint.viewer.json",
             },
         },
-
         rules: {
             "@typescript-eslint/naming-convention": ["error", {
                 selector: "interface",
                 prefix: ["I"],
                 format: ["PascalCase"],
             }],
-
             "@typescript-eslint/no-unnecessary-type-assertion": "off",
             "@typescript-eslint/ban-ts-comment": "off",
         },
