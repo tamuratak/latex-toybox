@@ -170,3 +170,6 @@ await extension.waitSetupAppOptionsReady()
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
 // @ts-expect-error
 await import('/viewer.mjs')
+
+const toolbar = document.getElementsByClassName('toolbar')[0] as HTMLElement
+toolbar.classList.add('hide')
