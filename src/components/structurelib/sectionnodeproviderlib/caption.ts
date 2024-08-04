@@ -10,7 +10,7 @@ import { latexParser } from 'latex-utensils'
  */
 export function findEnvCaption(node: latexParser.Environment): string {
     let captionNode: latexParser.Command | undefined
-    let caption: string = 'Untitled'
+    let caption = 'Untitled'
     if (node.name.replace(/\*$/, '') === 'frame') {
         // Frame titles can be specified as either \begin{frame}{Frame Title}
         // or \begin{frame} \frametitle{Frame Title}

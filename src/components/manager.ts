@@ -365,7 +365,7 @@ export class Manager {
      * @param texPath The path of a LaTeX file.
      * @param respectOutDir If `true`, the 'latex.outDir' config is respected.
      */
-    tex2pdf(texPath: string, respectOutDir: boolean = true) {
+    tex2pdf(texPath: string, respectOutDir = true) {
         let outDir = './'
         if (respectOutDir) {
             outDir = this.getOutDir(texPath)
@@ -863,7 +863,7 @@ export class Manager {
         }
     }
 
-    private buildOnFileChanged(fileUri: vscode.Uri, bibChanged: boolean = false) {
+    private buildOnFileChanged(fileUri: vscode.Uri, bibChanged = false) {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onFileChange) {
             return

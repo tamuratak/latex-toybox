@@ -170,8 +170,8 @@ export class BibtexUtils {
             return firstEntriesOrder
         }
 
-        let fieldA: string = ''
-        let fieldB: string = ''
+        let fieldA = ''
+        let fieldB = ''
 
         if (bibtexParser.isEntry(a)) {
             for(const elm of a.content) {

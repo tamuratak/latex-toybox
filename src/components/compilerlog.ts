@@ -6,8 +6,8 @@ import type { Logger } from './logger.js'
 import type { Manager } from './manager.js'
 
 export class BuildStepLog {
-    private buffer: string = ''
-    private errorBuffer: string = ''
+    private buffer = ''
+    private errorBuffer = ''
     private readonly logPanel: vscode.OutputChannel
     readonly languageId: string
 

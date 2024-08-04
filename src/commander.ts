@@ -75,7 +75,7 @@ export class Commander {
      * @param recipe This refers to the name of the recipe that will be executed for the build process.
      * @returns
      */
-    async build(skipQuickPick: boolean = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {
+    async build(skipQuickPick = false, rootFile: string | undefined = undefined, languageId: string | undefined = undefined, recipe: string | undefined = undefined) {
         this.extension.logger.info('BUILD command invoked.')
         if (!vscode.window.activeTextEditor) {
             this.extension.logger.info('Cannot start to build because the active editor is undefined.')

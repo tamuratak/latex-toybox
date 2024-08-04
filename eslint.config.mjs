@@ -46,13 +46,8 @@ export default tseslint.config(
             },
         },
         rules: {
-            "@typescript-eslint/explicit-module-boundary-types": "off",
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-empty-function": "off",
-            "@typescript-eslint/no-inferrable-types": "off",
-            "@typescript-eslint/no-parameter-properties": "off",
-            "@typescript-eslint/no-use-before-define": "off",
-            "@typescript-eslint/prefer-interface": "off",
             "@typescript-eslint/naming-convention": ["error", {
                 selector: "default",
                 format: ["camelCase", "PascalCase", "UPPER_CASE"],
@@ -166,7 +161,6 @@ export default tseslint.config(
                 prefix: ["I"],
                 format: ["PascalCase"],
             }],
-            "@typescript-eslint/no-unnecessary-type-assertion": "off",
             "@typescript-eslint/ban-ts-comment": "off",
         },
     }

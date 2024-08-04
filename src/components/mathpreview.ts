@@ -19,7 +19,7 @@ export type { TexMathEnv } from './mathpreviewlib/texmathenvfinder.js'
 
 
 export class MathPreview {
-    private color: string = '#000000'
+    private color = '#000000'
     private readonly mj: MathJaxPool
     private readonly cursorRenderer: CursorRenderer
     private readonly newCommandFinder: NewCommandFinder

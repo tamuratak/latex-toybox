@@ -48,7 +48,7 @@ export class CompilerLogParser {
     /**
      * Set true when LaTeXmk did nothing because all targets are up-to-date.
      */
-    isLaTeXmkSkipped: boolean = false
+    isLaTeXmkSkipped = false
 
     constructor(extension: {
         readonly compilerLog: CompilerLog,

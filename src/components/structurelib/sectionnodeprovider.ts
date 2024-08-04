@@ -16,7 +16,7 @@ export class SectionNodeProvider implements vscode.TreeDataProvider<Section> {
 
     private readonly _onDidChangeTreeData: vscode.EventEmitter<Section | undefined> = new vscode.EventEmitter<Section | undefined>()
     readonly onDidChangeTreeData: vscode.Event<Section | undefined>
-    public root: string = ''
+    public root = ''
 
     // our data source is a set multi-rooted set of trees
     public ds: Section[] = []
