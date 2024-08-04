@@ -24,7 +24,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 .eslintcache
-.eslintignore
+eslint.config.mjs
 
 **/*.map
 node_modules/**/*.d.ts
