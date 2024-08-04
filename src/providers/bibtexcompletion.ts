@@ -53,8 +53,8 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
     private initialize() {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', this.scope)
         const citationBackend = configuration.get('intellisense.citation.backend')
-        let entriesFile: string = ''
-        let optEntriesFile: string = ''
+        let entriesFile = ''
+        let optEntriesFile = ''
         let entriesReplacements: Record<string, string[]> = {}
         switch (citationBackend) {
             case 'bibtex': {
@@ -127,7 +127,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         const suggestion: vscode.CompletionItem = new vscode.CompletionItem(itemName, BibtexSnippetKind)
         suggestion.detail = itemName
         suggestion.documentation = `Add a @${itemName} entry`
-        let count: number = 1
+        let count = 1
 
         // The following code is copied from BibtexUtils.bibtexFormat
         // Find the longest field name in entry

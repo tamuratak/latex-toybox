@@ -39,7 +39,7 @@ export class Section extends vscode.TreeItem {
 export class StructureTreeView {
     private readonly treeView: vscode.TreeView<Section | undefined>
     private readonly sectionNodeProvider: SectionNodeProvider
-    private followCursor: boolean = true
+    private followCursor = true
 
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,

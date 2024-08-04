@@ -40,7 +40,7 @@ class ParserState {
 }
 
 export class LatexLogParser {
-    isLaTeXmkSkipped: boolean = false
+    isLaTeXmkSkipped = false
     buildLog: LogEntry[] = []
     readonly compilerDiagnostics = vscode.languages.createDiagnosticCollection('LaTeX')
 

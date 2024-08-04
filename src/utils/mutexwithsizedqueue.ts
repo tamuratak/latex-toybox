@@ -9,7 +9,7 @@ export class MaxWaitingLimitError extends MutexWithSizedQueueError { }
  */
 export class MutexWithSizedQueue {
     readonly maxWaitingLimit: number
-    #waiting: number = 0
+    #waiting = 0
     private readonly mutex = new Mutex()
 
     /**

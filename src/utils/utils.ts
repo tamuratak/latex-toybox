@@ -33,7 +33,7 @@ export function escapeRegExp(str: string) {
  * @param suffix The suffix of the input file
  * @return an absolute path or undefined if the file does not exist
  */
-export async function findFileInDirs(dirs: string[], inputFile: string, suffix: string = '.tex') {
+export async function findFileInDirs(dirs: string[], inputFile: string, suffix = '.tex') {
     if (inputFile.startsWith('/')) {
         dirs.unshift('')
     }

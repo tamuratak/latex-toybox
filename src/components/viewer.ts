@@ -122,7 +122,7 @@ export class Viewer {
         })
     }
 
-    private async checkViewer(sourceFile: string, respectOutDir: boolean = true): Promise<string | undefined> {
+    private async checkViewer(sourceFile: string, respectOutDir = true): Promise<string | undefined> {
         const pdfFile = this.tex2pdf(sourceFile, respectOutDir)
         if (!await lwfs.exists(pdfFile)) {
             this.extension.logger.info(`Cannot find PDF file ${pdfFile}`)

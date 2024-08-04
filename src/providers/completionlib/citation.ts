@@ -40,7 +40,7 @@ export class Fields extends Map<string, string> {
      * @param joinString the string to use for joining the fields
      * @returns a string
      */
-    join(selectedFields: string[], prefixWithKeys: boolean, joinString: string = ' '): string {
+    join(selectedFields: string[], prefixWithKeys: boolean, joinString = ' '): string {
         const s: string[] = []
         for (const key of this.keys()) {
             if (selectedFields.includes(key)) {

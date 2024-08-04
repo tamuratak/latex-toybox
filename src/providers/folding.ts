@@ -105,7 +105,7 @@ export class FoldingProvider implements vscode.FoldingRangeProvider {
             //for 'endgroup': match[6] contains 'endgroup', keyword is 'group'
             //for '% region': match[7] contains 'region', keyword is 'region'
             //for '% endregion': match[8] contains 'endregion', keyword is 'region'
-            let keyword: string = ''
+            let keyword = ''
             if (match[1]) {
                 keyword = match[2]
             } else if (match[4]) {
