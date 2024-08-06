@@ -16,11 +16,6 @@ export default tseslint.config(
             "resources/",
             "samples/",
             "syntax/",
-            ".idea/",
-            "__pycache__/",
-            ".mypy_cache/",
-            ".pytest_cache/",
-            ".venv/",
             ".vscode/",
             ".vscode-test/",
             ".git/",
@@ -72,7 +67,9 @@ export default tseslint.config(
             "@typescript-eslint/no-empty-interface": ["error", {
                 allowSingleExtends: true,
             }],
-            "@typescript-eslint/no-floating-promises": "error",
+            "@typescript-eslint/no-floating-promises": ["error", {
+                checkThenables: true,
+            }],
             "@typescript-eslint/no-invalid-void-type": "error",
             "@typescript-eslint/no-misused-promises": ["error", {
                 checksVoidReturn: {
@@ -114,15 +111,11 @@ export default tseslint.config(
             "eqeqeq": ["error", "always"],
             "func-call-spacing": ["error", "never"],
             "no-caller": "error",
-            "no-constant-condition": ["error", {
-                checkLoops: false,
-            }],
+            "no-constant-condition": "error",
             "no-eval": "error",
             "no-invalid-this": "error",
             "no-multiple-empty-lines": "error",
-            "no-multi-spaces": ["error", {
-                ignoreEOLComments: true,
-            }],
+            "no-multi-spaces": "error",
             "no-new-wrappers": "error",
             "no-trailing-spaces": "error",
             "no-empty": ["error", {
