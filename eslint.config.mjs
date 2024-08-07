@@ -29,8 +29,7 @@ export default tseslint.config(
     {
         files: [
             "src/**/*.ts",
-            "test/**/*.ts",
-            "dev/**/*.ts"
+            "test/**/*.ts"
         ],
         languageOptions: {
             parser: tseslint.parser,
