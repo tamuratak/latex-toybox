@@ -139,7 +139,8 @@ export default tseslint.config(
                 }, {
                     selector: "objectLiteralProperty",
                     format: null,
-                }],
+                }
+            ],
             ...commonRules,
         },
     },
@@ -153,11 +154,26 @@ export default tseslint.config(
             },
         },
         rules: {
-            "@typescript-eslint/naming-convention": ["error", {
-                selector: "interface",
-                prefix: ["I"],
-                format: ["PascalCase"],
-            }],
+            "@typescript-eslint/naming-convention": ["error",
+                {
+                    selector: "default",
+                    format: ["camelCase", "PascalCase", "UPPER_CASE"],
+                    leadingUnderscore: "allow",
+                }, {
+                    selector: "method",
+                    format: ["camelCase"],
+                    leadingUnderscore: "allow",
+                }, {
+                    selector: "function",
+                    format: ["camelCase"],
+                }, {
+                    selector: "typeLike",
+                    format: ["PascalCase"],
+                }, {
+                    selector: "objectLiteralProperty",
+                    format: null,
+                }
+            ],
             "@typescript-eslint/ban-ts-comment": "off",
             ...commonRules
         },
