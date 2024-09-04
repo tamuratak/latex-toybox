@@ -22,10 +22,10 @@ function createForwardBackwardButtons() {
 function createCheckBoxes() {
     const elements = html`
     <div class="horizontalToolbarSeparator"></div>
-    <button id="synctexOffButton" class="secondaryToolbarButton" title="Disable forward SyncTeX" tabindex="70">
+    <button id="synctexOffButton" type="button" class="toolbarButton labeled" title="Disable forward SyncTeX" tabindex="71">
         <input id="synctexOff" type="checkbox"> Stop SyncTeX
     </button>
-    <button id="autoReloadOffButton" class="secondaryToolbarButton" title="Disable auto reload" tabindex="71">
+    <button id="autoReloadOffButton" type="button" class="toolbarButton labeled" title="Disable auto reload" tabindex="72">
         <input id="autoReloadOff" type="checkbox"> Stop Auto Reload
     </button>
     `
