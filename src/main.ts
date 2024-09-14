@@ -198,6 +198,7 @@ export class Extension {
         this.logger.info(`process.arch: ${process.arch}`)
         this.logger.info(`vscode.env.appName: ${vscode.env.appName}`)
         this.logger.info(`vscode.env.remoteName: ${vscode.env.remoteName}`)
+        this.logger.info(`vscode.env.sessionId: ${vscode.env.sessionId}`)
         this.logger.info(`vscode.env.uiKind: ${vscode.env.uiKind}`)
     }
 

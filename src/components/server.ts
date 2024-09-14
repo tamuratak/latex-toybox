@@ -42,6 +42,11 @@ class WsServer extends ws.Server {
 
 }
 
+interface CurrentSessionPort {
+    sessionId: string
+    port: number
+}
+
 export class Server {
     private readonly httpServer: http.Server
     private address?: AddressInfo
@@ -90,12 +95,25 @@ export class Server {
     }
 
     private initializeHttpServer() {
+        const serverPortKey = 'server.port'
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        const viewerPort = configuration.get('view.pdf.port', 0)
+        let viewerPort = configuration.get('view.pdf.port', 0)
+        // Use the same port for the same session even if the extension host is reloaded.
+        const currentSessionPort = this.extension.extensionContext.workspaceState.get<CurrentSessionPort>(serverPortKey)
+        if (viewerPort === 0 && currentSessionPort) {
+            const {sessionId, port} = currentSessionPort
+            if (sessionId === vscode.env.sessionId) {
+                this.extension.logger.info(`[Server] Restoring server port of current session: ${JSON.stringify(currentSessionPort)}`)
+                viewerPort = port
+            }
+        }
         this.httpServer.listen(viewerPort, '127.0.0.1', undefined, async () => {
             const address = this.httpServer.address()
             if (address && typeof address !== 'string') {
                 this.address = address
+                const curPort: CurrentSessionPort = {sessionId: vscode.env.sessionId, port: address.port}
+                // Store the session id and the port number to use the same port for the same session even if the extension host is reloaded.
+                await this.extension.extensionContext.workspaceState.update(serverPortKey, curPort)
                 this.extension.logger.info(`[Server] Server successfully started: ${inspectCompact(address)}`)
                 this.validOriginUri = await this.obtainValidOrigin(address.port)
                 this.extension.logger.info(`[Server] valdOrigin is ${this.validOrigin}`)
@@ -106,7 +124,7 @@ export class Server {
             }
         })
         this.httpServer.on('error', (err) => {
-            this.extension.logger.error(`[Server] Error creating LaTeX Toybox http server: ${inspectReadable(err)}.`)
+            this.extension.logger.error(`[Server] Error creating LaTeX Toybox http server: ${inspectReadable({viewerPort, err})}.`)
         })
     }
 

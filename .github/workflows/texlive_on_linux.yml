@@ -54,6 +54,7 @@ jobs:
         perl -v
     - run: perl -MCwd -e 'print $Cwd::VERSION."\n";'
     - run: latexmk -v
+    - run: echo "$PATH"
     - run: |
         npm ci
         npm run compile
