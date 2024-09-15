@@ -2,6 +2,10 @@ import { decodePath, pdfFilePrefix } from './encodepdffilepath.js'
 
 export const isEmbedded = window.parent !== window
 
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export function isPrefersColorSchemeDark() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 }

@@ -1,6 +1,7 @@
 import type { ClientRequest, ServerResponse } from 'latex-toybox-protocol-types'
-import { isEmbedded } from '../utils/utils.js'
+import { isEmbedded, sleep } from '../utils/utils.js'
 import type { ILatexToyboxPdfViewer } from './interface.js'
+import { ExternalPromise } from '../utils/externalpromise.js'
 
 
 export class ExtensionConnection {
@@ -40,38 +41,46 @@ export class ExtensionConnection {
             }
         })
 
-        void this.connectionPort.onDidClose(() => {
+        void this.connectionPort.onDidClose(async () => {
             document.title = `[Disconnected] ${this.lwApp.documentTitle}`
             console.log('Closed: WebScocket to LaTeX Toybox.')
 
             // Since WebSockets are disconnected when PC resumes from sleep,
             // we have to reconnect. https://github.com/James-Yu/LaTeX-Workshop/pull/1812
-            setTimeout(() => {
+            for (let i = 0; i < 10; i++) {
+                await sleep(3000)
                 console.log('Try to reconnect to LaTeX Toybox.')
-                this.connectionPort = new ConnectionPort()
-                void this.connectionPort.onDidOpen(() => {
+                try {
+                    this.connectionPort = new ConnectionPort()
+                    await this.connectionPort.readyPromise
                     document.title = this.lwApp.documentTitle
                     this.setupConnectionPort()
                     console.log('Reconnected: WebScocket to LaTeX Toybox.')
-                })
-            }, 3000)
+                    return
+                } catch (e) {
+                    console.log('Failed to reconnect to LaTeX Toybox.')
+                    console.log(e)
+                }
+            }
         })
     }
 
 }
 
 class ConnectionPort {
-    private readonly socket: Promise<WebSocket>
+    private readonly socketPromise = new ExternalPromise<WebSocket>
 
     constructor() {
         const scheme = 'https:' === window.location.protocol ? 'wss' : 'ws'
         const server = `${scheme}://${window.location.hostname}:${window.location.port}`
-        this.socket = new Promise((resolve, reject) => {
-            const sock = new WebSocket(server)
-            sock.addEventListener('open', () => resolve(sock) )
-            sock.addEventListener('error', (ev) => reject(new Error(`Failed to connect to ${server}: ${ev}`)) )
-        })
+        const sock = new WebSocket(server)
+        sock.addEventListener('open', () => this.socketPromise.resolve(sock) )
+        sock.addEventListener('error', (ev) => this.socketPromise.reject(new Error(`Failed to connect to ${server}: ${ev}`)) )
         this.startConnectionKeeper()
+    }
+
+    get readyPromise() {
+        return this.socketPromise.promise.then(() => undefined)
     }
 
     private startConnectionKeeper() {
@@ -82,24 +91,24 @@ class ConnectionPort {
     }
 
     async send(message: ClientRequest) {
-        const sock = await this.socket
+        const sock = await this.socketPromise.promise
         if (sock.readyState === 1) {
             sock.send(JSON.stringify(message))
         }
     }
 
     async onDidReceiveMessage(cb: (event: WebSocketEventMap['message']) => void) {
-        const sock = await this.socket
+        const sock = await this.socketPromise.promise
         sock.addEventListener('message', cb)
     }
 
     async onDidClose(cb: () => unknown) {
-        const sock = await this.socket
+        const sock = await this.socketPromise.promise
         sock.addEventListener('close', () => cb())
     }
 
     async onDidOpen(cb: () => unknown) {
-        await this.socket
+        await this.socketPromise.promise
         cb()
     }
 
