@@ -103,7 +103,7 @@ export class Server {
         if (viewerPort === 0 && currentSessionPort) {
             const {sessionId, port} = currentSessionPort
             if (sessionId === vscode.env.sessionId) {
-                this.extension.logger.info(`[Server] Restoring server port of current session: ${JSON.stringify(currentSessionPort)}`)
+                this.extension.logger.info(`[Server] Restoring server port of current session: ${inspectCompact(currentSessionPort)}`)
                 viewerPort = port
             }
         }
