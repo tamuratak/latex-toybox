@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { Logger } from './logger.js'
-import { inspectReadable } from '../utils/inspect.js'
+import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 
 
 export class Configuration {
@@ -36,7 +36,7 @@ export class Configuration {
             const configuration = vscode.workspace.getConfiguration(undefined, workspace)
             for(const config of this.configurationsToLog) {
                 const value = configuration.get(config)
-                this.extension.logger.info(`${config}: ${inspectReadable(value)}`)
+                this.extension.logger.info(inspectReadable({config: value}))
             }
         }
     }
@@ -48,7 +48,7 @@ export class Configuration {
                 if (ev.affectsConfiguration(config, workspace)) {
                     const configuration = vscode.workspace.getConfiguration(undefined, workspace)
                     const value = configuration.get(config)
-                    this.extension.logger.info(`Configuration changed to { ${config}: ${JSON.stringify(value)} } at ${workspace?.uri.toString(true)}`)
+                    this.extension.logger.info(`Configuration changed to ${inspectCompact({config: value})} at ${workspace?.uri.toString(true)}`)
                 }
             }
         }

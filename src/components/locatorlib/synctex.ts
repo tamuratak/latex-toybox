@@ -137,8 +137,7 @@ export class SyncTexJs {
         const inputFilePath = await this.findInputFilePathForward(filePath, pdfSyncObject)
         if (inputFilePath === undefined) {
             const inputFiles = Object.keys(pdfSyncObject.blockNumberLine)
-            const inputFilesStr = JSON.stringify(inputFiles, null, ' ')
-            throw new SyncTexJsError(`[SyncTexJs] No relevant entry of the tex file found in the synctex file: ${inspectCompact({filePath, pdfFile, line, inputFilesStr})}`)
+            throw new SyncTexJsError(`[SyncTexJs] No relevant entry of the tex file found in the synctex file: ${inspectCompact({filePath, pdfFile, line, inputFiles})}`)
         }
 
         const linePageBlocks = pdfSyncObject.blockNumberLine[inputFilePath]
@@ -183,8 +182,7 @@ export class SyncTexJs {
         const fileNames = Object.keys(pdfSyncObject.blockNumberLine)
 
         if (fileNames.length === 0) {
-            const inputFiles = JSON.stringify(fileNames, null, ' ')
-            throw new SyncTexJsError(`No entry of the tex file found in the synctex file. Entries: ${inputFiles}`)
+            throw new SyncTexJsError(`No entry of the tex file found in the synctex file. Entries: ${inspectCompact(fileNames)}`)
         }
 
         const record = {
