@@ -54,7 +54,14 @@ jobs:
         perl -v
     - run: perl -MCwd -e 'print $Cwd::VERSION."\n";'
     - run: latexmk -v
-    - run: echo "$PATH"
+    - run: |
+        echo "$PATH"
+        bash -cl 'echo $PATH'
+        bash -c 'echo $PATH'
+        cat ~/.bashrc || true
+        cat ~/.bash_profile || true
+        cat ~/.profile || true
+        cat ~/.bash_login || true
     - run: |
         npm ci
         npm run compile
