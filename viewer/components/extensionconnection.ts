@@ -62,6 +62,7 @@ export class ExtensionConnection {
                     console.log(e)
                 }
             }
+            console.log('Failed to reconnect to LaTeX Toybox after 10 attempts. Giving up.')
         })
     }
 
