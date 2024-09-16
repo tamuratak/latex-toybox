@@ -17,6 +17,10 @@ jobs:
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v4
+    - name: Try to fix env
+      run: |
+        sudo sed -i '' '/ export PATH;$/,+2d' ~/.bashrc
+        source ~/.bashrc
     - name: Set up PATH
       run: |
         echo "/Users/runner/texlive/bin/x86_64-darwin" >> $GITHUB_PATH
@@ -55,8 +59,14 @@ jobs:
     - run: perl -MCwd -e 'print $Cwd::VERSION."\n";'
     - run: latexmk -v
     - run: |
-        ls -al /Users/runner/texlive/bin/
+        ls -al /Users/runner/texlive/bin/ || true
         echo "$PATH"
+        bash -cl 'echo $PATH'
+        bash -c 'echo $PATH'
+        cat ~/.bashrc || true
+        cat ~/.bash_profile || true
+        cat ~/.profile || true
+        cat ~/.bash_login || true
     - run: |
         npm ci
         npm run compile
