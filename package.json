@@ -1713,7 +1713,7 @@
     "ws": "8.18.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.10.0",
+    "@eslint/js": "9.11.1",
     "@types/cross-spawn": "6.0.6",
     "@types/eslint__js": "8.42.3",
     "@types/micromatch": "4.0.9",
@@ -1724,12 +1724,12 @@
     "@types/ws": "8.5.12",
     "@vscode/test-electron": "2.4.1",
     "@vscode/vsce": "3.1.0",
-    "eslint": "9.10.0",
+    "eslint": "9.11.1",
     "glob": "11.0.0",
     "mocha": "10.7.3",
     "rimraf": "3.0.2",
     "tmp": "0.2.3",
     "typescript": "5.5.4",
-    "typescript-eslint": "8.5.0"
+    "typescript-eslint": "8.7.0"
   }
 }
