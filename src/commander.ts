@@ -273,63 +273,6 @@ export class Commander {
     }
 
     /**
-     * If the current line starts with \item or \item[], do the same for
-     * the new line when hitting enter.
-     * Note that hitting enter on a line containing only \item or \item[]
-     * actually deletes the content of the line.
-     */
-    onEnterKey(modifiers?: string) {
-        const editor = vscode.window.activeTextEditor
-        if (!editor) {
-            return
-        }
-        const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        if (!configuration.get('bind.enter.key')) {
-            return vscode.commands.executeCommand('type', { source: 'keyboard', text: '\n' })
-        }
-        if (modifiers === 'alt') {
-            return vscode.commands.executeCommand('editor.action.insertLineAfter')
-        }
-
-        // Test if every cursor is at the end of a line starting with \item
-        const allCursorsOnItem = editor.selections.every((selection: vscode.Selection) => {
-                const cursorPos = selection.active
-                const line = editor.document.lineAt(cursorPos.line)
-                return /^\s*\\item/.test(line.text) && (line.text.substring(cursorPos.character).trim().length === 0)
-        })
-        if (!allCursorsOnItem) {
-            return vscode.commands.executeCommand('type', { source: 'keyboard', text: '\n' })
-        }
-
-        return editor.edit(editBuilder => {
-            // If we arrive here, all the cursors are at the end of a line starting with `\s*\\item`.
-            // Yet, we keep the conditions for the sake of maintenance.
-            for (const selection of editor.selections) {
-                const cursorPos = selection.active
-                const line = editor.document.lineAt(cursorPos.line)
-                const indentation = line.text.substring(0, line.firstNonWhitespaceCharacterIndex)
-
-                if (/^\s*\\item(\[\s*\])?\s*$/.test(line.text)) {
-                    // The line is an empty \item or \item[]
-                    const rangeToDelete = line.range.with(cursorPos.with(line.lineNumber, line.firstNonWhitespaceCharacterIndex), line.range.end)
-                    editBuilder.delete(rangeToDelete)
-                } else if(/^\s*\\item\[[^[\]]*\]/.test(line.text)) {
-                    // The line starts with \item[blabla] or \item[] blabla
-                    const itemString = `\n${indentation}\\item[] `
-                    editBuilder.insert(cursorPos, itemString)
-                } else if(/^\s*\\item\s*[^\s]+.*$/.test(line.text)) {
-                    // The line starts with \item blabla
-                    const itemString = `\n${indentation}\\item `
-                    editBuilder.insert(cursorPos, itemString)
-                } else {
-                    // If we do not know what to do, insert a newline and indent using the current indentation
-                    editBuilder.insert(cursorPos, `\n${indentation}`)
-                }
-            }
-        })
-    }
-
-    /**
      * Shift the level sectioning in the selection by one (up or down)
      * @param change
      */
