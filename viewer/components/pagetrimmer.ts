@@ -15,26 +15,17 @@ export enum TrimMode {
     TRIM_15 = 3,
 }
 
-const trimRule05 = { trimValue: 0.05, sheet: document.createElement('style') } as const
-const trimRule10 = { trimValue: 0.10, sheet: document.createElement('style') } as const
-const trimRule15 = { trimValue: 0.15, sheet: document.createElement('style') } as const
+const trimRule05 = { trimValue: 0.05, sheet: new CSSStyleSheet() } as const
+const trimRule10 = { trimValue: 0.10, sheet: new CSSStyleSheet() } as const
+const trimRule15 = { trimValue: 0.15, sheet: new CSSStyleSheet() } as const
 const trimValueAndSheet = [trimRule05, trimRule10, trimRule15] as const
 trimValueAndSheet.forEach(({ trimValue, sheet }) => {
-    document.head.appendChild(sheet)
     const left = -100 * trimValue
-    sheet.textContent = `
-.page canvas {
-    left: ${left}%;
-    position: relative;
-}
-.page .textLayer {
-    left: ${left}%;
-}
-.page .annotationLayer {
-    left: ${left}%;
-}
-`
+    sheet.insertRule(`.page canvas { left: ${left}%; position: relative; }`)
+    sheet.insertRule(`.page .textLayer { left: ${left}%; }`)
+    sheet.insertRule(`.page .annotationLayer { left: ${left}%; }`)
     sheet.disabled = true
+    document.adoptedStyleSheets.push(sheet)
 })
 
 function disableAllTrimRuleStylesheets() {

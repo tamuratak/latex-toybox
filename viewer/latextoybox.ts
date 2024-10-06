@@ -17,8 +17,8 @@ import { ViewerLoading } from './components/viewerloading.js'
 import { LwEventBus } from './components/lweventbus.js'
 import { PanelManagerConnection } from './components/panelmanagerconnection.js'
 import { VolatileConfig } from './components/volatileconfig.js'
-import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
 import { trimSelectElement, viewerContainer } from './components/constants.js'
+import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
 
 
 declare const PDFViewerApplication: IPDFViewerApplication
