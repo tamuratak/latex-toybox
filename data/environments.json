@@ -11,11 +11,11 @@
   },
   "enumerate": {
     "name": "enumerate",
-    "snippet": "\n\t\\item $0"
+    "snippet": "\n\t\\item $0\n\t\\item \n\t\\item "
   },
   "itemize": {
     "name": "itemize",
-    "snippet": "\n\t\\item $0"
+    "snippet": "\n\t\\item $0\n\t\\item \n\t\\item "
   },
   "math": {
     "name": "math"

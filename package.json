@@ -352,16 +352,6 @@
         "mac": "cmd+alt+j",
         "command": "latex-toybox.synctex",
         "when": "editorTextFocus && editorLangId == 'latex' && !config.latex-toybox.bind.altKeymap.enabled && !virtualWorkspace"
-      },
-      {
-        "key": "enter",
-        "command": "latex-toybox.onEnterKey",
-        "when": "latex-toybox:enabled && config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/ && (vim.active && vim.mode == 'Insert' || !vim.active)"
-      },
-      {
-        "key": "alt+enter",
-        "command": "latex-toybox.onAltEnterKey",
-        "when": "latex-toybox:enabled && config.latex-toybox.bind.enter.key && editorTextFocus && (acceptSuggestionOnEnter && !suggestWidgetVisible || !acceptSuggestionOnEnter) && !editorReadonly && editorLangId =~ /^latex$|^latex-expl3$/"
       }
     ],
     "configurationDefaults": {
@@ -1252,12 +1242,6 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable the LaTeX contextual menu. This menu is deactivated as it is available through the new LaTeX badge. Just set this variable to `true` to recover the menu."
-        },
-        "latex-toybox.bind.enter.key": {
-          "scope": "window",
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enable the automatic insertion of `\\item` on a newline when pressing `Enter` in a line starting in `\\item`."
         },
         "latex-toybox.bind.altKeymap.enabled": {
           "scope": "window",

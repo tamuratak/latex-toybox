@@ -68,8 +68,6 @@ function registerLatexToyboxCommands(
         vscode.commands.registerCommand('latex-toybox.compilerlog', () => extension.commander.log('compiler')),
         vscode.commands.registerCommand('latex-toybox.goto-section', (filePath: string, lineNumber: number) => extension.commander.gotoSection(filePath, lineNumber)),
         vscode.commands.registerCommand('latex-toybox.navigate-envpair', () => extension.commander.navigateToEnvPair()),
-        vscode.commands.registerCommand('latex-toybox.onEnterKey', () => extension.commander.onEnterKey()),
-        vscode.commands.registerCommand('latex-toybox.onAltEnterKey', () => extension.commander.onEnterKey('alt')),
         vscode.commands.registerCommand('latex-toybox.revealOutputDir', () => extension.commander.revealOutputDir()),
 
         vscode.commands.registerCommand('latex-toybox.promote-sectioning', () => extension.commander.shiftSectioningLevel('promote')),
