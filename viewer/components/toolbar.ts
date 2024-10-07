@@ -19,7 +19,7 @@ export function showToolbar(animate: boolean) {
         toolbarDiv.classList.add('notransition')
     }
     hideToolbarInterval = setInterval(() => {
-        if(!PDFViewerApplication.findBar.opened && !PDFViewerApplication.pdfSidebar.isOpen && !PDFViewerApplication.secondaryToolbar.isOpen) {
+        if (!PDFViewerApplication.findBar.opened && !PDFViewerApplication.pdfSidebar.isOpen && !PDFViewerApplication.secondaryToolbar.isOpen) {
             toolbarDiv.classList.remove('notransition')
             toolbarDiv.classList.add('hide')
             clearInterval(hideToolbarInterval)
@@ -43,17 +43,18 @@ export function setCssRuleForToolbar() {
     const numPages = document.getElementById('numPages') as HTMLElement
     const numPagesWidth = elementWidth(numPages)
     const printerButtonWidth = isEmbedded ? 0 : 34
-    const smallViewMaxWidth = 580 + numPagesWidth + scaleWidth + printerButtonWidth
-    const smallViewRule = `@media all and (max-width: ${smallViewMaxWidth}px) { .hiddenSmallView, .hiddenSmallView * { display: none; } }`
-    styleSheet.insertRule(smallViewRule)
-    const buttonSpacerMaxWidth = 540 + numPagesWidth + scaleWidth + printerButtonWidth
-    const buttonSpacerRule = `@media all and (max-width: ${buttonSpacerMaxWidth}px) { .toolbarButtonSpacer { width: 0; } }`
-    styleSheet.insertRule(buttonSpacerRule)
-    const scaleMaxWidth = 500 + numPagesWidth + scaleWidth + printerButtonWidth
-    const scaleRule = `@media all and (max-width: ${scaleMaxWidth}px) { #scaleSelectContainer { display: none; } }`
-    styleSheet.insertRule(scaleRule)
+    // The constant must be larger than 366 = 28 + 28 + 28 + 30 + 28 + 28 + 28 + 56 + 28 + 28 + 28 + 28
+    // It is the sum of the widths of the elements in the toolbar except for numPages and printerButton.
     const trimMaxWidth = 500 + numPagesWidth + printerButtonWidth
-    const trimRule = `@media all and (max-width: ${trimMaxWidth}px) { #trimSelectContainer { display: none; } }`
-    styleSheet.insertRule(trimRule)
+    const scaleMaxWidth = scaleWidth + trimMaxWidth
+    // The constant must be larger than 86 = 28 + 28 + 30
+    // It is the sum of the widths of toolbarButtonSpacer, previous, and next.
+    const smallViewMaxWidth = 86 + scaleMaxWidth
+    styleSheet.insertRule(` @media all and (max-width: ${smallViewMaxWidth}px) {
+    .hiddenSmallView, .hiddenSmallView * { display: none; }
+    .toolbarButtonSpacer { width: 0 !important; }
+}`)
+    styleSheet.insertRule(`@media all and (max-width: ${scaleMaxWidth}px) { #scaleSelectContainer { display: none; } }`)
+    styleSheet.insertRule(`@media all and (max-width: ${trimMaxWidth}px) { #trimSelectContainer { display: none; } }`)
     document.adoptedStyleSheets.push(styleSheet)
 }
