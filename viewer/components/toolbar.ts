@@ -43,18 +43,24 @@ export function setCssRuleForToolbar() {
     const numPages = document.getElementById('numPages') as HTMLElement
     const numPagesWidth = elementWidth(numPages)
     const printerButtonWidth = isEmbedded ? 0 : 34
-    // The constant must be larger than 366 = 28 + 28 + 28 + 30 + 28 + 28 + 28 + 56 + 28 + 28 + 28 + 28
-    // It is the sum of the widths of the elements in the toolbar except for numPages and printerButton.
+    /**
+    The total width of the toolbar elements is:
+
+    28 + 28 + 28 + 30 + 28 + 28 + 28 + 56 + 28 + 28 + 28 + 28 + 130 (trimWidth) + numPagesWidth + printerButtonWidth + scaleWidth
+    = 496 + numPagesWidth + printerButtonWidth + scaleWidth.
+
+    The combined width of `toolbarButtonSpacer`, `previous`, and `next` is 30 + 28 + 28 = 86.
+    Since these three elements disappear earlier than the others, we subtract 86.
+    Thus, `trimMaxWidth` must be greater than 496 + numPagesWidth + printerButtonWidth - 86 = 410 + numPagesWidth + printerButtonWidth.
+    We set it to 500, slightly larger than 410.
+    */
     const trimMaxWidth = 500 + numPagesWidth + printerButtonWidth
     const scaleMaxWidth = scaleWidth + trimMaxWidth
-    // The constant must be larger than 86 = 28 + 28 + 30
-    // It is the sum of the widths of toolbarButtonSpacer, previous, and next.
-    const smallViewMaxWidth = 86 + scaleMaxWidth
-    styleSheet.insertRule(` @media all and (max-width: ${smallViewMaxWidth}px) {
-    .hiddenSmallView, .hiddenSmallView * { display: none; }
-    .toolbarButtonSpacer { width: 0 !important; }
-}`)
-    styleSheet.insertRule(`@media all and (max-width: ${scaleMaxWidth}px) { #scaleSelectContainer { display: none; } }`)
+    // The sum of the widths of toolbarButtonSpacer, previous, and next is 86.
+    // We set 90, slightly larger than 86.
+    const smallViewMaxWidth = 90 + scaleMaxWidth
     styleSheet.insertRule(`@media all and (max-width: ${trimMaxWidth}px) { #trimSelectContainer { display: none; } }`)
+    styleSheet.insertRule(`@media all and (max-width: ${scaleMaxWidth}px) { #scaleSelectContainer { display: none; } }`)
+    styleSheet.insertRule(` @media all and (max-width: ${smallViewMaxWidth}px) { .hiddenSmallView { display: none; } }`)
     document.adoptedStyleSheets.push(styleSheet)
 }
