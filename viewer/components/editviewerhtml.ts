@@ -16,7 +16,7 @@ function createForwardBackwardButtons() {
       <span>Forward</span>
     </button>
     `
-    insertAfterEnd('sidebarToggle', elements)
+    insertAfterEnd('sidebarToggleButton', elements)
 }
 
 function createCheckBoxes() {

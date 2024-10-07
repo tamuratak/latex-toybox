@@ -29,7 +29,7 @@ export function showToolbar(animate: boolean) {
 
 export function hidePrintButton() {
     if (isEmbedded) {
-        const dom = document.getElementById('print') as HTMLElement
+        const dom = document.getElementById('printButton') as HTMLElement
         dom.style.display = 'none'
     }
 }
@@ -37,16 +37,7 @@ export function hidePrintButton() {
 // Since the width of the selector of scaling depends on each locale,
 // we have to set its `max-width` dynamically on initialization.
 export function setCssRuleForToolbar() {
-    let styleSheet: CSSStyleSheet | undefined
-    for (const style of document.styleSheets) {
-        if (style.href && /latextoybox.css/.exec(style.href)) {
-            styleSheet = style
-            break
-        }
-    }
-    if (!styleSheet) {
-        return
-    }
+    const styleSheet = new CSSStyleSheet()
     const scaleSelectContainer = document.getElementById('scaleSelectContainer') as HTMLElement
     const scaleWidth = elementWidth(scaleSelectContainer)
     const numPages = document.getElementById('numPages') as HTMLElement
@@ -64,4 +55,5 @@ export function setCssRuleForToolbar() {
     const trimMaxWidth = 500 + numPagesWidth + printerButtonWidth
     const trimRule = `@media all and (max-width: ${trimMaxWidth}px) { #trimSelectContainer { display: none; } }`
     styleSheet.insertRule(trimRule)
+    document.adoptedStyleSheets.push(styleSheet)
 }
