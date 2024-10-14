@@ -66,7 +66,7 @@ interface IPageView {
 interface IPDFViewer {
     currentScale: number,
     currentScaleValue: string,
-    getPageView(index: number): IPageView,
+    getPageView(index: number): IPageView | undefined,
     scrollMode: ScrollMode,
     spreadMode: SpreadMode,
     _getVisiblePages(): { first: number, last: number, views: { id: number, x: number, y: number, view: IPageView, percent: number }[], ids: Set<number> }

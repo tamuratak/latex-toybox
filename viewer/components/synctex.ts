@@ -25,7 +25,10 @@ export class SyncTex {
         }
         // use the offsetTop of the actual page, much more accurate than multiplying the offsetHeight of the first page
         // https://github.com/James-Yu/LaTeX-Workshop/pull/417
-        const pos = PDFViewerApplication.pdfViewer.getPageView(position.page - 1).viewport.convertToViewportPoint(position.x, position.y)
+        const pos = PDFViewerApplication.pdfViewer.getPageView(position.page - 1)?.viewport.convertToViewportPoint(position.x, position.y)
+        if (!pos) {
+            return
+        }
         let page: HTMLElement
         if (PDFViewerApplication.pdfViewer.scrollMode === ScrollMode.PAGE) {
             page = document.getElementsByClassName('page')[0] as HTMLElement
@@ -85,7 +88,10 @@ export class SyncTex {
             const offsetLeft = m ? Number(m[1]) : 0
             left += offsetLeft
         }
-        const pos = PDFViewerApplication.pdfViewer.getPageView(page - 1).getPagePoint(left, canvasDom.offsetHeight - top)
+        const pos = PDFViewerApplication.pdfViewer.getPageView(page - 1)?.getPagePoint(left, canvasDom.offsetHeight - top)
+        if (!pos) {
+            return
+        }
         this.lwApp.send({ type: 'reverse_synctex', pdfFileUri: this.lwApp.pdfFileUri, pos, page, textBeforeSelection, textAfterSelection })
     }
 

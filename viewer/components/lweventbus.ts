@@ -13,8 +13,6 @@ export class LwEventBus implements ILwEventBus {
 
     // For the details of the initialization of PDF.js,
     // see https://github.com/mozilla/pdf.js/wiki/Third-party-viewer-usage
-    // We should use only the promises provided by PDF.js here, not the ones defined by us,
-    // to avoid deadlock.
     private async getEventBus() {
         await this.webViewerLoaded
         await PDFViewerApplication.initializedPromise
