@@ -7,14 +7,38 @@ import { ExternalPromise } from '../utils/externalpromise.js'
 export class ExtensionConnection {
     private readonly lwApp: ILatexToyboxPdfViewer
     private connectionPort = new ConnectionPort()
+    private readonly disconnectedNotificationDom = document.createElement('div')
+    private readonly reconnectedNotificationDom = document.createElement('div')
 
     constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         this.setupConnectionPort()
+        this.setupDoms()
     }
 
     send(message: ClientRequest) {
         void this.connectionPort.send(message)
+    }
+
+    private setupDoms() {
+        this.disconnectedNotificationDom.id = 'notify-disconnected'
+        this.disconnectedNotificationDom.textContent = 'Disconnected from LaTeX Toybox. Trying to reconnect...'
+        this.disconnectedNotificationDom.classList.add('hide')
+        document.body.appendChild(this.disconnectedNotificationDom)
+        this.reconnectedNotificationDom.id = 'notify-reconnected'
+        this.reconnectedNotificationDom.textContent = 'Reconnected to LaTeX Toybox. Happy TeXing!'
+        this.reconnectedNotificationDom.classList.add('hide')
+        document.body.appendChild(this.reconnectedNotificationDom)
+    }
+
+    private notifyDisconnected() {
+        this.disconnectedNotificationDom.classList.remove('hide')
+    }
+
+    private notifyReconnected() {
+        this.disconnectedNotificationDom.classList.add('hide')
+        this.reconnectedNotificationDom.classList.remove('hide')
+        setTimeout(() => this.reconnectedNotificationDom.classList.add('hide'), 3000)
     }
 
     private setupConnectionPort() {
@@ -42,7 +66,7 @@ export class ExtensionConnection {
         })
 
         void this.connectionPort.onDidClose(async () => {
-            document.title = `[Disconnected] ${this.lwApp.documentTitle}`
+            this.notifyDisconnected()
             console.log('Closed: WebScocket to LaTeX Toybox.')
 
             // Since WebSockets are disconnected when PC resumes from sleep,
@@ -53,7 +77,7 @@ export class ExtensionConnection {
                 try {
                     this.connectionPort = new ConnectionPort()
                     await this.connectionPort.readyPromise
-                    document.title = this.lwApp.documentTitle
+                    this.notifyReconnected()
                     this.setupConnectionPort()
                     console.log('Reconnected: WebScocket to LaTeX Toybox.')
                     return
