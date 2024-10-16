@@ -97,7 +97,7 @@ export class SyncTexJs {
         try {
             const data = await readFileAsUint8Array(vscode.Uri.file(synctexFileGz))
             const b = zlib.gunzipSync(data)
-            const s = b.toString('binary')
+            const s = xuserdefined.decode(b)
             return parseSyncTex(s)
         } catch (e) {
             if (await existsPath(synctexFileGz)) {

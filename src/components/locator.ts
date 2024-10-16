@@ -180,16 +180,14 @@ export class Locator {
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfFile)})
-        proc.stdout.setEncoding('utf8')
-        proc.stderr.setEncoding('utf8')
 
         let stdout = ''
-        proc.stdout.on('data', newStdout => {
+        proc.stdout.on('data', (newStdout: Buffer) => {
             stdout += newStdout
         })
 
         let stderr = ''
-        proc.stderr.on('data', newStderr => {
+        proc.stderr.on('data', (newStderr: Buffer) => {
             stderr += newStderr
         })
 
@@ -230,16 +228,14 @@ export class Locator {
 
         const command = configuration.get('synctex.path') as string
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfPath)})
-        proc.stdout.setEncoding('utf8')
-        proc.stderr.setEncoding('utf8')
 
         let stdout = ''
-        proc.stdout.on('data', newStdout => {
+        proc.stdout.on('data', (newStdout: Buffer) => {
             stdout += newStdout
         })
 
         let stderr = ''
-        proc.stderr.on('data', newStderr => {
+        proc.stderr.on('data', (newStderr: Buffer) => {
             stderr += newStderr
         })
 

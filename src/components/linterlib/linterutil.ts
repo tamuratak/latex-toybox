@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
 import { EOL } from 'node:os'
 import type { Logger } from '../logger.js'
 import { ExternalPromise } from '../../utils/externalpromise.js'
-
+import * as xuserdefined from '../../utils/xuserdefined.js'
 
 export class LinterUtil {
     readonly #currentProcesses = Object.create(null) as Record<string, ChildProcessWithoutNullStreams>
@@ -20,16 +20,14 @@ export class LinterUtil {
         const startTime = process.hrtime()
         this.#currentProcesses[linterId] = spawn(command, args, options)
         const proc = this.#currentProcesses[linterId]
-        proc.stdout.setEncoding('binary')
-        proc.stderr.setEncoding('binary')
 
         let stdout = ''
-        proc.stdout.on('data', newStdout => {
-            stdout += newStdout
+        proc.stdout.on('data', (newStdout: Buffer) => {
+            stdout += xuserdefined.decode(newStdout)
         })
 
         let stderr = ''
-        proc.stderr.on('data', newStderr => {
+        proc.stderr.on('data', (newStderr: Buffer) => {
             stderr += newStderr
         })
 
