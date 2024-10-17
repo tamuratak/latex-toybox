@@ -13,7 +13,7 @@ import type { Manager } from './manager.js'
 import type { Viewer } from './viewer.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { inspectCompact } from '../utils/inspect.js'
-import * as xuserdefined from '../utils/xuserdefined.js'
+import { decodeXUserDefined } from '../utils/xuserdefined.js'
 
 export interface SyncTeXRecordForward {
     page: number,
@@ -184,7 +184,7 @@ export class Locator {
 
         let stdout = ''
         proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += xuserdefined.decode(newStdout)
+            stdout += decodeXUserDefined(newStdout)
         })
 
         let stderr = ''
@@ -232,7 +232,7 @@ export class Locator {
 
         let stdout = ''
         proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += xuserdefined.decode(newStdout)
+            stdout += decodeXUserDefined(newStdout)
         })
 
         let stderr = ''
