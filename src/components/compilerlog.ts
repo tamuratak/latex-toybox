@@ -4,6 +4,7 @@ import { CompilerLogParser, LogEntry } from './compilerloglib/core.js'
 import type { Completer } from '../providers/completion.js'
 import type { Logger } from './logger.js'
 import type { Manager } from './manager.js'
+import { decodeUtf8 } from '../utils/utf8.js'
 
 export class BuildStepLog {
     private buffer = ''
@@ -35,13 +36,13 @@ export class BuildStepLog {
         return this.buffer
     }
 
-    append(message: Buffer) {
-        this.buffer += message
+    append(message: Uint8Array) {
+        this.buffer += decodeUtf8(message)
         this.logPanel.append(message.toString())
     }
 
-    appendError(message: Buffer) {
-        this.errorBuffer += message
+    appendError(message: Uint8Array) {
+        this.errorBuffer += decodeUtf8(message)
     }
 
     dispose() {

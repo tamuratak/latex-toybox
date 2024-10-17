@@ -48,6 +48,7 @@ const commonRules = {
     "@typescript-eslint/return-await": "error",
     "require-await": "off",
     "@typescript-eslint/require-await": "error",
+    "@typescript-eslint/restrict-plus-operands": "error",
     "@typescript-eslint/unbound-method": "error",
     "curly": "error",
     "default-case": "error",
