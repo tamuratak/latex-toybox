@@ -129,12 +129,12 @@ export class Builder {
         this.extension.logger.info(`External build process spawned. PID: ${pid}.`)
 
         const stepLog = this.extension.compilerLog.createStepLog(rootFile, {name: 'external', command, args}, {stepIndex: 1, totalStepsLength: 1})
-        this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
-            stepLog.append(newStdout.toString())
+        this.currentProcess.stdout.on('data', (newStdout: Buffer) => {
+            stepLog.append(newStdout)
         })
 
-        this.currentProcess.stderr.on('data', (newStderr: Buffer | string) => {
-            stepLog.appendError(newStderr.toString())
+        this.currentProcess.stderr.on('data', (newStderr: Buffer) => {
+            stepLog.appendError(newStderr)
         })
 
         const resultPromise = new ExternalPromise<void>()
@@ -268,12 +268,12 @@ export class Builder {
 
         const stepLog = this.extension.compilerLog.createStepLog(rootFile, step, {stepIndex, totalStepsLength})
 
-        this.currentProcess.stdout.on('data', (newStdout: Buffer | string) => {
-            stepLog.append(newStdout.toString())
+        this.currentProcess.stdout.on('data', (newStdout: Buffer) => {
+            stepLog.append(newStdout)
         })
 
-        this.currentProcess.stderr.on('data', (newStderr: Buffer | string) => {
-            stepLog.appendError(newStderr.toString())
+        this.currentProcess.stderr.on('data', (newStderr: Buffer) => {
+            stepLog.appendError(newStderr)
         })
 
         const resultPromise = new ExternalPromise<void>()

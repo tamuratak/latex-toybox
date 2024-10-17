@@ -1,9 +1,7 @@
 import * as vscode from 'vscode'
 
-import { convertFilenameEncoding } from '../../utils/convertfilename.js'
 import { LatexLogParser } from './latexlogparser.js'
 import { BibLogParser } from './biblogparser.js'
-import { existsPath } from '../../lib/lwfs/lwfs.js'
 import { BuildStepLog, CompilerLog } from '../compilerlog.js'
 import { getDirtyContent } from '../../utils/getdirtycontent.js'
 import type { Completer } from '../../providers/completion.js'
@@ -185,17 +183,8 @@ export class CompilerLogParser {
             diagsCollection[item.file].push(diag)
         }
 
-        const configuration = vscode.workspace.getConfiguration('latex-toybox')
-        const convEnc = configuration.get('message.convertFilenameEncoding') as boolean
         for (const file in diagsCollection) {
-            let file1 = file
-            if (!await existsPath(file1) && convEnc) {
-                const f = await convertFilenameEncoding(file1)
-                if (f !== undefined) {
-                    file1 = f
-                }
-            }
-            compilerDiagnostics.set(vscode.Uri.file(file1), diagsCollection[file])
+            compilerDiagnostics.set(vscode.Uri.file(file), diagsCollection[file])
         }
     }
 

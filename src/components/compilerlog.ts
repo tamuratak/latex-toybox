@@ -35,12 +35,12 @@ export class BuildStepLog {
         return this.buffer
     }
 
-    append(message: string) {
+    append(message: Buffer) {
         this.buffer += message
-        this.logPanel.append(message)
+        this.logPanel.append(message.toString())
     }
 
-    appendError(message: string) {
+    appendError(message: Buffer) {
         this.errorBuffer += message
     }
 
