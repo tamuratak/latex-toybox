@@ -3,6 +3,7 @@ import * as cs from 'cross-spawn'
 import type { Logger } from './logger.js'
 import type { Manager } from './manager.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
+import { decodeUtf8 } from '../utils/utf8.js'
 
 
 export class TeXDoc {
@@ -21,13 +22,13 @@ export class TeXDoc {
         const proc = cs.spawn(texdocPath, texdocArgs)
 
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += newStdout
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
+            stdout += decodeUtf8(newStdout)
         })
 
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
+            stderr += decodeUtf8(newStderr)
         })
 
         const resultPromise = new ExternalPromise<void>()

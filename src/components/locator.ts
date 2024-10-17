@@ -14,6 +14,7 @@ import type { Viewer } from './viewer.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { inspectCompact } from '../utils/inspect.js'
 import { decodeXUserDefined } from '../utils/xuserdefined.js'
+import { decodeUtf8 } from '../utils/utf8.js'
 
 export interface SyncTeXRecordForward {
     page: number,
@@ -183,13 +184,13 @@ export class Locator {
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfFile)})
 
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
             stdout += decodeXUserDefined(newStdout)
         })
 
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
+            stderr += decodeUtf8(newStderr)
         })
 
         const resultPromise = new ExternalPromise<SyncTeXRecordForward>()
@@ -231,13 +232,13 @@ export class Locator {
         const proc = cp.spawn(command, args, {cwd: path.dirname(pdfPath)})
 
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
             stdout += decodeXUserDefined(newStdout)
         })
 
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
+            stderr += decodeUtf8(newStderr)
         })
 
         const resultPromise = new ExternalPromise<SyncTeXRecordBackward>
@@ -473,12 +474,12 @@ export class Locator {
         this.extension.logger.logCommand('Execute external SyncTeX command', command, args)
         const proc = cp.spawn(command, args)
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += newStdout
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
+            stdout += decodeUtf8(newStdout)
         })
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
+            stderr += decodeUtf8(newStderr)
         })
         const cb = () => {
             void this.extension.logger.info(`The external SyncTeX command stdout: ${stdout}`)
