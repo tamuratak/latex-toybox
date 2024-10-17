@@ -236,11 +236,11 @@ export class Viewer {
         const proc = cs.spawn(command, args, {cwd: path.dirname(sourceFile), detached: true})
         const resultPromise = new ExternalPromise<void>()
         let stdout = ''
-        proc.stdout.on('data', newStdout => {
+        proc.stdout.on('data', (newStdout: Buffer) => {
             stdout += newStdout
         })
         let stderr = ''
-        proc.stderr.on('data', newStderr => {
+        proc.stderr.on('data', (newStderr: Buffer) => {
             stderr += newStderr
         })
         const cb = () => {
