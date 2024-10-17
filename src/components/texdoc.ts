@@ -21,12 +21,12 @@ export class TeXDoc {
         const proc = cs.spawn(texdocPath, texdocArgs)
 
         let stdout = ''
-        proc.stdout.on('data', newStdout => {
+        proc.stdout.on('data', (newStdout: Buffer) => {
             stdout += newStdout
         })
 
         let stderr = ''
-        proc.stderr.on('data', newStderr => {
+        proc.stderr.on('data', (newStderr: Buffer) => {
             stderr += newStderr
         })
 
