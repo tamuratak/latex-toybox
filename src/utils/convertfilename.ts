@@ -1,6 +1,6 @@
 import * as iconv from 'iconv-lite'
 import { existsPath } from '../lib/lwfs/lwfs.js'
-import * as xuserdefined from './xuserdefined.js'
+import { encodeXUserDefined } from './xuserdefined.js'
 
 // https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
 export const iconvLiteSupportedEncodings = [
@@ -36,7 +36,7 @@ export class ConvertFilenameEncodingIterator implements IterableIterator<string>
     private index = 0
 
     constructor(filePath: string) {
-        this.fileNameBuffer = xuserdefined.encode(filePath)
+        this.fileNameBuffer = encodeXUserDefined(filePath)
     }
 
     private computeNext() {

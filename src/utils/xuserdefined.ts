@@ -10,7 +10,7 @@ function initializeDecoder() {
 
 // https://encoding.spec.whatwg.org/#x-user-defined
 // https://en.wikipedia.org/wiki/Character_encodings_in_HTML#cite_note-34
-export function decode(bytes: Uint8Array) {
+export function decodeXUserDefined(bytes: Uint8Array) {
     if (decoder) {
         return decoder.decode(bytes)
     } else {
@@ -24,7 +24,7 @@ export function decode(bytes: Uint8Array) {
     }
 }
 
-export function encode(str: string) {
+export function encodeXUserDefined(str: string) {
     const array = str.split('').map((char, index) => {
         const code = char.charCodeAt(0)
         if (code < 0x80) {
