@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import * as path from 'path'
 
 import { LatexLogParser } from './latexlogparser.js'
 import { BibLogParser } from './biblogparser.js'
@@ -7,6 +8,8 @@ import { getDirtyContent } from '../../utils/getdirtycontent.js'
 import type { Completer } from '../../providers/completion.js'
 import type { Logger } from '../logger.js'
 import type { Manager } from '../manager.js'
+import { exists } from '../../lib/lwfs/lwfs.js'
+import { toKey } from '../../utils/tokey.js'
 
 
 // Notice that 'Output written on filename.pdf' isn't output in draft mode.
@@ -37,6 +40,11 @@ export interface LogEntry {
     text: string,
     line: number,
     errorPosText?: string
+}
+
+interface DiagnosticEntry {
+    uri: vscode.Uri,
+    diags: vscode.Diagnostic[]
 }
 
 export class CompilerLogParser {
@@ -163,8 +171,13 @@ export class CompilerLogParser {
     async showCompilerDiagnostics(compilerDiagnostics: vscode.DiagnosticCollection, buildLog: LogEntry[], source: string) {
         compilerDiagnostics.clear()
         const newBuildLog = this.tweakLogEntries(buildLog)
-        const diagsCollection = Object.create(null) as Record<string, vscode.Diagnostic[]>
+        const diagsCollection = new Map<string, DiagnosticEntry>()
         for (const item of newBuildLog) {
+            const itemUri = await this.findFile(item.file)
+            if (!itemUri) {
+                continue
+            }
+            const itemKey = toKey(itemUri)
             let startChar = 0
             let endChar = 65535
             // Try to compute a more precise position
@@ -177,15 +190,28 @@ export class CompilerLogParser {
             const range = new vscode.Range(new vscode.Position(item.line - 1, startChar), new vscode.Position(item.line - 1, endChar))
             const diag = new vscode.Diagnostic(range, item.text, DIAGNOSTIC_SEVERITY[item.type])
             diag.source = source
-            if (diagsCollection[item.file] === undefined) {
-                diagsCollection[item.file] = []
+            if (!diagsCollection.get(itemKey)) {
+                diagsCollection.set(itemKey, {uri: itemUri, diags: []})
             }
-            diagsCollection[item.file].push(diag)
+            diagsCollection.get(itemKey)?.diags.push(diag)
         }
 
-        for (const file in diagsCollection) {
-            compilerDiagnostics.set(vscode.Uri.file(file), diagsCollection[file])
+        for (const [_, diagsEntry] of diagsCollection) {
+            compilerDiagnostics.set(diagsEntry.uri, diagsEntry.diags)
         }
+    }
+
+    private async findFile(filePath: string): Promise<vscode.Uri | undefined> {
+        const uri = vscode.Uri.file(filePath)
+        if (await exists(uri)) {
+            return uri
+        }
+        const fileName = path.posix.basename(uri.path)
+        const newDoc = vscode.workspace.textDocuments.find((doc) => path.posix.basename(doc.uri.path) === fileName)
+        if (newDoc) {
+            return newDoc.uri
+        }
+        return
     }
 
     private tweakLogEntries(logEntries: LogEntry[]): LogEntry[] {
