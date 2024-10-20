@@ -22,12 +22,12 @@ export class TeXDoc {
         const proc = cs.spawn(texdocPath, texdocArgs)
 
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
             stdout += decodeUtf8(newStdout)
         })
 
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
             stderr += decodeUtf8(newStderr)
         })
 

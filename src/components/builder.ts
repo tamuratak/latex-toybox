@@ -129,11 +129,11 @@ export class Builder {
         this.extension.logger.info(`External build process spawned. PID: ${pid}.`)
 
         const stepLog = this.extension.compilerLog.createStepLog(rootFile, {name: 'external', command, args}, {stepIndex: 1, totalStepsLength: 1})
-        this.currentProcess.stdout.on('data', (newStdout: Buffer) => {
+        this.currentProcess.stdout.on('data', (newStdout: Uint8Array) => {
             stepLog.append(newStdout)
         })
 
-        this.currentProcess.stderr.on('data', (newStderr: Buffer) => {
+        this.currentProcess.stderr.on('data', (newStderr: Uint8Array) => {
             stepLog.appendError(newStderr)
         })
 
@@ -268,11 +268,11 @@ export class Builder {
 
         const stepLog = this.extension.compilerLog.createStepLog(rootFile, step, {stepIndex, totalStepsLength})
 
-        this.currentProcess.stdout.on('data', (newStdout: Buffer) => {
+        this.currentProcess.stdout.on('data', (newStdout: Uint8Array) => {
             stepLog.append(newStdout)
         })
 
-        this.currentProcess.stderr.on('data', (newStderr: Buffer) => {
+        this.currentProcess.stderr.on('data', (newStderr: Uint8Array) => {
             stepLog.appendError(newStderr)
         })
 

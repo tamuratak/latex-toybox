@@ -237,11 +237,11 @@ export class Viewer {
         const proc = cs.spawn(command, args, {cwd: path.dirname(sourceFile), detached: true})
         const resultPromise = new ExternalPromise<void>()
         let stdout = ''
-        proc.stdout.on('data', (newStdout: Buffer) => {
+        proc.stdout.on('data', (newStdout: Uint8Array) => {
             stdout += decodeUtf8(newStdout)
         })
         let stderr = ''
-        proc.stderr.on('data', (newStderr: Buffer) => {
+        proc.stderr.on('data', (newStderr: Uint8Array) => {
             stderr += decodeUtf8(newStderr)
         })
         const cb = () => {

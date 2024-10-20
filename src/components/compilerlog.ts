@@ -36,12 +36,12 @@ export class BuildStepLog {
         return this.buffer
     }
 
-    append(message: Buffer) {
+    append(message: Uint8Array) {
         this.buffer += decodeUtf8(message)
         this.logPanel.append(message.toString())
     }
 
-    appendError(message: Buffer) {
+    appendError(message: Uint8Array) {
         this.errorBuffer += decodeUtf8(message)
     }
 
