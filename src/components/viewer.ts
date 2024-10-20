@@ -21,6 +21,7 @@ import type { Server } from './server.js'
 import type { LwStatusBarItem } from './statusbaritem.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { inspectCompact } from '../utils/inspect.js'
+import { decodeUtf8 } from '../utils/utf8.js'
 export { PdfViewerHookProvider } from './viewerlib/pdfviewerhook.js'
 
 
@@ -237,11 +238,11 @@ export class Viewer {
         const resultPromise = new ExternalPromise<void>()
         let stdout = ''
         proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += newStdout
+            stdout += decodeUtf8(newStdout)
         })
         let stderr = ''
         proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+            stderr += decodeUtf8(newStderr)
         })
         const cb = () => {
             void this.extension.logger.info(`The external PDF viewer stdout: ${stdout}`)

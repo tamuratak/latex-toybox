@@ -3,6 +3,7 @@ import { EOL } from 'node:os'
 import type { Logger } from '../logger.js'
 import { ExternalPromise } from '../../utils/externalpromise.js'
 import { decodeXUserDefined } from '../../utils/xuserdefined.js'
+import { decodeUtf8 } from '../../utils/utf8.js'
 
 export class LinterUtil {
     readonly #currentProcesses = Object.create(null) as Record<string, ChildProcessWithoutNullStreams>
@@ -28,7 +29,7 @@ export class LinterUtil {
 
         let stderr = ''
         proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+            stderr += decodeUtf8(newStderr)
         })
 
         const resutlPromise = new ExternalPromise<string>()

@@ -14,6 +14,7 @@ import type { Viewer } from './viewer.js'
 import { ExternalPromise } from '../utils/externalpromise.js'
 import { inspectCompact } from '../utils/inspect.js'
 import { decodeXUserDefined } from '../utils/xuserdefined.js'
+import { decodeUtf8 } from '../utils/utf8.js'
 
 export interface SyncTeXRecordForward {
     page: number,
@@ -189,7 +190,7 @@ export class Locator {
 
         let stderr = ''
         proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+            stderr += decodeUtf8(newStderr)
         })
 
         const resultPromise = new ExternalPromise<SyncTeXRecordForward>()
@@ -237,7 +238,7 @@ export class Locator {
 
         let stderr = ''
         proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+            stderr += decodeUtf8(newStderr)
         })
 
         const resultPromise = new ExternalPromise<SyncTeXRecordBackward>
@@ -474,11 +475,11 @@ export class Locator {
         const proc = cp.spawn(command, args)
         let stdout = ''
         proc.stdout.on('data', (newStdout: Buffer) => {
-            stdout += newStdout
+            stdout += decodeUtf8(newStdout)
         })
         let stderr = ''
         proc.stderr.on('data', (newStderr: Buffer) => {
-            stderr += newStderr
+            stderr += decodeUtf8(newStderr)
         })
         const cb = () => {
             void this.extension.logger.info(`The external SyncTeX command stdout: ${stdout}`)
