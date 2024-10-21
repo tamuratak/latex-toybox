@@ -3,9 +3,5 @@
     "include": [
       "src/**/*.ts",
       "test/**/*.ts"
-    ],
-    "exclude": [
-      "viewer/**",
-      "dev/**"
     ]
 }
