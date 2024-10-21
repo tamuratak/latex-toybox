@@ -87,7 +87,7 @@ export class LabelDefinitionUpdater {
             return this.getRefFromNodeArray(node.args, lines)
         }
         if (latexParser.isLstlisting(node)) {
-            const arg = (node as latexParser.Lstlisting).arg
+            const arg = node.arg
             if (arg) {
                 return this.getRefFromNode(arg, lines)
             }

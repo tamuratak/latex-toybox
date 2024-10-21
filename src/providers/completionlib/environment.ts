@@ -22,6 +22,7 @@ export interface EnvItemEntry {
 }
 
 function isEnvItemEntry(obj: any): obj is EnvItemEntry {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
     return (typeof obj.name === 'string')
 }
 
