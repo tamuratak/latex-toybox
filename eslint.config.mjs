@@ -113,9 +113,7 @@ export default tseslint.config(
     {
         ignores: ["viewer/**/*.ts"],
         languageOptions: {
-            parser: tseslint.parser,
             ecmaVersion: 2018,
-            sourceType: "commonjs",
             parserOptions: {
                 project: "./tsconfig.eslint.json",
                 tsconfigRootDir: import.meta.dirname
@@ -148,7 +146,6 @@ export default tseslint.config(
         ignores: ["src/**/*.ts", "test/**/*.ts"],
         languageOptions: {
             ecmaVersion: 2018,
-            sourceType: "script",
             parserOptions: {
                 project: "./tsconfig.eslint.viewer.json",
                 tsconfigRootDir: import.meta.dirname
