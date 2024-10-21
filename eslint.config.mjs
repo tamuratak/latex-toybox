@@ -87,10 +87,12 @@ const commonRules = {
 export default tseslint.config(
     {
         ignores: [
+            "eslint.config.mjs",
             "src/lib/await-semaphore/",
             "src/lib/synctexjs/",
             "viewer/viewer.js",
             "viewer/viewer.mjs",
+            "types/**/*.d.ts",
             "data/",
             "dev/",
             "icons/",
@@ -110,16 +112,13 @@ export default tseslint.config(
     ...tseslint.configs.recommended,
     ...tseslint.configs.stylistic,
     {
-        files: [
-            "src/**/*.ts",
-            "test/**/*.ts"
-        ],
         languageOptions: {
-            parser: tseslint.parser,
             ecmaVersion: 2018,
-            sourceType: "commonjs",
             parserOptions: {
-                project: "./tsconfig.eslint.json",
+                projectService: {
+                    defaultProject: "tsconfig.json",
+                },
+                tsconfigRootDir: import.meta.dirname
             },
         },
         rules: {
@@ -146,12 +145,13 @@ export default tseslint.config(
         },
     },
     {
-        files: ["viewer/**/*.ts"],
         languageOptions: {
             ecmaVersion: 2018,
-            sourceType: "script",
             parserOptions: {
-                project: "./tsconfig.eslint.viewer.json",
+                projectService: {
+                    defaultProject: "tsconfig.json",
+                },
+                tsconfigRootDir: import.meta.dirname + "/viewer"
             },
         },
         rules: {
