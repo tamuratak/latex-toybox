@@ -7,9 +7,5 @@
       "src/**",
       "test/**",
       "dev/**"
-    ],
-    "compilerOptions": {
-      "allowJs": true,
-      "checkJs": true
-    }
+    ]
 }
