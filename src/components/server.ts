@@ -285,6 +285,7 @@ export class Server {
                 }
             } catch (err: unknown) {
                 if (err instanceof vscode.FileSystemError || err instanceof Error) {
+                    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
                     const code = (err as any)?.code as unknown
                     if (code === 'FileNotFound' || code === 'ENOENT') {
                         response.writeHead(404)

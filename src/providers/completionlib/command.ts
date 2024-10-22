@@ -31,6 +31,7 @@ export interface CmdSignature {
 }
 
 function isCmdItemEntry(obj: any): obj is CmdItemEntry {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
     return (typeof obj.command === 'string') && (typeof obj.snippet === 'string')
 }
 

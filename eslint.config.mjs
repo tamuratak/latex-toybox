@@ -22,12 +22,6 @@ const commonRules = {
     }],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "error",
-    "@typescript-eslint/no-unsafe-argument": "error",
-    "@typescript-eslint/no-unsafe-assignment": "error",
-    "@typescript-eslint/no-unsafe-call": "error",
-    "@typescript-eslint/no-unsafe-return": "error",
-    "no-unused-expressions": "off",
-    "@typescript-eslint/no-unused-expressions": "error",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
         "error",
@@ -41,15 +35,12 @@ const commonRules = {
             "ignoreRestSiblings": true
         }
     ],
-    "@typescript-eslint/no-require-imports": "error",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
     "@typescript-eslint/prefer-includes": "error",
     "@typescript-eslint/prefer-readonly": "error",
     "no-return-await": "off",
     "@typescript-eslint/return-await": "error",
-    "require-await": "off",
-    "@typescript-eslint/require-await": "error",
-    "@typescript-eslint/restrict-plus-operands": "error",
-    "@typescript-eslint/unbound-method": "error",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "curly": "error",
     "default-case": "error",
     "eol-last": "error",
@@ -109,7 +100,7 @@ export default tseslint.config(
         ],
     },
     eslint.configs.recommended,
-    ...tseslint.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
     ...tseslint.configs.stylistic,
     {
         languageOptions: {
