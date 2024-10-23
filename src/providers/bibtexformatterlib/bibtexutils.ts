@@ -53,7 +53,7 @@ export class BibtexFormatConfig {
         const leftright = config.get('bibtex-format.surround') === 'Curly braces' ? [ '{', '}' ] : [ '"', '"']
         let tabs: string | undefined = getBibtexFormatTab(config.get('bibtex-format.tab') as string)
         if (tabs === undefined) {
-            this.extension.logger.info(`Wrong value for bibtex-format.tab: ${config.get('bibtex-format.tab')}`)
+            this.extension.logger.info(`Wrong value for bibtex-format.tab: ${config.get<string>('bibtex-format.tab')}`)
             this.extension.logger.info('Setting bibtex-format.tab to \'2 spaces\'')
             tabs = '  '
         }

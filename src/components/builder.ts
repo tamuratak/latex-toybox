@@ -347,7 +347,7 @@ export class Builder {
             recipe = recipes[0]
         }
         if (recipe === undefined) {
-            this.extension.logger.error(`Failed to resolve build recipe: ${[recipeName, defaultRecipeName]}`)
+            this.extension.logger.error(`Failed to resolve build recipe: ${inspectCompact({recipeName, defaultRecipeName})}`)
             return
         }
         this.previouslyUsedRecipe = recipe

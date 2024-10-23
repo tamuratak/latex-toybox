@@ -31,7 +31,7 @@ import type { Commander } from '../commander.js'
 import type { DuplicateLabels } from './duplicatelabels.js'
 import type { CompletionUpdater } from './completionupdater.js'
 import { ManagerWatcher } from './managerlib/managerwatcher.js'
-import { inspectReadable } from '../utils/inspect.js'
+import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 import { stripCommentsAndVerbatim } from '../utils/strip.js'
 
 
@@ -522,7 +522,7 @@ export class Manager {
                 }
             }
             if (candidates.length > 0) {
-                this.extension.logger.info(`Found files that might be root, choose the first one: ${candidates}`)
+                this.extension.logger.info(`Found files that might be root, choose the first one: ${inspectCompact(candidates)}`)
                 return candidates[0]
             }
         } catch (e) {

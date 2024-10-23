@@ -27,7 +27,7 @@ export function run(): Promise<void> {
             })
         } catch (e) {
             console.error(e)
-            /* eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors */
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             reject(e)
         }
     })

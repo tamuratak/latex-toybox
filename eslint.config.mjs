@@ -3,7 +3,6 @@ import tseslint from 'typescript-eslint';
 
 const commonRules = {
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/consistent-type-assertions": ["error", {
         assertionStyle: "as",
         objectLiteralTypeAssertions: "never",
@@ -40,7 +39,17 @@ const commonRules = {
     "@typescript-eslint/prefer-readonly": "error",
     "no-return-await": "off",
     "@typescript-eslint/return-await": "error",
-    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/restrict-template-expressions": ["error", {
+        allow: [
+            {
+                from: "package",
+                name: ["Uri"],
+                package: "vscode",
+            }
+        ],
+        allowAny: true,
+        allowNever: true,
+    }],
     "curly": "error",
     "default-case": "error",
     "eol-last": "error",

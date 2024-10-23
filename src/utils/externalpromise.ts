@@ -1,6 +1,6 @@
 function promiseTriplet<T>() {
-    let resolve: ((value: T | PromiseLike<T>) => void) = () => {}
-    let reject: ((reason?: any) => void) = () => {}
+    let resolve: ((value: T | PromiseLike<T>) => void) = () => undefined
+    let reject: ((reason?: any) => void) = () => undefined
     const promise = new Promise<T>((r, rej) => {
         resolve = r
         reject = rej

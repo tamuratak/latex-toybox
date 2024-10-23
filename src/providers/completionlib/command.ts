@@ -30,9 +30,12 @@ export interface CmdSignature {
     readonly args: string // {} for mandatory args and [] for optional args
 }
 
-function isCmdItemEntry(obj: any): obj is CmdItemEntry {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
-    return (typeof obj.command === 'string') && (typeof obj.snippet === 'string')
+function isCmdItemEntry(obj: CmdItemEntry | undefined) {
+    if (obj) {
+        return (typeof obj.command === 'string') && (typeof obj.snippet === 'string')
+    } else {
+        return false
+    }
 }
 
 /**

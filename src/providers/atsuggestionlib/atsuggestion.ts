@@ -78,8 +78,8 @@ export class AtSuggestion implements IProvider {
             const filteredSuggestions = suggestions.filter(item => item.label === result[0])
             if (filteredSuggestions.length > 0) {
                 return filteredSuggestions.map(item => {
-                    /* eslint-disable-next-line @typescript-eslint/no-base-to-string */
-                    item.range = new vscode.Range(args.position.translate(undefined, -item.label.toString().length), args.position)
+                    const length = typeof item.label === 'string' ? item.label.length : item.label.label.length
+                    item.range = new vscode.Range(args.position.translate(undefined, -length), args.position)
                     return item
                 })
             }

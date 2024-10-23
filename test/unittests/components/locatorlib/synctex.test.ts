@@ -8,8 +8,7 @@ import { inspect } from 'node:util'
 
 suite('unit test suite', () => {
 
-    suiteSetup(() => {
-    })
+    suiteSetup(() => undefined)
 
     runUnitTestWithFixture('fixture001', 'test synctex', () => {
         const fixtureDir = getFixtureDir()
