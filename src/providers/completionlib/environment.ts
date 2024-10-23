@@ -21,9 +21,12 @@ export interface EnvItemEntry {
     readonly detail?: string
 }
 
-function isEnvItemEntry(obj: any): obj is EnvItemEntry {
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
-    return (typeof obj.name === 'string')
+function isEnvItemEntry(obj: EnvItemEntry | undefined) {
+    if (obj) {
+        return (typeof obj.name === 'string')
+    } else {
+        return false
+    }
 }
 
 export enum EnvSnippetType {
@@ -73,7 +76,7 @@ export class Environment implements IProvider {
                     const content = await lwfs.readFile(filePathUri)
                     const envs: Record<string, EnvItemEntry> = JSON.parse(content) as DataEnvsJsonType
                     Object.keys(envs).forEach(key => {
-                        if (! isEnvItemEntry(envs[key])) {
+                        if (!isEnvItemEntry(envs[key])) {
                             this.extension.logger.info(`Cannot parse intellisense file: ${filePathUri}`)
                             this.extension.logger.info(`Missing field in entry: "${key}": ${inspectCompact(envs[key])}`)
                             delete envs[key]

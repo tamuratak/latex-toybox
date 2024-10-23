@@ -114,7 +114,7 @@ class SnippetViewProvider implements vscode.WebviewViewProvider {
             const editor = this.lastActiveTextEditor
             if (editor) {
                 editor.insertSnippet(new vscode.SnippetString(message.snippet.replace(/\\\n/g, '\\n'))).then(
-                    () => {},
+                    () => undefined,
                     err => {
                         void vscode.window.showWarningMessage(`Unable to insert symbol, ${err}`)
                     }
