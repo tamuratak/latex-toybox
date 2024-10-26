@@ -13,7 +13,7 @@ export class PdfViewerHookProvider implements vscode.CustomReadonlyEditorProvide
     openCustomDocument(uri: vscode.Uri) {
         return {
             uri,
-            dispose: () => {}
+            dispose: () => undefined
         }
     }
 

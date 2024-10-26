@@ -10,6 +10,7 @@ import { ExternalPromise } from '../utils/externalpromise.js'
 import type { Logger } from './logger.js'
 import type { Viewer } from './viewer.js'
 import { inspectCompact, inspectReadable } from '../utils/inspect.js'
+import { instanceOfNodeError } from '../utils/utils.js'
 
 class WsServer extends ws.Server {
     private readonly validOrigin: string
@@ -284,9 +285,8 @@ export class Server {
                     this.sendOkResponse(response, content, contentType)
                 }
             } catch (err: unknown) {
-                if (err instanceof vscode.FileSystemError || err instanceof Error) {
-                    /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
-                    const code = (err as any)?.code as unknown
+                if (err instanceof vscode.FileSystemError || instanceOfNodeError(err, Error)) {
+                    const code = err.code
                     if (code === 'FileNotFound' || code === 'ENOENT') {
                         response.writeHead(404)
                     } else {

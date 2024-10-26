@@ -1,10 +1,10 @@
 import { ILogger } from '../../src/interfaces.js'
 
 export class FakeLogger implements ILogger {
-    info() {}
-    logCommand() {}
-    debug(){}
-    error(){}
-    logError() {}
-    showLog() {}
+    info() { return }
+    logCommand() { return }
+    debug() { return }
+    error() { return }
+    logError() { return }
+    showLog() { return }
 }

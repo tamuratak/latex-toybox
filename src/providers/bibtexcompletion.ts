@@ -6,6 +6,7 @@ import { hasBibtexId } from '../utils/hastexid.js'
 import type { Logger } from '../components/logger.js'
 import type { Manager } from '../components/manager.js'
 import { BibtexSnippetKind } from './completionlib/completionkind.js'
+import { inspectReadable } from '../utils/inspect.js'
 
 
 type DataBibtexJsonType = typeof import('../../data/bibtex-entries.json')
@@ -52,7 +53,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
 
     private initialize() {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', this.scope)
-        const citationBackend = configuration.get('intellisense.citation.backend')
+        const citationBackend = configuration.get<string>('intellisense.citation.backend')
         let entriesFile = ''
         let optEntriesFile = ''
         let entriesReplacements: Record<string, string[]> = {}
@@ -77,7 +78,7 @@ export class BibtexCompleter implements vscode.CompletionItemProvider {
         try {
             void this.loadDefaultItems(entriesFile, optEntriesFile, entriesReplacements)
         } catch (err) {
-            this.extension.logger.error(`Error reading data: ${err}.`)
+            this.extension.logger.error(`Error reading data: ${inspectReadable(err)}.`)
         }
     }
 
