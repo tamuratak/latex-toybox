@@ -1707,7 +1707,7 @@
     "@types/vscode": "1.93.0",
     "@types/ws": "8.5.12",
     "@vscode/test-electron": "2.4.1",
-    "@vscode/vsce": "3.1.1",
+    "@vscode/vsce": "3.2.1",
     "eslint": "9.13.0",
     "glob": "11.0.0",
     "mocha": "10.7.3",
