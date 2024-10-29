@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 const importPdfMjsPromise = import('/node_modules/pdfjs-dist/build/pdf.mjs')
 // Edit viewer.html
@@ -168,6 +169,7 @@ const extension = new LateXToyboxPdfViewer()
 await extension.waitSetupAppOptionsReady()
 
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 await import('/viewer.mjs')
 

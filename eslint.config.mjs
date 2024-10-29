@@ -2,7 +2,6 @@ import eslint from "@eslint/js";
 import tseslint from 'typescript-eslint';
 
 const commonRules = {
-    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/consistent-type-assertions": ["error", {
         assertionStyle: "as",
         objectLiteralTypeAssertions: "never",
@@ -34,7 +33,6 @@ const commonRules = {
             "ignoreRestSiblings": true
         }
     ],
-    "@typescript-eslint/no-unsafe-enum-comparison": "off",
     "@typescript-eslint/prefer-includes": "error",
     "@typescript-eslint/prefer-readonly": "error",
     "no-return-await": "off",
@@ -175,7 +173,6 @@ export default tseslint.config(
                     format: null,
                 }
             ],
-            "@typescript-eslint/ban-ts-comment": "off",
             ...commonRules
         },
     }

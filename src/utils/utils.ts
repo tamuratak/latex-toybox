@@ -30,6 +30,7 @@ export function escapeRegExp(str: string) {
  * @author Joseph JDBar Barron
  * @link https://dev.to/jdbar/the-problem-with-handling-node-js-errors-in-typescript-and-the-workaround-m64
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function instanceOfNodeError<T extends new(...args: any) => Error>(
     value: unknown,
     errorType: T

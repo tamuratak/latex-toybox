@@ -1,6 +1,7 @@
 function promiseTriplet<T>() {
     let resolve: ((value: T | PromiseLike<T>) => void) = () => undefined
-    let reject: ((reason?: any) => void) = () => undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let reject: ((reason: any) => void) = () => undefined
     const promise = new Promise<T>((r, rej) => {
         resolve = r
         reject = rej
@@ -27,7 +28,8 @@ export class ExternalPromise<T> {
         this.promiseTriplet.resolve(value)
     }
 
-    reject(reason?: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reject(reason: any) {
         if (this.#isResolved) {
             return
         }
