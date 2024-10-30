@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import { ScaleMode, trimSelectElement, viewerDom } from './constants.js'
 import type { IPDFViewerApplication } from './interface.js'
 

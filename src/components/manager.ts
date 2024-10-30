@@ -865,6 +865,7 @@ export class Manager {
 
     private buildOnFileChanged(fileUri: vscode.Uri, bibChanged = false) {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onFileChange) {
             return
         }
@@ -873,6 +874,7 @@ export class Manager {
 
     private buildOnSave(fileUri: vscode.Uri) {
         const configuration = vscode.workspace.getConfiguration('latex-toybox', fileUri)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (configuration.get('latex.autoBuild.run') as string !== BuildEvents.onSave) {
             return
         }
