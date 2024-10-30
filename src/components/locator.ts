@@ -132,7 +132,7 @@ export class Locator {
             }
             const position = vscode.window.activeTextEditor.selection.active
             if (!position) {
-                this.extension.logger.info(`Cannot get cursor position: ${position}`)
+                this.extension.logger.info(`Cannot get cursor position: ${inspectCompact(position)}`)
                 return
             }
             line = position.line + 1

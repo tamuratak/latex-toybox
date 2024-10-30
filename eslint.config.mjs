@@ -45,8 +45,6 @@ const commonRules = {
                 package: "vscode",
             }
         ],
-        allowAny: true,
-        allowNever: true,
     }],
     "curly": "error",
     "default-case": "error",

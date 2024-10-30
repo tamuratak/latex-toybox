@@ -23,6 +23,7 @@ import type { LatexAstManager } from '../components/astmanager.js'
 import type { GraphicsPreview } from '../components/graphicspreview.js'
 import type { MathPreview } from '../components/mathpreview.js'
 import { FileKind, ReferenceKind } from './completionlib/completionkind.js'
+import { inspectCompact } from '../utils/inspect.js'
 
 
 type DataEnvsJsonType = typeof import('../../data/environments.json')
@@ -267,7 +268,7 @@ export class Completer implements vscode.CompletionItemProvider {
                 break
             default:
                 // This shouldn't be possible, so mark as error case in log.
-                this.extension.logger.error(`Error - trying to complete unknown type ${type}`)
+                this.extension.logger.error(`Error - trying to complete unknown type: ${inspectCompact(type)}`)
                 return []
         }
         const result = line.match(reg)

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { stripCommentsAndVerbatim } from '../utils/strip.js'
 import type { Logger } from './logger.js'
+import { inspectCompact } from '../utils/inspect.js'
 
 interface MatchSection {
     readonly level: string,
@@ -32,9 +33,7 @@ export class Section {
     shiftSectioningLevel(change: 'promote' | 'demote') {
         this.extension.logger.info(`Calling shiftSectioningLevel with parameter: ${change}`)
         if (change !== 'promote' && change !== 'demote') {
-            throw TypeError(
-            `Invalid value of function parameter 'change' (=${change})`
-            )
+            throw TypeError(`Invalid value of function parameter 'change': ${inspectCompact(change)}`)
         }
 
         const editor = vscode.window.activeTextEditor
