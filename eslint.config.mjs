@@ -2,6 +2,26 @@ import eslint from "@eslint/js";
 import tseslint from 'typescript-eslint';
 
 const commonRules = {
+    "@typescript-eslint/naming-convention": ["error",
+        {
+            selector: "default",
+            format: ["camelCase", "PascalCase", "UPPER_CASE"],
+            leadingUnderscore: "allow",
+        }, {
+            selector: "method",
+            format: ["camelCase"],
+            leadingUnderscore: "allow",
+        }, {
+            selector: "function",
+            format: ["camelCase"],
+        }, {
+            selector: "typeLike",
+            format: ["PascalCase"],
+        }, {
+            selector: "objectLiteralProperty",
+            format: null,
+        }
+    ],
     "@typescript-eslint/consistent-type-assertions": ["error", {
         assertionStyle: "as",
         objectLiteralTypeAssertions: "never",
@@ -52,7 +72,6 @@ const commonRules = {
     "eqeqeq": ["error", "always"],
     "func-call-spacing": ["error", "never"],
     "no-caller": "error",
-    "no-constant-condition": "error",
     "no-eval": "error",
     "no-invalid-this": "error",
     "no-multiple-empty-lines": "error",
@@ -118,25 +137,6 @@ export default tseslint.config(
             },
         },
         rules: {
-            "@typescript-eslint/naming-convention": ["error",
-                {
-                    selector: "default",
-                    format: ["camelCase", "PascalCase", "UPPER_CASE"],
-                    leadingUnderscore: "allow",
-                }, {
-                    selector: "method",
-                    format: ["camelCase"],
-                }, {
-                    selector: "function",
-                    format: ["camelCase"],
-                }, {
-                    selector: "typeLike",
-                    format: ["PascalCase"],
-                }, {
-                    selector: "objectLiteralProperty",
-                    format: null,
-                }
-            ],
             ...commonRules,
         },
     },
@@ -151,26 +151,6 @@ export default tseslint.config(
             },
         },
         rules: {
-            "@typescript-eslint/naming-convention": ["error",
-                {
-                    selector: "default",
-                    format: ["camelCase", "PascalCase", "UPPER_CASE"],
-                    leadingUnderscore: "allow",
-                }, {
-                    selector: "method",
-                    format: ["camelCase"],
-                    leadingUnderscore: "allow",
-                }, {
-                    selector: "function",
-                    format: ["camelCase"],
-                }, {
-                    selector: "typeLike",
-                    format: ["PascalCase"],
-                }, {
-                    selector: "objectLiteralProperty",
-                    format: null,
-                }
-            ],
             ...commonRules
         },
     }
