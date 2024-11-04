@@ -106,6 +106,14 @@ html[dir='rtl'] .findbar {
     mask-image: var(--findbarButton-next-icon);
 }
 
+/**
+ * Tweak for reloading.
+ */
+.pdfViewer .page{
+    --scale-round-x: var(--stored-scale-round-x, 1px);
+    --scale-round-y: var(--stored-scale-round-y, 1px);
+}
+
 .pdfViewer.removePageBorders .page {
     border: none;
     box-shadow: 0px 0px 0px 1px lightgrey;

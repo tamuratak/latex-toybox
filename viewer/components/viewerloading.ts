@@ -89,6 +89,7 @@ export class ViewerLoading {
         // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
         PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
+        storeScaleRounds()
         const maskArray = makeMasksForAllVisiblePages()
         void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
             // reset the document title to the original value to avoid duplication
@@ -173,6 +174,17 @@ function makeMasksForAllVisiblePages() {
         debugPrint({ offsetTop: img.offsetTop, offetLeft: img.offsetLeft, width: img.clientWidth, height: img.clientHeight})
     }
     return maskArray
+}
+
+/**
+ * We must store the values to prevent glitches when refreshing the PDF viewer.
+ */
+function storeScaleRounds() {
+    const page = viewerDom.firstElementChild as HTMLElement
+    const scaleRoundX = page.style.getPropertyValue('--scale-round-x')
+    const scaleRoundY = page.style.getPropertyValue('--scale-round-y')
+    viewerContainer.style.setProperty('--stored-scale-round-x', scaleRoundX)
+    viewerContainer.style.setProperty('--stored-scale-round-y', scaleRoundY)
 }
 
 export function isAllVisiblePagesRendered(): boolean {
