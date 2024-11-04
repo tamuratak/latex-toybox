@@ -91,11 +91,13 @@ export class ViewerLoading {
 
         storeScaleRounds()
         const maskArray = makeMasksForAllVisiblePages()
+        const viewerContainerSpacer = createViewerContainerSpacer()
         void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
             // reset the document title to the original value to avoid duplication
             document.title = this.lwApp.documentTitle
         })
         const disposable = this.lwApp.lwEventBus.onPageRendered(() => {
+            viewerContainerSpacer.remove()
             if (isAllVisiblePagesRendered()) {
                 disposable.dispose()
                 // Remove the maskt with a transition effect.
@@ -185,6 +187,17 @@ function storeScaleRounds() {
     const scaleRoundY = page.style.getPropertyValue('--scale-round-y')
     viewerContainer.style.setProperty('--stored-scale-round-x', scaleRoundX)
     viewerContainer.style.setProperty('--stored-scale-round-y', scaleRoundY)
+}
+
+function createViewerContainerSpacer() {
+    const spacer = document.createElement('div')
+    spacer.id = 'viewerContainerSpacer'
+    spacer.style.top = viewerDom.offsetTop + 'px'
+    spacer.style.left = viewerDom.offsetLeft + 'px'
+    spacer.style.width = viewerDom.clientWidth + 'px'
+    spacer.style.height = viewerDom.clientHeight + 'px'
+    viewerContainer.appendChild(spacer)
+    return spacer
 }
 
 export function isAllVisiblePagesRendered(): boolean {

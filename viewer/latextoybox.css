@@ -72,6 +72,12 @@ html[dir='rtl'] .findbar {
 /**
  * Remove the masks after the PDF document rendered with a transition animation.
  */
+
+#viewerContainerSpacer {
+    position: absolute;
+    z-index: -1;
+}
+
 .removeMask {
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
