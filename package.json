@@ -3,7 +3,7 @@
   "displayName": "LaTeX Toybox",
   "description": "An extension for VS Code that offers comprehensive support for editing LaTeX documents, incorporating a range of experimental features.",
   "icon": "icons/icon.png",
-  "version": "40.6.0",
+  "version": "40.6.1",
   "publisher": "tamuratak",
   "license": "MIT",
   "homepage": "https://github.com/tamuratak/latex-toybox",
