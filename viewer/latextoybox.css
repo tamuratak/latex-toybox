@@ -74,6 +74,9 @@ html[dir='rtl'] .findbar {
  */
 
 #viewerContainerSpacer {
+    padding: 0;
+    margin: 0;
+    border: none;
     position: absolute;
     z-index: -1;
 }
@@ -89,7 +92,7 @@ html[dir='rtl'] .findbar {
     border: none;
     box-shadow: 0px 0px 0px 1px lightgrey;
     outline: none;
-    position: absolute;
+    position: fixed;
     overflow: hidden;
     z-index: 10;
 }
@@ -110,14 +113,6 @@ html[dir='rtl'] .findbar {
 #historyForward::before {
     -webkit-mask-image: var(--findbarButton-next-icon);
     mask-image: var(--findbarButton-next-icon);
-}
-
-/**
- * Tweak for reloading.
- */
-.pdfViewer .page{
-    --scale-round-x: var(--stored-scale-round-x, 1px);
-    --scale-round-y: var(--stored-scale-round-y, 1px);
 }
 
 .pdfViewer.removePageBorders .page {
