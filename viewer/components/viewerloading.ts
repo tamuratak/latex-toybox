@@ -89,7 +89,6 @@ export class ViewerLoading {
         // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
         PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
-        storeScaleRounds()
         const maskArray = makeMasksForAllVisiblePages()
         const viewerContainerSpacer = createViewerContainerSpacer()
         void PDFViewerApplication.open({ url: `${pdfFilePrefix}${this.lwApp.encodedPdfFilePath}` }).then(() => {
@@ -97,8 +96,8 @@ export class ViewerLoading {
             document.title = this.lwApp.documentTitle
         })
         const disposable = this.lwApp.lwEventBus.onPageRendered(() => {
-            viewerContainerSpacer.remove()
             if (isAllVisiblePagesRendered()) {
+                viewerContainerSpacer.remove()
                 disposable.dispose()
                 // Remove the maskt with a transition effect.
                 for (const mask of maskArray) {
@@ -146,57 +145,53 @@ function makeMasksForAllVisiblePages() {
     const visiblePages = PDFViewerApplication.pdfViewer._getVisiblePages()
     for (const visiblePage of visiblePages.views) {
         const page = visiblePage.view.div
+        const pageRect = page.getBoundingClientRect()
         const canvas = visiblePage.view.canvas
         if (!canvas) {
             continue
         }
+        const canvasRect = canvas.getBoundingClientRect()
         const div = document.createElement('div')
         div.className = 'divMask'
         maskArray.push(div)
         div.style.display = 'none'
-        div.style.top = page.offsetTop + 'px'
-        div.style.left = page.offsetLeft + 'px'
-        div.style.width = Math.min(viewerDom.clientWidth, page.clientWidth) + 'px'
-        div.style.height = page.clientHeight + 'px'
+        div.style.top = pageRect.top + 'px'
+        div.style.left = pageRect.left + 'px'
+        div.style.width = pageRect.width + 'px'
+        div.style.height = pageRect.height + 'px'
         const img = new Image()
-        img.src = canvas.toDataURL() ?? ''
-        img.style.left = canvas.offsetLeft + 'px'
-        img.style.width = canvas.clientWidth + 'px'
-        img.style.height = canvas.clientHeight + 'px'
+        img.src = canvas.toDataURL()
+        img.style.left = canvasRect.left - pageRect.left + 'px'
+        img.style.width = canvasRect.width + 'px'
+        img.style.height = canvasRect.height + 'px'
         div.appendChild(img)
         viewerContainer.appendChild(div)
         div.style.display = 'inherit'
-        debugPrint('page')
-        debugPrint({ offsetTop: page.offsetTop, offetLeft: page.offsetLeft, width: page.clientWidth, height: page.clientHeight})
-        debugPrint('canvas')
-        debugPrint({ offsetTop: canvas.offsetTop, offetLeft: canvas.offsetLeft, width: canvas.clientWidth, height: canvas.clientHeight})
-        debugPrint('div')
-        debugPrint({ offsetTop: div.offsetTop, offetLeft: div.offsetLeft, width: div.clientWidth, height: div.clientHeight})
-        debugPrint('img')
-        debugPrint({ offsetTop: img.offsetTop, offetLeft: img.offsetLeft, width: img.clientWidth, height: img.clientHeight})
+        debugPrintElements([['page', page], ['canvas', canvas], ['div', div], ['img', img]])
     }
     return maskArray
 }
 
-/**
- * We must store the values to prevent glitches when refreshing the PDF viewer.
- */
-function storeScaleRounds() {
-    const page = viewerDom.firstElementChild as HTMLElement
-    const scaleRoundX = page.style.getPropertyValue('--scale-round-x')
-    const scaleRoundY = page.style.getPropertyValue('--scale-round-y')
-    viewerContainer.style.setProperty('--stored-scale-round-x', scaleRoundX)
-    viewerContainer.style.setProperty('--stored-scale-round-y', scaleRoundY)
+function debugPrintElements(elems: [string, HTMLElement][]) {
+    for (const [name, elem] of elems) {
+        debugPrint(name)
+        const rect = elem.getBoundingClientRect()
+        const { top, left, width, height } = rect
+        debugPrint({ top, left, width, height })
+    }
 }
 
 function createViewerContainerSpacer() {
     const spacer = document.createElement('div')
+    const viewerDomRect = viewerDom.getBoundingClientRect()
     spacer.id = 'viewerContainerSpacer'
     spacer.style.top = viewerDom.offsetTop + 'px'
     spacer.style.left = viewerDom.offsetLeft + 'px'
-    spacer.style.width = viewerDom.clientWidth + 'px'
-    spacer.style.height = viewerDom.clientHeight + 'px'
+    spacer.style.width = viewerDomRect.width + 'px'
+    const pageBottomMargin = 10
+    spacer.style.height = viewerDomRect.height + pageBottomMargin + 'px'
     viewerContainer.appendChild(spacer)
+    debugPrintElements([['viewer', viewerDom], ['spacer', spacer]])
     return spacer
 }
 
