@@ -195,8 +195,10 @@ export class Server {
         if (!isValidOrigin) {
             return
         }
-        if (request.url.startsWith('/' + pdfFilePrefix)) {
-            const encodedFileUri = request.url.replace('/', '')
+        const requestUrl = new URL(request.url, this.validOrigin)
+        const requestPath = requestUrl.pathname
+        if (requestPath.startsWith('/' + pdfFilePrefix)) {
+            const encodedFileUri = requestPath.replace('/', '')
             const fileUri = decodePathWithPrefix(encodedFileUri)
             if (this.extension.viewer.getClientSet(fileUri) === undefined) {
                 this.extension.logger.error(`[Server] Invalid PDF request: ${fileUri.toString(true)}`)
@@ -213,7 +215,7 @@ export class Server {
                 response.end()
             }
             return
-        } else if (request.url === '/config.json') {
+        } else if (requestPath === '/config.json') {
             const params = this.extension.viewer.viewerParams()
             const content = JSON.stringify(params)
             this.sendOkResponse(response, content, 'application/json')
@@ -223,7 +225,7 @@ export class Server {
             // Prevent directory traversal attack.
             // - https://en.wikipedia.org/wiki/Directory_traversal_attack
             //
-            const reqPath = path.posix.resolve('/', request.url.split('?')[0])
+            const reqPath = path.posix.resolve('/', requestPath)
             const extensionRootUri = this.extension.extensionContext.extensionUri
             let root: vscode.Uri
             // /viewer/**/*.ts are requested from sourcemaps.
@@ -279,7 +281,7 @@ export class Server {
             }
             try {
                 const content = await readFileAsUint8Array(fileName)
-                if (request.url?.startsWith('/viewer.html')) {
+                if (requestPath === '/viewer.html') {
                     this.sendOkResponse(response, content, contentType, { isVeiewerHtml: true })
                 } else {
                     this.sendOkResponse(response, content, contentType)

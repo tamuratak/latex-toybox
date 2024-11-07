@@ -74,11 +74,8 @@ export function elementWidth(element: HTMLElement, forceDisplay = true): number 
 }
 
 export function decodeQuery() {
-    const query = document.location.search.substring(1)
-    const parts = query.split('&')
-
-    for (const part of parts) {
-        const [key, value] = part.split('=')
+    const params = new URLSearchParams(window.location.search)
+    for (const [key, value] of params) {
         if (key && value && key.toLowerCase() === 'file') {
             const encodedPdfFilePath = value.replace(pdfFilePrefix, '')
             const pdfFileUri = decodePath(encodedPdfFilePath)
