@@ -157,7 +157,9 @@ function makeMasksForAllVisiblePages() {
         div.style.display = 'none'
         div.style.top = pageRect.top + 'px'
         div.style.left = pageRect.left + 'px'
-        div.style.width = pageRect.width + 'px'
+        // When the trim mode is enabled, the width of the page is much larger
+        // than the width of the viewerDom. It hides the scrollbar. So we have to use the minimum value.
+        div.style.width = Math.min(viewerDom.clientWidth, pageRect.width) + 'px'
         div.style.height = pageRect.height + 'px'
         const img = new Image()
         img.src = canvas.toDataURL()
