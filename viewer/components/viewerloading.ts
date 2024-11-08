@@ -175,12 +175,14 @@ function makeMasksForAllVisiblePages() {
 }
 
 function debugPrintElements(elems: [string, HTMLElement][]) {
+    const mesg = []
     for (const [name, elem] of elems) {
-        debugPrint(name)
+        mesg.push(name)
         const rect = elem.getBoundingClientRect()
         const { top, left, width, height } = rect
-        debugPrint({ top, left, width, height })
+        mesg.push({ top, left, width, height })
     }
+    debugPrint(...mesg)
 }
 
 function createViewerContainerSpacer() {
@@ -199,9 +201,11 @@ function createViewerContainerSpacer() {
 
 export function isAllVisiblePagesRendered(): boolean {
     const pageViews = PDFViewerApplication.pdfViewer._getVisiblePages()
-    debugPrint('pageViews')
-    debugPrint(pageViews.ids)
-    debugPrint('renderingState')
-    debugPrint(pageViews.views.map(view => view.view.renderingState))
+    debugPrint(
+        'pageViews',
+        pageViews.ids,
+        'renderingState',
+        pageViews.views.map(view => view.view.renderingState)
+    )
     return pageViews.views.every(view => view.view.renderingState === RenderingStates.FINISHED)
 }

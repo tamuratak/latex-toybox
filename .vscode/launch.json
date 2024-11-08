@@ -16,7 +16,10 @@
                 "${workspaceFolder}/out/viewer/**/*.js"
             ],
             "debugWebviews": true,
-            "preLaunchTask": "task-watch-all"
+            "preLaunchTask": "task-watch-all",
+            "env": {
+                "LATEXTOYBOX_DEBUG": "1"
+            }
         },
         {
             "name": "Run Extension With Sample",
