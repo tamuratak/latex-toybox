@@ -16,3 +16,27 @@ export function debugPrint(...args: unknown[]) {
     }
     console.log(mesg)
 }
+
+export function debugPrintElements(elems: HTMLElement[]) {
+    if (!DEBUG) {
+        return
+    }
+    const mesg = []
+    for (const elem of elems) {
+        let elemName = elem.nodeName.toLowerCase()
+        const elemId = elem.id
+        if (elemId) {
+            elemName += ' id=' + elemId
+        }
+        const classList = Array.from(elem.classList)
+        if (classList.length > 0) {
+            elemName += ' class=' + JSON.stringify(classList)
+        }
+        mesg.push(elemName)
+        const rect = elem.getBoundingClientRect()
+        const { top, left, width, height } = rect
+        const clientWidth = elem.clientWidth
+        mesg.push({ top, left, width, height, clientWidth })
+    }
+    debugPrint(...mesg)
+}

@@ -1,7 +1,7 @@
 import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
-import { debugPrint } from '../utils/debug.js'
+import { debugPrintElements } from '../utils/debug.js'
 import { trimSelectElement, viewerContainer, viewerDom, RenderingStates, ScrollMode } from './constants.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
@@ -139,9 +139,6 @@ export class ViewerLoading {
  */
 function makeMasksForAllVisiblePages() {
     const maskArray: HTMLDivElement[] = []
-    if (!viewerContainer || !viewerDom) {
-        return maskArray
-    }
     const visiblePages = PDFViewerApplication.pdfViewer._getVisiblePages()
     for (const visiblePage of visiblePages.views) {
         const page = visiblePage.view.div
@@ -159,7 +156,8 @@ function makeMasksForAllVisiblePages() {
         div.style.left = pageRect.left + 'px'
         // When the trim mode is enabled, the width of the page is much larger
         // than the width of the viewerDom. It hides the scrollbar. So we have to use the minimum value.
-        div.style.width = Math.min(viewerDom.clientWidth, pageRect.width) + 'px'
+        const viewerDomRect = viewerDom.getBoundingClientRect()
+        div.style.width = Math.min(viewerDomRect.width, pageRect.width) + 'px'
         div.style.height = pageRect.height + 'px'
         const img = new Image()
         img.src = canvas.toDataURL()
@@ -169,20 +167,9 @@ function makeMasksForAllVisiblePages() {
         div.appendChild(img)
         viewerContainer.appendChild(div)
         div.style.display = 'inherit'
-        debugPrintElements([['page', page], ['canvas', canvas], ['div', div], ['img', img]])
+        debugPrintElements([page, canvas, div, img])
     }
     return maskArray
-}
-
-function debugPrintElements(elems: [string, HTMLElement][]) {
-    const mesg = []
-    for (const [name, elem] of elems) {
-        mesg.push(name)
-        const rect = elem.getBoundingClientRect()
-        const { top, left, width, height } = rect
-        mesg.push({ top, left, width, height })
-    }
-    debugPrint(...mesg)
 }
 
 function createViewerContainerSpacer() {
@@ -195,17 +182,11 @@ function createViewerContainerSpacer() {
     const pageBottomMargin = 10
     spacer.style.height = viewerDomRect.height + pageBottomMargin + 'px'
     viewerContainer.appendChild(spacer)
-    debugPrintElements([['viewer', viewerDom], ['spacer', spacer]])
+    debugPrintElements([viewerContainer, viewerDom, spacer])
     return spacer
 }
 
 export function isAllVisiblePagesRendered(): boolean {
     const pageViews = PDFViewerApplication.pdfViewer._getVisiblePages()
-    debugPrint(
-        'pageViews',
-        pageViews.ids,
-        'renderingState',
-        pageViews.views.map(view => view.view.renderingState)
-    )
     return pageViews.views.every(view => view.view.renderingState === RenderingStates.FINISHED)
 }
