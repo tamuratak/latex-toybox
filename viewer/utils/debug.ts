@@ -21,7 +21,7 @@ export function debugPrintElements(elems: HTMLElement[]) {
     if (!DEBUG) {
         return
     }
-    const mesg = []
+    let mesg = ''
     for (const elem of elems) {
         let elemName = elem.nodeName.toLowerCase()
         const elemId = elem.id
@@ -32,11 +32,27 @@ export function debugPrintElements(elems: HTMLElement[]) {
         if (classList.length > 0) {
             elemName += ' class=' + JSON.stringify(classList)
         }
-        mesg.push(elemName)
+        mesg += elemName + '\n'
         const rect = elem.getBoundingClientRect()
         const { top, left, width, height } = rect
         const clientWidth = elem.clientWidth
-        mesg.push({ top, left, width, height, clientWidth })
+        const args = {
+            top: formatFloat(top),
+            left: formatFloat(left),
+            width: formatFloat(width),
+            height: formatFloat(height),
+            clientWidth: formatFloat(clientWidth)
+        }
+        let elemSizes = '{ '
+        for (const [key, val] of Object.entries(args)) {
+            elemSizes += `${key}: ${val}, `
+        }
+        elemSizes += '}'
+        mesg += elemSizes + '\n'
     }
-    debugPrint(...mesg)
+    console.log(mesg)
+}
+
+function formatFloat(num: number): string {
+    return num.toFixed(3).padStart(10)
 }
