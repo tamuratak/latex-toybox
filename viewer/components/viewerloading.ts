@@ -186,7 +186,7 @@ function createViewerContainerSpacer() {
     return spacer
 }
 
-export function isAllVisiblePagesRendered(): boolean {
+function isAllVisiblePagesRendered(): boolean {
     const pageViews = PDFViewerApplication.pdfViewer._getVisiblePages()
     return pageViews.views.every(view => view.view.renderingState === RenderingStates.FINISHED)
 }
