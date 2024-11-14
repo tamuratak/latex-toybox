@@ -15,7 +15,7 @@ export class ExtensionConnection {
     }
 
     send(message: ClientRequest) {
-        void this.connectionPort.send(message)
+        return this.connectionPort.send(message)
     }
 
     private notifyDisconnected() {
@@ -44,7 +44,7 @@ export class ExtensionConnection {
             pdfFileUri: this.lwApp.pdfFileUri,
             viewer: (isEmbedded ? 'tab' : 'browser')
         }
-        this.send(openPack)
+        void this.send(openPack)
         void this.connectionPort.onDidReceiveMessage((event: MessageEvent<string>) => {
             const data = JSON.parse(event.data) as ServerResponse
             switch (data.type) {
