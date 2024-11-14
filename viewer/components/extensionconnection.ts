@@ -7,38 +7,35 @@ import { ExternalPromise } from '../utils/externalpromise.js'
 export class ExtensionConnection {
     private readonly lwApp: ILatexToyboxPdfViewer
     private connectionPort = new ConnectionPort()
-    private readonly disconnectedNotificationDom = document.createElement('div')
-    private readonly reconnectedNotificationDom = document.createElement('div')
+    private disconnectedNotificationDom: HTMLDivElement | undefined
 
     constructor(lwApp: ILatexToyboxPdfViewer) {
         this.lwApp = lwApp
         this.setupConnectionPort()
-        this.setupDoms()
     }
 
     send(message: ClientRequest) {
         void this.connectionPort.send(message)
     }
 
-    private setupDoms() {
-        this.disconnectedNotificationDom.id = 'notify-disconnected'
-        this.disconnectedNotificationDom.textContent = 'Disconnected from LaTeX Toybox. Trying to reconnect...'
-        this.disconnectedNotificationDom.classList.add('hide')
-        document.body.appendChild(this.disconnectedNotificationDom)
-        this.reconnectedNotificationDom.id = 'notify-reconnected'
-        this.reconnectedNotificationDom.textContent = 'Reconnected to LaTeX Toybox. Happy TeXing!'
-        this.reconnectedNotificationDom.classList.add('hide')
-        document.body.appendChild(this.reconnectedNotificationDom)
-    }
-
     private notifyDisconnected() {
-        this.disconnectedNotificationDom.classList.remove('hide')
+        const dom = document.createElement('div')
+        dom.id = 'notify-disconnected'
+        dom.textContent = 'Disconnected from LaTeX Toybox. Trying to reconnect...'
+        this.disconnectedNotificationDom = dom
+        document.body.appendChild(dom)
     }
 
-    private notifyReconnected() {
-        this.disconnectedNotificationDom.classList.add('hide')
-        this.reconnectedNotificationDom.classList.remove('hide')
-        setTimeout(() => this.reconnectedNotificationDom.classList.add('hide'), 3000)
+    private async notifyReconnected() {
+        const dom = document.createElement('div')
+        dom.id = 'notify-reconnected'
+        dom.textContent = 'Reconnected to LaTeX Toybox. Happy TeXing!'
+        this.disconnectedNotificationDom?.remove()
+        document.body.appendChild(dom)
+        await sleep(3000)
+        dom.classList.add('hide')
+        await sleep(1000)
+        dom.remove()
     }
 
     private setupConnectionPort() {
@@ -77,7 +74,7 @@ export class ExtensionConnection {
                 try {
                     this.connectionPort = new ConnectionPort()
                     await this.connectionPort.readyPromise
-                    this.notifyReconnected()
+                    void this.notifyReconnected()
                     this.setupConnectionPort()
                     console.log('Reconnected: WebScocket to LaTeX Toybox.')
                     return

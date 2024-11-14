@@ -215,11 +215,6 @@ html[dir='rtl'] .findbar {
     border: 3px solid red;
 }
 
-#notify-disconnected[class="hide"] {
-    opacity: 0;
-    z-index: -1;
-}
-
 #notify-reconnected {
     position: fixed;
     top: 0;
@@ -230,6 +225,5 @@ html[dir='rtl'] .findbar {
 
 #notify-reconnected[class="hide"] {
     opacity: 0;
-    z-index: -1;
     transition: opacity 0.5s ease-in-out;
 }
