@@ -19,6 +19,9 @@ export class ExtensionConnection {
     }
 
     private notifyDisconnected() {
+        if (this.disconnectedNotificationDom) {
+            return
+        }
         const dom = document.createElement('div')
         dom.id = 'notify-disconnected'
         dom.textContent = 'Disconnected from LaTeX Toybox. Trying to reconnect...'
@@ -27,10 +30,11 @@ export class ExtensionConnection {
     }
 
     private async notifyReconnected() {
+        this.disconnectedNotificationDom?.remove()
+        this.disconnectedNotificationDom = undefined
         const dom = document.createElement('div')
         dom.id = 'notify-reconnected'
         dom.textContent = 'Reconnected to LaTeX Toybox. Happy TeXing!'
-        this.disconnectedNotificationDom?.remove()
         document.body.appendChild(dom)
         await sleep(3000)
         dom.classList.add('hide')
