@@ -1697,23 +1697,23 @@
     "ws": "8.18.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.15.0",
+    "@eslint/js": "9.18.0",
     "@types/cross-spawn": "6.0.6",
     "@types/eslint__js": "8.42.3",
     "@types/micromatch": "4.0.9",
-    "@types/mocha": "10.0.9",
+    "@types/mocha": "10.0.10",
     "@types/node": "~20.14",
     "@types/tmp": "0.2.6",
     "@types/vscode": "1.95.0",
     "@types/ws": "8.5.13",
     "@vscode/test-electron": "2.4.1",
     "@vscode/vsce": "3.2.1",
-    "eslint": "9.15.0",
+    "eslint": "9.18.0",
     "glob": "11.0.0",
     "mocha": "10.8.2",
     "rimraf": "3.0.2",
     "tmp": "0.2.3",
     "typescript": "5.6.3",
-    "typescript-eslint": "8.15.0"
+    "typescript-eslint": "8.20.0"
   }
 }
