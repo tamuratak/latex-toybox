@@ -213,6 +213,8 @@ html[dir='rtl'] .findbar {
     left: 0;
     z-index: 100000;
     border: 3px solid red;
+    color: black;
+    background: white;
 }
 
 #notify-reconnected {
@@ -221,6 +223,8 @@ html[dir='rtl'] .findbar {
     left: 0;
     z-index: 100000;
     border: 3px solid green;
+    color: black;
+    background-color: white;
 }
 
 #notify-reconnected[class="hide"] {
