@@ -309,6 +309,7 @@ export class Viewer {
                 break
             }
             default: {
+                data satisfies never
                 this.extension.logger.error(`Unknown websocket message: ${msg}`)
                 break
             }

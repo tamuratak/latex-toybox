@@ -61,6 +61,7 @@ export class ExtensionConnection {
                     break
                 }
                 default: {
+                    data satisfies never
                     break
                 }
             }

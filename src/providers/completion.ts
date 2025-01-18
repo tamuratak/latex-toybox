@@ -210,7 +210,7 @@ export class Completer implements vscode.CompletionItemProvider {
     }
 
     private async completion(
-        type: CompletionType,
+        ctype: CompletionType,
         line: string,
         args: {
             document: vscode.TextDocument,
@@ -221,7 +221,7 @@ export class Completer implements vscode.CompletionItemProvider {
     ) {
         let reg: RegExp | undefined
         let provider: IProvider | undefined
-        switch (type) {
+        switch (ctype) {
             case 'citation':
                 reg = /(?:\\[a-zA-Z]*[Cc]ite[a-zA-Z]*\*?(?:\([^[)]*\)){0,2}(?:<[^<>]*>|\[[^[\]]*\]|{[^{}]*})*{([^}]*)$)|(?:\\bibentry{([^}]*)$)/
                 provider = this.citation
@@ -267,8 +267,9 @@ export class Completer implements vscode.CompletionItemProvider {
                 provider = this.glossary
                 break
             default:
+                ctype satisfies never
                 // This shouldn't be possible, so mark as error case in log.
-                this.extension.logger.error(`Error - trying to complete unknown type: ${inspectCompact(type)}`)
+                this.extension.logger.error(`Error - trying to complete unknown type: ${inspectCompact(ctype)}`)
                 return []
         }
         const result = line.match(reg)
