@@ -279,7 +279,7 @@ export class Citation implements IProvider {
     private entryToFields(entry: bibtexParser.Entry) {
         const fields = new Fields()
         entry.content.forEach(field => {
-            const value = Array.isArray(field.value.content) ? field.value.content.join(' ') : this.deParenthesis(field.value.content)
+            const value = Array.isArray(field.value.content) ? field.value.content.map(e => e.content).join(' ') : this.deParenthesis(field.value.content)
             fields.set(field.name, value)
         })
         return fields
