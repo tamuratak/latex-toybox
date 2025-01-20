@@ -22,7 +22,7 @@ const trimRule15 = { trimValue: 0.15, sheet: new CSSStyleSheet() } as const
 const trimValueAndSheet = [trimRule05, trimRule10, trimRule15] as const
 trimValueAndSheet.forEach(({ trimValue, sheet }) => {
     const left = -100 * trimValue
-    sheet.insertRule(`.page canvas { left: ${left}%; position: relative; }`)
+    sheet.insertRule(`:is(.pdfViewer .canvasWrapper) canvas { left: ${left}%; position: relative; }`)
     sheet.insertRule(`.page .textLayer { left: ${left}%; }`)
     sheet.insertRule(`.page .annotationLayer { left: ${left}%; }`)
     sheet.disabled = true
