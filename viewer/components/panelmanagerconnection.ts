@@ -68,6 +68,7 @@ export class PanelManagerConnection {
                     break
                 }
                 default: {
+                    data satisfies never
                     break
                 }
             }
