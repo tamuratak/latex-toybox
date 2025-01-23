@@ -16,6 +16,8 @@ function resourcesFolder(extensionRoot: string) {
     return vscode.Uri.file(folder)
 }
 
+let restored = false
+
 export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer {
 
     constructor(private readonly extension: {
@@ -34,6 +36,7 @@ export class MathPreviewPanelSerializer implements vscode.WebviewPanelSerializer
         }
         panel.webview.html = this.extension.mathPreviewPanel.getHtml(panel.webview)
         this.extension.logger.info('Math preview panel: restored')
+        restored = true
         return Promise.resolve()
     }
 
@@ -63,6 +66,33 @@ export class MathPreviewPanel {
             }),
             new vscode.Disposable(() => void this.panel?.dispose())
         )
+        setTimeout(() => this.reopenPanelOnNewSession(), 1000)
+    }
+
+    private findPanelTabs() {
+        return vscode.window.tabGroups.all.flatMap(group =>
+            group.tabs.filter(tab => {
+                return tab.input instanceof vscode.TabInputWebview && tab.input.viewType.includes('latex-toybox-mathpreview')
+            })
+        )
+    }
+
+    // When the extension host reloads due to an extension update or other reasons,
+    // the connection with the webview is lost. Therefore, we close the old panel
+    // and open a new panel.
+    private async reopenPanelOnNewSession() {
+        if (restored || this.panel) {
+            return
+        }
+        const oldPanelTab = this.findPanelTabs()[0]
+        if (oldPanelTab) {
+            await this.open()
+            // We need to locate the old tab again because the oldPanelTab object becomes invalid after a tab operation.
+            const theOldPanelTab = this.findPanelTabs()[0]
+            if (theOldPanelTab) {
+                await vscode.window.tabGroups.close(theOldPanelTab)
+            }
+        }
     }
 
     private get mathPreview() {
