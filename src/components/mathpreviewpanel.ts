@@ -6,6 +6,8 @@ import { hasTexId } from '../utils/hastexid.js'
 import type { Logger } from './logger.js'
 
 
+export const mathPreviewPanelViewType = 'latex-toybox-mathpreview'
+
 interface UpdateEvent {
     type: 'selection',
     event: vscode.TextEditorSelectionChangeEvent
@@ -72,7 +74,7 @@ export class MathPreviewPanel {
     private findPanelTabs() {
         return vscode.window.tabGroups.all.flatMap(group =>
             group.tabs.filter(tab => {
-                return tab.input instanceof vscode.TabInputWebview && tab.input.viewType.includes('latex-toybox-mathpreview')
+                return tab.input instanceof vscode.TabInputWebview && tab.input.viewType.includes(mathPreviewPanelViewType)
             })
         )
     }
@@ -109,7 +111,7 @@ export class MathPreviewPanel {
         }
         this.mathPreview.getColor()
         const panel = vscode.window.createWebviewPanel(
-            'latex-toybox-mathpreview',
+            mathPreviewPanelViewType,
             'Math Preview',
             { viewColumn: vscode.ViewColumn.Active, preserveFocus: true },
             {
