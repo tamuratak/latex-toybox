@@ -12,9 +12,10 @@ import { BibtexCompleter } from './providers/bibtexcompletion.js'
 import { FoldingProvider } from './providers/folding.js'
 import { BibtexFormatterProvider } from './providers/bibtexformatter.js'
 import type { Extension } from './main.js'
-import { MathPreviewPanelSerializer } from './components/mathpreviewpanel.js'
+import { MathPreviewPanelSerializer, mathPreviewPanelViewType } from './components/mathpreviewpanel.js'
 import { AtSuggestionCompleter } from './providers/atsuggestion.js'
 import { inspectCompact } from './utils/inspect.js'
+import { pdfViewerPanelViewType } from './components/viewerlib/pdfviewerpanel.js'
 
 
 abstract class SingleProviderManager implements vscode.Disposable {
@@ -149,9 +150,9 @@ export class ProvidersManager {
         )
 
         context.subscriptions.push(
-            vscode.window.registerWebviewPanelSerializer('latex-toybox-pdf', extension.viewer.pdfViewerPanelSerializer),
+            vscode.window.registerWebviewPanelSerializer(pdfViewerPanelViewType, extension.viewer.pdfViewerPanelSerializer),
             vscode.window.registerCustomEditorProvider('latex-toybox-pdf-hook', new PdfViewerHookProvider(extension), {supportsMultipleEditorsPerDocument: true}),
-            vscode.window.registerWebviewPanelSerializer('latex-toybox-mathpreview', new MathPreviewPanelSerializer(extension))
+            vscode.window.registerWebviewPanelSerializer(mathPreviewPanelViewType, new MathPreviewPanelSerializer(extension))
         )
 
         context.subscriptions.push(

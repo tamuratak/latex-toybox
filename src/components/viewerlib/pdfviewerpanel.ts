@@ -12,6 +12,7 @@ import { Logger } from '../logger.js'
 import { Server } from '../server.js'
 import { inspectCompact } from '../../utils/inspect.js'
 
+export const pdfViewerPanelViewType = 'latex-toybox-pdf'
 
 export class PdfViewerPanel {
     readonly webviewPanel: vscode.WebviewPanel
@@ -129,7 +130,7 @@ export class PdfViewerPanelService {
 
     async createPdfViewerPanel(pdfFileUri: vscode.Uri, viewColumn: vscode.ViewColumn): Promise<PdfViewerPanel> {
         await this.extension.server.serverStarted
-        const panel = vscode.window.createWebviewPanel('latex-toybox-pdf', path.basename(pdfFileUri.path), viewColumn, {
+        const panel = vscode.window.createWebviewPanel(pdfViewerPanelViewType, path.basename(pdfFileUri.path), viewColumn, {
             enableScripts: true,
             retainContextWhenHidden: true
         })
