@@ -61,6 +61,6 @@ export function setCssRuleForToolbar() {
     const smallViewMaxWidth = 90 + scaleMaxWidth
     styleSheet.insertRule(`@media all and (max-width: ${trimMaxWidth}px) { #trimSelectContainer { display: none; } }`)
     styleSheet.insertRule(`@media all and (max-width: ${scaleMaxWidth}px) { #scaleSelectContainer { display: none; } }`)
-    styleSheet.insertRule(` @media all and (max-width: ${smallViewMaxWidth}px) { .hiddenSmallView { display: none; } }`)
+    styleSheet.insertRule(`@media all and (max-width: ${smallViewMaxWidth}px) { .hiddenSmallView { display: none; } }`)
     document.adoptedStyleSheets.push(styleSheet)
 }

@@ -17,6 +17,7 @@
 html[dir='ltr'] .findbar {
     left: 125px;
 }
+
 html[dir='rtl'] .findbar {
     right: 125px;
 }
