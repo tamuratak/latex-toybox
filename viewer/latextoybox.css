@@ -121,7 +121,7 @@ html[dir='rtl'] .findbar {
 }
 
 .notransition {
-    transition: none !important;
+    transition: none;
 }
 
 .toolbar {
@@ -146,43 +146,43 @@ html[dir='rtl'] .findbar {
 }
 
 #viewBookmark {
-    display: none !important;
+    display: none;
 }
 
 #secondaryViewBookmark {
-    display: none  !important;
+    display: none;
 }
 
 #downloadButton {
-    display: none  !important;
+    display: none;
 }
 
 #secondaryDownload {
-    display: inherit !important;
+    display: inherit;
 }
 
 #secondaryToolbarButtonContainer .horizontalToolbarSeparator {
-    display: inherit !important;
+    display: inherit;
 }
 
 #toolbarViewerRight .verticalToolbarSeparator {
-    display: none  !important;
+    display: none;
 }
 
 #openFile  {
-    display: none  !important;
+    display: none;
 }
 
 #secondaryOpenFile {
-    display: none  !important;
+    display: none;
 }
 
 #presentationMode {
-    display: none  !important;
+    display: none;
 }
 
 #secondaryPresentationMode {
-    display: none  !important;
+    display: none;
 }
 
 #trimSelectContainer {
