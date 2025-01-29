@@ -25,5 +25,5 @@ export interface ICommand {
 export interface IContexAwareProvider {
     readonly needsAst: boolean,
     test(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): boolean,
-    provide(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): vscode.CompletionItem[]
+    provide(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext, ast: latexParser.LatexAst | undefined): vscode.CompletionItem[] | Thenable<vscode.CompletionItem[]>
 }
