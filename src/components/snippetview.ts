@@ -21,7 +21,11 @@ interface RenderResult {
 export class SnippetView {
     readonly snippetViewProvider: SnippetViewProvider
 
-    constructor(extension: ConstructorParameters<typeof SnippetViewProvider>[0]) {
+    constructor(extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly extensionRoot: string,
+        readonly manager: Manager
+    }) {
         this.snippetViewProvider = new SnippetViewProvider(extension)
     }
 

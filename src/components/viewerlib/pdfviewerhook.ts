@@ -6,9 +6,7 @@ export class PdfViewerHookProvider implements vscode.CustomReadonlyEditorProvide
 
     constructor(private readonly extension: {
         readonly commander: Commander
-    }) {
-        this.extension = extension
-    }
+    }) { }
 
     openCustomDocument(uri: vscode.Uri) {
         return {

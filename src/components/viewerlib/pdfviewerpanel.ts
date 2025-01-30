@@ -69,7 +69,6 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
         panelService: PdfViewerPanelService,
         service: PdfViewerManagerService
     ) {
-        this.extension = extension
         this.panelService = panelService
         this.managerService = service
     }

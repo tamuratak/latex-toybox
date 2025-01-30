@@ -16,7 +16,6 @@ export class DuplicateLabels {
         readonly logger: Logger,
         readonly manager: Manager
     }) {
-        this.extension = extension
         this.extension.eventBus.completionUpdated.event((file: string) => {
             const configuration = vscode.workspace.getConfiguration('latex-toybox')
             if (configuration.get('check.duplicatedLabels.enabled')) {

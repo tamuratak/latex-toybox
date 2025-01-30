@@ -36,7 +36,6 @@ export class Locator {
         readonly manager: Manager,
         readonly viewer: Viewer
     }) {
-        this.extension = extension
         this.synctexjs = new SyncTexJs(extension)
     }
 

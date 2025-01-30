@@ -1,5 +1,8 @@
 import type * as vscode from 'vscode'
 import { ReferenceUpdater } from './referencestorelib/referenceupdater.js'
+import type { EventBus } from './eventbus.js'
+import type { Manager } from './manager.js'
+import type { LatexAstManager } from './astmanager.js'
 
 
 export class ReferenceStore {
@@ -9,7 +12,13 @@ export class ReferenceStore {
     readonly bibitemCommandLocationMap = new Map<string, vscode.Location[]>()
     private readonly referenceUpdater: ReferenceUpdater
 
-    constructor(extension: ConstructorParameters<typeof ReferenceUpdater>[0]) {
+    constructor(extension: {
+        readonly extensionContext: vscode.ExtensionContext,
+        readonly eventBus: EventBus,
+        readonly manager: Manager,
+        readonly latexAstManager: LatexAstManager,
+        readonly referenceStore: ReferenceStore
+    }) {
         this.referenceUpdater = new ReferenceUpdater(extension)
     }
 
