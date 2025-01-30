@@ -58,8 +58,8 @@ export class MathPreview {
         const typesetOpts = { scale, color: this.color }
         try {
             const xml = await this.mj.typeset(typesetArg, typesetOpts)
-            const md = utils.svgToDataUrl(xml)
-            return new vscode.Hover(new vscode.MarkdownString(this.mputils.addDummyCodeBlock(`![equation](${md})`)), tex.range )
+            const dataUrl = utils.svgToDataUrl(xml)
+            return new vscode.Hover(new vscode.MarkdownString(this.mputils.addDummyCodeBlock(`![equation](${dataUrl})`)), tex.range )
         } catch(e) {
             this.extension.logger.error(`Error while MathJax is rendering: ${typesetArg}`)
             this.extension.logger.logError(e)

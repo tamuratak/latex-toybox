@@ -75,7 +75,7 @@ export class Completer implements vscode.CompletionItemProvider {
         this.import = new Import(extension)
         this.subImport = new SubImport(extension)
         this.glossary = new Glossary(extension)
-        this.bracketReplacer = new BracketReplacer()
+        this.bracketReplacer = new BracketReplacer(extension)
         this.commandAdder = new CommandAdder(this.command)
         this.commandRemover = new CommandRemover()
         this.commandReplacer = new CommandReplacer()
@@ -160,7 +160,8 @@ export class Completer implements vscode.CompletionItemProvider {
             ast = await this.extension.latexAstManager.getDocAst(document)
         }
         for (const provider of providers) {
-            items = [...items, ...provider.provide(document, position, context, ast)]
+            const providedItems = await provider.provide(document, position, context, ast)
+            items = [...items, ...providedItems]
         }
         return items
     }
