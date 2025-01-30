@@ -11,6 +11,8 @@ import type { CompilerLog } from './components/compilerlog.js'
 import type { Section } from './components/section.js'
 import type { MathPreviewPanel } from './components/mathpreviewpanel.js'
 import type { EnvPair } from './components/envpair.js'
+import type { Logger } from './components/logger.js'
+import type { Manager } from './components/manager.js'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -57,11 +59,12 @@ export class Commander {
         readonly compilerLog: CompilerLog,
         readonly envPair: EnvPair,
         readonly locator: Locator,
+        readonly logger: Logger,
+        readonly manager: Manager,
         readonly mathPreviewPanel: MathPreviewPanel,
         readonly section: Section,
         readonly viewer: Viewer
-    } & ConstructorParameters<typeof TeXDoc>[0]) {
-        this.extension = extension
+    }) {
         this._texdoc = new TeXDoc(extension)
     }
 

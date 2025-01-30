@@ -35,7 +35,6 @@ class LaTeXCommanderProvider implements vscode.TreeDataProvider<LaTeXCommand> {
         readonly extensionContext: vscode.ExtensionContext,
         readonly manager: Manager
     }) {
-        this.extension = extension
         this.onDidChangeTreeData = this.treeDataEventEmitter.event
         extension.extensionContext.subscriptions.push(
             vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {

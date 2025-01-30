@@ -26,7 +26,6 @@ export class AtSuggestion implements IProvider {
         },
         triggerCharacter: string
     ) {
-        this.extension = extension
         this.triggerCharacter = triggerCharacter
         this.escapedTriggerCharacter = escapeRegExp(this.triggerCharacter)
 
