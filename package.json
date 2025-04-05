@@ -1692,7 +1692,7 @@
     "latex-utensils": "6.2.0",
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.8",
-    "pdfjs-dist": "4.10.38",
+    "pdfjs-dist": "5.1.91",
     "workerpool": "9.2.0",
     "ws": "8.18.0"
   },
