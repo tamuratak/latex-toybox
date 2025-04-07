@@ -1697,9 +1697,8 @@
     "ws": "8.18.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.19.0",
+    "@eslint/js": "9.24.0",
     "@types/cross-spawn": "6.0.6",
-    "@types/eslint__js": "8.42.3",
     "@types/micromatch": "4.0.9",
     "@types/mocha": "10.0.10",
     "@types/node": "~20.14",
@@ -1707,13 +1706,13 @@
     "@types/vscode": "1.96.0",
     "@types/ws": "8.5.14",
     "@vscode/test-electron": "2.4.1",
-    "@vscode/vsce": "3.2.2",
-    "eslint": "9.19.0",
-    "glob": "11.0.0",
-    "mocha": "10.8.2",
+    "@vscode/vsce": "3.3.2",
+    "eslint": "9.24.0",
+    "glob": "11.0.1",
+    "mocha": "11.1.0",
     "rimraf": "3.0.2",
     "tmp": "0.2.3",
-    "typescript": "5.7.3",
-    "typescript-eslint": "8.24.0"
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.29.0"
   }
 }
