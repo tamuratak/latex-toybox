@@ -88,7 +88,7 @@ export class MathPreviewPanel {
         }
         const oldPanelTab = this.findPanelTabs()[0]
         if (oldPanelTab) {
-            await this.open()
+            await this.open(oldPanelTab.group.viewColumn)
             // We need to locate the old tab again because the oldPanelTab object becomes invalid after a tab operation.
             const theOldPanelTab = this.findPanelTabs()[0]
             if (theOldPanelTab) {
@@ -101,7 +101,7 @@ export class MathPreviewPanel {
         return this.extension.mathPreview
     }
 
-    async open() {
+    async open(viewColumn?: vscode.ViewColumn) {
         const activeDocument = vscode.window.activeTextEditor?.document
         if (this.panel) {
             if (!this.panel.visible) {
@@ -113,7 +113,7 @@ export class MathPreviewPanel {
         const panel = vscode.window.createWebviewPanel(
             mathPreviewPanelViewType,
             'Math Preview',
-            { viewColumn: vscode.ViewColumn.Active, preserveFocus: true },
+            { viewColumn: viewColumn || vscode.ViewColumn.Active, preserveFocus: true },
             {
                 enableScripts: true,
                 localResourceRoots: [resourcesFolder(this.extension.extensionRoot)],
@@ -124,7 +124,7 @@ export class MathPreviewPanel {
         panel.webview.html = this.getHtml(panel.webview)
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const editorGroup = configuration.get('mathpreviewpanel.editorGroup') as string
-        if (activeDocument) {
+        if (activeDocument && !viewColumn) {
             await openWebviewPanel(panel, editorGroup, activeDocument)
         }
         this.extension.logger.info('Math preview panel: opened')
