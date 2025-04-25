@@ -126,7 +126,7 @@ html[dir='rtl'] .findbar {
 }
 
 .toolbar {
-    transition: all 0.2s cubic-bezier(.23,.96,.57,.99);
+    transition: opacity 0.2s cubic-bezier(.23,.96,.57,.99);
 }
 
 .toolbar.hide {
