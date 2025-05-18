@@ -106,3 +106,9 @@ export interface IPDFViewerApplicationOptions {
     set(name: string, value: unknown): void,
     setAll(options: unknown): void
 }
+
+export interface IPDFViewerApplicationConstants {
+    RenderingStates: RenderingStates,
+    ScrollMode: ScrollMode,
+    SpreadMode: SpreadMode
+}
