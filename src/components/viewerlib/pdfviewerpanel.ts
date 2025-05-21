@@ -81,7 +81,7 @@ export class PdfViewerPanelSerializer implements vscode.WebviewPanelSerializer {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.file(resourceFolder)]
         }
-        await this.extension.server.serverStarted
+        await this.extension.server.isReady
         this.extension.logger.info(`Restoring the PDF viewer at the column ${panel.viewColumn} from the state: ${inspectCompact(argState)}`)
         const state = argState.state
         let pdfFileUri: vscode.Uri | undefined
@@ -128,7 +128,7 @@ export class PdfViewerPanelService {
     }
 
     async createPdfViewerPanel(pdfFileUri: vscode.Uri, viewColumn: vscode.ViewColumn): Promise<PdfViewerPanel> {
-        await this.extension.server.serverStarted
+        await this.extension.server.isReady
         const panel = vscode.window.createWebviewPanel(pdfViewerPanelViewType, path.basename(pdfFileUri.path), viewColumn, {
             enableScripts: true,
             retainContextWhenHidden: true

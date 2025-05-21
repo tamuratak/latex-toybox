@@ -52,7 +52,7 @@ export class Server {
     private readonly httpServer: http.Server
     private address?: AddressInfo
     private validOriginUri: vscode.Uri | undefined
-    readonly #serverStarted = new ExternalPromise<void>()
+    readonly #isReady = new ExternalPromise<void>()
 
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,
@@ -70,8 +70,8 @@ export class Server {
         this.extension.logger.info('[Server] Creating LaTeX Toybox http and websocket server.')
     }
 
-    get serverStarted(): Promise<void> {
-        return this.#serverStarted.promise
+    get isReady(): Promise<void> {
+        return this.#isReady.promise
     }
 
     private dispose() {
@@ -91,7 +91,7 @@ export class Server {
         if (this.validOriginUri) {
             return `${this.validOriginUri.scheme}://${this.validOriginUri.authority}`
         } else {
-            throw new Error('[Server] validOrigin is undefined')
+            throw new Error('[Server] validOriginUri is undefined')
         }
     }
 
@@ -117,11 +117,12 @@ export class Server {
                 await this.extension.extensionContext.workspaceState.update(serverPortKey, curPort)
                 this.extension.logger.info(`[Server] Server successfully started: ${inspectCompact(address)}`)
                 this.validOriginUri = await this.obtainValidOrigin(address.port)
-                this.extension.logger.info(`[Server] valdOrigin is ${this.validOrigin}`)
+                this.extension.logger.info(`[Server] validOrigin: ${this.validOrigin}`)
                 this.initializeWsServer()
-                this.#serverStarted.resolve()
+                this.#isReady.resolve()
             } else {
                 this.extension.logger.error(`[Server] Server failed to start. Address is invalid: ${inspectCompact(address)}`)
+                this.#isReady.reject(new Error(`Server failed to start. Address is invalid: ${inspectCompact(address)}`))
             }
         })
         this.httpServer.on('error', (err) => {
@@ -153,7 +154,7 @@ export class Server {
         const reqOrigin = req.headers['origin']
         if (reqOrigin !== undefined && reqOrigin !== this.validOrigin) {
             this.extension.logger.info(`[Server] Origin in http request is invalid: ${inspectReadable(req.headers)}`)
-            this.extension.logger.info(`[Server] Valid origin: ${this.validOrigin}`)
+            this.extension.logger.info(`[Server] validOrigin: ${this.validOrigin}`)
             response.writeHead(403)
             response.end()
             return false
@@ -188,6 +189,10 @@ export class Server {
     }
 
     private async handler(request: http.IncomingMessage, response: http.ServerResponse) {
+        // Extension host reload and window reload can occur simultaneously, such as during a VS Code update.
+        // In this situation, the server may not yet be initialized, leading to the handler being invoked before the server is ready.
+        // Consequently, we wait for the isReady promise to resolve before calling the handler body.
+        await this.isReady
         if (!request.url) {
             return
         }
