@@ -1,4 +1,4 @@
-import { viewerContainer, viewerDom, ScrollMode } from './constants.js'
+import { viewerContainer, viewerElement, ScrollMode } from './constants.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.js'
 import { isTrimEnabled } from './pagetrimmer.js'
 
@@ -97,7 +97,7 @@ export class SyncTex {
 
     registerListenerOnEachPage() {
         const keybinding = this.reverseSynctexKeybinding
-        for (const pageDom of viewerDom.childNodes as NodeListOf<HTMLElement>) {
+        for (const pageDom of viewerElement.childNodes as NodeListOf<HTMLElement>) {
             const page = Number(pageDom.dataset['pageNumber'])
             switch (keybinding) {
                 case 'ctrl-click': {

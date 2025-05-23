@@ -1,4 +1,5 @@
 import { elementWidth, isEmbedded } from '../utils/utils.js'
+import { toolbarElement } from './constants.js'
 import type { IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
@@ -10,18 +11,14 @@ export function showToolbar(animate: boolean) {
     if (hideToolbarInterval !== undefined) {
         clearInterval(hideToolbarInterval)
     }
-    const toolbarDiv = document.getElementsByClassName('toolbar')[0]
-    if (!toolbarDiv) {
-        throw new Error('toolbarDiv is undefined.')
-    }
-    toolbarDiv.classList.remove('hide')
+    toolbarElement.classList.remove('hide')
     if (!animate) {
-        toolbarDiv.classList.add('notransition')
+        toolbarElement.classList.add('notransition')
     }
     hideToolbarInterval = setInterval(() => {
         if (!PDFViewerApplication.findBar.opened && !PDFViewerApplication.pdfSidebar.isOpen && !PDFViewerApplication.secondaryToolbar.isOpen) {
-            toolbarDiv.classList.remove('notransition')
-            toolbarDiv.classList.add('hide')
+            toolbarElement.classList.remove('notransition')
+            toolbarElement.classList.add('hide')
             clearInterval(hideToolbarInterval)
         }
     }, 3000)

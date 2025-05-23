@@ -16,7 +16,7 @@ import { ViewerLoading } from './components/viewerloading.js'
 import { LwEventBus } from './components/lweventbus.js'
 import { PanelManagerConnection } from './components/panelmanagerconnection.js'
 import { VolatileConfig } from './components/volatileconfig.js'
-import { trimSelectElement, viewerContainer } from './components/constants.js'
+import { toolbarElement, trimSelectElement, viewerContainer } from './components/constants.js'
 import { hidePrintButton, setCssRuleForToolbar } from './components/toolbar.js'
 
 
@@ -169,5 +169,4 @@ await extension.waitSetupAppOptionsReady()
 // Defines PDFViewerApplication, PDFViewerApplicationOptions, and PDFViewerApplicationConstants globally.
 await import('/viewer.mjs')
 
-const toolbar = document.getElementsByClassName('toolbar')[0] as HTMLElement
-toolbar.classList.add('hide')
+toolbarElement.classList.add('hide')

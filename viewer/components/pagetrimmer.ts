@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
-import { ScaleMode, trimSelectElement, viewerDom } from './constants.js'
+import { ScaleMode, trimSelectElement, viewerElement } from './constants.js'
 import type { IPDFViewerApplication } from './interface.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
@@ -78,7 +78,7 @@ function registerTrimmer() {
         const changeEvent = new Event('change')
         if (!isTrimEnabled()) {
             // Undo trim
-            viewerDom.style.overflow = ''
+            viewerElement.style.overflow = ''
             for (const opt of scaleSelectElement.options) {
                 opt.disabled = false
             }
@@ -107,7 +107,7 @@ function registerTrimmer() {
             // Do trim
             const trimScale = getTrimScale()
             // This hides the right part of each page.
-            viewerDom.style.overflow = 'hidden'
+            viewerElement.style.overflow = 'hidden'
             for (const opt of scaleSelectElement.options) {
                 opt.disabled = true
             }

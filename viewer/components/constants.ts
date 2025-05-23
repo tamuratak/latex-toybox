@@ -1,7 +1,8 @@
 // Static HTML elements
-export const viewerDom = document.getElementById('viewer') as HTMLElement
+export const viewerElement = document.getElementById('viewer') as HTMLElement
 export const viewerContainer = document.getElementById('viewerContainer') as HTMLElement
 export const trimSelectElement = document.getElementById('trimSelect') as HTMLSelectElement
+export const toolbarElement = document.getElementsByClassName('toolbar')[0] as HTMLElement
 
 // https://github.com/mozilla/pdf.js/blob/master/src/shared/util.js
 // https://github.com/mozilla/pdf.js/blob/master/web/ui_utils.js
