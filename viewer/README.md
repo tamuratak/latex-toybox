@@ -35,7 +35,9 @@ Mozilla [asks](https://mozilla.github.io/pdf.js/getting_started/) web developers
 flowchart TB
   subgraph ExtensionHost["VS Code Extension Host"]
     LW["LaTeX Toybox"]
-    Server["Server for PDF viewer \n(Files and WebSocket)\n127.0.0.1"]
+    Server["Server for PDF viewer
+    (Files and WebSocket)
+    127.0.0.1"]
     LW --- Server
   end
   subgraph VSCode["VS Code"]
@@ -56,13 +58,16 @@ flowchart TB
   subgraph Remote["Remote machine or container"]
     subgraph ExtensionHost["VS Code Server (Extension Host)"]
       LW["LaTeX Toybox"]
-      Server["Server for PDF viewer\n(Files and WebSocket)\n127.0.0.1 at remote"]
+      Server["Server for PDF viewer
+      (Files and WebSocket)
+      127.0.0.1 at remote"]
       LW --- Server
     end
   end
   subgraph Local["Local machine"]
     subgraph VSCode["VS Code"]
-      PortForwarder["Port forwarder\n127.0.0.1 at local"]
+      PortForwarder["Port forwarder
+      127.0.0.1 at local"]
       subgraph WebView["WebView (parent iframe)"]
         PDFViewer["PDF viewer (viewer.html)"]
       end
@@ -213,7 +218,9 @@ flowchart TB
   subgraph Remote["Remote machine"]
     subgraph ExtensionHost["VS Code Server (Extension Host)"]
       LW["LaTeX Toybox"]
-      Server["Server for PDF viewer\n(Files and WebSocket)\n127.0.0.1 at remote"]
+      Server["Server for PDF viewer
+      (Files and WebSocket)
+      127.0.0.1 at remote"]
       LW --- Server
     end
     PortForwarder
