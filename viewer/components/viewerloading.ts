@@ -2,7 +2,7 @@ import type { PdfViewerState } from 'latex-toybox-protocol-types'
 import { pdfFilePrefix } from '../utils/encodepdffilepath.js'
 import type { ILatexToyboxPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions } from './interface.js'
 import { debugPrintElements } from '../utils/debug.js'
-import { trimSelectElement, viewerContainer, viewerDom, RenderingStates, ScrollMode } from './constants.js'
+import { trimSelectElement, viewerContainer, viewerElement, RenderingStates, ScrollMode } from './constants.js'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
@@ -156,7 +156,7 @@ function makeMasksForAllVisiblePages() {
         div.style.left = pageRect.left + 'px'
         // When the trim mode is enabled, the width of the page is much larger
         // than the width of the viewerDom. It hides the scrollbar. So we have to use the minimum value.
-        const viewerDomRect = viewerDom.getBoundingClientRect()
+        const viewerDomRect = viewerElement.getBoundingClientRect()
         div.style.width = Math.min(viewerDomRect.width, pageRect.width) + 'px'
         div.style.height = pageRect.height + 'px'
         const img = new Image()
@@ -174,15 +174,15 @@ function makeMasksForAllVisiblePages() {
 
 function createViewerContainerSpacer() {
     const spacer = document.createElement('div')
-    const viewerDomRect = viewerDom.getBoundingClientRect()
+    const viewerDomRect = viewerElement.getBoundingClientRect()
     spacer.id = 'viewerContainerSpacer'
-    spacer.style.top = viewerDom.offsetTop + 'px'
-    spacer.style.left = viewerDom.offsetLeft + 'px'
+    spacer.style.top = viewerElement.offsetTop + 'px'
+    spacer.style.left = viewerElement.offsetLeft + 'px'
     spacer.style.width = viewerDomRect.width + 'px'
     const pageBottomMargin = 10
     spacer.style.height = viewerDomRect.height + pageBottomMargin + 'px'
     viewerContainer.appendChild(spacer)
-    debugPrintElements([viewerContainer, viewerDom, spacer])
+    debugPrintElements([viewerContainer, viewerElement, spacer])
     return spacer
 }
 
