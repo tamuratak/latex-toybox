@@ -238,3 +238,22 @@ flowchart TB
   GitHub <--> Browser
   GitHubPreview <--> PDFViewer
 ```
+
+## Architecture of VS Code WebView
+
+```mermaid
+sequenceDiagram
+    participant WebView as WebView (UUID origin, fake.html)
+    participant ServiceWorker as Service Worker
+    participant ParentClient as Parent of WebView (UUID origin, index.html)
+    participant ExtensionHost as Extension Host 
+
+    WebView->>ServiceWorker: fetch (https://file+.vscode-resource.vscode-cdn.net/path/to/localfile)
+    Note right of ServiceWorker: Intercept the request, and parse the URL
+    ServiceWorker->>ParentClient: postMessage('load-resource', ...)
+    ParentClient->>ExtensionHost: postMessage('load-resource', ...)
+    Note right of ExtensionHost: Load the local resource
+    ExtensionHost->>ParentClient: postMessage('did-load-resource', ...)
+    ParentClient->>ServiceWorker: postMessage('did-load-resource', ...)
+    ServiceWorker->>WebView: Resource Response
+```
