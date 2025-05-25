@@ -243,17 +243,17 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    participant WebView as WebView (UUID origin, fake.html)
+    participant WebView as WebView <br>(UUID origin, fake.html)
     participant ServiceWorker as Service Worker
-    participant ParentClient as Parent of WebView (UUID origin, index.html)
+    participant ParentClient as Parent of WebView <br>(UUID origin, index.html)
     participant ExtensionHost as Extension Host 
 
-    WebView->>ServiceWorker: fetch (https://file+.vscode-resource.vscode-cdn.net/path/to/localfile)
-    Note right of ServiceWorker: Intercept the request, and parse the URL
-    ServiceWorker->>ParentClient: postMessage('load-resource', ...)
-    ParentClient->>ExtensionHost: postMessage('load-resource', ...)
+    WebView->>ServiceWorker: fetch (https://<br>file+.vscode-resource<br>.vscode-cdn.net/path/to/localfile)
+    Note right of ServiceWorker: Intercept the request,<br> and parse the URL
+    ServiceWorker->>ParentClient: load-resource
+    ParentClient->>ExtensionHost: load-resource
     Note right of ExtensionHost: Load the local resource
-    ExtensionHost->>ParentClient: postMessage('did-load-resource', ...)
-    ParentClient->>ServiceWorker: postMessage('did-load-resource', ...)
+    ExtensionHost->>ParentClient: did-load-resource
+    ParentClient->>ServiceWorker: did-load-resource
     ServiceWorker->>WebView: Resource Response
 ```
