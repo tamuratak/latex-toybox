@@ -10,17 +10,17 @@ sequenceDiagram
     ViewerJS->>PDFJS: getDocument({url, ...})
     PDFJS->>WorkerJS: Create PDFWorker
     PDFJS->>WorkerJS: Send PDF data
-    WorkerJS-->>PDFJS: Return metadata
+    WorkerJS--)PDFJS: Return metadata
 
     Note right of WorkerJS: PDF parsing
     par WASM usage
         WorkerJS->>Wasm: Load wasm files
         Note right of Wasm: Used for<br> fast image <br>decoding/parsing
-        Wasm-->>WorkerJS: Return processing result
+        Wasm--)WorkerJS: Return processing result
     end
 
-    WorkerJS-->>PDFJS: Return rendering commands
-    PDFJS-->>ViewerJS: Return PDFDocumentProxy
+    WorkerJS--)PDFJS: Return rendering commands
+    PDFJS--)ViewerJS: Return PDFDocumentProxy
     ViewerJS->>PDFJS: Request page rendering
     Note right of PDFJS: Rendering page on <br> canvas element
 ```

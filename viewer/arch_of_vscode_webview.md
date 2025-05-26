@@ -15,5 +15,5 @@ sequenceDiagram
     Note right of ExtensionHost: Load the local resource
     ExtensionHost->>ParentClient: postMessage:<br>did-load-resource
     ParentClient->>ServiceWorker: postMessage:<br>did-load-resource
-    ServiceWorker->>WebView: Resource Response
+    ServiceWorker-)WebView: Resource Response
 ```
