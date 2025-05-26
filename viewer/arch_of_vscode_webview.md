@@ -1,5 +1,5 @@
 
-## Architecture of VS Code WebView
+# Architecture of VS Code WebView
 
 ```mermaid
 sequenceDiagram

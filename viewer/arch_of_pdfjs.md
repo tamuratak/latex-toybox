@@ -1,3 +1,5 @@
+# Architecture of PDF.js viewer
+
 ```mermaid
 sequenceDiagram
     participant ViewerJS as viewer.js
