@@ -1,8 +1,4 @@
 
-- https://github.com/microsoft/vscode/wiki/Source-Code-Organization
-- https://code.visualstudio.com/blogs/2022/11/28/vscode-sandbox
-- https://code.visualstudio.com/blogs/2022/11/28/vscode-sandbox#_moving-processes-out-of-the-renderer
-
 ## Architecture of VS Code
 
 ```mermaid
@@ -68,3 +64,9 @@ The renderer process, search process, extension host, file watcher process, and 
 
 workbench で node のときはだいたい extension host で実行される. その場合 extension host のその機能は
 workbench (renderer) から呼び出せるようになっている.
+
+## Links
+
+- https://github.com/microsoft/vscode/wiki/Source-Code-Organization
+- https://code.visualstudio.com/blogs/2022/11/28/vscode-sandbox
+- https://code.visualstudio.com/blogs/2022/11/28/vscode-sandbox#_moving-processes-out-of-the-renderer
