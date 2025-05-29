@@ -3,7 +3,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph MainProcess
+    subgraph MainProcess[Main Process]
     end
     subgraph RendererProcess [Renderer Process]
         workbench.html
