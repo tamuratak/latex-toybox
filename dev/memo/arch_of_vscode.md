@@ -33,7 +33,7 @@ flowchart TB
 
 ## Creating processes
 
-The main process creates the renderer process, search process, extension host, file watcher process, and terminal host process. MessagePorts are created and transferred to each process as needed. The steps involved in spawning a new process can vary in several ways; in some instances, other processes may request the main process to create them.
+The main process creates the renderer process, search process, extension host, file watcher process, and PTY host process. MessagePorts are created and transferred to each process as needed. The steps involved in spawning a new process can vary in several ways; in some instances, other processes may request the main process to create them.
 
 ### Where actually spawned
 
