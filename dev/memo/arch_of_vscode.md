@@ -17,7 +17,7 @@ flowchart TB
         Extension@{ shape: procs }
     end
     SearchProcess@{ shape: procs, label: "Search Process" }
-    TerminalHostProcess[Terminal Host Process]
+    TerminalHostProcess@{ label: "PTY Host Process" }
     TerminalProcess@{ shape: procs, label: "Terminal Process" }
     FileWatcherProcess@{ shape: procs, label: "File Watcher Process" }
     LSPServer@{ shape: procs, label: "LSP Server" }
@@ -53,6 +53,8 @@ The renderer process, search process, extension host, file watcher process, and 
   - https://github.com/Microsoft/vscode/blob/708b6aa379c2c9d12c65123c8934ca5a6a29046d/src/vs/workbench/services/files/electron-sandbox/watcherClient.ts#L36
 - search
   - https://github.com/Microsoft/vscode/blob/ff48b17c8bac582dfa4deb088dd0bb88c3049d54/src/vs/workbench/services/search/node/ripgrepTextSearchEngine.ts#L75
+- pty
+  - https://github.com/Microsoft/vscode/blob/708b6aa379c2c9d12c65123c8934ca5a6a29046d/src/vs/platform/terminal/electron-main/electronPtyHostStarter.ts#L58
 - debugger
   - https://github.com/Microsoft/vscode/blob/31092ac1a0f9e68026cd0796f184fd3dfe978069/src/vs/workbench/contrib/debug/node/debugAdapter.ts#L221
 
