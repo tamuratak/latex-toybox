@@ -27,9 +27,9 @@ flowchart TB
     MainProcess -- Electron IPC --- RendererProcess
     MainProcess -- Electron IPC --- SharedProcess
     RendererProcess -- MessagePort IPC --- SharedProcess
-    RendererProcess --- SSHClient
+    RendererProcess -- multiple connections --- SSHClient
     SSHClient --- SSHServer
-    SSHServer --- VSCodeServer
+    SSHServer -- multiple connections --- VSCodeServer
     VSCodeServer --- ExtensionHostProcess
     VSCodeServer --- FileWatcherProcess
     VSCodeServer --- PTYHostProcess
