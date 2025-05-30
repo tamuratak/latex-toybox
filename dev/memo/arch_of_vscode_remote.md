@@ -8,8 +8,10 @@ flowchart TB
         subgraph RendererProcess [Renderer Process]
             workbench.html
         end
+        SSHClient
     end
     subgraph Remote
+        SSHServer
         VSCodeServer
         subgraph ExtensionHostProcess  [ExtensionHost Process]
             Extension@{ shape: procs }
@@ -22,7 +24,9 @@ flowchart TB
         Debugger@{ shape: procs }
     end
     MainProcess -- Electron IPC --- RendererProcess
-    RendererProcess --- VSCodeServer
+    RendererProcess --- SSHClient
+    SSHClient --- SSHServer
+    SSHServer --- VSCodeServer
     VSCodeServer --- ExtensionHostProcess
     VSCodeServer --- FileWatcherProcess
     VSCodeServer --- PTYHostProcess
