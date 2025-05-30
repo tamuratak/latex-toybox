@@ -24,6 +24,7 @@ flowchart TB
         Debugger@{ shape: procs }
     end
     MainProcess -- Electron IPC --- RendererProcess
+    MainProcess --- SSHClient
     RendererProcess --- SSHClient
     SSHClient --- SSHServer
     SSHServer --- VSCodeServer
