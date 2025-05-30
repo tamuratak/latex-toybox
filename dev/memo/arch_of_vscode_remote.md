@@ -8,6 +8,7 @@ flowchart TB
         subgraph RendererProcess [Renderer Process]
             workbench.html
         end
+        SharedProcess[Shared Process]
         SSHClient
     end
     subgraph Remote
@@ -24,7 +25,8 @@ flowchart TB
         Debugger@{ shape: procs }
     end
     MainProcess -- Electron IPC --- RendererProcess
-    MainProcess --- SSHClient
+    MainProcess -- Electron IPC --- SharedProcess
+    RendererProcess -- MessagePort IPC --- SharedProcess
     RendererProcess --- SSHClient
     SSHClient --- SSHServer
     SSHServer --- VSCodeServer
