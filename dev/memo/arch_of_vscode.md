@@ -12,21 +12,21 @@ flowchart TB
     subgraph ExtensionHostProcess  [ExtensionHost Process]
         Extension@{ shape: procs }
     end
-    SearchProcess@{ shape: procs, label: "Search Process" }
-    TerminalHostProcess@{ label: "PTY Host Process" }
+    SearchProcess@{ shape: procs, label: "Search Process<br/>(ripgrep)" }
+    TerminalHostProcess@{ label: "PTY Host Process<br/>(node-pty)" }
     TerminalProcess@{ shape: procs, label: "Terminal Process" }
-    FileWatcherProcess@{ shape: procs, label: "File Watcher Process" }
-    LSPServer@{ shape: procs, label: "LSP Server" }
+    FileWatcherProcess@{ shape: procs, label: "File Watcher Process<br/>(parcel or Node.js watcher)" }
+    LanguageServer@{ shape: procs, label: "Language Server" }
     Debugger@{ shape: procs }
     MainProcess -- Electron IPC --- SharedProcess
     MainProcess -- Electron IPC --- RendererProcess
-    RendererProcess -- MessagePort --- SharedProcess
-    RendererProcess -- MessagePort --- ExtensionHostProcess
-    RendererProcess -- MessagePort --- FileWatcherProcess
-    RendererProcess -- MessagePort --- TerminalHostProcess
+    RendererProcess -- MessagePort IPC --- SharedProcess
+    RendererProcess -- MessagePort IPC --- ExtensionHostProcess
+    RendererProcess -- MessagePort IPC --- FileWatcherProcess
+    RendererProcess -- MessagePort IPC --- TerminalHostProcess
     TerminalHostProcess -- PTY IPC --- TerminalProcess
     ExtensionHostProcess -- Node.js IPC --- SearchProcess
-    Extension -- (LSP) --- LSPServer
+    Extension -- (LSP) --- LanguageServer
     Extension -- (Varies) --- Debugger
 ```
 
