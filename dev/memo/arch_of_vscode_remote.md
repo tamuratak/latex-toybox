@@ -9,10 +9,10 @@ flowchart TB
             workbench.html
         end
         SharedProcess[Shared Process]
-        SSHClient
+        SSHClient@{ label: "SSH Clinet<br/>(port forwarding)" }
     end
     subgraph Remote
-        SSHServer
+        SSHServer@{ label: "SSH Server" }
         VSCodeServer
         subgraph ExtensionHostProcess  [ExtensionHost Process]
             Extension@{ shape: procs }
@@ -38,3 +38,8 @@ flowchart TB
     Extension -- (LSP) --- LanguageServer
     Extension -- (Varies) --- Debugger
 ```
+
+
+## Links
+
+- https://github.com/jeanp413/open-remote-ssh/tree/master
