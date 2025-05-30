@@ -3,8 +3,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph MainProcess[Main Process]
-    end
+    MainProcess[Main Process]
     subgraph RendererProcess [Renderer Process]
         workbench.html
     end
@@ -13,7 +12,7 @@ flowchart TB
         Extension@{ shape: procs }
     end
     SearchProcess@{ shape: procs, label: "Search Process<br/>(ripgrep)" }
-    TerminalHostProcess@{ label: "PTY Host Process<br/>(node-pty)" }
+    PTYHostProcess@{ label: "PTY Host Process<br/>(node-pty)" }
     TerminalProcess@{ shape: procs, label: "Terminal Process" }
     FileWatcherProcess@{ shape: procs, label: "File Watcher Process<br/>(parcel or Node.js watcher)" }
     LanguageServer@{ shape: procs, label: "Language Server" }
@@ -23,8 +22,8 @@ flowchart TB
     RendererProcess -- MessagePort IPC --- SharedProcess
     RendererProcess -- MessagePort IPC --- ExtensionHostProcess
     RendererProcess -- MessagePort IPC --- FileWatcherProcess
-    RendererProcess -- MessagePort IPC --- TerminalHostProcess
-    TerminalHostProcess -- PTY IPC --- TerminalProcess
+    RendererProcess -- MessagePort IPC --- PTYHostProcess
+    PTYHostProcess -- PTY IPC --- TerminalProcess
     ExtensionHostProcess -- Node.js IPC --- SearchProcess
     Extension -- (LSP) --- LanguageServer
     Extension -- (Varies) --- Debugger
