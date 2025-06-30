@@ -1693,11 +1693,11 @@
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.8",
     "pdfjs-dist": "5.2.133",
-    "workerpool": "9.2.0",
-    "ws": "8.18.2"
+    "workerpool": "9.3.3",
+    "ws": "8.18.3"
   },
   "devDependencies": {
-    "@eslint/js": "9.26.0",
+    "@eslint/js": "9.30.0",
     "@types/cross-spawn": "6.0.6",
     "@types/micromatch": "4.0.9",
     "@types/mocha": "10.0.10",
@@ -1706,13 +1706,13 @@
     "@types/vscode": "1.99.1",
     "@types/ws": "8.18.1",
     "@vscode/test-electron": "2.5.2",
-    "@vscode/vsce": "3.4.0",
-    "eslint": "9.27.0",
-    "glob": "11.0.1",
-    "mocha": "11.1.0",
+    "@vscode/vsce": "3.6.0",
+    "eslint": "9.30.0",
+    "glob": "11.0.3",
+    "mocha": "11.7.1",
     "rimraf": "3.0.2",
     "tmp": "0.2.3",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.32.1"
+    "typescript-eslint": "8.35.0"
   }
 }
