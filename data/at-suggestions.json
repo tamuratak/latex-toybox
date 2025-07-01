@@ -16,7 +16,7 @@
 	},
 	"fraction": {
 		"prefix": "@/",
-		"body": "\\frac{$1}{$2}$0",
+		"body": "\\frac{${1:${TM_SELECTED_TEXT}}}{$2}$0",
 		"description": "fraction"
 	},
 	"fraction2": {
