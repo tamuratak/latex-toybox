@@ -7,11 +7,13 @@ import type { AuxManager } from '../components/auxmanager.js'
 import type { LatexAstManager } from '../components/astmanager.js'
 import type { Manager } from '../components/manager.js'
 import type { EventBus } from '../components/eventbus.js'
+import { toKey } from '../utils/tokey.js'
 
 
 export class LtInlayHintsProvider implements InlayHintsProvider {
     private readonly eventEmitter = new EventEmitter<void>()
     readonly onDidChangeInlayHints: Event<void>
+    private prevResult: { hints: vscode.InlayHint[], uri: string } = { hints: [], uri: '' }
 
     constructor(private readonly extension: {
         readonly extensionContext: vscode.ExtensionContext,
@@ -35,14 +37,18 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
         if (!enabled) {
             return []
         }
+        let prevHints: vscode.InlayHint[] = []
+        if (this.prevResult.uri === toKey(document.uri)) {
+            prevHints = this.prevResult.hints
+        }
         const ast = await this.extension.latexAstManager.getDocAst(document)
         const rootFile = this.extension.manager.rootFile
         if (!ast || !rootFile) {
-            return []
+            return prevHints
         }
         const auxStore = this.extension.auxManager.getAuxStore(rootFile)
         if (!auxStore) {
-            return []
+            return prevHints
         }
         const labelNodes = latexParser.findAll(
             ast.content,
@@ -67,6 +73,7 @@ export class LtInlayHintsProvider implements InlayHintsProvider {
             const hint = new InlayHint(toVscodePosition(node.location.end), '(' + labelEntry.refNumber + ')')
             result.push(hint)
         }
+        this.prevResult = { hints: result, uri: toKey(document.uri) }
         return result
     }
 
