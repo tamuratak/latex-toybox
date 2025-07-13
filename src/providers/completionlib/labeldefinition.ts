@@ -56,14 +56,19 @@ export class LabelDefinition implements IProvider {
             range = new vscode.Range(args.position.line, startPos + 1, args.position.line, args.position.character)
         }
         const items: vscode.CompletionItem[] = []
-        for (const [, entry] of this.labelDefinitions) {
+        for (const [token, entry] of this.labelDefinitions) {
+            const labelDef = this.getLabelDef(token)
+            const refNumber = labelDef?.prevIndex?.refNumber
+            const detail = refNumber ? `(${refNumber})` : ''
             if (range) {
                 items.push({...entry,
                     range,
+                    detail,
                     kind: ReferenceKind,
                 })
             } else {
                 items.push({...entry,
+                    detail,
                     kind: ReferenceKind,
                 })
             }
