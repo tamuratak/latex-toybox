@@ -33,13 +33,13 @@ export class TeXMathEnvFinder {
         document: ITextDocumentLike,
         position: vscode.Position,
         labelDef: LabelDefinitionEntry,
-        token: string,
+        labelToken: string,
     ): Promise<TexMathEnv | undefined> {
         const limit = vscode.workspace.getConfiguration('latex-toybox').get('hover.preview.maxLines') as number
         const docOfRef = await TextDocumentLike.load(labelDef.file)
         const envBeginPatMathMode = /\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
         const l = docOfRef.lineAt(labelDef.position.line).text
-        const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(token) + '\\}')
+        const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(labelToken) + '\\}')
         const m = l.match(pat)
         if (m && m.index !== undefined) {
             const labelPos = new vscode.Position(labelDef.position.line, m.index)
