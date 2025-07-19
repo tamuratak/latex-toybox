@@ -98,8 +98,8 @@ export class MathPreview {
     }
 
     private refNumberMessage(labelDef: LabelDefinitionEntry): string | undefined {
-        if (labelDef.prevIndex) {
-            const refNum = labelDef.prevIndex.refNumber
+        if (labelDef.lastInfoInAuxFile) {
+            const refNum = labelDef.lastInfoInAuxFile.refNumber
             const refMessage = `numbered ${refNum} at last compilation`
             return refMessage
         }

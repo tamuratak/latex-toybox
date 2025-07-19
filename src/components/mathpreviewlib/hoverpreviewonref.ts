@@ -31,13 +31,13 @@ export class HoverPreviewOnRefProvider {
         return new vscode.Hover( [this.mputils.addDummyCodeBlock(`![equation](${md})`), mdLink], tex.range )
     }
 
-    async renderSvgOnRef(tex: TexMathEnv, newCommand: string, labelDef: Pick<LabelDefinitionEntry, 'label' | 'prevIndex'>, color: string) {
+    async renderSvgOnRef(tex: TexMathEnv, newCommand: string, labelDef: Pick<LabelDefinitionEntry, 'label' | 'lastInfoInAuxFile'>, color: string) {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
 
         let newTeXString: string
-        if (labelDef.prevIndex !== undefined && configuration.get('hover.ref.number.enabled') as boolean) {
-            const tag = labelDef.prevIndex.refNumber
+        if (labelDef.lastInfoInAuxFile !== undefined && configuration.get('hover.ref.number.enabled') as boolean) {
+            const tag = labelDef.lastInfoInAuxFile.refNumber
             const texString = this.replaceLabelWithTag(tex.texString, labelDef.label, tag)
             newTeXString = this.mputils.mathjaxify(texString, tex.envname, {stripLabel: false})
         } else {
