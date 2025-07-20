@@ -16,7 +16,7 @@ export class GlossaryUpdater {
         readonly manager: Manager
     }) { }
 
-    private getGlossaryFromNodeArray(nodes: latexParser.Node[], file: string): GlossarySuggestion[] {
+    private extractGlossaryEntriesFromNodeArray(nodes: latexParser.Node[], file: string): GlossarySuggestion[] {
         const glossaries: GlossarySuggestion[] = []
         let entry: GlossaryEntry
         let type: GlossaryType | undefined
@@ -151,7 +151,7 @@ export class GlossaryUpdater {
         if (cache === undefined) {
             return
         }
-        cache.element.glossary = this.getGlossaryFromNodeArray(nodes, file)
+        cache.element.glossary = this.extractGlossaryEntriesFromNodeArray(nodes, file)
     }
 
 }

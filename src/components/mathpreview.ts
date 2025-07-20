@@ -46,7 +46,7 @@ export class MathPreview {
     }
 
     findProjectNewCommand(ctoken: vscode.CancellationToken): Promise<string> {
-        return this.newCommandFinder.findProjectNewCommand(ctoken)
+        return this.newCommandFinder.collectAllNewCommandsInProject(ctoken)
     }
 
     async provideHoverOnTex(document: vscode.TextDocument, texMathEnv: TexMathEnv, projectNewCommands: string): Promise<vscode.Hover> {
@@ -107,7 +107,7 @@ export class MathPreview {
     }
 
     async generateSVG(tex: Pick<TexMathEnv, 'texString' | 'envname'>, projectNewCommands?: string) {
-        const resolvedNewCommands: string = projectNewCommands ?? await this.newCommandFinder.findProjectNewCommand()
+        const resolvedNewCommands: string = projectNewCommands ?? await this.newCommandFinder.collectAllNewCommandsInProject()
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
         const newTexString = this.mputils.mathjaxify(tex.texString, tex.envname)
