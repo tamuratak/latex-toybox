@@ -33,13 +33,13 @@ export class TeXMathEnvFinder {
         document: ITextDocumentLike,
         position: vscode.Position,
         labelDef: LabelDefinitionEntry,
-        token: string,
+        labelToken: string,
     ): Promise<TexMathEnv | undefined> {
         const limit = vscode.workspace.getConfiguration('latex-toybox').get('hover.preview.maxLines') as number
         const docOfRef = await TextDocumentLike.load(labelDef.file)
         const envBeginPatMathMode = /\\begin\{(align|align\*|alignat|alignat\*|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*)\}/
         const l = docOfRef.lineAt(labelDef.position.line).text
-        const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(token) + '\\}')
+        const pat = new RegExp('\\\\label\\{' + utils.escapeRegExp(labelToken) + '\\}')
         const m = l.match(pat)
         if (m && m.index !== undefined) {
             const labelPos = new vscode.Position(labelDef.position.line, m.index)
@@ -89,16 +89,20 @@ export class TeXMathEnvFinder {
 
     //  \begin{...}                \end{...}
     //             ^
-    //             startPos1
-    findEndPair(document: ITextDocumentLike, endPat: RegExp, startPos1: vscode.Position): vscode.Position | undefined {
-        const currentLine = document.lineAt(startPos1).text.substring(startPos1.character)
+    //             beginCloseBraceNextPosition
+    findEndPair(
+        document: ITextDocumentLike,
+        endPat: RegExp,
+        beginCloseBraceNextPosition: vscode.Position
+    ): vscode.Position | undefined {
+        const currentLine = document.lineAt(beginCloseBraceNextPosition).text.substring(beginCloseBraceNextPosition.character)
         const l = stripCommentsAndVerbatim(currentLine)
         let m = l.match(endPat)
         if (m && m.index !== undefined) {
-            return startPos1.translate(0, m.index + m[0].length)
+            return beginCloseBraceNextPosition.translate(0, m.index + m[0].length)
         }
 
-        let lineNum = startPos1.line + 1
+        let lineNum = beginCloseBraceNextPosition.line + 1
         while (lineNum <= document.lineCount) {
             m = stripCommentsAndVerbatim(document.lineAt(lineNum).text).match(endPat)
             if (m && m.index !== undefined) {
@@ -111,15 +115,20 @@ export class TeXMathEnvFinder {
 
     //  \begin{...}                \end{...}
     //  ^                          ^
-    //  return pos                 endPos1
-    private findBeginPair(document: ITextDocumentLike, beginPat: RegExp, endPos1: vscode.Position, limit: number): vscode.Position | undefined {
-        const currentLine = document.lineAt(endPos1).text.substring(0, endPos1.character)
+    //  return pos                 endBackslashPos
+    private findBeginPair(
+        document: ITextDocumentLike,
+        beginPat: RegExp,
+        endBackslashPos: vscode.Position,
+        limit: number
+    ): vscode.Position | undefined {
+        const currentLine = document.lineAt(endBackslashPos).text.substring(0, endBackslashPos.character)
         let l = stripCommentsAndVerbatim(currentLine)
         let m = l.match(beginPat)
         if (m && m.index !== undefined) {
-            return new vscode.Position(endPos1.line, m.index)
+            return new vscode.Position(endBackslashPos.line, m.index)
         }
-        let lineNum = endPos1.line - 1
+        let lineNum = endBackslashPos.line - 1
         let i = 0
         while (lineNum >= 0 && i < limit) {
             l = document.lineAt(lineNum).text
@@ -139,8 +148,8 @@ export class TeXMathEnvFinder {
     //  startPos
     private findHoverOnEnv(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = new RegExp('\\\\end\\{' + utils.escapeRegExp(envname) + '\\}')
-        const startPos1 = startPos.translate(0, envname.length + '\\begin{}'.length)
-        const endPos = this.findEndPair(document, pattern, startPos1)
+        const beginCloseBraceNextPosition = startPos.translate(0, envname.length + '\\begin{}'.length)
+        const endPos = this.findEndPair(document, pattern, beginCloseBraceNextPosition)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}
@@ -153,8 +162,8 @@ export class TeXMathEnvFinder {
     //  startPos
     private findHoverOnParen(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = envname === '\\[' ? /\\\]/ : envname === '\\(' ? /\\\)/ : /\$\$/
-        const startPos1 = startPos.translate(0, envname.length)
-        const endPos = this.findEndPair(document, pattern, startPos1)
+        const openBracketNextPosition = startPos.translate(0, envname.length)
+        const endPos = this.findEndPair(document, pattern, openBracketNextPosition)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}

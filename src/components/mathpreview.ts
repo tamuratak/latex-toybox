@@ -49,17 +49,17 @@ export class MathPreview {
         return this.newCommandFinder.findProjectNewCommand(ctoken)
     }
 
-    async provideHoverOnTex(document: vscode.TextDocument, tex: TexMathEnv, newCommand: string): Promise<vscode.Hover> {
+    async provideHoverOnTex(document: vscode.TextDocument, texMathEnv: TexMathEnv, projectNewCommands: string): Promise<vscode.Hover> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
-        let newTexString = await this.cursorRenderer.renderCursor(document, tex, this.color) || tex.texString
-        newTexString = this.mputils.mathjaxify(newTexString, tex.envname)
-        const typesetArg = newCommand + this.mputils.stripTeX(newTexString)
+        let newTexString = await this.cursorRenderer.renderCursor(document, texMathEnv, this.color) || texMathEnv.texString
+        newTexString = this.mputils.mathjaxify(newTexString, texMathEnv.envname)
+        const typesetArg = projectNewCommands + this.mputils.stripTeX(newTexString)
         const typesetOpts = { scale, color: this.color }
         try {
             const xml = await this.mj.typeset(typesetArg, typesetOpts)
             const dataUrl = utils.svgToDataUrl(xml)
-            return new vscode.Hover(new vscode.MarkdownString(this.mputils.addDummyCodeBlock(`![equation](${dataUrl})`)), tex.range )
+            return new vscode.Hover(new vscode.MarkdownString(this.mputils.addDummyCodeBlock(`![equation](${dataUrl})`)), texMathEnv.range )
         } catch(e) {
             this.extension.logger.error(`Error while MathJax is rendering: ${typesetArg}`)
             this.extension.logger.logError(e)
@@ -71,7 +71,7 @@ export class MathPreview {
         document: vscode.TextDocument,
         position: vscode.Position,
         labelDef: LabelDefinitionEntry,
-        token: string,
+        labelToken: string,
         ctoken: vscode.CancellationToken
     ): Promise<vscode.Hover> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
@@ -80,7 +80,7 @@ export class MathPreview {
         const mdLink = new vscode.MarkdownString(`[View on pdf](${link})`)
         mdLink.isTrusted = true
         try {
-            const tex = await this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, token)
+            const tex = await this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, labelToken)
             if (tex) {
                 const newCommands = await this.findProjectNewCommand(ctoken)
                 return await this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
@@ -98,21 +98,21 @@ export class MathPreview {
     }
 
     private refNumberMessage(labelDef: LabelDefinitionEntry): string | undefined {
-        if (labelDef.prevIndex) {
-            const refNum = labelDef.prevIndex.refNumber
+        if (labelDef.lastInfoInAuxFile) {
+            const refNum = labelDef.lastInfoInAuxFile.refNumber
             const refMessage = `numbered ${refNum} at last compilation`
             return refMessage
         }
         return undefined
     }
 
-    async generateSVG(tex: Pick<TexMathEnv, 'texString' | 'envname'>, newCommandsArg?: string) {
-        const newCommands: string = newCommandsArg ?? await this.newCommandFinder.findProjectNewCommand()
+    async generateSVG(tex: Pick<TexMathEnv, 'texString' | 'envname'>, projectNewCommands?: string) {
+        const resolvedNewCommands: string = projectNewCommands ?? await this.newCommandFinder.findProjectNewCommand()
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const scale = configuration.get('hover.preview.scale') as number
         const newTexString = this.mputils.mathjaxify(tex.texString, tex.envname)
-        const xml = await this.mj.typeset(newCommands + this.mputils.stripTeX(newTexString), {scale, color: this.color})
-        return {svgDataUrl: utils.svgToDataUrl(xml), newCommands}
+        const xml = await this.mj.typeset(resolvedNewCommands + this.mputils.stripTeX(newTexString), {scale, color: this.color})
+        return {svgDataUrl: utils.svgToDataUrl(xml), newCommands: resolvedNewCommands}
     }
 
     getColor() {
@@ -124,8 +124,8 @@ export class MathPreview {
         }
     }
 
-    renderCursor(document: vscode.TextDocument, texMath: TexMathEnv, cursorPos?: vscode.Position): Promise<string | undefined> {
-        return this.cursorRenderer.renderCursor(document, texMath, this.color, cursorPos)
+    renderCursor(document: vscode.TextDocument, texMathEnv: TexMathEnv, cursorPos?: vscode.Position): Promise<string | undefined> {
+        return this.cursorRenderer.renderCursor(document, texMathEnv, this.color, cursorPos)
     }
 
     findHoverOnTex(document: ITextDocumentLike, position: vscode.Position): TexMathEnv | undefined {

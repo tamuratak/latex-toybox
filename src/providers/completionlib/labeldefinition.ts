@@ -22,7 +22,7 @@ export interface LabelDefinitionStored {
 }
 
 export interface LabelDefinitionEntry extends LabelDefinitionStored {
-    readonly prevIndex: {
+    readonly lastInfoInAuxFile: {
         readonly refNumber: string,
         readonly pageNumber: string
     } | undefined
@@ -58,7 +58,7 @@ export class LabelDefinition implements IProvider {
         const items: vscode.CompletionItem[] = []
         for (const [token, entry] of this.labelDefinitions) {
             const labelDef = this.getLabelDef(token)
-            const refNumber = labelDef?.prevIndex?.refNumber
+            const refNumber = labelDef?.lastInfoInAuxFile?.refNumber
             const detail = refNumber ? `(${refNumber})` : ''
             if (range) {
                 items.push({...entry,
@@ -90,7 +90,7 @@ export class LabelDefinition implements IProvider {
         if (!labelPosArray || labelPosArray.length > 1) {
             return
         }
-        return {...ret, prevIndex: labelPosArray[0]}
+        return {...ret, lastInfoInAuxFile: labelPosArray[0]}
     }
 
     private updateAll() {
