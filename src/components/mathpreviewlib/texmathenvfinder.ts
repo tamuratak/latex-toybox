@@ -17,13 +17,13 @@ export class TeXMathEnvFinder {
         const envBeginPat = /\\begin\{(align|align\*|alignat|alignat\*|aligned|alignedat|array|Bmatrix|bmatrix|cases|CD|eqnarray|eqnarray\*|equation|equation\*|gather|gather\*|gathered|matrix|multline|multline\*|pmatrix|smallmatrix|split|subarray|Vmatrix|vmatrix)\}/
         let r = document.getWordRangeAtPosition(position, envBeginPat)
         if (r) {
-            const envname = this.getFirstRememberedSubstring(document.getText(r), envBeginPat)
+            const envname = this.extractFirstGroupMatch(document.getText(r), envBeginPat)
             return this.findHoverOnEnv(document, envname, r.start)
         }
         const parenBeginPat = /(\\\[|\\\(|\$\$)/
         r = document.getWordRangeAtPosition(position, parenBeginPat)
         if (r) {
-            const paren = this.getFirstRememberedSubstring(document.getText(r), parenBeginPat)
+            const paren = this.extractFirstGroupMatch(document.getText(r), parenBeginPat)
             return this.findHoverOnParen(document, paren, r.start)
         }
         return this.findHoverOnInline(document, position)
@@ -79,7 +79,7 @@ export class TeXMathEnvFinder {
         return
     }
 
-    private getFirstRememberedSubstring(s: string, pat: RegExp): string {
+    private extractFirstGroupMatch(s: string, pat: RegExp): string {
         const m = s.match(pat)
         if (m && m[1]) {
             return m[1]
@@ -90,7 +90,7 @@ export class TeXMathEnvFinder {
     //  \begin{...}                \end{...}
     //             ^
     //             beginCloseBraceNextPosition
-    findEndPair(
+    locateMatchingEndEnvironment(
         document: ITextDocumentLike,
         endPat: RegExp,
         beginCloseBraceNextPosition: vscode.Position
@@ -149,7 +149,7 @@ export class TeXMathEnvFinder {
     private findHoverOnEnv(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = new RegExp('\\\\end\\{' + utils.escapeRegExp(envname) + '\\}')
         const beginCloseBraceNextPosition = startPos.translate(0, envname.length + '\\begin{}'.length)
-        const endPos = this.findEndPair(document, pattern, beginCloseBraceNextPosition)
+        const endPos = this.locateMatchingEndEnvironment(document, pattern, beginCloseBraceNextPosition)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}
@@ -163,7 +163,7 @@ export class TeXMathEnvFinder {
     private findHoverOnParen(document: ITextDocumentLike, envname: string, startPos: vscode.Position): TexMathEnv | undefined {
         const pattern = envname === '\\[' ? /\\\]/ : envname === '\\(' ? /\\\)/ : /\$\$/
         const openBracketNextPosition = startPos.translate(0, envname.length)
-        const endPos = this.findEndPair(document, pattern, openBracketNextPosition)
+        const endPos = this.locateMatchingEndEnvironment(document, pattern, openBracketNextPosition)
         if (endPos) {
             const range = new vscode.Range(startPos, endPos)
             return {texString: document.getText(range), range, envname}

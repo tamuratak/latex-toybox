@@ -51,7 +51,7 @@ export class NewCommandFinder {
         return commandsString
     }
 
-    async findProjectNewCommand(ctoken?: vscode.CancellationToken): Promise<string> {
+    async collectAllNewCommandsInProject(ctoken?: vscode.CancellationToken): Promise<string> {
         const configuration = vscode.workspace.getConfiguration('latex-toybox')
         const newCommandFile = configuration.get('hover.preview.newcommand.newcommandFile') as string
         let commandsInConfigFile = ''
@@ -70,8 +70,8 @@ export class NewCommandFinder {
                 return ''
             }
             if (exceeded) {
-                this.extension.logger.error('Timeout error when parsing preambles in findProjectNewCommand.')
-                throw new Error('Timeout Error in findProjectNewCommand')
+                this.extension.logger.error('Timeout error when parsing preambles in collectAllNewCommandsInProject.')
+                throw new Error('Timeout Error in collectAllNewCommandsInProject')
             }
             const cache = this.extension.manager.getCachedContent(tex)
             if (cache === undefined) {
@@ -81,12 +81,12 @@ export class NewCommandFinder {
             if (content === undefined) {
                 continue
             }
-            commands = commands.concat(await this.findNewCommand(content))
+            commands = commands.concat(await this.extractNewCommandsFromPreamble(content))
         }
         return commandsInConfigFile + '\n' + this.postProcessNewCommands(commands.join(''))
     }
 
-    async findNewCommand(content: string): Promise<string[]> {
+    async extractNewCommandsFromPreamble(content: string): Promise<string[]> {
         const commands: string[] = []
         try {
             const ast = await this.extension.utensilsParser.parseLatexPreamble(content)
