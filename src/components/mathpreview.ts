@@ -45,7 +45,7 @@ export class MathPreview {
         return this.mj.dispose()
     }
 
-    findProjectNewCommand(ctoken: vscode.CancellationToken): Promise<string> {
+    collectAllNewCommandsInProject(ctoken: vscode.CancellationToken): Promise<string> {
         return this.newCommandFinder.collectAllNewCommandsInProject(ctoken)
     }
 
@@ -82,7 +82,7 @@ export class MathPreview {
         try {
             const tex = await this.texMathEnvFinder.findHoverOnRef(document, position, labelDef, labelToken)
             if (tex) {
-                const newCommands = await this.findProjectNewCommand(ctoken)
+                const newCommands = await this.collectAllNewCommandsInProject(ctoken)
                 return await this.hoverPreviewOnRefProvider.provideHoverPreviewOnRef(tex, newCommands, labelDef, this.color)
             }
         } catch (_) {
@@ -139,7 +139,7 @@ export class MathPreview {
     }
 
     async renderSvgOnRef(tex: TexMathEnv, labelDef: LabelDefinitionEntry, ctoken: vscode.CancellationToken) {
-        const newCommand = await this.findProjectNewCommand(ctoken)
+        const newCommand = await this.collectAllNewCommandsInProject(ctoken)
         return this.hoverPreviewOnRefProvider.renderSvgOnRef(tex, newCommand, labelDef, this.color)
     }
 
