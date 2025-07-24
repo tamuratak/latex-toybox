@@ -11,12 +11,14 @@ export class BuildStepLog {
     private errorBuffer = ''
     private readonly logPanel: vscode.OutputChannel
     readonly languageId: string
+    readonly uri: vscode.Uri
 
     constructor(step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
         const name = `LaTeX Compiler Log: ${stepIndex} of ${totalStepsLength} ${step.name}`
         const languageId = this.detectLanguageId(step)
         this.languageId = languageId
         this.logPanel = this.createPanel(name, languageId)
+        this.uri = vscode.Uri.parse(`output:extension-output-tamuratak.latex-toybox-%23${stepIndex}-${name}`, true)
     }
 
     private createPanel(name: string, languageId: string): vscode.OutputChannel {
