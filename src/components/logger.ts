@@ -33,9 +33,15 @@ export class Logger implements ILogger {
         this.error(inspectReadable(e))
     }
 
-    showLog() {
-        // return vscode.window.showTextDocument(await vscode.workspace.openTextDocument(vscode.Uri.parse('output:tamuratak.latex-toybox.LaTeX Toybox')))
-        this.logPanel.show()
+    showLog(opts?: { inEditor?: boolean}) {
+        if (opts?.inEditor) {
+            return vscode.workspace.openTextDocument(this.uri).then((doc) => {
+                return vscode.window.showTextDocument(doc, { preview: false })
+            })
+        } else {
+            this.logPanel.show()
+            return
+        }
     }
 
 }

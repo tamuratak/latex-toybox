@@ -9,5 +9,5 @@ export interface ILogger {
     error(message: string): void,
     logError(e: Error): void,
     logError(e: unknown): void,
-    showLog(): void
+    showLog(): undefined | Thenable<unknown>
 }

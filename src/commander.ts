@@ -13,6 +13,7 @@ import type { MathPreviewPanel } from './components/mathpreviewpanel.js'
 import type { EnvPair } from './components/envpair.js'
 import type { Logger } from './components/logger.js'
 import type { Manager } from './components/manager.js'
+import { collectPdfViewerTabs } from './utils/webview.js'
 
 
 async function quickPickRootFile(rootFile: string, localRootFile: string): Promise<string | undefined> {
@@ -246,9 +247,13 @@ export class Commander {
         this.extension.logger.info(`LOG command invoked: ${compiler || 'default'}`)
         if (compiler) {
             this.extension.compilerLog.show()
-            return
+        } else {
+            if (collectPdfViewerTabs().length > 0) {
+                this.extension.logger.showLog({ inEditor: true })
+            } else {
+                this.extension.logger.showLog()
+            }
         }
-        this.extension.logger.showLog()
     }
 
     gotoSection(filePath: string, lineNumber: number) {
