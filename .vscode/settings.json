@@ -7,4 +7,8 @@
     },
     "typescript.tsdk": "./node_modules/typescript/lib",
     "typescript.preferences.importModuleSpecifier": "relative",
+    "git.repositoryScanIgnoredFolders": [
+        "node_modules",
+        "../lw_master"
+    ],
 }

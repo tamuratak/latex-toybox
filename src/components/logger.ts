@@ -5,6 +5,7 @@ import { inspectCompact, inspectReadable } from '../utils/inspect.js'
 
 export class Logger implements ILogger {
     private readonly logPanel: vscode.LogOutputChannel
+    readonly uri = vscode.Uri.parse('output:tamuratak.latex-toybox.LaTeX Toybox')
 
     constructor(extensionContextSubscriptions: vscode.ExtensionContext['subscriptions']) {
         this.logPanel = vscode.window.createOutputChannel('LaTeX Toybox', { log: true })
@@ -32,8 +33,15 @@ export class Logger implements ILogger {
         this.error(inspectReadable(e))
     }
 
-    showLog() {
-        this.logPanel.show()
+    showLog(opts?: { inEditor?: boolean}) {
+        if (opts?.inEditor) {
+            return vscode.workspace.openTextDocument(this.uri).then((doc) => {
+                return vscode.window.showTextDocument(doc, { preview: false })
+            })
+        } else {
+            this.logPanel.show()
+            return
+        }
     }
 
 }

@@ -6,5 +6,5 @@ export class FakeLogger implements ILogger {
     debug() { return }
     error() { return }
     logError() { return }
-    showLog() { return }
+    showLog() { return undefined }
 }

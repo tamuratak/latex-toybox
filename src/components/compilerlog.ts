@@ -11,12 +11,14 @@ export class BuildStepLog {
     private errorBuffer = ''
     private readonly logPanel: vscode.OutputChannel
     readonly languageId: string
+    readonly uri: vscode.Uri
 
     constructor(step: StepCommand, {stepIndex, totalStepsLength}: {stepIndex: number, totalStepsLength: number}) {
         const name = `LaTeX Compiler Log: ${stepIndex} of ${totalStepsLength} ${step.name}`
         const languageId = this.detectLanguageId(step)
         this.languageId = languageId
         this.logPanel = this.createPanel(name, languageId)
+        this.uri = vscode.Uri.parse(`output:extension-output-tamuratak.latex-toybox-%23${stepIndex}-${name}`, true)
     }
 
     private createPanel(name: string, languageId: string): vscode.OutputChannel {
@@ -49,8 +51,15 @@ export class BuildStepLog {
         this.logPanel.dispose()
     }
 
-    show() {
-        this.logPanel.show()
+    show(opts?: { inEditor?: boolean}) {
+        if (opts?.inEditor) {
+            return vscode.workspace.openTextDocument(this.uri).then((doc) => {
+                return vscode.window.showTextDocument(doc, { preview: false })
+            })
+        } else {
+            this.logPanel.show()
+            return
+        }
     }
 
 }
@@ -100,8 +109,8 @@ export class CompilerLog {
         return this.compilerLogParser.isLaTeXmkSkipped
     }
 
-    show() {
-        this.stepLogs[0]?.show()
+    show(opts?: { inEditor?: boolean}) {
+        return this.stepLogs[0]?.show(opts)
     }
 
 }

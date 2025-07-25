@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { getNonce } from './getnonce.js'
+import { pdfViewerPanelViewType } from '../components/viewerlib/pdfviewerpanel.js'
 
 export function replaceWebviewPlaceholders(content: string, extensionRootUri: vscode.Uri, webview: vscode.Webview): string {
     const resourcesFolderUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionRootUri, 'resources'))
@@ -66,4 +67,12 @@ export async function openWebviewPanel(
         }
         await vscode.window.showTextDocument(activeDocument, vscode.ViewColumn.Active)
     }, delay)
+}
+
+export function collectPdfViewerTabs(): vscode.Tab[] {
+    return vscode.window.tabGroups.all.flatMap((group) => {
+        return group.tabs.filter((tab) => {
+            return tab.input instanceof vscode.TabInputWebview && tab.input.viewType.includes(pdfViewerPanelViewType)
+        })
+    })
 }
