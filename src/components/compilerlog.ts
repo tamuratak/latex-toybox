@@ -51,8 +51,15 @@ export class BuildStepLog {
         this.logPanel.dispose()
     }
 
-    show() {
-        this.logPanel.show()
+    show(opts?: { inEditor?: boolean}) {
+        if (opts?.inEditor) {
+            return vscode.workspace.openTextDocument(this.uri).then((doc) => {
+                return vscode.window.showTextDocument(doc, { preview: false })
+            })
+        } else {
+            this.logPanel.show()
+            return
+        }
     }
 
 }
@@ -102,8 +109,8 @@ export class CompilerLog {
         return this.compilerLogParser.isLaTeXmkSkipped
     }
 
-    show() {
-        this.stepLogs[0]?.show()
+    show(opts?: { inEditor?: boolean}) {
+        return this.stepLogs[0]?.show(opts)
     }
 
 }

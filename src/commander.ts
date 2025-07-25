@@ -245,14 +245,11 @@ export class Commander {
 
     log(compiler?: string) {
         this.extension.logger.info(`LOG command invoked: ${compiler || 'default'}`)
+        const opt = collectPdfViewerTabs().length > 0 ? { inEditor: true } : undefined
         if (compiler) {
-            this.extension.compilerLog.show()
+            return this.extension.compilerLog.show(opt)
         } else {
-            if (collectPdfViewerTabs().length > 0) {
-                this.extension.logger.showLog({ inEditor: true })
-            } else {
-                this.extension.logger.showLog()
-            }
+            return this.extension.logger.showLog(opt)
         }
     }
 
