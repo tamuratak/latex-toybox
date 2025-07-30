@@ -87,8 +87,8 @@
 	},
 	"Big|": {
 		"prefix": "@|",
-		"body": "\\Big|",
-		"description": "Big |"
+		"body": "\\left| ${1:${TM_SELECTED_TEXT}} \\right|",
+		"description": "left| ... right|"
 	},
 	"bigcup": {
 		"prefix": "@+",
