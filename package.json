@@ -1645,18 +1645,21 @@
         {
           "id": "latex-toybox-commands",
           "name": "Commands",
-          "when": "latex-toybox:enabled"
+          "when": "latex-toybox:enabled",
+          "icon": "./icons/activity-bar.svg"
         },
         {
           "id": "latex-toybox-structure",
           "name": "Structure",
-          "when": "latex-toybox:enabled"
+          "when": "latex-toybox:enabled",
+          "icon": "./icons/activity-bar.svg"
         },
         {
           "id": "latex-toybox-snippet-view",
+          "name": "Snippet View",
           "type": "webview",
           "when": "latex-toybox:enabled",
-          "name": "Snippet View"
+          "icon": "./icons/activity-bar.svg"
         }
       ]
     },

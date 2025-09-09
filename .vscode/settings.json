@@ -11,4 +11,10 @@
         "node_modules",
         "../lw_master"
     ],
+    "able.taskWatcher": [
+        {
+            "name": "task-lint",
+            "globPattern": ["./src/**/*.ts"],
+        }
+    ]
 }
