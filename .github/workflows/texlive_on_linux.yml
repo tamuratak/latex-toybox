@@ -45,7 +45,7 @@ jobs:
         tlmgr install import subfiles latexmk makeindex
         tlmgr install chktex lacheck
       if: steps.cache-texlive.outputs.cache-hit != 'true'
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v6
       with:
         node-version: '20'
     - run: latex -v
