@@ -17,6 +17,7 @@
         "noUnusedParameters": true,
         "outDir": "../out/viewer",
         "inlineSourceMap": true,
+        "skipLibCheck": true,
         "strict": true,
         "target": "es2022",
         "typeRoots": [],
