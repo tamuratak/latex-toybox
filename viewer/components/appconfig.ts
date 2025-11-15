@@ -43,6 +43,8 @@ export class AppConfig {
             cMapUrl: '/node_modules/pdfjs-dist/cmaps/',
             sidebarViewOnLoad: 0,
             standardFontDataUrl: '/node_modules/pdfjs-dist/standard_fonts/',
+            wasmUrl: '/node_modules/pdfjs-dist/wasm/',
+            iccUrl: '/node_modules/pdfjs-dist/iccs/',
             workerSrc: '/node_modules/pdfjs-dist/build/pdf.worker.mjs',
             forcePageColors: true,
             ...color
