@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up PATH
       run: |
         echo "/tmp/texlive/bin/x86_64-linux" >> $GITHUB_PATH
     - name: Cache TeX Live
       id: cache-texlive
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: /tmp/texlive
         key: ${{ env.cache-version }}-${{ runner.os }}-texlive-essential
