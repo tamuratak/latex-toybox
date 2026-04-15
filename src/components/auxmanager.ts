@@ -62,7 +62,7 @@ export class AuxManager {
                 }
                 let refNumber = result[2]
                 const [label, pageNumber] = [result[1], result[3]]
-                refNumber = refNumber.replace(/[\{\}]/g, '')
+                refNumber = refNumber.replace(/[{}]/g, '')
                 if (label.endsWith('@cref') && auxLabelsStore.has(label.replace('@cref', ''))) {
                     // Drop extra \newlabel entries added by cleveref
                     continue
