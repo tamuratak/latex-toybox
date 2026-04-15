@@ -22,7 +22,6 @@
         "sourceMap": true,
         "strict": true,
         "target": "es2022",
-        "baseUrl": "./",
         "paths": {
             "latex-toybox-protocol-types": ["./types/latex-toybox-protocol-types/index.js"],
             "mathjax-full": ["./types/mathjax-full/index.js"]

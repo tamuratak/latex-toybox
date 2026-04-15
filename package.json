@@ -1689,7 +1689,7 @@
   "dependencies": {
     "cross-spawn": "7.0.6",
     "iconv-lite": "0.6.3",
-    "latex-utensils": "6.2.0",
+    "latex-utensils": "7.0.0",
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.8",
     "pdfjs-dist": "5.4.296",
@@ -1708,7 +1708,7 @@
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.6.2",
     "eslint": "9.39.0",
-    "glob": "11.0.3",
+    "glob": "13.0.6",
     "mocha": "11.7.1",
     "rimraf": "3.0.2",
     "tmp": "0.2.5",
