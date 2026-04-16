@@ -201,6 +201,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = Miniatura { $page }. strony
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Zaznacz { $page }. stronę
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Zaznacz { $page }. stronę
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = { $page }. strona z { $total }
 
 ## Find panel button title and messages
 
@@ -310,6 +323,10 @@ pdfjs-comment-floating-button =
     .title = Dodaj komentarz
     .aria-label = Dodaj komentarz
 pdfjs-comment-floating-button-label = Dodaj komentarz
+pdfjs-editor-comment-button =
+    .title = Dodaj komentarz
+    .aria-label = Dodaj komentarz
+pdfjs-editor-comment-button-label = Dodaj komentarz
 pdfjs-editor-signature-button =
     .title = Dodaj podpis
 pdfjs-editor-signature-button-label = Dodaj podpis
@@ -372,6 +389,21 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Edytor tekstu
     .default-content = Zacznij pisać…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [one] Komentarz
+       *[other] Komentarze
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Zamknij panel boczny
+    .aria-label = Zamknij panel boczny
+pdfjs-editor-comments-sidebar-close-button-label = Zamknij panel boczny
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Widzisz coś godnego uwagi? Wyróżnij to i zostaw komentarz.
+pdfjs-editor-comments-sidebar-no-comments-link = Więcej informacji
 
 ## Alt-text dialog
 
@@ -517,6 +549,7 @@ pdfjs-editor-undo-bar-message-freetext = Usunięto tekst
 pdfjs-editor-undo-bar-message-ink = Usunięto rysunek
 pdfjs-editor-undo-bar-message-stamp = Usunięto obraz
 pdfjs-editor-undo-bar-message-signature = Usunięto podpis
+pdfjs-editor-undo-bar-message-comment = Usunięto komentarz
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -589,25 +622,123 @@ pdfjs-editor-add-signature-cancel-button = Anuluj
 pdfjs-editor-add-signature-add-button = Dodaj
 pdfjs-editor-edit-signature-update-button = Aktualizuj
 
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Edytuj komentarz
+pdfjs-editor-edit-comment-popup-button =
+    .title = Edytuj komentarz
+pdfjs-editor-delete-comment-popup-button-label = Usuń komentarz
+pdfjs-editor-delete-comment-popup-button =
+    .title = Usuń komentarz
+pdfjs-show-comment-button =
+    .title = Wyświetl komentarz
+
 ##  Edit a comment dialog
 
-pdfjs-editor-edit-comment-actions-button-label = Działania
-pdfjs-editor-edit-comment-actions-button =
-    .title = Działania
-pdfjs-editor-edit-comment-close-button-label = Zamknij
-pdfjs-editor-edit-comment-close-button =
-    .title = Zamknij
-pdfjs-editor-edit-comment-actions-edit-button-label = Edytuj
-pdfjs-editor-edit-comment-actions-delete-button-label = Usuń
-pdfjs-editor-edit-comment-manager-text-input =
-    .placeholder = Napisz komentarz
-pdfjs-editor-edit-comment-manager-cancel-button = Anuluj
-pdfjs-editor-edit-comment-manager-save-button = Zapisz
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Edytuj komentarz
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Aktualizuj
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Dodaj komentarz
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Dodaj
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Zacznij pisać…
+pdfjs-editor-edit-comment-dialog-cancel-button = Anuluj
 
 ## Edit a comment button in the editor toolbar
 
-pdfjs-editor-edit-comment-button =
-    .title = Edytuj komentarz
+pdfjs-editor-add-comment-button =
+    .title = Dodaj komentarz
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Przełącz panel boczny
+pdfjs-toggle-views-manager-notification-button =
+    .title = Przełącz panel boczny (dokument zawiera miniatury/konspekt/załączniki/warstwy)
+pdfjs-toggle-views-manager-button1-label = Zarządzaj stronami
+pdfjs-toggle-views-manager-button-label = Przełącz panel boczny
+pdfjs-views-manager-sidebar =
+    .aria-label = Panel boczny
+pdfjs-views-manager-sidebar-resizer =
+    .aria-label = Zmiana rozmiaru panelu bocznego
+pdfjs-views-manager-view-selector-button =
+    .title = Widoki
+pdfjs-views-manager-view-selector-button-label = Widoki
+pdfjs-views-manager-pages-title = Strony
+pdfjs-views-manager-outlines-title = Konspekt dokumentu
+pdfjs-views-manager-attachments-title = Załączniki
+pdfjs-views-manager-layers-title = Warstwy
+pdfjs-views-manager-pages-option-label = Strony
+pdfjs-views-manager-outlines-option-label = Konspekt dokumentu
+pdfjs-views-manager-attachments-option-label = Załączniki
+pdfjs-views-manager-layers-option-label = Warstwy
+pdfjs-views-manager-add-file-button =
+    .title = Dodaj plik
+pdfjs-views-manager-add-file-button-label = Dodaj plik
+# Variables:
+#   $count (Number) - the number of selected pages.
+pdfjs-views-manager-pages-status-action-label =
+    { $count ->
+        [one] { $count } zaznaczona
+        [few] { $count } zaznaczone
+       *[many] { $count } zaznaczonych
+    }
+pdfjs-views-manager-pages-status-none-action-label = Zaznacz strony
+pdfjs-views-manager-pages-status-action-button-label = Zarządzaj
+pdfjs-views-manager-pages-status-copy-button-label = Kopiuj
+pdfjs-views-manager-pages-status-cut-button-label = Wytnij
+pdfjs-views-manager-pages-status-delete-button-label = Usuń
+pdfjs-views-manager-pages-status-save-as-button-label = Zapisz jako…
+# Variables:
+#   $count (Number) - the number of selected pages to be cut.
+pdfjs-views-manager-status-undo-cut-label =
+    { $count ->
+        [one] Wycięto 1 stronę
+        [few] Wycięto { $count } strony
+       *[many] Wycięto { $count } stron
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be copied.
+pdfjs-views-manager-pages-status-undo-copy-label =
+    { $count ->
+        [one] Skopiowano 1 stronę
+        [few] Skopiowano { $count } strony
+       *[many] Skopiowano { $count } stron
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be deleted.
+pdfjs-views-manager-pages-status-undo-delete-label =
+    { $count ->
+        [one] Usunięto 1 stronę
+        [few] Usunięto { $count } strony
+       *[many] Usunięto { $count } stron
+    }
+pdfjs-views-manager-pages-status-waiting-ready-label = Przygotowywanie pliku…
+pdfjs-views-manager-pages-status-waiting-uploading-label = Przesyłanie pliku…
+pdfjs-views-manager-status-warning-cut-label = Nie udało się wyciąć. Odśwież stronę i spróbuj ponownie.
+pdfjs-views-manager-status-warning-copy-label = Nie udało się skopiować. Odśwież stronę i spróbuj ponownie.
+pdfjs-views-manager-status-warning-delete-label = Nie udało się usunąć. Odśwież stronę i spróbuj ponownie.
+pdfjs-views-manager-status-warning-save-label = Nie udało się zachować. Odśwież stronę i spróbuj ponownie.
+pdfjs-views-manager-status-undo-button-label = Cofnij
+pdfjs-views-manager-status-done-button-label = Gotowe
+pdfjs-views-manager-status-close-button =
+    .title = Zamknij
+pdfjs-views-manager-status-close-button-label = Zamknij
+pdfjs-views-manager-paste-button-label = Wklej
+pdfjs-views-manager-paste-button-before =
+    .title = Wklej przed pierwszą stroną
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Wklej po { $page }. stronie
+pdfjs-toggle-views-manager-button1 =
+    .title = Zarządzaj stronami
 
 ## Main menu for adding/removing signatures
 

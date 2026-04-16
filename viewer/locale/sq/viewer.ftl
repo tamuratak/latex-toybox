@@ -192,6 +192,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = Miniaturë e Faqes { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Përzgjidhni faqen { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Përzgjidhni faqen { $page }
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = Faqja { $page } nga { $total } gjithsej
 
 ## Find panel button title and messages
 
@@ -277,9 +290,13 @@ pdfjs-web-fonts-disabled = Shkronjat Web janë të çaktivizuara: s’arrihet t�
 
 pdfjs-editor-free-text-button =
     .title = Tekst
+pdfjs-editor-color-picker-free-text-input =
+    .title = Ndryshoni ngjyrë teksti
 pdfjs-editor-free-text-button-label = Tekst
 pdfjs-editor-ink-button =
     .title = Vizatoni
+pdfjs-editor-color-picker-ink-input =
+    .title = Ndryshoni ngjyrë vizatimi
 pdfjs-editor-ink-button-label = Vizatoni
 pdfjs-editor-stamp-button =
     .title = Shtoni ose përpunoni figura
@@ -291,6 +308,14 @@ pdfjs-highlight-floating-button1 =
     .title = Theksim
     .aria-label = Theksim
 pdfjs-highlight-floating-button-label = Theksim
+pdfjs-comment-floating-button =
+    .title = Komentoni
+    .aria-label = Komentoni
+pdfjs-comment-floating-button-label = Komentoni
+pdfjs-editor-comment-button =
+    .title = Koment
+    .aria-label = Koment
+pdfjs-editor-comment-button-label = Komentoni
 pdfjs-editor-signature-button =
     .title = Shtoni nënshkrim
 pdfjs-editor-signature-button-label = Shtoni nënshkrim
@@ -353,6 +378,21 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Përpunues Tekstesh
     .default-content = Filloni të shtypni…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [one] Koment
+       *[other] Komente
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Mbylleni anështyllën
+    .aria-label = Mbylleni anështyllën
+pdfjs-editor-comments-sidebar-close-button-label = Mbylleni anështyllën
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Shihni diçka që ia vlen. Theksojeni dhe lini një koment.
+pdfjs-editor-comments-sidebar-no-comments-link = Mësoni më tepër
 
 ## Alt-text dialog
 
@@ -483,6 +523,14 @@ pdfjs-editor-alt-text-settings-show-dialog-button-label = Shfaq menjëherë për
 pdfjs-editor-alt-text-settings-show-dialog-description = Ju ndihmon të siguroheni se krejt figurat tuaja kanë tekst alternativ.
 pdfjs-editor-alt-text-settings-close-button = Mbylle
 
+## Accessibility labels (announced by screen readers) for objects added to the editor.
+
+pdfjs-editor-highlight-added-alert = U shtua theksim
+pdfjs-editor-freetext-added-alert = U shtua tekst
+pdfjs-editor-ink-added-alert = U shtua vizatim
+pdfjs-editor-stamp-added-alert = U shtua figurë
+pdfjs-editor-signature-added-alert = U shtua nënshkrim
+
 ## "Annotations removed" bar
 
 pdfjs-editor-undo-bar-message-highlight = U hoq theksimi
@@ -490,6 +538,7 @@ pdfjs-editor-undo-bar-message-freetext = U hoq tekst
 pdfjs-editor-undo-bar-message-ink = U hoq vizatim
 pdfjs-editor-undo-bar-message-stamp = U hoq figurë
 pdfjs-editor-undo-bar-message-signature = Nënshkrimi u hoq
+pdfjs-editor-undo-bar-message-comment = Komenti u hoq
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -551,6 +600,8 @@ pdfjs-editor-add-signature-save-checkbox = Ruaje nënshkrimin
 pdfjs-editor-add-signature-save-warning-message = Keni mbërritur në kufirin e 5 nënshkrimeve të ruajtura. Që të ruani tjetër, hiqni një.
 pdfjs-editor-add-signature-image-upload-error-title = S’u ngarkua dot figurë
 pdfjs-editor-add-signature-image-upload-error-description = Kontrolloni lidhjen tuaj në rrjet, ose provoni figurë tjetër.
+pdfjs-editor-add-signature-image-no-data-error-title = S’shndërrohet dot kjo figurë në një nënshkrim
+pdfjs-editor-add-signature-image-no-data-error-description = Ju lutemi, provoni të ngarkoni një figurë tjetër.
 pdfjs-editor-add-signature-error-close-button = Mbylle
 
 ## Dialog buttons
@@ -558,6 +609,126 @@ pdfjs-editor-add-signature-error-close-button = Mbylle
 pdfjs-editor-add-signature-cancel-button = Anuloje
 pdfjs-editor-add-signature-add-button = Shtoje
 pdfjs-editor-edit-signature-update-button = Përditësoje
+
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Përpunoni koment
+pdfjs-editor-edit-comment-popup-button =
+    .title = Përpunoni koment
+pdfjs-editor-delete-comment-popup-button-label = Hiqe komentin
+pdfjs-editor-delete-comment-popup-button =
+    .title = Hiqe komentin
+pdfjs-show-comment-button =
+    .title = Shfaqe komentin
+
+##  Edit a comment dialog
+
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Përpunoni koment
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Përditësojeni
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Shtoni koment
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Shtoje
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Filloni të shtypni…
+pdfjs-editor-edit-comment-dialog-cancel-button = Anuloje
+
+## Edit a comment button in the editor toolbar
+
+pdfjs-editor-add-comment-button =
+    .title = Shtoni koment
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Shfaq/Fshih Anështyllën
+pdfjs-toggle-views-manager-notification-button =
+    .title = Shfaqni/Fshihni Anështyllër (dokumenti përmban miniatura/përvijim/bashkëngjitje/shtresa)
+pdfjs-toggle-views-manager-button1-label = Administroni faqe
+pdfjs-toggle-views-manager-button-label = Shfaq/Fshih Anështyllën
+pdfjs-views-manager-sidebar =
+    .aria-label = Anështyllë
+pdfjs-views-manager-sidebar-resizer =
+    .aria-label = Ripërmasues anështylle
+pdfjs-views-manager-view-selector-button =
+    .title = Pamje
+pdfjs-views-manager-view-selector-button-label = Pamje
+pdfjs-views-manager-pages-title = Faqe
+pdfjs-views-manager-outlines-title = Përvijim dokumenti
+pdfjs-views-manager-attachments-title = Bashkëngjitje
+pdfjs-views-manager-layers-title1 = Shtresa
+    .title = Shtresa (dyklikoni që të rikthehen krejt shtresat te gjendja parazgjedhje)
+pdfjs-views-manager-layers-title = Shtresa
+pdfjs-views-manager-pages-option-label = Faqe
+pdfjs-views-manager-outlines-option-label = Përvijim dokumenti
+pdfjs-views-manager-attachments-option-label = Bashkëngjitje
+pdfjs-views-manager-layers-option-label = Shtresa
+pdfjs-views-manager-add-file-button =
+    .title = Shtoni kartelë
+pdfjs-views-manager-add-file-button-label = Shtoni kartelë
+# Variables:
+#   $count (Number) - the number of selected pages.
+pdfjs-views-manager-pages-status-action-label =
+    { $count ->
+        [one] { $count } e përzgjedhur
+       *[other] { $count } të përzgjedhura
+    }
+pdfjs-views-manager-pages-status-none-action-label = Përzgjidhni faqe
+pdfjs-views-manager-pages-status-action-button-label = Administrojini
+pdfjs-views-manager-pages-status-copy-button-label = Kopjoje
+pdfjs-views-manager-pages-status-cut-button-label = Prije
+pdfjs-views-manager-pages-status-delete-button-label = Fshije
+pdfjs-views-manager-pages-status-export-selected-button-label = Eksportoni të përzgjedhurit…
+pdfjs-views-manager-pages-status-save-as-button-label = Ruajeni si…
+# Variables:
+#   $count (Number) - the number of selected pages to be cut.
+pdfjs-views-manager-status-undo-cut-label =
+    { $count ->
+        [one] Prerje e 1 faqeje
+       *[other] Prerje e { $count } faqesh
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be copied.
+pdfjs-views-manager-pages-status-undo-copy-label =
+    { $count ->
+        [one] 1 faqe e kopjuar
+       *[other] { $count } faqe të kopjuara
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be deleted.
+pdfjs-views-manager-pages-status-undo-delete-label =
+    { $count ->
+        [one] 1 faqe e fshirë
+       *[other] { $count } faqe të fshira
+    }
+pdfjs-views-manager-pages-status-waiting-ready-label = Po bëhet gati kartela juaj…
+pdfjs-views-manager-pages-status-waiting-uploading-label = Po ngarkohet kartelë…
+pdfjs-views-manager-status-warning-cut-label = S’u bë dot prerja. Rifreskoni faqen dhe riprovoni.
+pdfjs-views-manager-status-warning-copy-label = S’u kopjua dot. Rifreskoni faqen dhe riprovoni.
+pdfjs-views-manager-status-warning-delete-label = S’u fshi dot. Rifreskoni faqen dhe riprovoni.
+pdfjs-views-manager-status-warning-save-label = S’u ruajt dot. Rifreskoni faqen dhe riprovoni.
+pdfjs-views-manager-status-undo-button-label = Zhbëje
+pdfjs-views-manager-status-done-button-label = U bë
+pdfjs-views-manager-status-close-button =
+    .title = Mbylle
+pdfjs-views-manager-status-close-button-label = Mbylle
+pdfjs-views-manager-paste-button-label = Ngjite
+pdfjs-views-manager-paste-button-before =
+    .title = Ngjite para faqes së parë
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Ngjite pas faqes { $page }
+# Badge used to promote a new feature in the UI, keep it as short as possible.
+# It's spelled uppercase for English, but it can be translated as usual.
+pdfjs-new-badge-content = E RE
+pdfjs-toggle-views-manager-button1 =
+    .title = Administroni faqe
 
 ## Main menu for adding/removing signatures
 

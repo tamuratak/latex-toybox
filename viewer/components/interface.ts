@@ -52,7 +52,7 @@ export type PdfjsEventName
     | 'pagechanging'
     | 'pagerendered'
 
-interface IPageView {
+interface IPDFPageView {
     readonly viewport: {
         convertToViewportPoint(x: number, y: number): [number, number]
     },
@@ -66,10 +66,10 @@ interface IPageView {
 interface IPDFViewer {
     currentScale: number,
     currentScaleValue: string,
-    getPageView(index: number): IPageView | undefined,
+    getPageView(index: number): IPDFPageView | undefined,
     scrollMode: ScrollMode,
     spreadMode: SpreadMode,
-    _getVisiblePages(): { first: number, last: number, views: { id: number, x: number, y: number, view: IPageView, percent: number }[], ids: Set<number> }
+    _getVisiblePages(): { first: number, last: number, views: { id: number, x: number, y: number, view: IPDFPageView, percent: number }[], ids: Set<number> }
 }
 
 export interface IPDFViewerApplication {
@@ -91,7 +91,7 @@ export interface IPDFViewerApplication {
             deactivate(): void
         }
     },
-    readonly pdfSidebar: {
+    readonly viewsManager: {
         isOpen: boolean
     },
     readonly secondaryToolbar: {

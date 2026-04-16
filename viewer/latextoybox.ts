@@ -1,4 +1,4 @@
-const importPdfMjsPromise = import('/node_modules/pdfjs-dist/build/pdf.mjs')
+const importPdfMjsPromise = import('/node_modules/pdfjs-dist/legacy/build/pdf.mjs')
 // Edit viewer.html
 import './components/editviewerhtml.js'
 import { ExtensionConnection } from './components/extensionconnection.js'

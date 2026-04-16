@@ -201,6 +201,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = Мініяцюра старонкі { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Выбраць старонку { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Выбраць старонку { $page }
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = Старонка { $page } з { $total }
 
 ## Find panel button title and messages
 
@@ -310,6 +323,10 @@ pdfjs-comment-floating-button =
     .title = Каментаваць
     .aria-label = Каментаваць
 pdfjs-comment-floating-button-label = Каментаваць
+pdfjs-editor-comment-button =
+    .title = Каментарый
+    .aria-label = Каментарый
+pdfjs-editor-comment-button-label = Каментарый
 pdfjs-editor-signature-button =
     .title = Дадаць подпіс
 pdfjs-editor-signature-button-label = Дадаць подпіс
@@ -372,6 +389,22 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Тэкставы рэдактар
     .default-content = Пачніце ўводзіць…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [one] Каментарый
+        [few] Каментарыі
+       *[many] Каментарыі
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Закрыць бакавую панэль
+    .aria-label = Закрыць бакавую панэль
+pdfjs-editor-comments-sidebar-close-button-label = Закрыць бакавую панэль
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Бачыце штосьці вартае ўвагі? Вылучыце і пакіньце каментарый.
+pdfjs-editor-comments-sidebar-no-comments-link = Падрабязней
 
 ## Alt-text dialog
 
@@ -517,6 +550,7 @@ pdfjs-editor-undo-bar-message-freetext = Тэкст выдалены
 pdfjs-editor-undo-bar-message-ink = Малюнак выдалены
 pdfjs-editor-undo-bar-message-stamp = Відарыс выдалены
 pdfjs-editor-undo-bar-message-signature = Подпіс выдалены
+pdfjs-editor-undo-bar-message-comment = Каментарый выдалены
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -589,25 +623,123 @@ pdfjs-editor-add-signature-cancel-button = Скасаваць
 pdfjs-editor-add-signature-add-button = Дадаць
 pdfjs-editor-edit-signature-update-button = Абнавіць
 
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Змяніць каментарый
+pdfjs-editor-edit-comment-popup-button =
+    .title = Змяніць каментарый
+pdfjs-editor-delete-comment-popup-button-label = Выдаліць каментарый
+pdfjs-editor-delete-comment-popup-button =
+    .title = Выдаліць каментарый
+pdfjs-show-comment-button =
+    .title = Паказаць каментарый
+
 ##  Edit a comment dialog
 
-pdfjs-editor-edit-comment-actions-button-label = Дзеянні
-pdfjs-editor-edit-comment-actions-button =
-    .title = Дзеянні
-pdfjs-editor-edit-comment-close-button-label = Закрыць
-pdfjs-editor-edit-comment-close-button =
-    .title = Закрыць
-pdfjs-editor-edit-comment-actions-edit-button-label = Праўка
-pdfjs-editor-edit-comment-actions-delete-button-label = Выдаліць
-pdfjs-editor-edit-comment-manager-text-input =
-    .placeholder = Увядзіце свой каментарый
-pdfjs-editor-edit-comment-manager-cancel-button = Скасаваць
-pdfjs-editor-edit-comment-manager-save-button = Захаваць
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Змяніць каментарый
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Абнавіць
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Дадаць каментарый
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Дадаць
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Пачніце набор тэксту…
+pdfjs-editor-edit-comment-dialog-cancel-button = Скасаваць
 
 ## Edit a comment button in the editor toolbar
 
-pdfjs-editor-edit-comment-button =
-    .title = Змяніць каментарый
+pdfjs-editor-add-comment-button =
+    .title = Дадаць каментарый
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Паказаць/схаваць бакавую панэль
+pdfjs-toggle-views-manager-notification-button =
+    .title = Паказаць/схаваць бакавую панэль (дакумент мае мініяцюры/змест/далучэнні/пласты)
+pdfjs-toggle-views-manager-button1-label = Кіраванне старонкамі
+pdfjs-toggle-views-manager-button-label = Паказаць/схаваць бакавую панэль
+pdfjs-views-manager-sidebar =
+    .aria-label = Бакавая панэль
+pdfjs-views-manager-sidebar-resizer =
+    .aria-label = Змена памеру бакавой панэлі
+pdfjs-views-manager-view-selector-button =
+    .title = Выгляд
+pdfjs-views-manager-view-selector-button-label = Выгляд
+pdfjs-views-manager-pages-title = Старонкі
+pdfjs-views-manager-outlines-title = Структура дакумента
+pdfjs-views-manager-attachments-title = Далучэнні
+pdfjs-views-manager-layers-title = Пласты
+pdfjs-views-manager-pages-option-label = Старонкі
+pdfjs-views-manager-outlines-option-label = Структура дакумента
+pdfjs-views-manager-attachments-option-label = Далучэнні
+pdfjs-views-manager-layers-option-label = Пласты
+pdfjs-views-manager-add-file-button =
+    .title = Дадаць файл
+pdfjs-views-manager-add-file-button-label = Дадаць файл
+# Variables:
+#   $count (Number) - the number of selected pages.
+pdfjs-views-manager-pages-status-action-label =
+    { $count ->
+        [one] Вылучана { $count }
+        [few] Вылучаны { $count }
+       *[many] Вылучана { $count }
+    }
+pdfjs-views-manager-pages-status-none-action-label = Выбраць старонкі
+pdfjs-views-manager-pages-status-action-button-label = Кіраваць
+pdfjs-views-manager-pages-status-copy-button-label = Капіяваць
+pdfjs-views-manager-pages-status-cut-button-label = Выразаць
+pdfjs-views-manager-pages-status-delete-button-label = Выдаліць
+pdfjs-views-manager-pages-status-save-as-button-label = Захаваць як…
+# Variables:
+#   $count (Number) - the number of selected pages to be cut.
+pdfjs-views-manager-status-undo-cut-label =
+    { $count ->
+        [one] Выразана { $count } старонка
+        [few] Выразана { $count } старонкі
+       *[many] Выразана { $count } старонак
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be copied.
+pdfjs-views-manager-pages-status-undo-copy-label =
+    { $count ->
+        [one] Скапіравана { $count } старонка
+        [few] Скапіравана { $count } старонкі
+       *[many] Скапіравана { $count } старонак
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be deleted.
+pdfjs-views-manager-pages-status-undo-delete-label =
+    { $count ->
+        [one] Выдалена { $count } старонка
+        [few] Выдалена { $count } старонкі
+       *[many] Выдалена { $count } старонак
+    }
+pdfjs-views-manager-pages-status-waiting-ready-label = Рыхтуецца ваш файл…
+pdfjs-views-manager-pages-status-waiting-uploading-label = Зацягваецца файл…
+pdfjs-views-manager-status-warning-cut-label = Не ўдалося выразаць. Абнавіце старонку і паспрабуйце зноў.
+pdfjs-views-manager-status-warning-copy-label = Не ўдалося скапіяваць. Абнавіце старонку і паспрабуйце зноў.
+pdfjs-views-manager-status-warning-delete-label = Не ўдалося выдаліць. Абнавіце старонку і паспрабуйце зноў.
+pdfjs-views-manager-status-warning-save-label = Не ўдалося захаваць. Абнавіце старонку і паспрабуйце зноў.
+pdfjs-views-manager-status-undo-button-label = Адмяніць
+pdfjs-views-manager-status-done-button-label = Гатова
+pdfjs-views-manager-status-close-button =
+    .title = Закрыць
+pdfjs-views-manager-status-close-button-label = Закрыць
+pdfjs-views-manager-paste-button-label = Уставіць
+pdfjs-views-manager-paste-button-before =
+    .title = Уставіць перад першай старонкай
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Уставіць пасля старонкі { $page }
+pdfjs-toggle-views-manager-button1 =
+    .title = Кіраванне старонкамі
 
 ## Main menu for adding/removing signatures
 

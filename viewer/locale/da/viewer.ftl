@@ -201,6 +201,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = Miniature af side { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Vælg side { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Vælg side { $page }
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = Side { $page } af { $total }
 
 ## Find panel button title and messages
 
@@ -308,6 +321,10 @@ pdfjs-comment-floating-button =
     .title = Kommenter
     .aria-label = Kommenter
 pdfjs-comment-floating-button-label = Kommenter
+pdfjs-editor-comment-button =
+    .title = Kommentar
+    .aria-label = Kommentar
+pdfjs-editor-comment-button-label = Kommentar
 pdfjs-editor-signature-button =
     .title = Tilføj signatur
 pdfjs-editor-signature-button-label = Tilføj signatur
@@ -370,6 +387,21 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Teksteditor
     .default-content = Begynd at skrive…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [one] Kommentar
+       *[other] Kommentarer
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Luk sidepanelet
+    .aria-label = Luk sidepanelet
+pdfjs-editor-comments-sidebar-close-button-label = Luk sidepanelet
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Har du fundet noget interessant? Fremhæv det og gem en kommentar.
+pdfjs-editor-comments-sidebar-no-comments-link = Læs mere
 
 ## Alt-text dialog
 
@@ -515,6 +547,7 @@ pdfjs-editor-undo-bar-message-freetext = Tekst fjernet
 pdfjs-editor-undo-bar-message-ink = Tegning fjernet
 pdfjs-editor-undo-bar-message-stamp = Billede fjernet
 pdfjs-editor-undo-bar-message-signature = Signatur fjernet
+pdfjs-editor-undo-bar-message-comment = Kommentar fjernet
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -586,25 +619,63 @@ pdfjs-editor-add-signature-cancel-button = Annuller
 pdfjs-editor-add-signature-add-button = Tilføj
 pdfjs-editor-edit-signature-update-button = Opdater
 
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Rediger kommentar
+pdfjs-editor-edit-comment-popup-button =
+    .title = Rediger kommentar
+pdfjs-editor-delete-comment-popup-button-label = Fjern kommentar
+pdfjs-editor-delete-comment-popup-button =
+    .title = Fjern kommentar
+pdfjs-show-comment-button =
+    .title = Vis kommentar
+
 ##  Edit a comment dialog
 
-pdfjs-editor-edit-comment-actions-button-label = Handlinger
-pdfjs-editor-edit-comment-actions-button =
-    .title = Handlinger
-pdfjs-editor-edit-comment-close-button-label = Luk
-pdfjs-editor-edit-comment-close-button =
-    .title = Luk
-pdfjs-editor-edit-comment-actions-edit-button-label = Rediger
-pdfjs-editor-edit-comment-actions-delete-button-label = Slet
-pdfjs-editor-edit-comment-manager-text-input =
-    .placeholder = Indtast din kommentar
-pdfjs-editor-edit-comment-manager-cancel-button = Annuller
-pdfjs-editor-edit-comment-manager-save-button = Gem
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Rediger kommentar
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Opdater
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Tilføj kommentar
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Tilføj
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Begynd at skrive…
+pdfjs-editor-edit-comment-dialog-cancel-button = Annuller
 
 ## Edit a comment button in the editor toolbar
 
-pdfjs-editor-edit-comment-button =
-    .title = Rediger kommentar
+pdfjs-editor-add-comment-button =
+    .title = Tilføj kommentar
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Slå sidepanel til eller fra
+pdfjs-toggle-views-manager-notification-button =
+    .title = Slå sidepanel til eller fra (dokumentet indeholder miniaturer/disposition/vedhæftede filer/lag)
+pdfjs-toggle-views-manager-button1-label = Håndter sider
+pdfjs-toggle-views-manager-button-label = Slå sidepanel til eller fra
+pdfjs-views-manager-sidebar =
+    .aria-label = Sidepanel
+pdfjs-views-manager-view-selector-button =
+    .title = Visninger
+pdfjs-views-manager-view-selector-button-label = Visninger
+pdfjs-views-manager-pages-title = Sider
+pdfjs-views-manager-outlines-title = Dokument-disposition
+pdfjs-views-manager-attachments-title = Vedhæftede filer
+pdfjs-views-manager-layers-title = Lag
+pdfjs-views-manager-pages-option-label = Sider
+pdfjs-views-manager-paste-button-before =
+    .title = Indsæt før første side
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Indsæt efter side { $page }
 
 ## Main menu for adding/removing signatures
 

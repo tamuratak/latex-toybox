@@ -29,6 +29,7 @@ export enum RenderingStates {
     FINISHED = 3,
 }
 
+// Depends on select#scaleSelect and its options order in viewer.html
 export enum ScaleMode {
     AUTO = 0,
     PAGE_ACTUAL = 1,

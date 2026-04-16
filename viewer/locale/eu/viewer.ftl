@@ -201,6 +201,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = { $page }. orriaren koadro txikia
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Hautatu { $page } orria
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Hautatu { $page } orria
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = { $total } / { $page }. orria
 
 ## Find panel button title and messages
 
@@ -308,6 +321,10 @@ pdfjs-comment-floating-button =
     .title = Iruzkina
     .aria-label = Iruzkina
 pdfjs-comment-floating-button-label = Iruzkina
+pdfjs-editor-comment-button =
+    .title = Iruzkina
+    .aria-label = Iruzkina
+pdfjs-editor-comment-button-label = Iruzkina
 pdfjs-editor-signature-button =
     .title = Gehitu sinadura
 pdfjs-editor-signature-button-label = Gehitu sinadura
@@ -370,6 +387,21 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Testu-editorea
     .default-content = Hasi idazten…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [one] Iruzkina
+       *[other] Iruzkinak
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Itxi alboko barra
+    .aria-label = Itxi alboko barra
+pdfjs-editor-comments-sidebar-close-button-label = Itxi alboko barra
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Azpimarratzeko zerbait ikusi duzu? Nabarmen ezazu eta utzi iruzkina.
+pdfjs-editor-comments-sidebar-no-comments-link = Argibide gehiago
 
 ## Alt-text dialog
 
@@ -515,6 +547,7 @@ pdfjs-editor-undo-bar-message-freetext = Testua kenduta
 pdfjs-editor-undo-bar-message-ink = Marrazkia kenduta
 pdfjs-editor-undo-bar-message-stamp = Irudia kenduta
 pdfjs-editor-undo-bar-message-signature = Sinadura kenduta
+pdfjs-editor-undo-bar-message-comment = Iruzkina kenduta
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -590,25 +623,119 @@ pdfjs-editor-add-signature-cancel-button = Utzi
 pdfjs-editor-add-signature-add-button = Gehitu
 pdfjs-editor-edit-signature-update-button = Eguneratu
 
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Editatu iruzkina
+pdfjs-editor-edit-comment-popup-button =
+    .title = Editatu iruzkina
+pdfjs-editor-delete-comment-popup-button-label = Kendu iruzkina
+pdfjs-editor-delete-comment-popup-button =
+    .title = Kendu iruzkina
+pdfjs-show-comment-button =
+    .title = Erakutsi iruzkina
+
 ##  Edit a comment dialog
 
-pdfjs-editor-edit-comment-actions-button-label = Ekintzak
-pdfjs-editor-edit-comment-actions-button =
-    .title = Ekintzak
-pdfjs-editor-edit-comment-close-button-label = Itxi
-pdfjs-editor-edit-comment-close-button =
-    .title = Itxi
-pdfjs-editor-edit-comment-actions-edit-button-label = Editatu
-pdfjs-editor-edit-comment-actions-delete-button-label = Ezabatu
-pdfjs-editor-edit-comment-manager-text-input =
-    .placeholder = Idatzi zure iruzkina
-pdfjs-editor-edit-comment-manager-cancel-button = Utzi
-pdfjs-editor-edit-comment-manager-save-button = Gorde
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Editatu iruzkina
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Eguneratu
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Gehitu iruzkina
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Gehitu
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Hasi idazten…
+pdfjs-editor-edit-comment-dialog-cancel-button = Utzi
 
 ## Edit a comment button in the editor toolbar
 
-pdfjs-editor-edit-comment-button =
-    .title = Editatu iruzkina
+pdfjs-editor-add-comment-button =
+    .title = Gehitu iruzkina
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Txandakatu alboko barra
+pdfjs-toggle-views-manager-notification-button =
+    .title = Txandakatu alboko barra (dokumentuak koadro txikiak/eskema/eranskinak/geruzak ditu)
+pdfjs-toggle-views-manager-button1-label = Kudeatu orriak
+pdfjs-toggle-views-manager-button-label = Txandakatu alboko barra
+pdfjs-views-manager-sidebar =
+    .aria-label = Alboko barra
+pdfjs-views-manager-sidebar-resizer =
+    .aria-label = Alboko barra neurriz aldatzekoa
+pdfjs-views-manager-view-selector-button =
+    .title = Ikuspegiak
+pdfjs-views-manager-view-selector-button-label = Ikuspegiak
+pdfjs-views-manager-pages-title = Orriak
+pdfjs-views-manager-outlines-title = Dokumentuaren eskema
+pdfjs-views-manager-attachments-title = Eranskinak
+pdfjs-views-manager-layers-title = Geruzak
+pdfjs-views-manager-pages-option-label = Orriak
+pdfjs-views-manager-outlines-option-label = Dokumentuaren eskema
+pdfjs-views-manager-attachments-option-label = Eranskinak
+pdfjs-views-manager-layers-option-label = Geruzak
+pdfjs-views-manager-add-file-button =
+    .title = Gehitu fitxategia
+pdfjs-views-manager-add-file-button-label = Gehitu fitxategia
+# Variables:
+#   $count (Number) - the number of selected pages.
+pdfjs-views-manager-pages-status-action-label =
+    { $count ->
+        [one] { $count } hautatuta
+       *[other] { $count } hautatuta
+    }
+pdfjs-views-manager-pages-status-none-action-label = Hautatu orriak
+pdfjs-views-manager-pages-status-action-button-label = Kudeatu
+pdfjs-views-manager-pages-status-copy-button-label = Kopiatu
+pdfjs-views-manager-pages-status-cut-button-label = Ebaki
+pdfjs-views-manager-pages-status-delete-button-label = Ezabatu
+pdfjs-views-manager-pages-status-save-as-button-label = Gorde honela…
+# Variables:
+#   $count (Number) - the number of selected pages to be cut.
+pdfjs-views-manager-status-undo-cut-label =
+    { $count ->
+        [one] Orri bat moztuta
+       *[other] { $count } orri moztuta
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be copied.
+pdfjs-views-manager-pages-status-undo-copy-label =
+    { $count ->
+        [one] Orri bat kopiatuta
+       *[other] { $count } orri kopiatuta
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be deleted.
+pdfjs-views-manager-pages-status-undo-delete-label =
+    { $count ->
+        [one] Orri bat ezabatuta
+       *[other] { $count } orri ezabatuta
+    }
+pdfjs-views-manager-pages-status-waiting-ready-label = Zuee fitxategia prestatzen…
+pdfjs-views-manager-pages-status-waiting-uploading-label = Fitxategia igotzen…
+pdfjs-views-manager-status-warning-cut-label = Ezin da moztu. Berritu orria eta saiatu berriro.
+pdfjs-views-manager-status-warning-copy-label = Ezin da kopiatu. Berritu orria eta saiatu berriro.
+pdfjs-views-manager-status-warning-delete-label = Ezin da ezabatu. Berritu orria eta saiatu berriro.
+pdfjs-views-manager-status-warning-save-label = Ezin da gorde. Berritu orria eta saiatu berriro.
+pdfjs-views-manager-status-undo-button-label = Desegin
+pdfjs-views-manager-status-done-button-label = Eginda
+pdfjs-views-manager-status-close-button =
+    .title = Itxi
+pdfjs-views-manager-status-close-button-label = Itxi
+pdfjs-views-manager-paste-button-label = Itsatsi
+pdfjs-views-manager-paste-button-before =
+    .title = Itsatsi lehen orriaren aurretik
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Itsatsi { $page }. orriaren aurretik
+pdfjs-toggle-views-manager-button1 =
+    .title = Kudeatu orriak
 
 ## Main menu for adding/removing signatures
 

@@ -201,6 +201,19 @@ pdfjs-thumb-page-title =
 #   $page (Number) - the page number
 pdfjs-thumb-page-canvas =
     .aria-label = Llun Bach Tudalen { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox1 =
+    .title = Dewis tudalen { $page }
+# Variables:
+#   $page (Number) - the page number
+pdfjs-thumb-page-checkbox =
+    .aria-label = Dewis tudalen { $page }
+# Variables:
+#   $page (Number) - the page number
+#   $total (Number) - the number of pages
+pdfjs-thumb-page-title1 =
+    .title = Tudalen { $page } o { $total }
 
 ## Find panel button title and messages
 
@@ -316,6 +329,10 @@ pdfjs-comment-floating-button =
     .title = Sylw
     .aria-label = Sylw
 pdfjs-comment-floating-button-label = Sylw
+pdfjs-editor-comment-button =
+    .title = Sylw
+    .aria-label = Sylw
+pdfjs-editor-comment-button-label = Sylw
 pdfjs-editor-signature-button =
     .title = Ychwanegu llofnod
 pdfjs-editor-signature-button-label = Ychwanegu llofnod
@@ -378,6 +395,25 @@ pdfjs-editor-add-saved-signature-button =
 pdfjs-free-text2 =
     .aria-label = Golygydd Testun
     .default-content = Cychwyn teipio…
+# Used to show how many comments are present in the pdf file.
+# Variables:
+#   $count (Number) - the number of comments.
+pdfjs-editor-comments-sidebar-title =
+    { $count ->
+        [zero] Sylwadau
+        [one] Sylw
+        [two] Sylw
+        [few] Sylw
+        [many] Sylw
+       *[other] Sylw
+    }
+pdfjs-editor-comments-sidebar-close-button =
+    .title = Cau'r bar ochr
+    .aria-label = Cau'r bar ochr
+pdfjs-editor-comments-sidebar-close-button-label = Cau'r bar ochr
+# Instructional copy to add a comment by selecting text or an annotations.
+pdfjs-editor-comments-sidebar-no-comments1 = Gweld rhywbeth nodedig? Amlygwch ef a gadael sylw.
+pdfjs-editor-comments-sidebar-no-comments-link = Dysgu rhagor
 
 ## Alt-text dialog
 
@@ -523,6 +559,7 @@ pdfjs-editor-undo-bar-message-freetext = Tynnwyd y testun
 pdfjs-editor-undo-bar-message-ink = Tynnwyd y lluniad
 pdfjs-editor-undo-bar-message-stamp = Tynnwyd y ddelwedd
 pdfjs-editor-undo-bar-message-signature = Llofnod wedi'i dynnu
+pdfjs-editor-undo-bar-message-comment = Sylw wedi'i dynnu
 # Variables:
 #   $count (Number) - the number of removed annotations.
 pdfjs-editor-undo-bar-message-multiple =
@@ -598,25 +635,135 @@ pdfjs-editor-add-signature-cancel-button = Diddymu
 pdfjs-editor-add-signature-add-button = Ychwanegu
 pdfjs-editor-edit-signature-update-button = Diweddaru
 
+## Comment popup
+
+pdfjs-editor-edit-comment-popup-button-label = Golygu sylw
+pdfjs-editor-edit-comment-popup-button =
+    .title = Golygu sylw
+pdfjs-editor-delete-comment-popup-button-label = Tynnu sylw
+pdfjs-editor-delete-comment-popup-button =
+    .title = Tynnu sylw
+pdfjs-show-comment-button =
+    .title = Dangos sylw
+
 ##  Edit a comment dialog
 
-pdfjs-editor-edit-comment-actions-button-label = Gweithredoedd
-pdfjs-editor-edit-comment-actions-button =
-    .title = Gweithredoedd
-pdfjs-editor-edit-comment-close-button-label = Cau
-pdfjs-editor-edit-comment-close-button =
-    .title = Cau
-pdfjs-editor-edit-comment-actions-edit-button-label = Golygu
-pdfjs-editor-edit-comment-actions-delete-button-label = Dileu
-pdfjs-editor-edit-comment-manager-text-input =
-    .placeholder = Rhowch eich sylw
-pdfjs-editor-edit-comment-manager-cancel-button = Diddymu
-pdfjs-editor-edit-comment-manager-save-button = Cadw
+# An existing comment is edited
+pdfjs-editor-edit-comment-dialog-title-when-editing = Golygu sylw
+pdfjs-editor-edit-comment-dialog-save-button-when-editing = Diweddaru
+# No existing comment
+pdfjs-editor-edit-comment-dialog-title-when-adding = Ychwanegu sylw
+pdfjs-editor-edit-comment-dialog-save-button-when-adding = Ychwanegu
+pdfjs-editor-edit-comment-dialog-text-input =
+    .placeholder = Cychwyn teipio…
+pdfjs-editor-edit-comment-dialog-cancel-button = Diddymu
 
 ## Edit a comment button in the editor toolbar
 
-pdfjs-editor-edit-comment-button =
-    .title = Golygu sylw
+pdfjs-editor-add-comment-button =
+    .title = Ychwanegu sylw
+
+## The view manager is a sidebar displaying different views:
+##  - thumbnails;
+##  - outline;
+##  - attachments;
+##  - layers.
+## The thumbnails view is used to edit the pdf: remove/insert pages, ...
+
+pdfjs-toggle-views-manager-button =
+    .title = Togl y Bar Ochr
+pdfjs-toggle-views-manager-notification-button =
+    .title = Togl y Bar Ochr (dogfen yn cynnwys lluniau bach/amlinelliad/atodiadau/haenau)
+pdfjs-toggle-views-manager-button1-label = Rheoli tudalennau
+pdfjs-toggle-views-manager-button-label = Togl y Bar Ochr
+pdfjs-views-manager-sidebar =
+    .aria-label = Bar Ochr
+pdfjs-views-manager-sidebar-resizer =
+    .aria-label = Newid maint bar ochr
+pdfjs-views-manager-view-selector-button =
+    .title = Golygon
+pdfjs-views-manager-view-selector-button-label = Golygon
+pdfjs-views-manager-pages-title = Tudalennau
+pdfjs-views-manager-outlines-title = Amlinelliad dogfen
+pdfjs-views-manager-attachments-title = Atodiadau
+pdfjs-views-manager-layers-title = Haenau
+pdfjs-views-manager-pages-option-label = Tudalennau
+pdfjs-views-manager-outlines-option-label = Amlinelliad dogfen
+pdfjs-views-manager-attachments-option-label = Atodiadau
+pdfjs-views-manager-layers-option-label = Haenau
+pdfjs-views-manager-add-file-button =
+    .title = Ychwanegu ffeil
+pdfjs-views-manager-add-file-button-label = Ychwanegu ffeil
+# Variables:
+#   $count (Number) - the number of selected pages.
+pdfjs-views-manager-pages-status-action-label =
+    { $count ->
+        [zero] { $count } wedi'u dewis
+        [one] { $count } wedi'i dewis
+        [two] { $count } wedi'u dewis
+        [few] { $count } wedi'u dewis
+        [many] { $count } wedi'u dewis
+       *[other] { $count } wedi'u dewis
+    }
+pdfjs-views-manager-pages-status-none-action-label = Dewiswch dudalennau
+pdfjs-views-manager-pages-status-action-button-label = Rheoli
+pdfjs-views-manager-pages-status-copy-button-label = Copïo
+pdfjs-views-manager-pages-status-cut-button-label = Torri
+pdfjs-views-manager-pages-status-delete-button-label = Dileu
+pdfjs-views-manager-pages-status-save-as-button-label = Cadw fel…
+# Variables:
+#   $count (Number) - the number of selected pages to be cut.
+pdfjs-views-manager-status-undo-cut-label =
+    { $count ->
+        [zero] { $count } tudalennau wedi'u torri
+        [one] { $count } dudalen wedi'i thorri
+        [two] { $count } dudalen wedi'u torri
+        [few] { $count } tudalen wedi'u torri
+        [many] { $count } tudalen wedi'u torri
+       *[other] { $count } tudalen wedi'u torri
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be copied.
+pdfjs-views-manager-pages-status-undo-copy-label =
+    { $count ->
+        [zero] { $count } tudalennau wedi'u copïo
+        [one] { $count } tudalen wedi'i chopïo
+        [two] { $count } tudalen wedi'u copïo
+        [few] { $count } tudalen wedi'u copïo
+        [many] { $count } tudalen wedi'u copïo
+       *[other] { $count } tudalen wedi'u copïo
+    }
+# Variables:
+#   $count (Number) - the number of selected pages to be deleted.
+pdfjs-views-manager-pages-status-undo-delete-label =
+    { $count ->
+        [zero] { $count } tudalennau wedi'u dileu
+        [one] { $count } tudalen wedi'i dileu
+        [two] { $count } dudalen wedi'u dileu
+        [few] { $count } tudalen wedi'u dileu
+        [many] { $count } tudalen wedi'u dileu
+       *[other] { $count } tudalen wedi'u dileu
+    }
+pdfjs-views-manager-pages-status-waiting-ready-label = Yn paratoi eich ffeil…
+pdfjs-views-manager-pages-status-waiting-uploading-label = Yn llwytho ffeil i fyny…
+pdfjs-views-manager-status-warning-cut-label = Methu torri. Adnewyddwch y dudalen a cheisio eto.
+pdfjs-views-manager-status-warning-copy-label = Methu copïo. Adnewyddwch y dudalen a cheisio eto.
+pdfjs-views-manager-status-warning-delete-label = Methu dileu. Adnewyddwch y dudalen a cheisio eto.
+pdfjs-views-manager-status-warning-save-label = Methu cadw. Adnewyddwch y dudalen a cheisio eto.
+pdfjs-views-manager-status-undo-button-label = Dadwneud
+pdfjs-views-manager-status-done-button-label = Gorffen
+pdfjs-views-manager-status-close-button =
+    .title = Cau
+pdfjs-views-manager-status-close-button-label = Cau
+pdfjs-views-manager-paste-button-label = Gludo
+pdfjs-views-manager-paste-button-before =
+    .title = Gludo cyn y dudalen gyntaf
+# Variables:
+#   $page (Number) - the page number after which the paste button is.
+pdfjs-views-manager-paste-button-after =
+    .title = Gludo ar ôl tudalen { $page }
+pdfjs-toggle-views-manager-button1 =
+    .title = Rheoli tudalennau
 
 ## Main menu for adding/removing signatures
 
