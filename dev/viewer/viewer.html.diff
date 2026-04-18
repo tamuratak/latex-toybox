@@ -1,14 +1,14 @@
---- ../tmp/pdfjs-4.0.379/web/viewer.html	2023-12-31 15:22:18
-+++ viewer/viewer.html	2024-01-08 06:55:38
+--- ../tmp/pdfjs-5-6-205/web/viewer.html	2026-03-29 16:08:20
++++ viewer/viewer.html	2026-04-18 16:29:14
 @@ -25,15 +25,22 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-     <meta name="google" content="notranslate">
-+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+     <meta name="google" content="notranslate" />
++    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;" />
      <title>PDF.js viewer</title>
  
 -<!-- This snippet is used in production (included from viewer.html) -->
--<link rel="resource" type="application/l10n" href="locale/locale.json">
+-<link rel="resource" type="application/l10n" href="locale/locale.json" />
 -<script src="../build/pdf.mjs" type="module"></script>
 -
 +    <!--
@@ -16,24 +16,15 @@
 +      we can override viewer.css by editing latextoybox.css.
 +      DONT EDIT viewer.css. EDIT latextoybox.css instead.
 +    -->
-     <link rel="stylesheet" href="viewer.css">
+     <link rel="stylesheet" href="viewer.css" />
  
 -  <script src="viewer.mjs" type="module"></script>
-+    <link rel="stylesheet" href="latextoybox.css">
++    <link rel="stylesheet" href="latextoybox.css" />
 +
 +
 +<!-- This snippet is used in production (included from viewer.html) -->
-+<link rel="resource" type="application/l10n" href="locale/locale.json">
++<link rel="resource" type="application/l10n" href="locale/locale.json" />
 +<script src="/out/viewer/latextoybox.js" type="module"></script>
    </head>
  
-   <body tabindex="1">
-@@ -255,7 +262,7 @@
-           </div>
-         </div>  <!-- secondaryToolbar -->
- 
--        <div class="toolbar">
-+        <div class="toolbar hide">
-           <div id="toolbarContainer">
-             <div id="toolbarViewer">
-               <div id="toolbarViewerLeft">
+   <body tabindex="0">
