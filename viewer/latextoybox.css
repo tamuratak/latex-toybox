@@ -154,6 +154,10 @@ html[dir='rtl'] .findbar {
     display: none;
 }
 
+#printButton {
+    display: none;
+}
+
 #downloadButton {
     display: none;
 }
