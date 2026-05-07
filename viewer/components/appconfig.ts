@@ -45,7 +45,7 @@ export class AppConfig {
             standardFontDataUrl: '/node_modules/pdfjs-dist/standard_fonts/',
             wasmUrl: '/node_modules/pdfjs-dist/wasm/',
             iccUrl: '/node_modules/pdfjs-dist/iccs/',
-            workerSrc: '/node_modules/pdfjs-dist/build/pdf.worker.mjs',
+            workerSrc: '/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs',
             forcePageColors: true,
             ...color
         }
