@@ -5,7 +5,7 @@ import type { ILatexToyboxPdfViewer, IPDFViewerApplication } from './interface.j
 declare const PDFViewerApplication: IPDFViewerApplication
 
 // Static HTML elements
-const sidebarContainerElement = document.getElementById('sidebarContainer') as HTMLElement
+const sidebarContainerElement = document.getElementById('viewsManager') as HTMLElement
 const historyBackElement = document.getElementById('historyBack') as HTMLElement
 const historyForwardElement = document.getElementById('historyForward') as HTMLElement
 

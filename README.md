@@ -37,7 +37,9 @@ Additionally, the PDF viewer reloads with a smooth transition effect.
 
 https://github.com/tamuratak/latex-toybox/assets/10665499/e2df184b-ae95-416f-9576-d567de91bec4
 
+## PDF viewer trimming
 
+LaTeX Toybox uses an independently maintained viewer-side implementation of page trimming. It scales and clips the rendered layers without modifying PDF.js’s internal layout or scale calculations. The upstream implementation took a different approach and patched PDF.js internals, which caused scaling and display issues. This allows trimming remains functional in LaTeX Toybox with newer PDF.js versions.
 
 ## Removed features
 

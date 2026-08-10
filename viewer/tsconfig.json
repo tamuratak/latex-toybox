@@ -21,7 +21,6 @@
         "strict": true,
         "target": "es2022",
         "typeRoots": [],
-        "baseUrl": "./",
         "paths": {
             "/node_modules/pdfjs-dist/build/pdf.mjs": ["../node_modules/pdfjs-dist/types/src/pdf.d.ts"],
             "/viewer.mjs": ["./viewer.d.mts"],

@@ -34,7 +34,7 @@ window.addEventListener('message', async (event) => {
 
 // https://github.com/microsoft/vscode/issues/87282#issuecomment-919464403
 const pdfWorkerJsBlob = new Promise(async resolve => {
-    const result = await fetch(pdfjsDistUri + '/build/pdf.worker.mjs');
+    const result = await fetch(pdfjsDistUri + '/legacy/build/pdf.worker.mjs');
     const blob = await result.blob();
     resolve(blob);
 })

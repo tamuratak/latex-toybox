@@ -13,7 +13,7 @@
   },
   "engines": {
     "npm": ">=11.0.0",
-    "vscode": "^1.116.0"
+    "vscode": "^1.126.0"
   },
   "categories": [
     "Programming Languages",
@@ -1695,9 +1695,9 @@
     "latex-utensils": "7.0.0",
     "mathjax-full": "3.2.2",
     "micromatch": "4.0.8",
-    "pdfjs-dist": "5.4.296",
+    "pdfjs-dist": "6.2.108",
     "workerpool": "10.0.1",
-    "ws": "8.20.0"
+    "ws": "8.21.3"
   },
   "devDependencies": {
     "@eslint/js": "9.39.0",
@@ -1706,7 +1706,7 @@
     "@types/mocha": "10.0.10",
     "@types/node": "~22.15",
     "@types/tmp": "0.2.6",
-    "@types/vscode": "1.116.0",
+    "@types/vscode": "1.125.0",
     "@types/ws": "8.18.1",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.6.2",
@@ -1714,7 +1714,7 @@
     "glob": "13.0.6",
     "mocha": "11.7.5",
     "rimraf": "3.0.2",
-    "tmp": "0.2.5",
+    "tmp": "0.2.7",
     "typescript": "5.8.3",
     "typescript-eslint": "8.46.2"
   }
