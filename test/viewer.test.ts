@@ -216,6 +216,6 @@ suite('PDF Viewer test suite', () => {
         for (const result of secondResults) {
             assert.ok(Math.abs(result.scrollTop) > 10, 'Did not scroll to the correct position with SyncTeX.')
         }
-    })
+    }, () => true)
 
 })

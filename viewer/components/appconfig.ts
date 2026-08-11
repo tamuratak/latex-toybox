@@ -45,7 +45,7 @@ export class AppConfig {
             standardFontDataUrl: '/node_modules/pdfjs-dist/standard_fonts/',
             wasmUrl: '/node_modules/pdfjs-dist/wasm/',
             iccUrl: '/node_modules/pdfjs-dist/iccs/',
-            workerSrc: '/node_modules/pdfjs-dist/build/pdf.worker.mjs',
+            workerSrc: '/node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs',
             forcePageColors: true,
             ...color
         }
@@ -68,8 +68,7 @@ export class AppConfig {
             const filter = `invert(${invert * 100}%) hue-rotate(${hueRotate}deg) grayscale(${grayscale}) sepia(${sepia}) brightness(${brightness})`
             if (isPrefersColorSchemeDark()) {
                 viewerContainer.style.filter = filter;
-                (document.getElementById('thumbnailView') as HTMLElement).style.filter = filter;
-                (document.getElementById('sidebarContent') as HTMLElement).style.background = 'var(--body-bg-color)'
+                (document.getElementById('thumbnailsView') as HTMLElement).style.filter = filter;
             } else {
                 document.documentElement.style.filter = filter
                 document.documentElement.style.background = 'white'
